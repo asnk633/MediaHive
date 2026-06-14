@@ -1,4 +1,5 @@
 'use client';
+import { nativeNavigate } from '@/lib/utils';
 
 import { GovernanceDashboard } from '@/components/governance/GovernanceDashboard';
 import { useAuth } from '@/contexts/AuthContextProvider';
@@ -11,7 +12,7 @@ export default function GovernancePage() {
 
     useEffect(() => {
         if (authStatus === 'unauthenticated' || (user && user.role !== 'admin')) {
-            router.push('/');
+            nativeNavigate('/', router, 'page.tsx');
         }
     }, [user, authStatus, router]);
 

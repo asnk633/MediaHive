@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/apiClient';
@@ -32,7 +33,7 @@ export default function TenantsClient() {
 
         const fetchTenants = async () => {
             try {
-                const data = await apiClient('/api/tenants', {
+                const data = await apiClient(`${API_BASE}/tenants`, {
                     method: 'GET'
                 });
                 setTenants(data.tenants);
@@ -51,7 +52,7 @@ export default function TenantsClient() {
         e.preventDefault();
 
         try {
-            const url = editingTenant ? `/api/tenants/${editingTenant.id}` : '/api/tenants';
+            const url = editingTenant ? `${API_BASE}/tenants/${editingTenant.id}` : `${API_BASE}/tenants`;
             const method = editingTenant ? 'PUT' : 'POST';
 
             const data = await apiClient(url, {
@@ -92,7 +93,7 @@ export default function TenantsClient() {
         }
 
         try {
-            await apiClient(`/api/tenants/${tenantId}`, {
+            await apiClient(`${API_BASE}/tenants/${tenantId}`, {
                 method: 'DELETE',
             });
 

@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState, useEffect } from 'react';
 import { AutomationRule, RuleAction } from '@/types/automation-rules';
@@ -113,7 +114,7 @@ export default function NotificationPolicyView() {
     const fetchRules = async () => {
         setLoading(true);
         try {
-            const json = await apiClient('/api/admin/automation-rules');
+            const json = await apiClient(`${API_BASE}/admin/automation-rules`);
             setRules(json.custom);
             setSystemRules(json.system);
         } catch (e) {
@@ -163,14 +164,14 @@ export default function NotificationPolicyView() {
                 payload.conditions.push({ field: config.field, operator: 'gt', value: 0 });
             }
 
-            const createRes = await apiClient('/api/admin/automation-rules', {
+            const createRes = await apiClient(`${API_BASE}/admin/automation-rules`, {
                 method: 'POST',
                 body: JSON.stringify(payload)
             });
             
             const { rule } = createRes;
 
-            await apiClient('/api/admin/automation-rules', {
+            await apiClient(`${API_BASE}/admin/automation-rules`, {
                 method: 'PATCH',
                 body: JSON.stringify({ id: rule.id, command: 'activate' })
             });

@@ -1,6 +1,6 @@
-import { redirect } from 'next/navigation';
+import { serverRedirect } from '@/lib/server-redirect';
 
 export default function UsersRedirect() {
-    redirect('/admin/users');
+    serverRedirect('/admin/users');
     return null;
 }

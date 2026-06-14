@@ -391,7 +391,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
     useEffect(() => {
         clear();
         lastClickedIndexRef.current = null;
-    }, [view, filterStatus, filterPriority]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [view, filterStatus, filterPriority, clear]);
 
     // Sync FAB visibility with selection state
     useEffect(() => {

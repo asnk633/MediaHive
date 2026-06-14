@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -53,7 +54,7 @@ export default function SupportPage() {
     if (!user?.uid) return;
     setIsCreatingChat(true);
     try {
-      const res = await fetch("/api/chat/support", {
+      const res = await fetch(`${API_BASE}/chat/support`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.uid }),

@@ -1,4 +1,5 @@
 "use client"
+import { nativeNavigate } from '@/lib/utils';
 
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
@@ -12,7 +13,7 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (!loading && !user) {
             console.warn("[AUTH GATE] No user — redirecting to /login")
-            router.replace("/login")
+            nativeNavigate("/login", router, 'AuthGate.tsx')
         }
     }, [loading, user, router])
 

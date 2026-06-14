@@ -52,6 +52,15 @@ export default function LoginClient() {
         }
     }, []);
 
+    // Redirect to /home if already authenticated (handles playwright_test_auth bypass and normal auth)
+    React.useEffect(() => {
+        if (!authLoading && user) {
+            console.log('[LOGIN] User already authenticated, redirecting to /home');
+            nativeNavigate('/home', router, 'LoginClient-AlreadyAuthed');
+        }
+    }, [user, authLoading, router]);
+
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);

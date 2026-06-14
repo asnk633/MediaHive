@@ -104,6 +104,7 @@ export const NotificationInbox: React.FC = () => {
     );
 
     const sel = useBulkSelection<string>({ allIds });
+    const { clear, selectRange, toggle } = sel;
 
     // Shift+click: track last clicked index via ref (no re-render)
     const lastSelectedIndexRef = useRef<number | null>(null);
@@ -111,22 +112,20 @@ export const NotificationInbox: React.FC = () => {
     const handleSelectToggle = useCallback(
         (id: string, index: number, e: React.MouseEvent) => {
             if (e.shiftKey && lastSelectedIndexRef.current !== null) {
-                sel.selectRange(lastSelectedIndexRef.current, index);
+                selectRange(lastSelectedIndexRef.current, index);
             } else {
-                sel.toggle(id);
+                toggle(id);
                 lastSelectedIndexRef.current = index;
             }
         },
-        [sel],
+        [selectRange, toggle],
     );
 
     // Reset last-index when filter changes (selection also resets via allIds change)
     useEffect(() => {
         lastSelectedIndexRef.current = null;
-        sel.clear();
-        // sel.clear is stable; disabling exhaustive-deps is intentional here
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filter]);
+        clear();
+    }, [filter, clear]);
 
     if (loading) {
         return (

@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/apiClient';
@@ -34,13 +35,13 @@ export default function SystemMonitoringPage() {
     const fetchStats = async () => {
       try {
         // Fetch system stats
-        const systemData = await apiClient('/api/monitoring/system/stats', {
+        const systemData = await apiClient(`${API_BASE}/monitoring/system/stats`, {
           method: 'GET'
         });
         setSystemStats(systemData);
 
         // Fetch audit stats
-        const auditData = await apiClient(`/api/audit-log/stats?period=${selectedPeriod}&tenant=${selectedTenant}`, {
+        const auditData = await apiClient(`${API_BASE}/audit-log/stats?period=${selectedPeriod}&tenant=${selectedTenant}`, {
           method: 'GET'
         });
         setAuditStats(auditData);

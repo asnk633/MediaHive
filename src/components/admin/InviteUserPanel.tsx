@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState, useEffect } from 'react';
 import { isFeatureEnabled } from '@/app/featureFlags';
@@ -39,7 +40,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
   const fetchInvites = async () => {
     setLoadingInvites(true);
     try {
-      const data = await apiClient('/api/invites', {
+      const data = await apiClient(`${API_BASE}/invites`, {
         method: 'GET'
       });
 
@@ -66,7 +67,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
 
     setIsLoading(true);
     try {
-      const result = await apiClient('/api/invites', {
+      const result = await apiClient(`${API_BASE}/invites`, {
         method: 'POST',
         body: JSON.stringify({ email, role }),
       });
@@ -92,7 +93,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
     }
 
     try {
-      const result = await apiClient(`/api/invites?id=${inviteId}`, {
+      const result = await apiClient(`${API_BASE}/invites?id=${inviteId}`, {
         method: 'DELETE',
       });
 

@@ -1,4 +1,5 @@
 'use client';
+import { nativeNavigate } from '@/lib/utils';
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -103,7 +104,7 @@ export default function AcceptInvitePage() {
                     <h1 className="text-2xl font-black text-foreground tracking-tight">Oops! Something's wrong</h1>
                     <p className="text-foreground/80 text-sm leading-relaxed">{error}</p>
                     <button 
-                        onClick={() => router.push('/login')}
+                        onClick={() => nativeNavigate('/login', router, 'page.tsx')}
                         className="w-full py-4 bg-foreground/5 hover:bg-foreground/10 text-foreground font-bold rounded-2xl transition-colors"
                     >
                         Return to Login

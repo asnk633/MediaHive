@@ -1,3 +1,4 @@
+import { API_BASE } from '@/lib/api-utils';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -36,7 +37,7 @@ export function DemoDataButton({ onDemoDataLoaded }: DemoDataButtonProps) {
 
     const checkDemoData = async () => {
       try {
-        const data = await apiClient('/api/demo-data', {
+        const data = await apiClient(`${API_BASE}/demo-data`, {
           method: 'GET'
         });
         setHasDemoData(data.hasDemoData);
@@ -63,7 +64,7 @@ export function DemoDataButton({ onDemoDataLoaded }: DemoDataButtonProps) {
     setLoading(true);
 
     try {
-      const result = await apiClient('/api/demo-data', {
+      const result = await apiClient(`${API_BASE}/demo-data`, {
         method: 'POST',
         body: JSON.stringify({
           action: hasDemoData ? 'delete' : 'generate'

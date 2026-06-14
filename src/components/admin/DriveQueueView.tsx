@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useEffect, useState } from 'react';
 import { DriveQueueItem } from '@/types/drive-queue';
@@ -131,7 +132,7 @@ export function DriveQueueView() {
         // ... (rest of loadQueue)
 
         try {
-            const data = await apiClient('/api/admin/drive-queue');
+            const data = await apiClient(`${API_BASE}/admin/drive-queue`);
             setItems(data);
             setSelectedIds(new Set());
         } catch (e) {
@@ -144,7 +145,7 @@ export function DriveQueueView() {
 
     const loadFolderInfo = async () => {
         try {
-            const data = await apiClient('/api/admin/drive-queue/meta');
+            const data = await apiClient(`${API_BASE}/admin/drive-queue/meta`);
             setFolderInfo(data);
         } catch (e) {
             console.error('Failed to load folder info', e);
@@ -155,7 +156,7 @@ export function DriveQueueView() {
         setScanning(true);
         setScanLogs([]);
         try {
-            const data = await apiClient('/api/admin/drive-queue/scan', { method: 'POST' });
+            const data = await apiClient(`${API_BASE}/admin/drive-queue/scan`, { method: 'POST' });
 
             if (data.logs) {
                 setScanLogs(data.logs);
@@ -241,7 +242,7 @@ export function DriveQueueView() {
                 body.metadata = payloadMetadata;
             }
 
-            const data = await apiClient('/api/admin/drive-queue', {
+            const data = await apiClient(`${API_BASE}/admin/drive-queue`, {
                 method: 'POST',
                 body: JSON.stringify(body)
             });
@@ -279,7 +280,7 @@ export function DriveQueueView() {
                 };
             }
 
-            const data = await apiClient('/api/admin/drive-queue', {
+            const data = await apiClient(`${API_BASE}/admin/drive-queue`, {
                 method: 'POST',
                 body: JSON.stringify(body)
             });

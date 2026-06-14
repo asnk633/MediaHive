@@ -204,7 +204,7 @@ export default function HomeClient() {
                 !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement).tagName) &&
                 !e.ctrlKey && !e.metaKey && !e.altKey) {
                 e.preventDefault();
-                router.push('/tasks/new?returnTo=home');
+                nativeNavigate('/tasks/new?returnTo=home', router, 'HomeClient.tsx');
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -301,7 +301,7 @@ export default function HomeClient() {
                                 >
                                     <Magnetic strength={0.3}>
                                         <button 
-                                            onClick={() => router.push('/tasks/new?returnTo=home')} 
+                                            onClick={() => nativeNavigate('/tasks/new?returnTo=home', router, 'HomeClient.tsx')} 
                                             className="group flex items-center gap-3 h-12 px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
                                         >
                                             <CheckSquare size={18} className="text-primary group-hover:rotate-12 transition-transform" /> 
@@ -310,7 +310,7 @@ export default function HomeClient() {
                                     </Magnetic>
                                     <Magnetic strength={0.3}>
                                         <button 
-                                            onClick={() => router.push('/calendar')} 
+                                            onClick={() => nativeNavigate('/calendar', router, 'HomeClient.tsx')} 
                                             className="group flex items-center gap-3 h-12 px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
                                         >
                                             <CalendarIcon size={18} className="text-primary group-hover:rotate-12 transition-transform" /> 
@@ -320,7 +320,7 @@ export default function HomeClient() {
                                     {currentRole !== 'member' && (
                                         <Magnetic strength={0.3}>
                                             <button 
-                                                onClick={() => router.push('/campaigns/new')} 
+                                                onClick={() => nativeNavigate('/campaigns/new', router, 'HomeClient.tsx')} 
                                                 className="group flex items-center gap-3 h-12 px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
                                             >
                                                 <FolderPlus size={18} className="text-primary group-hover:scale-110 transition-transform" /> 
@@ -331,7 +331,7 @@ export default function HomeClient() {
                                     {['admin', 'manager'].includes(currentRole) && (
                                         <Magnetic strength={0.3}>
                                             <button 
-                                                onClick={() => router.push('/notifications/new')} 
+                                                onClick={() => nativeNavigate('/notifications/new', router, 'HomeClient.tsx')} 
                                                 className="group flex items-center gap-3 h-12 px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
                                             >
                                                 <Bell size={18} className="text-rose-400 animate-swing transition-transform" /> 
@@ -369,13 +369,13 @@ export default function HomeClient() {
                             <TodayTasksCard 
                                 tasks={todayTasks} 
                                 isLoading={isDataLoading} 
-                                onViewTask={(id) => router.push(`/tasks?id=${id}`)}
+                                onViewTask={(id) => nativeNavigate(`/tasks?id=${id}`, router, 'HomeClient.tsx')}
                             />
                             <TodayEventsCard 
                                 events={todayEvents} 
                                 tasks={tasks}
                                 isLoading={isDataLoading} 
-                                onViewEvent={(id) => router.push(`/calendar?id=${id}`)}
+                                onViewEvent={(id) => nativeNavigate(`/calendar?id=${id}`, router, 'HomeClient.tsx')}
                             />
                         </div>
 

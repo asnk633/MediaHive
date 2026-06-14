@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -88,7 +89,7 @@ export default function ReportsClient() {
                 if (eStats) setEventStats(eStats);
 
                 // Fetch recent audit logs
-                const res = await apiClient<{ activity: any[] }>('/api/reports/activity?limit=50').catch(() => null);
+                const res = await apiClient<{ activity: any[] }>(`${API_BASE}/reports/activity?limit=50`).catch(() => null);
                 if (res && res.activity) {
                     setActivityLogs(res.activity);
                 }

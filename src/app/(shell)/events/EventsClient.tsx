@@ -131,7 +131,7 @@ export default function EventsClient() {
                                 const endIso = end.toISOString();
                                 nativeNavigate(`/events/new?start_at=${startIso}&end_at=${endIso}`, router, `CalendarRange:${startIso}-${endIso}`);
                             }}
-                            onEventClick={(event: any) => router.push(`/events/${event.id}`)}
+                            onEventClick={(event: any) => nativeNavigate(`/events/${event.id}`, router, 'EventsClient.tsx')}
                         />
                     )}
 
@@ -140,7 +140,7 @@ export default function EventsClient() {
                             events={events}
                             currentDate={currentDate}
                             onDateChange={setCurrentDate}
-                            onEventClick={(event: any) => router.push(`/events/${event.id}`)}
+                            onEventClick={(event: any) => nativeNavigate(`/events/${event.id}`, router, 'EventsClient.tsx')}
                             onEventUpdate={async (id, updates) => {
                                 try {
                                     await EventService.updateEvent(id, updates, user?.uid || '', undefined, undefined);
@@ -175,7 +175,7 @@ export default function EventsClient() {
                     {viewMode === 'list' && (
                         <EventListView
                             events={events}
-                            onEventClick={(event: any) => router.push(`/events/${event.id}`)}
+                            onEventClick={(event: any) => nativeNavigate(`/events/${event.id}`, router, 'EventsClient.tsx')}
                         />
                     )}
                 </div>

@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE } from '@/lib/api-utils';
 
 import { useEffect, useState } from 'react';
 import { X, TrendingUp, TrendingDown, Minus, Activity, Users, AlertTriangle, MessageSquare, Shield } from 'lucide-react';
@@ -69,7 +70,7 @@ export function PerformanceHistoryModal({
 
     const fetchInterventions = async () => {
         try {
-            const data = await apiClient(`/api/admin/interventions/${userId}`);
+            const data = await apiClient(`${API_BASE}/admin/interventions/${userId}`);
             setInterventions(data.interventions || []);
         } catch (err) {
             console.error('Failed to fetch interventions:', err);
@@ -84,7 +85,7 @@ export function PerformanceHistoryModal({
             const currentPeriod = new Date().toISOString().slice(0, 7); // YYYY-MM
             const riskLevel = earlyWarning?.riskLevel || 'Low';
 
-            await apiClient('/api/admin/interventions', {
+            await apiClient(`${API_BASE}/admin/interventions`, {
                 method: 'POST',
                 body: JSON.stringify({
                     userId,
@@ -110,7 +111,7 @@ export function PerformanceHistoryModal({
         setLoading(true);
         setError(null);
         try {
-            const data = await apiClient(`/api/admin/performance-history/${userId}`);
+            const data = await apiClient(`${API_BASE}/admin/performance-history/${userId}`);
             setHistory(data.history || []);
             setTrend(data.trend || 'Insufficient Data');
             setDelta(data.delta || 0);

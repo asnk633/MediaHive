@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState, useEffect } from 'react';
 import { AutomationRule, RuleAction, ConditionOperator } from '@/types/automation-rules';
@@ -21,7 +22,7 @@ export default function AutomationRulesView() {
     const fetchRules = async () => {
         setLoading(true);
         try {
-            const json = await apiClient('/api/admin/automation-rules');
+            const json = await apiClient(`${API_BASE}/admin/automation-rules`);
             setData(json);
         } catch (e) {
             console.error(e);
@@ -60,7 +61,7 @@ export default function AutomationRulesView() {
     const handleActivate = async (id: string) => {
         if (!confirm('Activate this rule? Previous versions will be disabled.')) return;
         try {
-            await apiClient('/api/admin/automation-rules', {
+            await apiClient(`${API_BASE}/admin/automation-rules`, {
                 method: 'PATCH',
                 body: JSON.stringify({ id, command: 'activate' })
             });
@@ -73,7 +74,7 @@ export default function AutomationRulesView() {
     const handleSave = async (rule: Partial<AutomationRule>) => {
         try {
             const method = rule.id && rule.version ? 'PUT' : 'POST';
-            await apiClient('/api/admin/automation-rules', {
+            await apiClient(`${API_BASE}/admin/automation-rules`, {
                 method,
                 body: JSON.stringify(rule)
             });

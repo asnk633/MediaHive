@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 
 
@@ -50,7 +51,7 @@ const getTaskWorkloadData = async (tenantId: string, period: string) => {
     const { startDate } = getDateRange(period);
 
     // Fetch data from API
-    const workloadData = await apiClient(`/api/insights/task-workload?tenantId=${tenantId}&period=${period}`, {
+    const workloadData = await apiClient(`${API_BASE}/insights/task-workload?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
 
@@ -71,7 +72,7 @@ const getTatMetricsData = async (tenantId: string, period: string) => {
     const { startDate } = getDateRange(period);
 
     // Fetch data from API
-    const tatData = await apiClient(`/api/insights/tat-metrics?tenantId=${tenantId}&period=${period}`, {
+    const tatData = await apiClient(`${API_BASE}/insights/tat-metrics?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
 
@@ -92,7 +93,7 @@ const getSlaComplianceData = async (tenantId: string, period: string) => {
     const { startDate } = getDateRange(period);
 
     // Fetch data from API
-    const slaData = await apiClient(`/api/insights/sla-compliance?tenantId=${tenantId}&period=${period}`, {
+    const slaData = await apiClient(`${API_BASE}/insights/sla-compliance?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
 
@@ -113,7 +114,7 @@ const getEventFrequencyData = async (tenantId: string, period: string) => {
     const { startDate } = getDateRange(period);
 
     // Fetch data from API
-    const eventData = await apiClient(`/api/insights/event-frequency?tenantId=${tenantId}&period=${period}`, {
+    const eventData = await apiClient(`${API_BASE}/insights/event-frequency?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
 
@@ -138,7 +139,7 @@ const getMediaOutputData = async (tenantId: string, period: string) => {
     const { startDate } = getDateRange(period);
 
     // Fetch data from API
-    const mediaData = await apiClient(`/api/insights/media-output?tenantId=${tenantId}&period=${period}`, {
+    const mediaData = await apiClient(`${API_BASE}/insights/media-output?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
 
@@ -162,7 +163,7 @@ const getTeamActivityData = async (tenantId: string, period: string) => {
     const { startDate } = getDateRange(period);
 
     // Fetch data from API
-    const teamData = await apiClient(`/api/insights/team-activity?tenantId=${tenantId}&period=${period}`, {
+    const teamData = await apiClient(`${API_BASE}/insights/team-activity?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
 
@@ -184,7 +185,7 @@ const getPerformanceAnomaliesData = async (tenantId: string, period: string) => 
     const { startDate } = getDateRange(period);
 
     // Fetch data from API
-    const anomalies = await apiClient(`/api/insights/performance-anomalies?tenantId=${tenantId}&period=${period}`, {
+    const anomalies = await apiClient(`${API_BASE}/insights/performance-anomalies?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
 
@@ -332,7 +333,7 @@ export default function InsightsPage() {
 
   const exportData = async (format: string) => {
     try {
-      const response = await apiClient(`/api/insights/export?format=${format}&period=${selectedPeriod}&tenant=${selectedTenant}`, {
+      const response = await apiClient(`${API_BASE}/insights/export?format=${format}&period=${selectedPeriod}&tenant=${selectedTenant}`, {
         method: 'GET'
       });
 
@@ -352,7 +353,7 @@ export default function InsightsPage() {
 
   const sendEmailSummary = async () => {
     try {
-      const response = await apiClient('/api/insights/email-summary', {
+      const response = await apiClient(`${API_BASE}/insights/email-summary`, {
         method: 'POST',
         body: JSON.stringify({ period: selectedPeriod, tenant: selectedTenant }),
       });

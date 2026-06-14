@@ -1,7 +1,7 @@
 import { verifyUser } from "@/lib/server/server-utils";
 import { getSupabaseAdmin } from "@/lib/verifyUser";
 import ChatLayout from "@/components/chat/ChatLayout";
-import { redirect } from "next/navigation";
+import { serverRedirect } from "@/lib/server-redirect";
 import { Suspense } from "react";
 
 export const dynamic = 'force-dynamic';
@@ -12,7 +12,8 @@ export default async function ChatPage() {
   const user = await verifyUser(req);
   
   if (!user) {
-    redirect('/login');
+    serverRedirect('/login');
+    return null;
   }
 
   const supabase = getSupabaseAdmin();

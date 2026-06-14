@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import { render, screen } from '@testing-library/react';
 import TasksPage from '@/app/(shell)/tasks/page';
 import { AuthContext } from '@/contexts/AuthContextProvider';

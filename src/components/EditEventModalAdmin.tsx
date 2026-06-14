@@ -38,8 +38,6 @@ export default function EditEventModalAdmin({
   const setVisibility = (val: string) => setFormData(prev => ({ ...prev, visibility: val }));
   const setResources = (val: string) => setFormData(prev => ({ ...prev, resources: val }));
 
-  if (!open) return null;
-
   const submitUpdate = async () => {
     // Save logic
     await new Promise(resolve => setTimeout(resolve, 500)); // Mock network delay
@@ -52,6 +50,8 @@ export default function EditEventModalAdmin({
       onClose();
     }
   });
+
+  if (!open) return null;
 
   const handleSave = async () => {
     await handleSubmit(undefined);

@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { cn, nativeNavigate } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { InviteUserModal } from '@/components/admin/users/InviteUserModal';
 import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
@@ -64,11 +64,9 @@ export default function AdminUsersPage() {
 
     useEffect(() => {
         if (authResolved && !isAdmin) {
-            router.push('/home');
+            nativeNavigate('/home', router, 'page.tsx');
         }
     }, [isAdmin, authResolved, router]);
-
-    if (!authResolved || !isAdmin) return null;
 
     const [viewMode, setViewMode] = useState<'users' | 'invites'>('users');
     const [users, setUsers] = useState<User[]>([]);
@@ -102,6 +100,7 @@ export default function AdminUsersPage() {
     const selectedInvite = invites.find(i => i.id === selectedInviteId);
 
     const fetchData = async () => {
+        if (!authResolved || !isAdmin) return;
         setLoading(true);
         try {
             const [usersData, instData, inviteData, deptData] = await Promise.all([
@@ -128,6 +127,7 @@ export default function AdminUsersPage() {
     };
 
     const fetchAccess = async (uid: string) => {
+        if (!authResolved || !isAdmin) return;
         setLoadingAccess(true);
         try {
             const access = await AdminService.getUserWorkspaceAccess(uid);
@@ -140,14 +140,22 @@ export default function AdminUsersPage() {
     };
 
     useEffect(() => {
-        fetchData();
-    }, [viewMode]);
+        if (authResolved && !isAdmin) {
+            nativeNavigate('/home', router, 'page.tsx');
+        }
+    }, [isAdmin, authResolved, router]);
 
     useEffect(() => {
-        if (selectedUserId && viewMode === 'users') {
+        if (authResolved && isAdmin) {
+            fetchData();
+        }
+    }, [viewMode, authResolved, isAdmin]);
+
+    useEffect(() => {
+        if (authResolved && isAdmin && selectedUserId && viewMode === 'users') {
             fetchAccess(selectedUserId);
         }
-    }, [selectedUserId, viewMode]);
+    }, [selectedUserId, viewMode, authResolved, isAdmin]);
 
     const filteredUsers = users.filter(u =>
         (u.name?.toLowerCase().includes(search.toLowerCase())) ||
@@ -297,6 +305,8 @@ export default function AdminUsersPage() {
             }
         });
     };
+
+    if (!authResolved || !isAdmin) return null;
 
     return (
         <PageLayout mode="plain">

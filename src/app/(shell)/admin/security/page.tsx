@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 
 import React, { useEffect, useState } from "react";
@@ -31,7 +32,7 @@ export default function SecurityRulesPage() {
 
     const fetchSettings = async () => {
         try {
-            const data = await apiClient<{ settings: SystemSettings }>('/api/admin/settings');
+            const data = await apiClient<{ settings: SystemSettings }>(`${API_BASE}/admin/settings`);
             setSettings(data.settings);
         } catch (error) {
             console.error("Failed to load settings:", error);
@@ -48,7 +49,7 @@ export default function SecurityRulesPage() {
         setSettings(prev => prev ? { ...prev, [key]: newValue } : null);
 
         try {
-            await apiPost('/api/admin/settings', { key, value: newValue });
+            await apiPost(`${API_BASE}/admin/settings`, { key, value: newValue });
             toast.success("Security rule updated");
         } catch (error) {
             console.error("Failed to update setting:", error);

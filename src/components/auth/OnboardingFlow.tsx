@@ -1,4 +1,5 @@
 'use client';
+import { nativeNavigate } from '@/lib/utils';
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -143,7 +144,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ userName, worksp
                         </div>
 
                         <button 
-                            onClick={() => router.push('/home')}
+                            onClick={() => nativeNavigate('/home', router, 'OnboardingFlow.tsx')}
                             className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 text-foreground font-black text-sm uppercase tracking-widest rounded-2xl shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all"
                         >
                             Open Dashboard

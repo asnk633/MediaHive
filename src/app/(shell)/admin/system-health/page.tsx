@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 
 
@@ -32,7 +33,7 @@ export default function SystemHealthPage() {
     const fetchHealth = async () => {
         setRefreshing(true);
         try {
-            const data = await apiClient<{ health: HealthStats }>('/api/admin/health');
+            const data = await apiClient<{ health: HealthStats }>(`${API_BASE}/admin/health`);
             setStats(data.health);
         } catch (error) {
             console.error("Failed to fetch health:", error);

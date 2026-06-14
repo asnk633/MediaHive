@@ -172,6 +172,7 @@ D:\MediaHive App\
 ├── public/
 │   └── brand/                 # 🎨 Canonical brand assets (icon, wordmarks)
 ├── mediahive_mobile/          # Flutter mobile app
+├── website/                   # 🌐 Cinematic 3D scroll marketing landing page (Vite)
 ├── scratch/                   # Utility/one-off scripts (not committed)
 │   ├── link-drive-photos.js   # Links Drive photos to Supabase inventory
 │   ├── deploy-env.js          # CLI-based Vercel env var deployment
@@ -219,11 +220,19 @@ vercel env add VARIABLE_NAME production --value "value" --yes --force --token=<T
 ```
 Run from `D:\MediaHive App\` (NOT from any subdirectory).
 
-### Running Local Dev Server
+### Running Local Dev Server (Next.js administrative app)
 ```bash
-npm run dev
+pnpm dev
 ```
 Runs on `http://localhost:3000`. The mobile emulator reaches this via `http://10.0.2.2:3000`.
+
+### Running Local Dev Server (Marketing Landing Page)
+```bash
+cd website
+npm run dev
+```
+Runs on `http://localhost:3000` (make sure port 3000 is free or check Vite terminal).
+
 
 ---
 
@@ -289,3 +298,23 @@ Runs on `http://localhost:3000`. The mobile emulator reaches this via `http://10
 | Jun 13, 2026 | Created this Master Blueprint | AI Agent |
 | Jun 13, 2026 | Replaced all web logo and brand text assets with the finalized fixed designs | AI Agent |
 | Jun 13, 2026 | Created canonical `public/brand/` folder, updated all React/Next.js components to use new single-source logo and wordmark assets | AI Agent |
+| Jun 13, 2026 | Fixed background frame PNG images path mapping to correctly load numeric files 1.png to 30.png from the public directory | AI Agent |
+| Jun 13, 2026 | Implemented staggered letter-by-letter Aceternity Flip Words text animation effect using GSAP on landing page | AI Agent |
+| Jun 13, 2026 | Replaced 3D tilt text layout with custom SVG-based Aceternity UI Text Hover Effect featuring linear/radial gradients, dynamic cursor spotlight mask, and automatic breathing shine | AI Agent |
+| Jun 13, 2026 | Extended scroll trigger timeline limits to make 'Meet MediaHive' text visible from 1800px and stay till 2800px | AI Agent |
+| Jun 13, 2026 | Updated 'Meet MediaHive' SVG text to a 2-line layout ('Meet' / 'MediaHive.') with 1:2 font size ratio (60px/120px) and adjusted viewBox height to 300 | AI Agent |
+| Jun 13, 2026 | Shifted Platform Overview block to the left (left: 8vw) and visually doubled the size of the 'Meet MediaHive' SVG text spotlight (scaled font-size to 120/240 and shifted to left: 68% for balance) | AI Agent |
+| Jun 13, 2026 | Centered 'Meet MediaHive' SVG text by default and expanded position editor tool (lil-gui) to control both spotlight text and platform overview card properties | AI Agent |
+| Jun 13, 2026 | Applied finalized layout parameters from GUI editor tuning: shifted spotlight text container to left: 45% (top: 30%) and repositioned platform overview card to top: 44%, left: 8%, and width: 28vw | AI Agent |
+| Jun 13, 2026 | Adjusted spotlight text height position to top: 25% (left: 45%) based on fine-tuning layout settings | AI Agent |
+| Jun 13, 2026 | Replaced logo PNG frame sequence with `Media Hive final logo.webm` video file scrubbed via ScrollTrigger, and added comprehensive logo controls (scroll limits, position, scale, rotation, fade timing) to the lil-gui tuning panel | AI Agent |
+| Jun 13, 2026 | Completely removed the WebM logo overlay and the lil-gui tuning editor/positioning tool from the codebase, deleting the logo-sequence directory and package dependencies | AI Agent |
+| Jun 13, 2026 | Extended scroll value box (#frame-debugger) to be a direct child of body so it remains fixed and visible until the end of the website page | AI Agent |
+| Jun 13, 2026 | Extended ScrollTrigger pinning duration to 3100px (timeline end: +=3100) and updated final spotlight text opacity animations to keep it visible from 1800px to 3100px | AI Agent |
+| Jun 13, 2026 | Extended ScrollTrigger pinning duration to 3500px (timeline end: +=3500) and updated spotlight text animations to stay active from 1800px to 3500px (fade out starts at 3400px / 0.971 progress) | AI Agent |
+| Jun 13, 2026 | Unified the landing page background to a single continuous scrolling screen flow using GSAP-animated ambient glows, a parallax digital grid, and a procedural film grain overlay, and upgraded all page cards to use frosted glassmorphism | AI Agent |
+| Jun 13, 2026 | Integrated #hero-dark-glow and #hero-bottom-fade overlays into the main GSAP ScrollTrigger timeline to fade them to 0 alongside the desk sequence, scaled the laptop model to 2.8, and positioned it at y = 0.3 to completely eliminate any rendering cuts and visual breaks | AI Agent |
+| Jun 13, 2026 | Adjusted the spotlight text fade-out animation to end at 2800px (timeline progress 0.8) and start at 2700px (timeline progress 0.771) on the 3500px timeline | AI Agent |
+| Jun 13, 2026 | Repositioned the Platform Overview Card (#desktop-overlay) fade-in trigger to start at 2700px (timeline progress 0.771) on the 3500px timeline | AI Agent |
+| Jun 13, 2026 | Integrated the ReactBits-inspired animated "Silk" WebGL shader background using vanilla Three.js on a full-screen canvas (#global-silk-canvas) inside the fixed background container, rendering a deep indigo-purple flowing fabric texture that blends with scrolling glows and film grain | AI Agent |
+| Jun 14, 2026 | Fixed 5 failing unit test suites (policyEvaluator context cloning, enforcementEngine rule matching logic, missing const variables in governanceEngine, TasksPage breadcrumb duplicate h1 queries, and normalization toDate invalid date parsing + normalizeEvents precedence rules) | AI Agent |

@@ -63,6 +63,7 @@ Tenant (Organization)
 | Platform | Framework | Location | Hosting |
 |---|---|---|---|
 | **Web App** | Next.js (App Router) | `D:\MediaHive App\` | Vercel — `thaiba-garden-media-manager.vercel.app` |
+| **Marketing Landing Page** | Vite + Three.js + GSAP | `D:\MediaHive App\website\` | Vercel — `thaiba-garden-media-manager.vercel.app/` (subproject) |
 | **Mobile App** | Flutter (Dart) | `D:\MediaHive App\mediahive_mobile\` | Android APK + iOS IPA |
 | **Desktop App** | Windows | `D:\MediaHive App\MediaHive Windows app\` | Local install |
 
@@ -208,8 +209,22 @@ src/
 
 ### Running Locally
 ```bash
-pnpm dev     # → http://localhost:3000
+pnpm dev     # → http://localhost:3000 (Next.js administrative app)
 ```
+
+### Marketing Landing Page (Vite)
+- **Location:** `D:\MediaHive App\website\`
+- **Tech Stack:** HTML5, Vanilla JS, CSS3, GSAP (ScrollTrigger), Lenis, Three.js (WebGL rendering)
+- **Goal:** Cinematic 3D scroll-driven journey detailing the desktop, mobile, and web versions of MediaHive.
+- **Running Locally:**
+  ```bash
+  cd website
+  npm run dev   # → http://localhost:3000
+  ```
+- **Building:**
+  ```bash
+  npm run build # Compiles assets to website/dist/
+  ```
 
 ### Deploying to Vercel
 ```bash
@@ -415,4 +430,24 @@ USING (tenant_id = (auth.jwt() ->> 'tenant_id')::uuid)
 | Jun 13, 2026 | Mobile | Released mobile version `1.1.6-beta+43080` (build 43080) to fix logo design mistake across all platforms (superseding build 42080 running on real phones) | AI Agent |
 | Jun 13, 2026 | All | Replaced all logo and brand assets across Web, Mobile, and Windows platforms with the finalized fixed designs, and regenerated mobile launcher/splash assets | AI Agent |
 | Jun 13, 2026 | Web + Mobile | Created canonical `brand/` folders for Web and Mobile, updated all Web components and Mobile Dart screens to use new single-source logo and wordmark assets, and updated `pubspec.yaml` assets configuration | AI Agent |
-
+| Jun 13, 2026 | Mobile | Released mobile version `1.1.6-beta+46080` (build 46080) to fix `flutter_native_splash` dependency release compilation error and successfully trigger OTA update banner (superseding build 45080 running on real phones) | AI Agent |
+| Jun 13, 2026 | Web | Fixed background frame PNG images path mapping to correctly load numeric files 1.png to 30.png from the public directory | AI Agent |
+| Jun 13, 2026 | Web | Implemented staggered letter-by-letter Aceternity Flip Words text animation effect using GSAP on landing page | AI Agent |
+| Jun 13, 2026 | Web | Replaced 3D tilt text layout with custom SVG-based Aceternity UI Text Hover Effect featuring linear/radial gradients, dynamic cursor spotlight mask, and automatic breathing shine | AI Agent |
+| Jun 13, 2026 | Web | Extended scroll trigger timeline limits to make 'Meet MediaHive' text visible from 1800px and stay till 2800px | AI Agent |
+| Jun 13, 2026 | Web | Updated 'Meet MediaHive' SVG text to a 2-line layout ('Meet' / 'MediaHive.') with 1:2 font size ratio (60px/120px) and adjusted viewBox height to 300 | AI Agent |
+| Jun 13, 2026 | Web | Shifted Platform Overview block to the left (left: 8vw) and visually doubled the size of the 'Meet MediaHive' SVG text spotlight (scaled font-size to 120/240 and shifted to left: 68% for balance) | AI Agent |
+| Jun 13, 2026 | Web | Centered 'Meet MediaHive' SVG text by default and expanded position editor tool (lil-gui) to control both spotlight text and platform overview card properties | AI Agent |
+| Jun 13, 2026 | Web | Applied finalized layout parameters from GUI editor tuning: shifted spotlight text container to left: 45% (top: 30%) and repositioned platform overview card to top: 44%, left: 8%, and width: 28vw | AI Agent |
+| Jun 13, 2026 | Web | Adjusted spotlight text height position to top: 25% (left: 45%) based on fine-tuning layout settings | AI Agent |
+| Jun 13, 2026 | Web | Replaced logo PNG frame sequence with `Media Hive final logo.webm` video file scrubbed via ScrollTrigger, and added comprehensive logo controls (scroll limits, position, scale, rotation, fade timing) to the lil-gui tuning panel | AI Agent |
+| Jun 13, 2026 | Web | Completely removed the WebM logo overlay and the lil-gui tuning editor/positioning tool from the codebase, deleting the logo-sequence directory and package dependencies | AI Agent |
+| Jun 13, 2026 | Web | Extended scroll value box (#frame-debugger) to be a direct child of body so it remains fixed and visible until the end of the website page | AI Agent |
+| Jun 13, 2026 | Web | Extended ScrollTrigger pinning duration to 3100px (timeline end: +=3100) and updated final spotlight text opacity animations to keep it visible from 1800px to 3100px | AI Agent |
+| Jun 13, 2026 | Web | Extended ScrollTrigger pinning duration to 3500px (timeline end: +=3500) and updated spotlight text animations to stay active from 1800px to 3500px (fade out starts at 3400px / 0.971 progress) | AI Agent |
+| Jun 13, 2026 | Web | Unified the landing page background to a single continuous scrolling screen flow using GSAP-animated ambient glows, a parallax digital grid, and a procedural film grain overlay, and upgraded all page cards to use frosted glassmorphism | AI Agent |
+| Jun 13, 2026 | Web | Integrated #hero-dark-glow and #hero-bottom-fade overlays into the main GSAP ScrollTrigger timeline to fade them to 0 alongside the desk sequence, scaled the laptop model to 2.8, and positioned it at y = 0.3 to completely eliminate any rendering cuts and visual breaks | AI Agent |
+| Jun 13, 2026 | Web | Adjusted the spotlight text fade-out animation to end at 2800px (timeline progress 0.8) and start at 2700px (timeline progress 0.771) on the 3500px timeline | AI Agent |
+| Jun 13, 2026 | Web | Repositioned the Platform Overview Card (#desktop-overlay) fade-in trigger to start at 2700px (timeline progress 0.771) on the 3500px timeline | AI Agent |
+| Jun 13, 2026 | Web | Integrated the ReactBits-inspired animated "Silk" WebGL shader background using vanilla Three.js on a full-screen canvas (#global-silk-canvas) inside the fixed background container, rendering a deep indigo-purple flowing fabric texture that blends with scrolling glows and film grain | AI Agent |
+| Jun 14, 2026 | Web | Fixed 5 failing unit test suites (policyEvaluator context cloning, enforcementEngine rule matching logic, missing const variables in governanceEngine, TasksPage breadcrumb duplicate h1 queries, and normalization toDate invalid date parsing + normalizeEvents precedence rules) | AI Agent |

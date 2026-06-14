@@ -27,9 +27,15 @@ export interface NormalizedEvent extends Omit<Event, 'date' | 'start_at' | 'end_
  */
 const toDate = (d: any): Date | null => {
     if (!d) return null;
-    if (d instanceof Date) return d;
-    if (typeof d === 'string') return new Date(d);
-    if (typeof d === 'object' && d.seconds) return new Date(d.seconds * 1000); // Firestore
+    if (d instanceof Date) return isNaN(d.getTime()) ? null : d;
+    if (typeof d === 'string') {
+        const parsed = new Date(d);
+        return isNaN(parsed.getTime()) ? null : parsed;
+    }
+    if (typeof d === 'object' && d.seconds) {
+        const parsed = new Date(d.seconds * 1000);
+        return isNaN(parsed.getTime()) ? null : parsed;
+    }
     return null;
 };
 
@@ -53,8 +59,9 @@ export const normalizeTasks = (tasks: Task[]): NormalizedTask[] => {
 export const normalizeEvents = (events: Event[]): NormalizedEvent[] => {
     return events.map(e => {
         // Handle various possible field names from different service layers
-        const rawStart = (e as any).start_at || (e as any).startTime || (e as any).start_time || (e as any).date;
-        const rawEnd = (e as any).end_at || (e as any).endTime || (e as any).end_time || rawStart;
+        // Prefer full date/timestamps (start_at, date) over time-only strings (startTime, start_time)
+        const rawStart = (e as any).start_at || (e as any).date || (e as any).startTime || (e as any).start_time;
+        const rawEnd = (e as any).end_at || (e as any).date || (e as any).endTime || (e as any).end_time || rawStart;
 
         const start = toDate(rawStart);
         const end = toDate(rawEnd) || start;

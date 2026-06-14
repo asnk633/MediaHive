@@ -10,6 +10,15 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { PolicyGuidanceDisplay } from '@/components/conflicts/PolicyGuidanceDisplay';
 
+// Mock lucide-react icons using Proxy to dynamically support all icons
+jest.mock('lucide-react', () => {
+    return new Proxy({}, {
+        get: (target, name) => {
+            return (props: any) => <span data-testid={String(name)}>{String(name)} Icon</span>;
+        }
+    });
+});
+
 describe('Policy Guidance Snapshot Tests', () => {
   const mockExplanations = [
     {

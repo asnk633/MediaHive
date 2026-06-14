@@ -157,13 +157,22 @@ export class EnforcementEngine {
     };
   }
 
-  /**
-   * Check if the policy rule matches the context
-   */
   private ruleMatches(rule: PolicyRule, context: EnforcementContext): boolean {
-    // Basic matching based on rule target and action
-    if (rule.target && !context.action.toLowerCase().includes(rule.target.toLowerCase())) {
-      return false;
+    // Basic matching based on rule target, action, resource, and field
+    if (rule.target) {
+      const target = rule.target.toLowerCase();
+      const action = context.action.toLowerCase();
+      const resource = context.resourceType ? context.resourceType.toLowerCase() : '';
+      const field = context.field ? context.field.toLowerCase() : '';
+      
+      const matches = target.includes(action) || 
+                      action.includes(target) ||
+                      (resource && (target.includes(resource) || resource.includes(target))) ||
+                      (field && (target.includes(field) || field.includes(target)));
+                      
+      if (!matches) {
+        return false;
+      }
     }
 
     // More sophisticated rule matching could be implemented here

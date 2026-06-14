@@ -20,7 +20,7 @@ export const HaloLogo = ({ size = 110, className }: HaloLogoProps) => {
             
             {/* Logo Image with Rotating Animation */}
             <img
-                src="/logo-app.png"
+                src="/brand/icon.png"
                 alt="Thaiba Logo"
                 className="object-contain drop-shadow-[0_0_25px_rgba(99,102,241,0.4)] z-10 animate-logo-rotate"
                 style={{ width: size, height: size }}

@@ -36,7 +36,7 @@ export const RippleLogo = ({ size = 200, className }: RippleLogoProps) => {
             {/* Main Center Circle + Logo */}
             <div className="relative z-10 flex items-center justify-center">
                 <img
-                    src="/logo-app.png"
+                    src="/brand/icon.png"
                     alt="Thaiba Logo"
                     className="object-contain drop-shadow-xl"
                     style={{ width: size * 0.56, height: size * 0.56 }} // Proportional to original 28/200

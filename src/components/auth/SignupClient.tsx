@@ -170,7 +170,7 @@ export default function SignupClient() {
 
                 <div className="text-center mb-8 space-y-0.5 px-4">
                     <img 
-                        src={theme === 'luminous' ? '/brand-name-dark.png' : '/brand-name-light.png'}
+                        src={theme === 'luminous' ? '/brand/wordmark-dark.png' : '/brand/wordmark-light.png'}
                         alt="MediaHive"
                         className="w-72 md:w-96 h-auto object-contain drop-shadow-md mx-auto -mt-20 md:-mt-32 -mb-[80px] md:-mb-[120px]"
                     />

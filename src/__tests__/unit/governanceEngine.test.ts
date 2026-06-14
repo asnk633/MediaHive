@@ -191,7 +191,7 @@ describe('Governance Engine Tests', () => {
     };
 
     // Evaluate governance
-    result = await governanceEngine.evaluateGovernance(context);
+    let result = await governanceEngine.evaluateGovernance(context);
     expect(result.allowed).toBe(false);
 
     // Request an exception

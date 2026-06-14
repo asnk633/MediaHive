@@ -44,6 +44,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup pnpm (if using pnpm)
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -58,11 +61,6 @@ jobs:
           ls -la
           echo "show root file list:"
           ls -la .
-
-      - name: Setup pnpm (if using pnpm)
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Install dependencies (robust)
         shell: bash

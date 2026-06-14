@@ -166,7 +166,7 @@ export function evaluatePolicyImplications(context: PolicyEvaluationContext): Po
   
   return {
     explanations,
-    context
+    context: { ...context }
   };
 }
 

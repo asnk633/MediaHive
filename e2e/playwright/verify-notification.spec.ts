@@ -15,7 +15,7 @@ test('Guest Notification Flow', async ({ page }) => {
 
     // 2. Create Task
     await page.goto('/tasks/new');
-    await page.fill('input[placeholder*="title"]', 'AutoNotify Task ' + Date.now());
+    await page.fill('input[placeholder="What needs to be done?"]', 'AutoNotify Task ' + Date.now());
     await page.fill('textarea[placeholder*="details"]', 'Testing notification via Playwright');
 
     // Set Date (Future)

@@ -180,8 +180,9 @@ test.describe('Task Editing Regression', () => {
         const modal = page.locator('dialog, [role="dialog"], .fixed').first();
         await expect(modal).toBeVisible();
 
-        // Fill properly - Selector fixed based on UI inspection (Task title...)
-        const titleInput = page.locator('input[placeholder="Task title..."]');
+        // Fill properly - Selector fixed based on UI inspection
+        // Actual placeholder from TasksNewClient.tsx: COPY.placeholders.taskTitle = "What needs to be done?"
+        const titleInput = page.locator('input[placeholder="What needs to be done?"]');
         await expect(titleInput).toBeVisible();
         await titleInput.fill(originalTitle);
 
@@ -197,10 +198,21 @@ test.describe('Task Editing Regression', () => {
         const dateStr = tomorrow.toISOString().split('T')[0];
         await page.locator('input[type="date"]').fill(dateStr);
 
-        // Select Department (explicitly by label or value to avoid selecting empty default)
-        const deptSelect = page.locator('select');
-        // 'Media & IT Office' is a known valid department from manual verification
-        await deptSelect.selectOption({ label: 'Media & IT Office' });
+        // Select Department via DropdownSelector (custom popover-based UI, not native <select>)
+        // The form uses DropdownSelector which renders as a Button trigger + Popover with buttons inside
+        // Click the department trigger button and select the first available option
+        const deptTrigger = page.locator('button').filter({ hasText: /Select option|None/ }).first();
+        if (await deptTrigger.count() > 0 && await deptTrigger.isVisible()) {
+            await deptTrigger.click();
+            // Wait for popover to open and click first real option (skip "None")
+            const deptOption = page.locator('[role="presentation"] button, [data-radix-popper-content-wrapper] button').filter({ hasNotText: 'None' }).first();
+            if (await deptOption.count() > 0) {
+                await deptOption.click();
+            } else {
+                // Close popover if no option found
+                await page.keyboard.press('Escape');
+            }
+        }
 
         // Monitor for alerts (validation failures)
         page.on('dialog', async dialog => {
@@ -220,12 +232,13 @@ test.describe('Task Editing Regression', () => {
         // Edit Task
         await page.getByText(originalTitle).click();
 
-        // Wait for edit modal - assuming it's the same or similar
-        await expect(titleInput).toBeVisible();
+        // Wait for edit modal - re-locate the title input since it may be in a new modal
+        const editTitleInput = page.locator('input[placeholder="What needs to be done?"]');
+        await expect(editTitleInput).toBeVisible();
         // Check value is present
-        await expect(titleInput).toHaveValue(originalTitle);
+        await expect(editTitleInput).toHaveValue(originalTitle);
 
-        await titleInput.fill(updatedTitle);
+        await editTitleInput.fill(updatedTitle);
 
         // Click Save/Update
         const saveBtn = page.getByRole('button', { name: /save|update/i }).first();

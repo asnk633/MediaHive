@@ -20,7 +20,8 @@ test.describe('Guest UX Refinement', () => {
         await page.fill('input[type="text"]', name); // Name field
         await page.fill('input[type="email"]', email);
         await page.fill('input[type="password"]', password);
-        await page.fill('input[name="confirmPassword"]', password);
+        // Signup form uses two consecutive password inputs (no name attribute on confirmPassword)
+        await page.locator('input[type="password"]').nth(1).fill(password);
         await page.click('button:has-text("Create Account")');
 
         // Wait for redirect to home

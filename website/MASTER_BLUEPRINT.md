@@ -140,4 +140,5 @@ mediahive-app/
 | :--- | :--- | :--- |
 | 2026-06-14 | Resolved Jest test suites resolution and setup-pnpm workflows in Jules Session 8386157609187695369. | AI Agent |
 | 2026-06-14 | Resolved 29 ESLint violations in `src/services/` by using concatenation to bypass Capacitor `/api/` literal rule. Verified with ESLint and Unit Tests. | AI Agent |
+| 2026-06-14 | Resolved Group 2 (navigation) and Group 3 & 4 (widget filter/reduce and React rules/hooks) ESLint violations in core views and components. Verified with unit tests. | AI Agent |
 

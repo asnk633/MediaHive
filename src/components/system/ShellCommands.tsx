@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { nativeNavigate } from "@/lib/utils";
 import { useGlobalHotkeys } from "@/hooks/useGlobalHotkeys";
 import { CommandPalette } from "./CommandPalette";
 
@@ -19,7 +20,7 @@ export function ShellCommands() {
 
     useGlobalHotkeys({
         onCommand: () => setOpen(prev => !prev),
-        onToday: () => router.push('/tasks?view=today'), // Simple URL state default
+        onToday: () => nativeNavigate('/tasks?view=today', router), // Simple URL state default
         onNewTask: () => {
             // Since the New Task dialog is likely inside specific pages, we might need a global event bus or store.
             window.dispatchEvent(new CustomEvent('open-new-task'));
@@ -40,19 +41,19 @@ export function ShellCommands() {
             id: "home",
             label: "Go to Home",
             shortcut: "G H",
-            run: () => router.push("/"),
+            run: () => nativeNavigate("/", router),
         },
         {
             id: "tasks-all",
             label: "Go to All Tasks",
             shortcut: "G T",
-            run: () => router.push("/tasks"),
+            run: () => nativeNavigate("/tasks", router),
         },
         {
             id: "tasks-today",
             label: "Tasks: Today Focus",
             shortcut: "T",
-            run: () => router.push("/tasks?view=today"),
+            run: () => nativeNavigate("/tasks?view=today", router),
         },
         {
             id: "new-task",
@@ -63,7 +64,7 @@ export function ShellCommands() {
         {
             id: "settings",
             label: "Settings",
-            run: () => router.push("/settings")
+            run: () => nativeNavigate("/settings", router)
         },
         {
             id: "shortcuts",

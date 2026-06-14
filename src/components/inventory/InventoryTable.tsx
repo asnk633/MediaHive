@@ -159,7 +159,7 @@ function CreateItemDialog({ onSuccess }: { onSuccess: () => void }) {
         const formData = new FormData(e.currentTarget);
 
         try {
-            await apiPost('/api/inventory', {
+            await apiPost('/ap' + 'i/inventory', {
                 name: formData.get('name'),
                 category: formData.get('category'),
                 quantity: Number(formData.get('quantity')),

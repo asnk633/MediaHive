@@ -65,6 +65,7 @@ export function nativeNavigate(path: string, router?: any, source?: string) {
     console.log('[NAV] Native hard-nav to:', target);
     window.location.href = target;
   } else if (router) {
+    // eslint-disable-next-line no-restricted-syntax
     router.replace(path);
   }
 }

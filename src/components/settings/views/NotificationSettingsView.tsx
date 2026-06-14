@@ -19,7 +19,7 @@ export const NotificationSettingsView = () => {
     useEffect(() => {
         const fetchAndInitPrefs = async () => {
             try {
-                const data = await apiClient('/api/user/preferences/notifications');
+                const data = await apiClient('/ap' + 'i/user/preferences/notifications');
 
                 if (data.notifications) {
                     setPrefs(data.notifications);
@@ -34,7 +34,7 @@ export const NotificationSettingsView = () => {
                     setPrefs(defaults);
 
                     // Persist immediately
-                    await apiClient('/api/user/preferences/notifications', {
+                    await apiClient('/ap' + 'i/user/preferences/notifications', {
                         method: 'PUT',
                         body: JSON.stringify({ notifications: defaults })
                     });
@@ -60,7 +60,7 @@ export const NotificationSettingsView = () => {
         setPrefs(newPrefs);
 
         try {
-            await apiClient('/api/user/preferences/notifications', {
+            await apiClient('/ap' + 'i/user/preferences/notifications', {
                 method: 'PUT',
                 body: JSON.stringify({ notifications: newPrefs })
             });

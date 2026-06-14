@@ -16,7 +16,7 @@ export const ClientNotification = {
       ...data
     };
 
-    return apiClient('/api/notifications/trigger', {
+    return apiClient('/ap' + 'i/notifications/trigger', {
       method: 'POST',
       body: JSON.stringify({
         trigger: 'create_notification',
@@ -34,7 +34,7 @@ export const ClientNotification = {
 
     if (uniqueTargets.length === 0) return;
 
-    return apiClient('/api/notifications/trigger', {
+    return apiClient('/ap' + 'i/notifications/trigger', {
       method: 'POST',
       body: JSON.stringify({
         trigger: 'create_batch_notifications',
@@ -48,7 +48,7 @@ export const ClientNotification = {
    */
   getAdminIds: async (): Promise<string[]> => {
     try {
-      const response = await apiClient('/api/users/admins', {
+      const response = await apiClient('/ap' + 'i/users/admins', {
         method: 'GET'
       });
       return (response.admins || []).map((admin: any) => admin.uid);

@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { WorkspaceProvider } from "@/system/workspace/WorkspaceProvider";
 import { useRouter } from 'next/navigation';
 import { App } from '@capacitor/app';
+import { nativeNavigate } from '@/lib/utils';
 
 
 // --- GLOBAL BUFFER FOR DIAGNOSTICS ---
@@ -129,7 +130,7 @@ export default function RootProviders({ children }: { children: ReactNode }) {
         // We want to extract the pathname and navigate
         const path = url.pathname;
         if (path) {
-          router.push(path);
+          nativeNavigate(path, router);
           toast.info(`Navigating to shared content...`);
         }
       });

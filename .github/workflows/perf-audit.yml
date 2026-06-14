@@ -31,13 +31,10 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
           cache: 'pnpm'
 
       - name: Install system dependencies
@@ -66,7 +63,6 @@ jobs:
         uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: performance-reports
           path: |
             reports/performance/
           retention-days: 30
@@ -75,7 +71,6 @@ jobs:
         uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: lighthouse-html-report
           path: |
             reports/performance/*/lighthouse.html
           retention-days: 30

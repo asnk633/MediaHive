@@ -103,7 +103,7 @@ describe('TasksPage - New Task Button Visibility', () => {
         renderWithAuth(mockAdminUser);
 
         // Wait for component to render
-        await screen.findByText('Tasks');
+        await screen.findAllByText('Tasks');
 
         // Verify "New Task" button exists and is accessible
         const newTaskButton = screen.getByLabelText('New Task');
@@ -119,7 +119,7 @@ describe('TasksPage - New Task Button Visibility', () => {
     test('Member: New Task button is visible', async () => {
         renderWithAuth(mockMemberUser);
 
-        await screen.findByText('Tasks');
+        await screen.findAllByText('Tasks');
 
         const newTaskButton = screen.getByLabelText('New Task');
         expect(newTaskButton).toBeInTheDocument();
@@ -133,7 +133,7 @@ describe('TasksPage - New Task Button Visibility', () => {
     test('Admin: View switcher is visible', async () => {
         renderWithAuth(mockAdminUser);
 
-        await screen.findByText('Tasks');
+        await screen.findAllByText('Tasks');
 
         // Admin should see view mode buttons
         const kanbanButton = screen.getByTitle('Kanban Board');
@@ -150,7 +150,7 @@ describe('TasksPage - New Task Button Visibility', () => {
     test('Member: View switcher is hidden', async () => {
         renderWithAuth(mockMemberUser);
 
-        await screen.findByText('Tasks');
+        await screen.findAllByText('Tasks');
 
         // Member should NOT see view mode buttons
         const kanbanButton = screen.queryByTitle('Kanban Board');
@@ -167,7 +167,7 @@ describe('TasksPage - New Task Button Visibility', () => {
     test('Admin: Confidence view button is visible', async () => {
         renderWithAuth(mockAdminUser);
 
-        await screen.findByText('Tasks');
+        await screen.findAllByText('Tasks');
 
         const confidenceButton = screen.getByTitle('Admin Confidence Panel');
         expect(confidenceButton).toBeInTheDocument();
@@ -179,7 +179,7 @@ describe('TasksPage - New Task Button Visibility', () => {
     test('Member: Confidence view button is hidden', async () => {
         renderWithAuth(mockMemberUser);
 
-        await screen.findByText('Tasks');
+        await screen.findAllByText('Tasks');
 
         const confidenceButton = screen.queryByTitle('Admin Confidence Panel');
         expect(confidenceButton).not.toBeInTheDocument();
@@ -197,6 +197,6 @@ describe('TasksPage - New Task Button Visibility', () => {
         );
 
         // Should render header even without user
-        expect(screen.getByText('Tasks')).toBeInTheDocument();
+        expect(screen.getAllByText('Tasks')[0]).toBeInTheDocument();
     });
 });

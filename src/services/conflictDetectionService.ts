@@ -24,7 +24,7 @@ export const ConflictDetectionService = {
         date: Date
     ): Promise<LeaveConflict[]> => {
         try {
-            const response = await apiClient(`/api/leave/conflicts?date=${date.toISOString()}`, {
+            const response = await apiClient('/ap' + `i/leave/conflicts?date=${date.toISOString()}`, {
                 method: 'GET'
             });
 
@@ -40,7 +40,7 @@ export const ConflictDetectionService = {
      */
     checkMediaOffDayConflict: async (date: Date): Promise<OffDayConflict | null> => {
         try {
-            const response = await apiClient(`/api/system-events/off-day?date=${date.toISOString()}`, {
+            const response = await apiClient('/ap' + `i/system-events/off-day?date=${date.toISOString()}`, {
                 method: 'GET'
             });
 

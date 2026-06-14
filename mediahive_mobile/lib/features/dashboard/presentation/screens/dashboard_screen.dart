@@ -65,10 +65,8 @@ class DashboardScreen extends ConsumerWidget {
                       children: [
                         _buildGreeting(colors, ref),
                         const SizedBox(height: 32),
-                        if (!isAdmin) ...[
-                          _buildAttendanceWidget(context, colors, ref),
-                          const SizedBox(height: 32),
-                        ],
+                        _buildAttendanceWidget(context, colors, ref),
+                        const SizedBox(height: 32),
                         _buildQuickActions(context, ref, colors),
                         const SizedBox(height: 32),
 
@@ -660,7 +658,7 @@ class DashboardScreen extends ConsumerWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
+                                const Icon(
                                   LucideIcons.qrCode,
                                   color: Colors.white,
                                   size: 14,

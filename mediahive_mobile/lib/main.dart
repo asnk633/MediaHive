@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,6 +11,7 @@ import 'core/config/env_config.dart';
 import 'shared/widgets/mh_error_boundary.dart';
 
 import 'shared/widgets/mh_offline_banner.dart';
+import 'core/services/snackbar_service.dart';
 
 import 'core/theme_provider.dart';
 import 'core/services/logger_service.dart';
@@ -62,11 +64,6 @@ void main() async {
 
   // Asynchronous Error Interception
   PlatformDispatcher.instance.onError = (error, stack) {
-    final errStr = error.toString();
-    if (errStr.contains('refresh_token_not_found') || errStr.contains('Invalid Refresh Token')) {
-      logger.info('Session recovery bypassed: Refresh token expired or not found.');
-      return true;
-    }
     logger.error('ASYNC_ERROR', error, stack);
     return true;
   };
@@ -81,12 +78,19 @@ void main() async {
   // Warm update check provider to check for updates on startup
   container.read(updateInfoProvider);
 
+  // Set up periodic update checks every 5 minutes while the app is active
+  Timer.periodic(const Duration(minutes: 5), (timer) {
+    container.invalidate(updateInfoProvider);
+  });
+
   logger.info('APPLICATION_START: Flavor=development');
 
   runApp(
     UncontrolledProviderScope(
       container: container,
-      child: const MediaHiveApp(),
+      child: const SnackbarListener(
+        child: MediaHiveApp(),
+      ),
     ),
   );
 }

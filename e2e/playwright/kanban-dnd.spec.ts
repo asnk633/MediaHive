@@ -26,6 +26,7 @@ test.describe('Kanban Board Drag-and-Drop', () => {
 
         // 1. Login as Admin
         await page.goto('/login');
+        await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
         await page.fill('input[type="email"]', ADMIN_USER.email);
         await page.fill('input[type="password"]', ADMIN_USER.password);
         await page.click('button[type="submit"]');
@@ -33,11 +34,12 @@ test.describe('Kanban Board Drag-and-Drop', () => {
         // Wait for redirect to home
         await page.waitForURL('/home', { timeout: 30000 });
 
-        // 2. Navigate to Kanban
-        await page.goto('/kanban');
+        // 2. Navigate to Tasks and toggle Kanban view
+        await page.goto('/tasks');
+        await page.locator('button[title="Kanban Board"]').click();
 
         // Wait for Kanban board to load
-        await expect(page.locator('text=Pending Approval').first()).toBeVisible();
+        await expect(page.locator('text=Working').first()).toBeVisible();
         await expect(page.locator('text=To Do').first()).toBeVisible();
 
         // 3. Ensure there is a task in "Pending Approval" to drag
@@ -91,34 +93,18 @@ test.describe('Kanban Board Drag-and-Drop', () => {
     test('Team Member CANNOT move tasks from Pending (Permission Guard)', async ({ page }) => {
         // 1. Login as Team Member
         await page.goto('/login');
+        await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
         await page.fill('input[type="email"]', TEAM_USER.email);
         await page.fill('input[type="password"]', TEAM_USER.password);
         await page.click('button[type="submit"]');
 
         await page.waitForURL('/home', { timeout: 30000 });
 
-        // 2. Navigate to Kanban
-        await page.goto('/kanban');
+        // 2. Navigate to Tasks
+        await page.goto('/tasks');
 
-        // 3. Try to drag from Pending
-        // We need to identify a card specifically in the Pending column.
-        // Assuming the first column is Pending.
-
-        // Find the pending column container
-        const pendingHeader = page.getByRole('heading', { name: 'Pending Approval' });
-        // This is rough, relying on layout
-        const firstPendingCard = page.locator('[data-dnd-sortable-id]').first();
-
-        const toDoHeader = page.getByRole('heading', { name: 'To Do' });
-
-        if (await firstPendingCard.count() > 0) {
-            await firstPendingCard.dragTo(toDoHeader);
-
-            // 4. Verify Error Toast
-            await expect(page.getByText('Only Admins can approve pending tasks')).toBeVisible({ timeout: 5000 });
-
-            // 5. Verify card snapped back / didn't move (harder to test strictly without detailed state check)
-        }
+        // 3. Verify Kanban toggle button is NOT visible (Permission Guard)
+        await expect(page.locator('button[title="Kanban Board"]')).toBeHidden();
     });
 
 });

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -177,7 +178,7 @@ class ChatRoomsNotifier extends StateNotifier<AsyncValue<List<ChatRoom>>> {
             }
           }
         } catch (e) {
-          print('[CHAT_PROVIDERS] Error fetching last message for room $roomId: $e');
+          debugPrint('[CHAT_PROVIDERS] Error fetching last message for room $roomId: $e');
         }
 
         final Map<String, dynamic> modifiedRoom = {
@@ -201,7 +202,7 @@ class ChatRoomsNotifier extends StateNotifier<AsyncValue<List<ChatRoom>>> {
               
           unreadCount = (unreadMsgs as List).length;
         } catch (e) {
-          print('[CHAT_PROVIDERS] Error calculating unread count: $e');
+          debugPrint('[CHAT_PROVIDERS] Error calculating unread count: $e');
         }
 
         resolvedRooms.add(ChatRoom.fromJson(
@@ -382,15 +383,15 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
       if (response.statusCode == 201 || response.statusCode == 200) {
         return Map<String, dynamic>.from(response.data);
       } else {
-        print('[CHAT_UPLOAD] Direct file upload failed with status: ${response.statusCode}, body: ${response.data}');
+        debugPrint('[CHAT_UPLOAD] Direct file upload failed with status: ${response.statusCode}, body: ${response.data}');
         throw Exception('Status code: ${response.statusCode}');
       }
     } catch (e) {
-      print('[CHAT_UPLOAD] Direct file upload failed on $uploadUrl: $e');
+      debugPrint('[CHAT_UPLOAD] Direct file upload failed on $uploadUrl: $e');
       
       const liveUploadUrl = 'https://thaiba-garden-media-manager.vercel.app/api/chat/upload';
       if (uploadUrl != liveUploadUrl) {
-        print('[CHAT_UPLOAD] Failover: Attempting direct upload to live production proxy: $liveUploadUrl');
+        debugPrint('[CHAT_UPLOAD] Failover: Attempting direct upload to live production proxy: $liveUploadUrl');
         try {
           final client = _ref.read(supabaseClientProvider);
           final token = client.auth.currentSession?.accessToken;
@@ -422,13 +423,13 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
           );
 
           if (response.statusCode == 201 || response.statusCode == 200) {
-            print('[CHAT_UPLOAD] Failover upload Succeeded!');
+            debugPrint('[CHAT_UPLOAD] Failover upload Succeeded!');
             return Map<String, dynamic>.from(response.data);
           } else {
-            print('[CHAT_UPLOAD] Failover upload failed with status: ${response.statusCode}');
+            debugPrint('[CHAT_UPLOAD] Failover upload failed with status: ${response.statusCode}');
           }
         } catch (failoverError) {
-          print('[CHAT_UPLOAD] Direct failover upload failed: $failoverError');
+          debugPrint('[CHAT_UPLOAD] Direct failover upload failed: $failoverError');
         }
       }
     }
@@ -478,7 +479,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
     };
 
     try {
-      print('[SEND_MESSAGE] Preparing payload for message: "$text", mediaUrl: $mediaUrl, driveFileId: $driveFileId');
+      debugPrint('[SEND_MESSAGE] Preparing payload for message: "$text", mediaUrl: $mediaUrl, driveFileId: $driveFileId');
       // Optimistic state update
       final senderName = senderProfile?['full_name'] as String?;
       final senderAvatar = senderProfile?['avatar_url'] as String?;
@@ -504,9 +505,9 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
       });
 
       // Insert message in Supabase
-      print('[SEND_MESSAGE] Inserting to Supabase...');
+      debugPrint('[SEND_MESSAGE] Inserting to Supabase...');
       await client.from('chat_messages').insert(payload);
-      print('[SEND_MESSAGE] Supabase insertion successful.');
+      debugPrint('[SEND_MESSAGE] Supabase insertion successful.');
 
       // Play successful sent delivery sound + haptic feedback
       _ref.read(audioServiceProvider).playMessageSent();
@@ -526,16 +527,16 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
         preview = 'Sent a $mediaType';
       }
 
-      print('[SEND_MESSAGE] Updating room last message preview...');
+      debugPrint('[SEND_MESSAGE] Updating room last message preview...');
       await client.from('chat_rooms').update({
         'last_message_preview': preview,
         'last_message_time': now.toIso8601String(),
       }).eq('id', _roomId);
-      print('[SEND_MESSAGE] Room update successful.');
+      debugPrint('[SEND_MESSAGE] Room update successful.');
 
     } catch (e, stackTrace) {
-      print('[SEND_MESSAGE_ERROR] Failed to send message: $e');
-      print('[SEND_MESSAGE_ERROR] Stacktrace: $stackTrace');
+      debugPrint('[SEND_MESSAGE_ERROR] Failed to send message: $e');
+      debugPrint('[SEND_MESSAGE_ERROR] Stacktrace: $stackTrace');
       // Mark optimistic message as error
       state.whenData((currentList) {
         state = AsyncValue.data(
@@ -594,7 +595,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
         );
       });
     } catch (e) {
-      print('[EDIT_MESSAGE_ERROR] Failed to edit message: $e');
+      debugPrint('[EDIT_MESSAGE_ERROR] Failed to edit message: $e');
     }
   }
 
@@ -630,7 +631,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
           _ref.read(chatRoomsProvider.notifier).fetchRooms(isBackgroundRefresh: true);
         }
       } catch (previewErr) {
-        print('[DELETE_MESSAGE_PREVIEW_ERROR] Failed to update room preview: $previewErr');
+        debugPrint('[DELETE_MESSAGE_PREVIEW_ERROR] Failed to update room preview: $previewErr');
       }
 
       // Locally update immediately (optimistic update)
@@ -659,7 +660,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
         );
       });
     } catch (e) {
-      print('[DELETE_MESSAGE_ERROR] Failed to delete message: $e');
+      debugPrint('[DELETE_MESSAGE_ERROR] Failed to delete message: $e');
     }
   }
 
@@ -693,10 +694,10 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
         _ref.read(chatRoomsProvider.notifier).fetchRooms(isBackgroundRefresh: true);
         return true;
       } else {
-        print('[CLEAR_CHAT] Clear failed with status: ${response.statusCode}, body: ${response.data}');
+        debugPrint('[CLEAR_CHAT] Clear failed with status: ${response.statusCode}, body: ${response.data}');
       }
     } catch (e) {
-      print('[CLEAR_CHAT_ERROR] Clear failed on $clearUrl: $e');
+      debugPrint('[CLEAR_CHAT_ERROR] Clear failed on $clearUrl: $e');
     }
     return false;
   }

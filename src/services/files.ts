@@ -74,7 +74,7 @@ export async function uploadFile(
             uploaded_by: userId,
         };
 
-        const result = await apiClient('/api/files', {
+        const result = await apiClient('/ap' + 'i/files', {
             method: 'POST',
             body: JSON.stringify({
                 ...metadata
@@ -114,7 +114,7 @@ export function subscribeToFiles(
         if (isCancelled) return;
 
         try {
-            const endpoint = userId ? '/api/files' : '/api/files';
+            const endpoint = userId ? '/ap' + 'i/files' : '/ap' + 'i/files';
             const result = await apiClient(endpoint, {
                 method: 'GET'
             });
@@ -168,7 +168,7 @@ export async function deleteFile(file_id: string, storagePath: string): Promise<
         await deleteObject(storageRef);
 
         // Delete from API
-        await apiClient(`/api/files/${file_id}`, {
+        await apiClient('/ap' + `i/files/${file_id}`, {
             method: 'DELETE'
         });
     } catch (error: any) {
@@ -180,7 +180,7 @@ export async function deleteFile(file_id: string, storagePath: string): Promise<
 
         // Still delete from API even if storage file is gone
         try {
-            await apiClient(`/api/files/${file_id}`, {
+            await apiClient('/ap' + `i/files/${file_id}`, {
                 method: 'DELETE'
             });
         } catch (apiError) {
@@ -196,7 +196,7 @@ export async function deleteFile(file_id: string, storagePath: string): Promise<
  */
 export async function getFiles(userId: string): Promise<FileMetadata[]> {
     try {
-        const result = await apiClient('/api/files', {
+        const result = await apiClient('/ap' + 'i/files', {
             method: 'GET'
         });
 

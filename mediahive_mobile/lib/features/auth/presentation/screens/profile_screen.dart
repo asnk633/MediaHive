@@ -11,6 +11,7 @@ import '../../../../core/services/notification_service.dart';
 import '../../../../core/providers/user_provider.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/providers/labs_provider.dart';
+import '../../../../core/providers/update_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import '../../../../core/services/media_service.dart';
@@ -30,6 +31,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _pushNotifications = true;
   final ImagePicker _picker = ImagePicker();
   late final Future<PackageInfo> _packageInfoFuture;
+  bool _isCheckingUpdate = false;
 
   @override
   void initState() {
@@ -104,14 +106,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   final version = snapshot.hasData
                       ? 'VERSION ${snapshot.data!.version} (BETA $buildNum)'
                       : '';
-                  return Text(
-                    version.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: colors.textSecondary,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                    ),
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        version.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: colors.textSecondary,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildUpdateCheckButton(colors),
+                    ],
                   );
                 },
               ),
@@ -1197,6 +1206,147 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
       ],
     );
+  }
+
+  Widget _buildUpdateCheckButton(ThemeColors colors) {
+    return _isCheckingUpdate
+        ? const SizedBox(
+            height: 36,
+            width: 36,
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          )
+        : TextButton.icon(
+            onPressed: _performManualUpdateCheck,
+            icon: Icon(LucideIcons.refreshCw, size: 14, color: colors.honey),
+            label: Text(
+              'CHECK FOR UPDATE',
+              style: TextStyle(
+                fontSize: 11,
+                color: colors.honey,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+              ),
+            ),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              backgroundColor: colors.honey.withValues(alpha: 0.1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+          );
+  }
+
+  Future<void> _performManualUpdateCheck() async {
+    setState(() => _isCheckingUpdate = true);
+    final colors = ref.read(themeColorsProvider);
+    try {
+      // Refresh the update check provider to fetch fresh DB data
+      final updateInfo = await ref.refresh(updateInfoProvider.future);
+      
+      if (!mounted) return;
+      setState(() => _isCheckingUpdate = false);
+
+      if (updateInfo.isUpdateAvailable) {
+        // Show update available dialog
+        showDialog(
+          context: context,
+          builder: (dialogCtx) => AlertDialog(
+            backgroundColor: colors.backgroundSecondary,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            title: Row(
+              children: [
+                Icon(LucideIcons.sparkles, color: colors.honey, size: 24),
+                const SizedBox(width: 12),
+                const Text('Update Available'),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'A new version (${updateInfo.latestVersion}) is ready to download.',
+                  style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Release Notes:',
+                  style: TextStyle(color: colors.textSecondary, fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 150),
+                  width: double.maxFinite,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: colors.border),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Text(
+                      updateInfo.releaseNotes,
+                      style: TextStyle(color: colors.textPrimary, fontSize: 13, height: 1.4),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogCtx),
+                child: Text('Later', style: TextStyle(color: colors.textSecondary)),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(dialogCtx);
+                  // Trigger download via state notifier
+                  ref.read(updateStateProvider.notifier).downloadUpdate(updateInfo.downloadUrl);
+                  // Go to system health or navigate back to dashboard where the banner is visible
+                  context.go('/dashboard');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.honey,
+                  foregroundColor: colors.backgroundPrimary,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Update Now'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(LucideIcons.checkCircle, color: Colors.green, size: 20),
+                const SizedBox(width: 12),
+                Text(
+                  'You are on the latest version! (${updateInfo.currentVersion})',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isCheckingUpdate = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to check for updates: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildSignOutButton() {

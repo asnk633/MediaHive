@@ -7,7 +7,6 @@ import BootGate from '@/components/layout/BootGate';
 import Diagnostics from '@/components/Diagnostics';
 import { networkMonitor } from '@/utils/networkMonitor';
 import { toast } from 'sonner';
-import { MissingApiBanner } from '@/components/debug/MissingApiBanner';
 import { WorkspaceProvider } from "@/system/workspace/WorkspaceProvider";
 import { useRouter } from 'next/navigation';
 import { App } from '@capacitor/app';
@@ -149,7 +148,6 @@ export default function RootProviders({ children }: { children: ReactNode }) {
     <ThemeProvider>
       <AuthProvider>
         <WorkspaceProvider>
-          <MissingApiBanner />
           <Diagnostics />
           <BootGate>
             {children}

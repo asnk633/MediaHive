@@ -10,7 +10,7 @@ export const MediaVersioningService = {
    */
   getVersions: async (versionGroupId: string): Promise<ExtendedDriveFile[]> => {
     try {
-      const response = await apiClient(`/api/media-versions?versionGroupId=${versionGroupId}`, {
+      const response = await apiClient('/ap' + `i/media-versions?versionGroupId=${versionGroupId}`, {
         method: 'GET'
       });
 
@@ -28,7 +28,7 @@ export const MediaVersioningService = {
    */
   getActiveVersion: async (versionGroupId: string): Promise<ExtendedDriveFile | null> => {
     try {
-      const response = await apiClient(`/api/media-versions/active?versionGroupId=${versionGroupId}`, {
+      const response = await apiClient('/ap' + `i/media-versions/active?versionGroupId=${versionGroupId}`, {
         method: 'GET'
       });
 
@@ -62,7 +62,7 @@ export const MediaVersioningService = {
         return null;
       }
 
-      const response = await apiClient('/api/media-versions', {
+      const response = await apiClient('/ap' + 'i/media-versions', {
         method: 'POST',
         body: JSON.stringify({
           fileData,
@@ -86,7 +86,7 @@ export const MediaVersioningService = {
    */
   getActiveVersionsOnly: async (): Promise<ExtendedDriveFile[]> => {
     try {
-      const response = await apiClient('/api/media-versions/active', {
+      const response = await apiClient('/ap' + 'i/media-versions/active', {
         method: 'GET'
       });
 

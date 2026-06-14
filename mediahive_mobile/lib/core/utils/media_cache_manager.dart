@@ -37,7 +37,7 @@ class MediaCacheManager {
     }
     if (ext.isEmpty) ext = 'bin';
 
-    final cachedFile = File(p.join(tempDir.path, 'media_cache_${cacheKey}.$ext'));
+    final cachedFile = File(p.join(tempDir.path, 'media_cache_$cacheKey.$ext'));
 
     // Check if concurrently downloading
     if (_activeDownloads.contains(cacheKey)) {

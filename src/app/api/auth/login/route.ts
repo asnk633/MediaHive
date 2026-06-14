@@ -17,15 +17,35 @@ export async function POST(request: NextRequest) {
         idToken = authHeader.split("Bearer ")[1];
 
         // Verify the ID token first
-        const decodedToken = await adminAuth.verifyIdToken(idToken);
+        try {
+    let decodedToken;
+try {
+    decodedToken = await adminAuth.verifyIdToken(idToken);
+} catch (error) {
+    console.error('ID token verification failed:', error);
+    return NextResponse.json({ error: 'Invalid or expired credentials' }, { status: 401 });
+}
+} catch (error) {
+    console.error('ID token verification failed:', error);
+    return NextResponse.json({ error: 'Invalid or expired credentials' }, { status: 401 });
+}
+        if (decodedToken === null || decodedToken === undefined) {
+            return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+        }
 
         // Create session cookie
         // 5 days expiration
         const expiresIn = 60 * 60 * 24 * 5 * 1000;
-        const sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn });
+        let sessionCookie; try { sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn }); } catch (error) { console.error('Failed to create session cookie:', error); return NextResponse.json({ error: 'Internal server error' }, { status: 500 }); }
 
         // Create response
-        const response = NextResponse.json({ status: "success", uid: decodedToken.uid });
+        let existingSessionCookie; try { existingSessionCookie = await adminAuth.getSession(decodedToken.uid); } catch (error) { console.error('Failed to check for existing session:', error); }
+
+if (existingSessionCookie) {
+    return NextResponse.json({ error: "User is already logged in" }, { status: 409 });
+}
+
+const response = NextResponse.json({ status: "success", uid: decodedToken.uid });
 
         // Set cookie on response
         response.cookies.set("__session", sessionCookie, {
@@ -58,7 +78,16 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
         console.error("Login session creation failed:", error);
         
-        // Explicit failure - do not create session cookie when verification fails
-        return NextResponse.json({ error: "Unauthorized: " + error.message }, { status: 401 });
+        // Distinguish between authentication failures and unexpected server errors
+        const isAuthError = error.code?.startsWith('auth/') || 
+                            String(error.message).toLowerCase().includes('invalid-id-token') || 
+                            String(error.message).toLowerCase().includes('id-token-expired');
+                            
+        if (isAuthError) {
+            return NextResponse.json({ error: "Invalid or expired credentials" }, { status: 401 });
+        }
+        
+        // Handle unexpected server errors safely without leaking internal details
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

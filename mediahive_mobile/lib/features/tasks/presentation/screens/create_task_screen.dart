@@ -110,7 +110,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
               }
             }
           } catch (e) {
-            print('[CREATE_TASK] Error loading users for assignee fallback: $e');
+            debugPrint('[CREATE_TASK] Error loading users for assignee fallback: $e');
           }
         }
         
@@ -143,7 +143,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
             } catch (_) {}
           }
         } catch (e) {
-          print('[CREATE_TASK] Error parsing task metadata: $e');
+          debugPrint('[CREATE_TASK] Error parsing task metadata: $e');
         }
       }
 

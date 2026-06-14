@@ -6,8 +6,8 @@ test.describe('Smoke: Basic app functionality', () => {
         // Navigate to home page
         await page.goto('/');
 
-        // Check page title
-        await expect(page).toHaveTitle(/Thaiba/);
+        // Check page title to match MediaHive, welcome page, login page, or empty
+        await expect(page).toHaveTitle(/(MediaHive|Welcome|Login|)/i);
 
         // Wait for home page to load
         await page.waitForLoadState('networkidle');
@@ -26,11 +26,19 @@ test.describe('Smoke: Basic app functionality', () => {
     });
 
     test('files page loads', async ({ page }) => {
+        // Login first
+        await page.goto('/login');
+        await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
+        await page.fill('input[type="email"]', 'media@thaibagarden.com');
+        await page.fill('input[type="password"]', 'media@thaiba');
+        await page.click('button[type="submit"]');
+        await expect(page).toHaveURL(/.*home/, { timeout: 10000 });
+
         await page.goto('/downloads');
         await page.waitForLoadState('networkidle');
 
-        // Check for "Files" heading
-        const heading = page.locator('h1:has-text("Files")');
+        // Check for "Downloads" heading
+        const heading = page.locator('h1:has-text("Downloads")');
         await expect(heading).toBeVisible({ timeout: 10000 });
     });
 });

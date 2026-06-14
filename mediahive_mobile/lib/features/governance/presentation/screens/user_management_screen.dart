@@ -15,7 +15,7 @@ final usersListProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async
   final supabase = Supabase.instance.client;
   final query = ref.watch(userSearchQueryProvider);
   
-  var request = supabase.from('profiles').select('*').order('full_name');
+  var request = supabase.from('profiles').select('*').eq('status', 'active').order('full_name');
   
   final response = await request;
   final users = List<Map<String, dynamic>>.from(response);
@@ -195,11 +195,11 @@ class UserManagementScreen extends ConsumerWidget {
     
     return usersAsync.when(
       data: (users) => ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 120),
         itemCount: users.length,
         itemBuilder: (context, index) {
           final user = users[index];
-          return _buildUserTile(context, user, colors);
+          return _buildUserTile(context, ref, user, colors);
         },
       ),
       loading: () => const Center(child: MhLoading()),
@@ -231,7 +231,7 @@ class UserManagementScreen extends ConsumerWidget {
             ),
           )
         : ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 120),
             itemCount: invites.length,
             itemBuilder: (context, index) {
               final invite = invites[index];
@@ -333,7 +333,7 @@ class UserManagementScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildUserTile(BuildContext context, Map<String, dynamic> user, ThemeColors colors) {
+  Widget _buildUserTile(BuildContext context, WidgetRef ref, Map<String, dynamic> user, ThemeColors colors) {
     final fullName = user['full_name'] as String? ?? 'Unknown User';
     final email = user['email'] as String? ?? '';
     final rawRole = user['role'] as String? ?? 'member';
@@ -355,7 +355,7 @@ class UserManagementScreen extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
-        onTap: () => _showUserDetails(context, user, colors),
+        onTap: () => _showUserDetails(context, ref, user, colors),
         borderRadius: BorderRadius.circular(20),
         child: Container(
           padding: const EdgeInsets.all(16),
@@ -436,7 +436,7 @@ class UserManagementScreen extends ConsumerWidget {
     );
   }
 
-  void _showUserDetails(BuildContext context, Map<String, dynamic> user, ThemeColors colors) {
+  void _showUserDetails(BuildContext context, WidgetRef ref, Map<String, dynamic> user, ThemeColors colors) {
     final fullName = user['full_name'] as String? ?? 'Unknown User';
     final email = user['email'] as String? ?? '';
     final rawRole = user['role'] as String? ?? 'member';
@@ -446,6 +446,7 @@ class UserManagementScreen extends ConsumerWidget {
 
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       backgroundColor: colors.surface,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -518,13 +519,44 @@ class UserManagementScreen extends ConsumerWidget {
                   children: [
                     _buildIconButton(LucideIcons.trash2, Colors.redAccent.withValues(alpha: 0.1), Colors.redAccent),
                     const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: colors.border),
-                        borderRadius: BorderRadius.circular(8),
+                    InkWell(
+                      onTap: () async {
+                        try {
+                          await Supabase.instance.client
+                              .from('profiles')
+                              .update({'status': 'inactive'})
+                              .eq('id', user['id']);
+                          
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('$fullName deactivated successfully'),
+                                backgroundColor: colors.backgroundSecondary,
+                              ),
+                            );
+                            ref.refresh(usersListProvider);
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Failed to deactivate user: $e'),
+                                backgroundColor: Colors.redAccent,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: colors.border),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text('Deactivate', style: TextStyle(color: colors.textPrimary, fontSize: 10, fontWeight: FontWeight.bold)),
                       ),
-                      child: Text('Deactivate', style: TextStyle(color: colors.textPrimary, fontSize: 10, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),

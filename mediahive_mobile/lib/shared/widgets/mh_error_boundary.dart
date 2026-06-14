@@ -25,35 +25,35 @@ class _MhErrorBoundaryState extends State<MhErrorBoundary> {
   static Widget _getErrorWidget(BuildContext context, Object error, VoidCallback onRetry) {
     return Directionality(
       textDirection: TextDirection.ltr,
-      child: Scaffold(
-        backgroundColor: AppColors.backgroundPrimary,
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.xxl),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(LucideIcons.alertTriangle, size: 64, color: AppColors.error),
-                const SizedBox(height: AppSpacing.xl),
-                Text(
-                  'Something went wrong',
-                  style: AppTypography.h2,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSpacing.s),
-                Text(
-                  'An unexpected error occurred. Our team has been notified.',
-                  style: AppTypography.bodyM.copyWith(color: AppColors.textSecondary),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSpacing.huge),
-                MhButton(
-                  label: 'Retry',
-                  onTap: onRetry,
-                  type: MhButtonType.primary,
-                ),
-              ],
-            ),
+      child: Material(
+        color: AppColors.backgroundPrimary,
+        borderRadius: BorderRadius.circular(AppRadius.l),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.l),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(LucideIcons.alertTriangle, size: 48, color: AppColors.error),
+              const SizedBox(height: AppSpacing.m),
+              Text(
+                'Something went wrong',
+                style: AppTypography.h3,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                'An unexpected error occurred.',
+                style: AppTypography.bodyS.copyWith(color: AppColors.textSecondary),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.l),
+              MhButton(
+                label: 'Retry',
+                onTap: onRetry,
+                type: MhButtonType.primary,
+              ),
+            ],
           ),
         ),
       ),
@@ -82,38 +82,73 @@ class MhGlobalErrorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Check if it's a network/offline error
+    final errorString = details.exceptionAsString().toLowerCase();
+    final isOfflineError = errorString.contains('socketexception') || 
+                           errorString.contains('authretryablefetchexception') ||
+                           errorString.contains('clientexception') ||
+                           errorString.contains('failed host lookup') ||
+                           errorString.contains('network') ||
+                           errorString.contains('connection');
+
+    if (isOfflineError) {
+      return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Material(
+          color: Colors.transparent,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.l),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(LucideIcons.wifiOff, size: 40, color: AppColors.textSecondary),
+                  const SizedBox(height: AppSpacing.m),
+                  Text(
+                    'No Connection',
+                    style: AppTypography.h3,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    'Please check your internet connection.',
+                    style: AppTypography.bodyS.copyWith(color: AppColors.textSecondary),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return Directionality(
       textDirection: TextDirection.ltr,
-      child: Scaffold(
-        backgroundColor: AppColors.backgroundPrimary,
-        body: Center(
+      child: Material(
+        color: AppColors.backgroundPrimary,
+        child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.xxl),
+            padding: const EdgeInsets.all(AppSpacing.l),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(LucideIcons.bug, size: 64, color: AppColors.error),
-                const SizedBox(height: AppSpacing.xl),
-                Text('System Error', style: AppTypography.h2),
+                const Icon(LucideIcons.bug, size: 40, color: AppColors.error),
                 const SizedBox(height: AppSpacing.m),
+                Text('Widget Error', style: AppTypography.h3),
+                const SizedBox(height: AppSpacing.s),
                 Container(
-                  padding: const EdgeInsets.all(AppSpacing.m),
+                  padding: const EdgeInsets.all(AppSpacing.s),
                   decoration: BoxDecoration(
-                    color: Colors.black26,
+                    color: Colors.black12,
                     borderRadius: BorderRadius.circular(AppRadius.m),
                   ),
                   child: Text(
                     details.exceptionAsString(),
                     style: AppTypography.caption.copyWith(color: AppColors.error.withValues(alpha: 0.8), fontFamily: 'monospace'),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                MhButton(
-                  label: 'Restart App',
-                  onTap: () {
-                    // In a real app, you might trigger a hot restart or navigate to the splash screen
-                  },
-                  type: MhButtonType.primary,
                 ),
               ],
             ),

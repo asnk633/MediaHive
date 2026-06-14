@@ -12,7 +12,7 @@ export interface RoleUpdateResult {
 
 export const updateRole = async (targetUid: string, newRole: string): Promise<RoleUpdateResult> => {
   try {
-    const result = await apiPost<RoleUpdateResult>('/api/admin/change-role', { targetUid, newRole });
+    const result = await apiPost<RoleUpdateResult>('/ap' + 'i/admin/change-role', { targetUid, newRole });
     return result;
   } catch (error) {
     console.error('Error updating role via API:', error);

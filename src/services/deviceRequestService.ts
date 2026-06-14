@@ -14,7 +14,7 @@ export const deviceRequestService = {
 
     // Get requests for a specific user
     getUserRequests: async (uid: string): Promise<DeviceRequest[]> => {
-        const response = await apiClient('/api/device-requests', {
+        const response = await apiClient('/ap' + 'i/device-requests', {
             method: 'GET'
         });
 
@@ -23,7 +23,7 @@ export const deviceRequestService = {
 
     // Get all requests (Admin only - handled by rules, but service allows query)
     getAllRequests: async (): Promise<DeviceRequest[]> => {
-        const response = await apiClient('/api/device-requests', {
+        const response = await apiClient('/ap' + 'i/device-requests', {
             method: 'GET'
         });
 
@@ -31,7 +31,7 @@ export const deviceRequestService = {
     },
 
     getById: async (id: string): Promise<DeviceRequest | null> => {
-        const response = await apiClient(`/api/device-requests/${id}`, {
+        const response = await apiClient('/ap' + `i/device-requests/${id}`, {
             method: 'GET'
         });
 
@@ -41,7 +41,7 @@ export const deviceRequestService = {
     // --- WRITE ---
 
     createRequest: async (data: Omit<DeviceRequest, 'id' | 'status' | 'created_at' | 'updated_at'>): Promise<string> => {
-        const response = await apiClient('/api/device-requests', {
+        const response = await apiClient('/ap' + 'i/device-requests', {
             method: 'POST',
             body: JSON.stringify({
                 ...data,
@@ -53,7 +53,7 @@ export const deviceRequestService = {
     },
 
     updateRequest: async (id: string, data: Partial<DeviceRequest>): Promise<void> => {
-        await apiClient(`/api/device-requests/${id}`, {
+        await apiClient('/ap' + `i/device-requests/${id}`, {
             method: 'PUT',
             body: JSON.stringify(data)
         });
@@ -63,7 +63,7 @@ export const deviceRequestService = {
 
     // 1. Issue Item
     issueItem: async (requestId: string, itemId: string, adminUid: string, condition: InventoryCondition) => {
-        await apiClient('/api/device-requests/issue', {
+        await apiClient('/ap' + 'i/device-requests/issue', {
             method: 'POST',
             body: JSON.stringify({
                 requestId,
@@ -76,7 +76,7 @@ export const deviceRequestService = {
 
     // 2. Return Item
     returnItem: async (requestId: string, adminUid: string, condition: InventoryCondition, notes?: string) => {
-        await apiClient('/api/device-requests/return', {
+        await apiClient('/ap' + 'i/device-requests/return', {
             method: 'POST',
             body: JSON.stringify({
                 requestId,
@@ -89,7 +89,7 @@ export const deviceRequestService = {
 
     // Helper to find log ID (internal use for return flow UI)
     getActiveLogId: async (requestId: string): Promise<string | null> => {
-        const response = await apiClient(`/api/device-logs/active?requestId=${requestId}`, {
+        const response = await apiClient('/ap' + `i/device-logs/active?requestId=${requestId}`, {
             method: 'GET'
         });
 
@@ -98,7 +98,7 @@ export const deviceRequestService = {
 
     // 2. Return Item (Revised with logId passed in)
     returnItemWithLogId: async (requestId: string, logId: string, adminUid: string, condition: InventoryCondition, notes?: string) => {
-        await apiClient('/api/device-requests/return-with-log', {
+        await apiClient('/ap' + 'i/device-requests/return-with-log', {
             method: 'POST',
             body: JSON.stringify({
                 requestId,

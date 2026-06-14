@@ -20,9 +20,9 @@ export function HomeTaskRow({ task, timeContext, isFirst, isActive, onClick, onC
     const { density } = useDensityStore();
     const isOverdue = task.due_date ? new Date(task.due_date) < new Date() : false;
 
-    const isToday = task.due_date ? new Date(task.due_date).toDateString() === new Date().toDateString() : false;
+    const isToday = task.due_date && new Date(task.due_date).toDateString() === new Date().toDateString();
 
-    const isTomorrow = task.due_date && !isToday && !isOverdue;
+    const isTomorrow = task.due_date ? (!isToday && !isOverdue) : false;
 
     const isInProgress = task.status === 'in_progress';
     const isPendingReview = task.status === 'review';

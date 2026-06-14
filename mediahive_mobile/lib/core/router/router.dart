@@ -35,29 +35,61 @@ import '../../features/tasks/presentation/screens/task_details_screen.dart';
 import '../../features/governance/presentation/screens/user_management_screen.dart';
 import '../../features/system/presentation/screens/system_health_screen.dart';
 import '../providers/user_provider.dart';
+import '../../features/attendance/presentation/providers/attendance_provider.dart';
 import '../../features/chat/presentation/screens/chat_rooms_screen.dart';
 import '../../features/chat/presentation/screens/chat_room_screen.dart';
 import '../../features/chat/domain/models/chat_room.dart';
 
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    navigatorKey: _rootNavigatorKey,
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     redirect: (context, state) {
-      final location = state.uri.toString();
-      if (location.startsWith('mediahive://')) {
+      var location = state.uri.toString();
+      final isDeepLink = location.startsWith('mediahive://');
+      if (isDeepLink) {
         try {
           final uri = Uri.parse(location);
           final host = uri.host;
           final path = uri.path;
           final query = uri.query.isNotEmpty ? '?${uri.query}' : '';
-          return '/$host$path$query';
+          location = '/$host$path$query';
         } catch (_) {
           return null;
         }
+      }
+
+      if (location.startsWith('/attendance/scan')) {
+        // 1. If currently on the NFC registry screen, ignore the deep link navigation!
+        final isRegistryActive = ref.read(nfcRegistryActiveProvider);
+        if (isRegistryActive) {
+          debugPrint('ROUTER: NFC Registry screen is open, ignoring attendance scan deep link.');
+          return null;
+        }
+
+        // 2. Check check-in permission
+        final profileAsync = ref.read(currentUserProfileProvider);
+        final profile = profileAsync.valueOrNull;
+        if (profile != null) {
+          final role = (profile['role']?.toString() ?? 'member').toLowerCase().trim();
+          final department = (profile['department_name']?.toString() ?? 'None').toLowerCase().trim();
+          final isTeam = role == 'team';
+          final isMediaItManager = role == 'manager' && 
+              (department.contains('media') && department.contains('it'));
+          final hasCheckInPermission = isTeam || isMediaItManager;
+
+          if (!hasCheckInPermission) {
+            debugPrint('ROUTER: User has no check-in permission, ignoring scan deep link.');
+            return '/dashboard'; // Redirect to dashboard to prevent Restricted Screen
+          }
+        }
+      }
+
+      if (isDeepLink) {
+        return location;
       }
       return null;
     },
@@ -224,17 +256,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/notifications/create',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const CreateNotificationScreen(),
       ),
       GoRoute(
         path: '/campaigns/create',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const CreateCampaignScreen(),
       ),
       GoRoute(
         path: '/create-event',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final event = state.extra as Event?;
           return CreateEventScreen(eventToEdit: event);
@@ -242,7 +274,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/create-task',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final task = state.extra as Task?;
           return CreateTaskScreen(taskToEdit: task);
@@ -250,7 +282,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/task-details',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final task = state.extra as Task;
           return TaskDetailsScreen(task: task);
@@ -258,7 +290,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/inventory/create',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final item = state.extra as InventoryItem?;
           return AddInventoryItemScreen(itemToEdit: item);

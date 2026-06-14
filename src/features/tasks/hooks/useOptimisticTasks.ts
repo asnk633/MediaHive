@@ -152,7 +152,7 @@ export function useOptimisticTasks(
         const currentPatches = patchesRef.current;
         const prevTasksMap = new Map(serverTasksRef.current.map(t => [t.id, t]));
         
-        const nextDeferred: Record<string, Task> = { ...deferredRef.current };
+        const nextDeferred: Record<string, Task> = JSON.parse(JSON.stringify(deferredRef.current));
         let deferredChanged = false;
         const finalServerTasks: Task[] = [];
 
@@ -355,7 +355,13 @@ export function useOptimisticTasks(
         }
 
         // Check if the action is allowed in the current connectivity state
-        const actionCheck = canPerformAction(actionType, isOnline);
+        if (!isAuthPaused) {
+  const actionCheck = canPerformAction(actionType, isOnline);
+  if (!actionCheck.allowed) {
+    toast.error(actionCheck.reason || `Action "${actionType}" is not allowed in offline mode`);
+    return;
+  }
+}
         if (!actionCheck.allowed) {
             toast.error(actionCheck.reason || `Action "${actionType}" is not allowed in offline mode`);
             return;
@@ -502,7 +508,7 @@ export function useOptimisticTasks(
             });
 
             // Show error
-            toast.error(options?.errorMessage || err.message || "Action failed. Reverting changes.");
+            toast.error(options?.errorMessage ?? 'Action failed. Reverting changes.');
         }
     }, [optimisticPatches, serverTasks, setServerTasks, isOnline, logOpt]);
 
@@ -569,7 +575,8 @@ export function useOptimisticTasks(
                 t.id === taskId ? { ...t, [field]: conflict.serverValue } : t
             ));
 
-            toast.success(`Accepted remote change for ${field}`);
+            const sanitizedField = escapeHtml(field);
+            toast.success(`Accepted remote change for ${sanitizedField}`);
 
             ActivityHistory.push(taskId, {
                 action: 'conflict_resolved',

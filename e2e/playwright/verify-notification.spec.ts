@@ -6,8 +6,9 @@ test('Guest Notification Flow', async ({ page }) => {
     // 1. Login as Guest
     await page.goto('/tasks');
     if (page.url().includes('login')) {
-        await page.fill('input[type="email"]', 'guest@thaibagarden.com');
-        await page.fill('input[type="password"]', 'guest@thaiba');
+        await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
+        await page.fill('input[type="email"]', 'shuaibmse007@gmail.com');
+        await page.fill('input[type="password"]', 'amarthaiba@thaiba');
         await page.click('button[type="submit"]');
         await page.waitForURL('**/home', { timeout: 10000 });
     }
@@ -35,6 +36,7 @@ test('Guest Notification Flow', async ({ page }) => {
     await page.waitForURL('**/login');
 
     // 4. Login as Admin
+    await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
     await page.fill('input[type="email"]', 'media@thaibagarden.com');
     await page.fill('input[type="password"]', 'media@thaiba');
     await page.click('button[type="submit"]');

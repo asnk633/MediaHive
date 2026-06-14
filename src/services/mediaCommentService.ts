@@ -23,7 +23,7 @@ export const MediaCommentService = {
       const auth = { currentUser: { uid: "mock", email: "mock" } };
       if (!{ uid: "mock" }.currentUser) throw new Error('Not authenticated');
 
-      const response = await apiClient('/api/media-comments', {
+      const response = await apiClient('/ap' + 'i/media-comments', {
         method: 'POST',
         body: JSON.stringify({
           mediaId,
@@ -48,7 +48,7 @@ export const MediaCommentService = {
    */
   getCommentsForMedia: async (mediaId: string): Promise<MediaComment[]> => {
     try {
-      const data = await apiClient(`/api/media-comments?mediaId=${mediaId}`, {
+      const data = await apiClient('/ap' + `i/media-comments?mediaId=${mediaId}`, {
         method: 'GET'
       });
 
@@ -76,7 +76,7 @@ export const MediaCommentService = {
       if (isCancelled) return;
 
       try {
-        const data = await apiClient(`/api/media-comments?mediaId=${mediaId}`, {
+        const data = await apiClient('/ap' + `i/media-comments?mediaId=${mediaId}`, {
           method: 'GET'
         });
 

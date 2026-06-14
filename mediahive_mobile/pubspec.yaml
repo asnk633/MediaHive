@@ -64,6 +64,13 @@ dependencies:
   crypto: ^3.0.3
   qr_flutter: ^4.1.0
   nfc_manager_ndef: ^1.1.0
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
+  network_info_plus: ^6.0.0
+  flutter_secure_storage: ^9.2.2
+  google_sign_in: ^6.2.1
+  flutter_native_splash: ^2.4.0
+
 
 
 dependency_overrides:
@@ -74,7 +81,6 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^3.0.0
   flutter_launcher_icons: ^0.13.1
-  flutter_native_splash: ^2.4.0
   build_runner: ^2.4.8
   freezed: ^2.4.7
   json_serializable: ^6.7.1

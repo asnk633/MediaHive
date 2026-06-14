@@ -610,7 +610,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                             thumbUrl, 
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
-                              print('[DOWNLOADS] Thumb error: $error for $thumbUrl');
+                              debugPrint('[DOWNLOADS] Thumb error: $error for $thumbUrl');
                               return Center(
                                 child: Icon(
                                   isVideo ? LucideIcons.fileVideo : (isPdf ? LucideIcons.fileText : LucideIcons.image),

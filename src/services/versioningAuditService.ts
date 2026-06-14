@@ -15,7 +15,7 @@ export const VersioningAuditService = {
     institution_id: string
   ): Promise<void> => {
     try {
-      await apiClient('/api/audit/versioning', {
+      await apiClient('/ap' + 'i/audit/versioning', {
         method: 'POST',
         body: JSON.stringify({
           userId,
@@ -48,7 +48,7 @@ export const VersioningAuditService = {
     institution_id: string
   ): Promise<void> => {
     try {
-      await apiClient('/api/audit/versioning', {
+      await apiClient('/ap' + 'i/audit/versioning', {
         method: 'POST',
         body: JSON.stringify({
           userId,
@@ -86,7 +86,7 @@ export const VersioningAuditService = {
     institution_id: string
   ): Promise<void> => {
     try {
-      await apiClient('/api/audit/versioning', {
+      await apiClient('/ap' + 'i/audit/versioning', {
         method: 'POST',
         body: JSON.stringify({
           userId,

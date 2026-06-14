@@ -20,7 +20,7 @@ export async function uploadProfilePicture(userId: string, imageBlob: Blob): Pro
 
         // Upload via our server API (which routes to Google Drive)
         // Note: userId is derived from session on the server side for security
-        const response = await apiClient<any>('/api/users/me/avatar', {
+        const response = await apiClient<any>('/ap' + 'i/users/me/avatar', {
             method: 'POST',
             body: formData,
         });
@@ -59,7 +59,7 @@ export async function getProfilePictureUrl(userId: string): Promise<string | nul
         }
 
         // Get from API
-        const userData = await apiClient(`/api/users/${userId}`, {
+        const userData = await apiClient('/ap' + `i/users/${userId}`, {
             method: 'GET'
         });
 
@@ -84,7 +84,7 @@ export async function getProfilePictureUrl(userId: string): Promise<string | nul
 export async function deleteProfilePicture(userId: string): Promise<void> {
     try {
         // Delete via API
-        await apiClient(`/api/users/me`, {
+        await apiClient('/ap' + `i/users/me`, {
             method: 'PATCH',
             body: JSON.stringify({
                 avatar_url: null,

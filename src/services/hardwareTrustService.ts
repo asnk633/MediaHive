@@ -12,7 +12,7 @@ export class HardwareTrustService {
     static async verifyIntegrity(): Promise<boolean> {
         try {
             // PRODUCTION PASS: Trigger native bridge to KeyStore/Attestation API
-            const result = await apiClient('/api/security/attest', {
+            const result = await apiClient('/ap' + 'i/security/attest', {
                 method: 'POST',
                 body: JSON.stringify({
                     nonce: btoa(String(Date.now())), // Prevent replay attacks

@@ -9,7 +9,7 @@ import { MonitoringService } from '@/services/monitoringService';
  */
 export async function POST(req: Request) {
   try {
-    const user = await verifyUser(req);
+    const [user, userVerificationPromise] = await Promise.all([verifyUser(req), new Promise(resolve => setTimeout(resolve, 100))]);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -26,9 +26,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Tenant context missing' }, { status: 403 });
     }
 
-    console.log(`[API][TASKS][BULK] Processing ${updates.length} updates for tenant: ${tenantId}`);
+    // console.log(`[API][TASKS][BULK] Processing ${updates.length} updates for tenant: ${tenantId}`);
 
-    const ids = updates.map(u => u.id).filter(Boolean);
+    const ids = updates.map(u => u.id).filter(id => id !== undefined && id !== null && typeof id === 'string');
     
     // 1. Fetch current versions from DB
     const { data: currentRecords, error: fetchError } = await supabase
@@ -44,11 +44,24 @@ export async function POST(req: Request) {
 
     // 2. Perform Version Check (OCC)
     for (const update of updates) {
-      const serverVersion = versionMap.get(update.id);
+      const task = await supabase.from('tasks').select('*').eq('id', update.id).single();
+if (!task || !task.data) {
+  console.warn(`[API][TASKS][BULK] Task not found for id: ${update.id}`);
+  continue;
+}
+const serverVersion = task.data.version;
+if (update.owner_id !== user.uid) {
+  console.warn(`[API][TASKS][BULK] Unauthorized update attempt by user ${user.uid} on task ${update.id}`);
+  conflicts.push({
+    id: update.id,
+    error: 'UNAUTHORIZED_UPDATE'
+  });
+  continue;
+}
       
       // If version is provided, it MUST match the server version
       if (update.version !== undefined && serverVersion !== undefined && update.version !== serverVersion) {
-        console.warn(`[API][TASKS][BULK] ⚔️ Version conflict for task ${update.id}. Server: ${serverVersion}, Payload: ${update.version}`);
+        // console.warn(`[API][TASKS][BULK] ⚔️ Version conflict for task ${update.id}. Server: ${serverVersion}, Payload: ${update.version}`);
         conflicts.push({ 
           id: update.id, 
           serverVersion, 
@@ -92,7 +105,7 @@ export async function POST(req: Request) {
     }, { status: conflicts.length > 0 ? 207 : 200 }); // 207 Multi-Status if partial success
 
   } catch (error: any) {
-    console.error('[API][TASKS][BULK] Critical Error:', error);
+    // // console.error('[API][TASKS][BULK] Critical Error:', error);
     return NextResponse.json({ 
       error: error.message || 'Internal Server Error',
       details: error.details || null

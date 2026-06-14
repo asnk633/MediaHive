@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -73,12 +74,12 @@ final currentUserProfileProvider = FutureProvider<Map<String, dynamic>?>((ref) a
   final user = authState.value?.session?.user ?? Supabase.instance.client.auth.currentUser;
   
   if (user == null) {
-    print('[USER_PROVIDER] No authenticated user found');
+    debugPrint('[USER_PROVIDER] No authenticated user found');
     return null;
   }
 
   try {
-    print('[USER_PROVIDER] Fetching profile for: ${user.id}');
+    debugPrint('[USER_PROVIDER] Fetching profile for: ${user.id}');
     
     // Fetch profile from DB
     final profileResponse = await Supabase.instance.client
@@ -102,7 +103,7 @@ final currentUserProfileProvider = FutureProvider<Map<String, dynamic>?>((ref) a
     };
 
     if (isVirtual) {
-      print('[USER_PROVIDER] Profile not found in DB, using virtual profile from metadata');
+      debugPrint('[USER_PROVIDER] Profile not found in DB, using virtual profile from metadata');
     }
 
     // 1. Resolve Institution Name
@@ -136,7 +137,7 @@ final currentUserProfileProvider = FutureProvider<Map<String, dynamic>?>((ref) a
         }
       }
     } catch (e) {
-      print('[USER_PROVIDER] Error resolving institution: $e');
+      debugPrint('[USER_PROVIDER] Error resolving institution: $e');
     }
 
     institutionName ??= 'None';
@@ -157,7 +158,7 @@ final currentUserProfileProvider = FutureProvider<Map<String, dynamic>?>((ref) a
         }
       }
     } catch (e) {
-      print('[USER_PROVIDER] Error resolving department: $e');
+      debugPrint('[USER_PROVIDER] Error resolving department: $e');
     }
 
     departmentName ??= 'None';
@@ -181,16 +182,40 @@ final currentUserProfileProvider = FutureProvider<Map<String, dynamic>?>((ref) a
       }
     }
 
-    print('[USER_PROVIDER] Resolved profile for ${profile['full_name']}: $institutionName / $departmentName (Virtual: $isVirtual)');
+    debugPrint('[USER_PROVIDER] Resolved profile for ${profile['full_name']}: $institutionName / $departmentName (Virtual: $isVirtual)');
 
-    return {
+    final resolvedProfile = {
       ...profile,
       'avatar_url': avatarUrl,
       'institution_name': institutionName,
       'department_name': departmentName,
     };
+
+    // Cache the successful profile
+    try {
+      final box = await Hive.openBox('app_settings');
+      // Convert map to ensure it's safely storable in Hive
+      await box.put('cached_profile_${user.id}', resolvedProfile);
+    } catch (e) {
+      debugPrint('[USER_PROVIDER] Failed to cache profile: $e');
+    }
+
+    return resolvedProfile;
   } catch (e) {
-    print('[USER_PROVIDER] Critical error in provider: $e');
+    debugPrint('[USER_PROVIDER] Critical error in provider: $e');
+    
+    // Attempt to recover from cache if offline
+    try {
+      final box = await Hive.openBox('app_settings');
+      final cached = box.get('cached_profile_${user.id}');
+      if (cached != null) {
+        debugPrint('[USER_PROVIDER] Recovered profile from cache for ${user.id}');
+        return Map<String, dynamic>.from(cached as Map);
+      }
+    } catch (cacheError) {
+      debugPrint('[USER_PROVIDER] Failed to read cached profile: $cacheError');
+    }
+    
     return null;
   }
 });
@@ -205,7 +230,7 @@ final allUsersProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async 
         
     return List<Map<String, dynamic>>.from(response);
   } catch (e) {
-    print('[USER_PROVIDER] Error fetching all users: $e');
+    debugPrint('[USER_PROVIDER] Error fetching all users: $e');
     return [];
   }
 });

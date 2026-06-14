@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../domain/models/inventory_item.dart';
 
@@ -28,7 +29,7 @@ class HiveInventoryLocalDataSource implements InventoryLocalDataSource {
         final Map<String, dynamic> json = _castMap(raw as Map);
         items.add(InventoryItem.fromJson(json));
       } catch (e) {
-        print('[HIVE_LOCAL] Error parsing cached item: $e');
+        debugPrint('[HIVE_LOCAL] Error parsing cached item: $e');
       }
     }
     return items;

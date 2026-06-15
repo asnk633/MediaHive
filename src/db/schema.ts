@@ -39,6 +39,7 @@ export const users = sqliteTable('users', {
   institution_id: integer('institution_id').notNull().references(() => institutions.id),
   department_id: integer('department_id').references(() => departments.id),
   tenantId: integer('tenant_id').notNull().references(() => tenants.id),
+  expoPushToken: text('expo_push_token'),
   created_at: text('created_at').notNull(),
   updated_at: text('updated_at').notNull(),
 });

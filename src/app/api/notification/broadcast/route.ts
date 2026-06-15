@@ -28,6 +28,31 @@ export async function POST(req: NextRequest) {
       notification
     });
 
+    // 4. Send Expo Push if user has a registered token and notification contains content
+    if (notification && (type === 'new' || !type)) {
+      try {
+        const { getSupabaseAdmin } = await import('@/lib/server/supabase-admin');
+        const { sendExpoPush } = await import('@/lib/sendExpoPush');
+
+        const supabaseAdmin = getSupabaseAdmin();
+        const { data: profile } = await supabaseAdmin
+          .from('profiles')
+          .select('expo_push_token')
+          .eq('id', userId)
+          .single();
+
+        if (profile?.expo_push_token) {
+          await sendExpoPush(
+            profile.expo_push_token,
+            notification.title || 'MediaHive',
+            notification.body || notification.message || ''
+          );
+        }
+      } catch (pushError) {
+        console.error('[POST /api/notification/broadcast] Failed to send Expo push:', pushError);
+      }
+    }
+
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error('[POST /api/notification/broadcast]', error);

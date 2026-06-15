@@ -70,6 +70,8 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   google_sign_in: ^6.2.1
   flutter_native_splash: ^2.4.0
+  mobile_scanner: ^5.1.1
+  http_parser: ^4.0.0
 
 
 

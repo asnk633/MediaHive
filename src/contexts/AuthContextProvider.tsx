@@ -224,6 +224,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     avatar_url: finalProfile?.avatar_url,
                     photoURL: finalProfile?.avatar_url,
                     avatar_drive_id: finalProfile?.avatar_drive_id,
+                    expo_push_token: finalProfile?.expo_push_token || finalProfile?.expoPushToken,
                 });
 
             } catch (err: any) {
@@ -242,6 +243,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // 3. Singleton Auth Listener
         const { data: listener } = supabase.auth.onAuthStateChange(
             async (event: any, session: any) => {
+                // E2E test auth bypass check
+                if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production' && localStorage.getItem('playwright_test_auth') === 'true') {
+                    console.log('[AUTH LISTENER] E2E test auth bypass active - ignoring state change');
+                    return;
+                }
 
                 console.log("[SUPABASE TRACE] onAuthStateChange event:", event)
 
@@ -326,6 +332,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                             avatar_url: finalProfile?.avatar_url,
                             photoURL: finalProfile?.avatar_url,
                             avatar_drive_id: finalProfile?.avatar_drive_id,
+                            expo_push_token: finalProfile?.expo_push_token || finalProfile?.expoPushToken,
                         });
                     } catch (err: any) {
                         const isAbort = err?.name === 'AbortError' || err?.message?.includes('Lock broken') || err?.message?.includes('TIMEOUT');
@@ -603,6 +610,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 avatar_url: profile?.avatar_url,
                 photoURL: profile?.avatar_url,
                 avatar_drive_id: profile?.avatar_drive_id,
+                expo_push_token: profile?.expo_push_token || profile?.expoPushToken,
             });
         } else {
             setUser(null);

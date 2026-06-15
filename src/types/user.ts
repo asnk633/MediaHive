@@ -28,6 +28,7 @@ export interface User {
     // UI Fallbacks/Helpers
     default_institution?: string;
     default_department?: string;
+    expo_push_token?: string;
 }
 
 export type UserRole = User['role'];

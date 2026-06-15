@@ -52,6 +52,10 @@ const sentryConfig = {
   // https://docs.sentry.io/product/crons/
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
+
+  // Disable Sentry plugins during build in CI if auth token is missing to prevent build failure
+  disableServerWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
+  disableClientWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
 };
 
 export default withSentryConfig(nextConfig, sentryConfig);

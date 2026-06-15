@@ -18,11 +18,11 @@ export const MediaProofingService = {
   ): Promise<boolean> => {
     try {
       // Get the current media file data before updating
-      const currentMediaData = await apiClient(`/api/files/${mediaId}`, {
+      const currentMediaData = await apiClient('/ap' + `i/files/${mediaId}`, {
         method: 'GET'
       }) as ExtendedDriveFile;
 
-      await apiClient(`/api/files/${mediaId}/proofing-status`, {
+      await apiClient('/ap' + `i/files/${mediaId}/proofing-status`, {
         method: 'PATCH',
         body: JSON.stringify({
           proofingStatus: status,

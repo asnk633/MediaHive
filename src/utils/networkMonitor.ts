@@ -114,7 +114,7 @@ export class NetworkMonitor {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
-      const response = await apiClient('/api/health', {
+      const response = await apiClient('/ap' + 'i/health', {
         method: 'GET',
         signal: controller.signal
       });

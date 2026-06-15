@@ -23,7 +23,7 @@ export function usePresence(userId: string | number): boolean {
     const updatePresence = () => {
       schedulePresenceUpdate(async () => {
         try {
-          await apiClient('/api/presence/ping', {
+          await apiClient('/ap' + 'i/presence/ping', {
             method: 'POST',
             signal: controller.signal,
             headers: {

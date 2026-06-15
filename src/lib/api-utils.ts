@@ -65,3 +65,5 @@ export async function fetchWithTimeout(
         clearTimeout(id);
     }
 }
+
+export const API_BASE = '/api';

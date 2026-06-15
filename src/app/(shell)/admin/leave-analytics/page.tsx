@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContextProvider';
@@ -50,9 +51,9 @@ export default function LeaveAnalyticsPage() {
         setError(null);
         try {
             const [analytics, balances, requests, allTeamMembers] = await Promise.all([
-                apiGet('/api/leave/analytics'),
+                apiGet(`${API_BASE}/leave/analytics`),
                 LeaveBalanceService.getAllBalances(),
-                apiGet('/api/leave/requests?status=pending'),
+                apiGet(`${API_BASE}/leave/requests?status=pending`),
                 UserService.getTeamMembers(null, user.id, { forceMediaIT: true })
             ]);
             
@@ -111,7 +112,7 @@ export default function LeaveAnalyticsPage() {
 
     const handleAction = async (requestId: string, status: 'approved' | 'rejected') => {
         try {
-            await apiPost(`/api/leave/requests/${requestId}/status`, { status });
+            await apiPost(`${API_BASE}/leave/requests/${requestId}/status`, { status });
             toast.success(`Request ${status} successfully`);
             fetchAllData(); // Refresh
         } catch (err) {

@@ -1,6 +1,8 @@
 
-import { startOfDay, endOfDay, isWithinInterval, addDays, parseISO, isPast, isToday, startOfWeek, endOfWeek, format } from 'date-fns';
+import { startOfDay, endOfDay, isWithinInterval, addDays, parseISO, isPast, isToday, startOfWeek, endOfWeek, format, addHours, isAfter, isBefore, isSameDay } from 'date-fns';
 import { NormalizedTask, NormalizedEvent } from '@/lib/normalization';
+import { Task } from '@/features/tasks/types/task';
+import { normalizeDate } from '@/lib/dateUtils';
 
 export interface DashboardMetrics {
     readonly dueToday: number;
@@ -301,3 +303,68 @@ export const computeDashboardMetrics = (
         }
     };
 };
+
+export const getDueSoonTasks = (tasks: Task[]): Task[] => {
+    return tasks.filter(task => {
+        if (task.status === 'done' || !task.due_date) return false;
+
+        const date = normalizeDate(task.due_date);
+        if (!date) return false;
+
+        const now = new Date();
+        const twentyFourHoursLater = addHours(now, 24);
+
+        return isAfter(date, now) && isBefore(date, twentyFourHoursLater);
+    });
+};
+
+export const getMyFocusTasks = (tasks: Task[], userId: string, todayOnly?: boolean): Task[] => {
+    const now = new Date();
+    return tasks.filter(task => {
+        if (task.status === 'done' && !isSameDay(task.completed_at ? new Date(task.completed_at) : now, now)) {
+            return false; // Only show tasks completed TODAY if done
+        }
+
+        const isAssigned = Array.isArray(task.assignedTo) &&
+            task.assignedTo.some(a => a.uid === userId);
+        if (!isAssigned) return false;
+
+        if (todayOnly) {
+            if (!task.due_date) return false;
+            const due_date = new Date(task.due_date);
+            const isTodayToday = isSameDay(due_date, now);
+            const isOverdue = due_date < now;
+
+            // Suppress tomorrow if today has items
+            if (!isTodayToday && !isOverdue) return false;
+
+            return true;
+        }
+
+        return true;
+    });
+};
+
+export const getMyWorkflowTasks = (tasks: Task[], userId: string): Task[] => {
+    return tasks.filter(task => {
+        if (task.status === 'done') return false;
+
+        // Handle array of assignees
+        if (Array.isArray(task.assigned_to)) {
+            return task.assigned_to.some(u =>
+                (typeof u === 'string' ? u : u.uid) === userId
+            );
+        }
+        return false;
+    });
+};
+
+export const getTasksFromMe = (tasks: Task[], userId: string): Task[] => {
+    return tasks.filter(task => {
+        const creatorUid = typeof task.created_by === 'string' ? task.created_by : task.created_by?.uid;
+        if (creatorUid && creatorUid === userId) return true;
+        if (task.assigned_by?.uid === userId) return true;
+        return false;
+    });
+};
+

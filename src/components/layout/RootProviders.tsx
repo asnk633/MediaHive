@@ -7,10 +7,10 @@ import BootGate from '@/components/layout/BootGate';
 import Diagnostics from '@/components/Diagnostics';
 import { networkMonitor } from '@/utils/networkMonitor';
 import { toast } from 'sonner';
-import { MissingApiBanner } from '@/components/debug/MissingApiBanner';
 import { WorkspaceProvider } from "@/system/workspace/WorkspaceProvider";
 import { useRouter } from 'next/navigation';
 import { App } from '@capacitor/app';
+import { nativeNavigate } from '@/lib/utils';
 
 
 // --- GLOBAL BUFFER FOR DIAGNOSTICS ---
@@ -130,7 +130,7 @@ export default function RootProviders({ children }: { children: ReactNode }) {
         // We want to extract the pathname and navigate
         const path = url.pathname;
         if (path) {
-          router.push(path);
+          nativeNavigate(path, router);
           toast.info(`Navigating to shared content...`);
         }
       });
@@ -149,7 +149,6 @@ export default function RootProviders({ children }: { children: ReactNode }) {
     <ThemeProvider>
       <AuthProvider>
         <WorkspaceProvider>
-          <MissingApiBanner />
           <Diagnostics />
           <BootGate>
             {children}

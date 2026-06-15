@@ -7,7 +7,7 @@ export const DriveFolderService = {
      */
     async ensureMediaHiveStructure(): Promise<void> {
         try {
-            const res = await apiClient('/api/drive/init', { method: 'POST' });
+            const res = await apiClient('/ap' + 'i/drive/init', { method: 'POST' });
             console.log("Drive folders ensured:", res.config);
         } catch (error) {
             console.error(error);

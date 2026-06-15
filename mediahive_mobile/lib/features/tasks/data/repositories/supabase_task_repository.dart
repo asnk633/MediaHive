@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'package:dartz/dartz.dart' hide Task;
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,7 +23,7 @@ class SupabaseTaskRepository implements TaskRepository {
   @override
   Future<Either<Failure, List<Task>>> getTasks() async {
     try {
-      print('[TASK_REPO] Fetching tasks from remote...');
+      debugPrint('[TASK_REPO] Fetching tasks from remote...');
       
       // 1. Fetch from remote and update cache
       try {
@@ -39,10 +40,10 @@ class SupabaseTaskRepository implements TaskRepository {
             .eq('deleted', false)
             .order('created_at', ascending: false);
             
-        print('[TASK_REPO] Executing query: ${query.toString()}');
+        debugPrint('[TASK_REPO] Executing query: ${query.toString()}');
         
         final response = await query;
-        print('[TASK_REPO] Received response from Supabase. Count: ${(response as List).length}');
+        debugPrint('[TASK_REPO] Received response from Supabase. Count: ${(response as List).length}');
         
         final remoteTasks = (response).map((json) {
           // Flatten names into requester and assignee fields
@@ -100,22 +101,22 @@ class SupabaseTaskRepository implements TaskRepository {
         }).toList();
             
         await _localDataSource.cacheTasks(remoteTasks);
-        print('[TASK_REPO] Successfully mapped and cached ${remoteTasks.length} tasks');
+        debugPrint('[TASK_REPO] Successfully mapped and cached ${remoteTasks.length} tasks');
         return Right(remoteTasks);
       } catch (e, stack) {
-        print('[TASK_REPO] Remote fetch failed: $e');
-        print('[TASK_REPO] Stack: $stack');
+        debugPrint('[TASK_REPO] Remote fetch failed: $e');
+        debugPrint('[TASK_REPO] Stack: $stack');
         
         // Return local tasks as fallback if remote fails
         final localTasks = await _localDataSource.getTasks();
         if (localTasks.isNotEmpty) {
-          print('[TASK_REPO] Returning ${localTasks.length} cached tasks as fallback');
+          debugPrint('[TASK_REPO] Returning ${localTasks.length} cached tasks as fallback');
           return Right(localTasks);
         }
         return Left(ServerFailure('Remote fetch failed: $e'));
       }
     } catch (e) {
-      print('[TASK_REPO] Fatal error: $e');
+      debugPrint('[TASK_REPO] Fatal error: $e');
       return Left(CacheFailure('Repository error: $e'));
     }
   }
@@ -272,7 +273,7 @@ class SupabaseTaskRepository implements TaskRepository {
           });
         }
       } catch (e) {
-        print('[TASK_REPO] Failed to sync assignments: $e');
+        debugPrint('[TASK_REPO] Failed to sync assignments: $e');
       }
     }
   }

@@ -1,4 +1,5 @@
 'use client';
+import { nativeNavigate } from '@/lib/utils';
 // Build Trigger: 9e32e45b (Fix Service Types)
 
 import React, { useState, useEffect } from 'react';
@@ -48,8 +49,6 @@ export default function TasksNewClient() {
     // Organization Data
     const [departmentsList, setDepartmentsList] = useState<{ id: string | number; name: string }[]>([]);
     const [institutionsList, setInstitutionsList] = useState<{ id: string | number; name: string }[]>([]);
-
-    if (!user) return null;
 
     const isAdmin = currentRole?.toLowerCase() === 'admin';
     const isTeam = currentRole?.toLowerCase() === 'manager' || currentRole?.toLowerCase() === 'team';
@@ -123,6 +122,7 @@ export default function TasksNewClient() {
     // though typically state arrays are stable. The error "changed size" suggests something else might be going on, 
     // so we will stringify the dependence or just use the length as a proxy for "loaded".
     useEffect(() => {
+        if (!user) return;
         if (departmentsList.length === 0 && institutionsList.length === 0) return;
 
         const userDeptId = user.department_id;
@@ -137,13 +137,14 @@ export default function TasksNewClient() {
             const inst = institutionsList.find(i => String(i.id) === String(userInstId));
             if (inst) setSelectedInstitutionId(String(inst.id));
         }
-    }, [user.department_id, user.institution_id, departmentsList.length, institutionsList.length]);
+    }, [user, departmentsList.length, institutionsList.length, formData.selectedDepartmentId, formData.selectedInstitutionId]);
 
     // Role derived above to ensure consistency across the component lifecycle
     console.log("[TasksNew] User Role Detection (Active Context):", { role: currentRole, isAdmin, isTeam, isMember });
 
     // Fetch real team members from Firestore
     useEffect(() => {
+        if (!user) return;
         const fetchTeamMembers = async () => {
             // Use the user's current institution/workspace context, not the 'Requested By' selection.
             // This ensures you can always assign tasks to your own team members.
@@ -175,12 +176,15 @@ export default function TasksNewClient() {
             setTeamMembers(filtered);
         };
         fetchTeamMembers();
-    }, [user?.uid, currentWorkspaceId, selectedInstitutionId, selectedDepartmentId]);
+    }, [user, currentWorkspaceId, selectedInstitutionId, selectedDepartmentId, currentRole]);
     // ...
     // ...
 
 
     const submitTask = async () => {
+        if (!user) {
+            throw new Error("User session not found.");
+        }
         setError(null);
         
         // Comprehensive Validation Check
@@ -307,8 +311,8 @@ export default function TasksNewClient() {
                 clearDraft();
                 toast.success(COPY.toasts.taskCreated);
                 const returnTo = searchParams.get('returnTo');
-                if (returnTo === 'home') router.push('/home');
-                else router.push('/tasks');
+                if (returnTo === 'home') nativeNavigate('/home', router, 'TasksNewClient.tsx');
+                else nativeNavigate('/tasks', router, 'TasksNewClient.tsx');
                 return; // Early return to trigger onSuccess immediately
             }
 
@@ -355,8 +359,8 @@ export default function TasksNewClient() {
             clearDraft();
             toast.success(COPY.toasts.taskCreated);
             const returnTo = searchParams.get('returnTo');
-            if (returnTo === 'home') router.push('/home');
-            else router.push('/tasks');
+            if (returnTo === 'home') nativeNavigate('/home', router, 'TasksNewClient.tsx');
+            else nativeNavigate('/tasks', router, 'TasksNewClient.tsx');
         },
         onError: (err) => {
             setError(err.message || COPY.errors.generic);
@@ -390,9 +394,9 @@ export default function TasksNewClient() {
             if (e.key === 'Escape') {
                 const returnTo = searchParams.get('returnTo');
                 if (returnTo === 'home') {
-                    router.push('/home');
+                    nativeNavigate('/home', router, 'TasksNewClient.tsx');
                 } else {
-                    router.push('/tasks');
+                    nativeNavigate('/tasks', router, 'TasksNewClient.tsx');
                 }
             }
         };
@@ -431,6 +435,8 @@ export default function TasksNewClient() {
         return () => window.removeEventListener('keydown', handleDateShortcut);
     }, [due_date]);
  
+    if (!user) return null;
+
     return (
         <PageLayout mode="plain">
             <div className="flex flex-col items-center">
@@ -443,9 +449,9 @@ export default function TasksNewClient() {
                                 onClick={() => {
                                     const returnTo = searchParams.get('returnTo');
                                     if (returnTo === 'home') {
-                                        router.push('/home');
+                                        nativeNavigate('/home', router, 'TasksNewClient.tsx');
                                     } else {
-                                        router.push('/tasks');
+                                        nativeNavigate('/tasks', router, 'TasksNewClient.tsx');
                                     }
                                 }}
                                 className="text-red-400/80 font-medium hover:text-red-300 transition-colors text-sm hover:bg-foreground/5 px-3 py-1.5 rounded-full"

@@ -20,7 +20,7 @@ export function TaskItem({ title, date, icon: Icon, isCompleted: initialComplete
         // If completion is disabled, do nothing
         if (disableCompletion) return;
 
-        setIsCompleted(!isCompleted);
+        if (!disableCompletion) { const newIsCompleted = !isCompleted; setIsCompleted(newIsCompleted); }
 
         // If marking as complete, hide the item after animation
         if (!isCompleted) {

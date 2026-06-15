@@ -36,6 +36,7 @@ test.describe('Critical User Journeys', () => {
 
         // Login as admin
         await page.goto('http://localhost:3000/login');
+        await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
         await page.fill('input[type="email"]', ADMIN_USER.email);
         await page.fill('input[type="password"]', ADMIN_USER.password);
         await page.click('button[type="submit"]');
@@ -50,21 +51,18 @@ test.describe('Critical User Journeys', () => {
         // Click New Task button
         await page.getByLabel('New Task').click();
 
+        // Wait for defaults to load (Department should be auto-filled to Media & IT Department for this admin)
+        await page.waitForSelector('button:has-text("Media & IT Department")', { state: 'visible', timeout: 10000 });
+
         // Fill task form
-        await page.fill('[placeholder="Task title..."]', taskTitle);
+        await page.fill('[placeholder="What needs to be done?"]', taskTitle);
         await page.fill('[placeholder="Add details..."]', 'E2E test description');
 
-        // Set due date (tomorrow)
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const dateStr = tomorrow.toISOString().split('T')[0];
-        await page.fill('input[type="date"]', dateStr);
-
-        // Select department
-        await page.selectOption('select', { label: 'Media & IT Office' });
+        // Set due date via shortcut Alt+ArrowRight (tomorrow)
+        await page.keyboard.press('Alt+ArrowRight');
 
         // Submit task
-        await page.click('button:has-text("Create")');
+        await page.click('button:has-text("Create Task")');
 
         // Verify task appears in list
         await expect(page.getByText(taskTitle)).toBeVisible({ timeout: 10000 });
@@ -84,6 +82,7 @@ test.describe('Critical User Journeys', () => {
     test('Admin: Can see admin-only features', async ({ page }) => {
         // Login as admin
         await page.goto('http://localhost:3000/login');
+        await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
         await page.fill('input[type="email"]', ADMIN_USER.email);
         await page.fill('input[type="password"]', ADMIN_USER.password);
         await page.click('button[type="submit"]');

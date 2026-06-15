@@ -9,6 +9,7 @@ import FAB from "@/client/components/FAB";
 
 export default function BottomNavigation() {
   const pathname = usePathname();
+  const { user } = useAuth(); // Helper to access auth context
 
   const isActive = (href: string) => pathname === href || pathname?.startsWith(href + "/");
   const navRef = React.useRef<HTMLElement>(null);
@@ -52,8 +53,6 @@ export default function BottomNavigation() {
   // Only check window/search after mount
   const hasModalParam = mounted && (window.location.search.includes('id=') || window.location.search.includes('action='));
   const showFAB = mounted && isOnAllowedPage && !hasModalParam;
-
-  const { user } = useAuth(); // Helper to access auth context
   // Assume member if no role or specific member role
   const isMember = user?.role === 'member';
 

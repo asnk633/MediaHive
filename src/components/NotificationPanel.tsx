@@ -9,30 +9,24 @@ import { groupNotifications, GroupedNotification } from '@/lib/notification-grou
 import { formatDistanceToNow } from 'date-fns';
 import { apiClient } from '@/lib/apiClient';
 import { nativeNavigate } from '@/lib/utils';
+import { listenNotifications } from '@/services/notificationRealtime';
 
 export const NotificationPanel = () => {
     const { user } = useAuth();
     const router = useRouter();
     const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
-    // Initial fetch and setup
+    // Subscribe to real-time notifications via SSE
     useEffect(() => {
         if (!user) return;
 
-        const fetchNotifications = async () => {
-            try {
-                const data = await AlertService.getUserNotifications({ limit: 100 }); // Fetch more for panel
-                setNotifications(data);
-            } catch (e) {
-                console.error(e);
-            }
+        const unsubscribe = listenNotifications(String(user.id), (data) => {
+            setNotifications(data);
+        });
+
+        return () => {
+            if (unsubscribe) unsubscribe();
         };
-
-        fetchNotifications();
-
-        // Simple polling for now
-        const interval = setInterval(fetchNotifications, 60000);
-        return () => clearInterval(interval);
     }, [user]);
 
     const handleNotificationClick = async (notification: AppNotification | GroupedNotification) => {

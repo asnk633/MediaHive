@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,7 +37,7 @@ export const SystemUpdatesView = () => {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const data = await apiClient('/api/admin/system-updates');
+                const data = await apiClient(`${API_BASE}/admin/system-updates`);
                 if (data.updates) setHistory(data.updates);
             } catch (e) {
                 console.error("Failed to load history", e);
@@ -55,7 +56,7 @@ export const SystemUpdatesView = () => {
 
         setIsSubmitting(true);
         try {
-            await apiClient('/api/admin/system-updates', {
+            await apiClient(`${API_BASE}/admin/system-updates`, {
                 method: 'POST',
                 body: JSON.stringify({ title, body, severity })
             });
@@ -68,7 +69,7 @@ export const SystemUpdatesView = () => {
             setSeverity('info');
 
             // Refresh list
-            const data = await apiClient('/api/admin/system-updates');
+            const data = await apiClient(`${API_BASE}/admin/system-updates`);
             setHistory(data.updates || []);
 
         } catch (error) {

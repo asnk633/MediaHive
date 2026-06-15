@@ -42,5 +42,6 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
+    // eslint-disable-next-line no-restricted-syntax
     matcher: '/api/:path*',
 };

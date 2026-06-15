@@ -31,7 +31,7 @@ local_env = load_env(ENV_PATH)
 parent_env = load_env(PARENT_ENV_PATH)
 
 GITHUB_TOKEN = local_env.get("GITHUB_TOKEN") or parent_env.get("GITHUB_TOKEN") or os.environ.get("GITHUB_TOKEN")
-SUPABASE_SERVICE_KEY = parent_env.get("SUPABASE_SERVICE_ROLE_KEY")
+SUPABASE_SERVICE_KEY = parent_env.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
 
 if not GITHUB_TOKEN:
     print("[ERROR] GITHUB_TOKEN not found in .env, ../.env.local or environment!")
@@ -42,14 +42,16 @@ if not SUPABASE_SERVICE_KEY:
     print("[WARNING] SUPABASE_SERVICE_ROLE_KEY not found in ../.env.local. Supabase sync will be skipped.")
 
 RELEASE_NOTES = (
+    "• Logo Redesign: Fixed small mistake in the logo design and rebuilt all launcher icons and native splash screens.\n"
+    "• Google Drive Inventory Photos: Added full support for uploading and rendering inventory photos directly from Google Drive via secure proxy.\n"
+    "• Real Camera QR Scanner: QR attendance scanning now uses the actual device camera — no more emulator placeholder.\n"
+    "• Production Mode: Removed all demo/emulator stubs; NFC and QR flows now use real hardware exclusively.\n"
     "• NFC & QR Attendance Logging: Real-time, touchless checking directly from the dashboard.\n"
     "• NFC Tag & Biometrics Registry: Comprehensive registry management & biometric credentials linking.\n"
     "• Dynamic Attendance Reports: Live operational metrics, log verification, and daily summaries.\n"
     "• Governance & Shift Policies: Customizable hours, grace periods, overtime, and auto-close configurations.\n"
     "• Missed Log & Remote Requests: Easy submission, adjustment, and approvals of attendance logs.\n"
-    "• Custom Holiday List: Global and location-specific holiday scheduling and details.\n"
-    "• Top Header & Logo Alignment: Redesigned header with enlarged logo and perfect alignment.\n"
-    "• Fixed Trapped Interfaces: Standardized margins and scrolls to clear global top bar and bottom dock."
+    "• Custom Holiday List: Global and location-specific holiday scheduling and details."
 )
 
 # ─── 1. PARSE VERSION ─────────────────────────────────────────────────────────
@@ -76,10 +78,19 @@ print(f"[MediaHive] Target APK Name: MediaHive_V{clean_version}.apk")
 print("\n[MediaHive] Compiling optimized split APKs via Flutter...")
 try:
     # Run the compile process
-    subprocess.run(["D:\\flutter\\bin\\flutter.bat", "build", "apk", "--release", "--split-per-abi", "--dart-define=FLAVOR=production"], check=True)
+    flutter_bin = shutil.which("flutter")
+    if not flutter_bin:
+        fallback_path = "D:\\src\\flutter\\bin\\flutter.bat"
+        if os.path.exists(fallback_path):
+            flutter_bin = fallback_path
+        else:
+            print("[ERROR] Flutter executable not found in PATH or at fallback path!")
+            exit(1)
+    subprocess.run([flutter_bin, "build", "apk", "--release", "--split-per-abi", "--dart-define=FLAVOR=production"], check=True)
 except Exception as e:
     print("[ERROR] Flutter compilation failed:", e)
     exit(1)
+
 
 source_apk = os.path.join(BASE_DIR, "build", "app", "outputs", "flutter-apk", "app-arm64-v8a-release.apk")
 target_apk_name = f"MediaHive_V{clean_version}.apk"
@@ -113,7 +124,8 @@ try:
     github_headers = {
         "Authorization": f"Bearer {GITHUB_TOKEN}",
         "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28"
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "MediaHive-Release-Script"
     }
 
     # Create Release

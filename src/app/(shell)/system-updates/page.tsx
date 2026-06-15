@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 
 import React, { useEffect, useState } from 'react';
@@ -23,7 +24,7 @@ export default function SystemUpdatesFeedPage() {
     useEffect(() => {
         const fetchUpdates = async () => {
             try {
-                const data = await apiClient('/api/system-updates');
+                const data = await apiClient(`${API_BASE}/system-updates`);
                 setUpdates(data.updates || []);
             } catch (e) {
                 console.error("Failed to load updates", e);

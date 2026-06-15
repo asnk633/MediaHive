@@ -1,3 +1,4 @@
+import 'dart:io';
 import '../config/env_config.dart';
 
 class UrlHelpers {
@@ -8,10 +9,13 @@ class UrlHelpers {
     final id = driveFileId ?? (url != null ? _extractDriveId(url) : null);
     if (id != null) {
       // Use the Next.js proxy endpoint `/api/drive/image/[ID]?thumbnail=true`
-      // exactly as the web application does to bypass direct Google Drive 403 Forbidden checks.
       String baseUrl = EnvConfig.current.apiBaseUrl;
       if (baseUrl.contains('localhost') || baseUrl.contains('127.0.0.1')) {
-        baseUrl = 'https://thaiba-garden-media-manager.vercel.app'; // Fallback to live production proxy in development
+        try {
+          if (Platform.isAndroid) {
+            baseUrl = baseUrl.replaceAll('localhost', '10.0.2.2').replaceAll('127.0.0.1', '10.0.2.2');
+          }
+        } catch (_) {}
       }
       
       return '$baseUrl/api/drive/image/$id?thumbnail=true';
@@ -26,10 +30,13 @@ class UrlHelpers {
     final id = driveFileId ?? (url != null ? _extractDriveId(url) : null);
     if (id != null) {
       // Use the Next.js proxy endpoint `/api/drive/image/[ID]` (without thumbnail)
-      // exactly as the web application does to bypass direct Google Drive 403 Forbidden checks.
       String baseUrl = EnvConfig.current.apiBaseUrl;
       if (baseUrl.contains('localhost') || baseUrl.contains('127.0.0.1')) {
-        baseUrl = 'https://thaiba-garden-media-manager.vercel.app'; // Fallback to live production proxy in development
+        try {
+          if (Platform.isAndroid) {
+            baseUrl = baseUrl.replaceAll('localhost', '10.0.2.2').replaceAll('127.0.0.1', '10.0.2.2');
+          }
+        } catch (_) {}
       }
       
       return '$baseUrl/api/drive/image/$id';

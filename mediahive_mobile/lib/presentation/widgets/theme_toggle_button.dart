@@ -14,11 +14,16 @@ class ThemeToggleButton extends ConsumerWidget {
       onTap: () {
         ref.read(themeModeProvider.notifier).toggleTheme();
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
-        width: 34,
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: 44,
         height: 64,
-        padding: const EdgeInsets.all(2),
+        child: Center(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            width: 34,
+            height: 64,
+            padding: const EdgeInsets.all(2),
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF000429) : Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -57,6 +62,8 @@ class ThemeToggleButton extends ConsumerWidget {
           ],
         ),
       ),
-    );
+    ),
+  ),
+);
   }
 }

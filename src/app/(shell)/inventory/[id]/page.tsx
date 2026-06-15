@@ -1,4 +1,5 @@
 "use client";
+import { nativeNavigate } from '@/lib/utils';
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -28,12 +29,12 @@ export default function InventoryStandalonePage() {
                     setItem(data);
                 } else {
                     toast.error("Item not found");
-                    router.push('/inventory');
+                    nativeNavigate('/inventory', router, 'page.tsx');
                 }
             } catch (err) {
                 console.error("Failed to fetch inventory item for standalone page", err);
                 toast.error("An error occurred while loading the item");
-                router.push('/inventory');
+                nativeNavigate('/inventory', router, 'page.tsx');
             } finally {
                 setLoading(false);
             }
@@ -59,14 +60,14 @@ export default function InventoryStandalonePage() {
             <InventoryDetailDialog 
                 item={item}
                 open={true}
-                onOpenChange={(open) => !open && router.push('/inventory')}
+                onOpenChange={(open) => !open && nativeNavigate('/inventory', router, 'page.tsx')}
                 role={role}
-                onEdit={['admin', 'manager'].includes(role) ? (i) => router.push(`/inventory/edit?id=${i.id}`) : undefined}
+                onEdit={['admin', 'manager'].includes(role) ? (i) => nativeNavigate(`/inventory/edit?id=${i.id}`, router, 'page.tsx') : undefined}
                 onDelete={['admin', 'manager'].includes(role) ? async (i) => {
                     try {
                         await inventoryService.delete(String(i.id));
                         toast.success("Item moved to trash");
-                        router.push('/inventory');
+                        nativeNavigate('/inventory', router, 'page.tsx');
                     } catch (error) {
                         toast.error("Failed to delete item");
                     }

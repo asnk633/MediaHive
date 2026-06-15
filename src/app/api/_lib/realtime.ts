@@ -99,3 +99,24 @@ export function subscribeToEvents(channel: string, callback: (data: any) => void
 export function unsubscribeFromEvents(channel: string, callback: (data: any) => void) {
   eventEmitter.off(channel, callback);
 }
+
+/**
+ * Send an event securely to a specific connection
+ * 
+ * @param connectionKey Key of the connection (e.g. `notification-${userId}`)
+ * @param channel Channel name
+ * @param data Event data
+ */
+export function sendToConnection(connectionKey: string, channel: string, data: any) {
+  const connection = sseConnections.get(connectionKey);
+  if (connection) {
+    try {
+      connection.write(`event: ${channel}\n`);
+      connection.write(`data: ${JSON.stringify(data)}\n\n`);
+    } catch (error) {
+      console.warn(`Failed to send SSE event to connection ${connectionKey}:`, error);
+      sseConnections.delete(connectionKey);
+    }
+  }
+}
+

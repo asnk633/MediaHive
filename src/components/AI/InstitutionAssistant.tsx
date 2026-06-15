@@ -2,6 +2,7 @@
 // AI Institution Assistant Component
 
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { apiClient } from '@/lib/apiClient';
@@ -50,7 +51,7 @@ export function InstitutionAssistant() {
       setConversation(newConversation);
       
       // Call AI service to generate suggestions
-      const data = await apiClient('/api/ai/suggestions', {
+      const data = await apiClient(`${API_BASE}/ai/suggestions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

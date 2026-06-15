@@ -2,6 +2,7 @@
 // Monitoring Dashboard component for admin
 
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState, useEffect } from 'react';
 import { SSEStatusBadge } from './SSEStatusBadge';
@@ -21,7 +22,7 @@ export function MonitoringDashboard() {
 
   useEffect(() => {
     // Connect to monitoring SSE endpoint
-    const eventSource = new EventSource('/api/monitoring/events');
+    const eventSource = new EventSource(`${API_BASE}/monitoring/events`);
     
     eventSource.onopen = () => {
       setSseConnected(true);

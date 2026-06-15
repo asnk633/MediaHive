@@ -7,7 +7,7 @@ import { Plus, CheckSquare, Calendar, Bell, Users, Package, Download, BarChart3,
 import { usePathname, useRouter } from "next/navigation";
 import AppLink from "@/components/AppLink";
 import { triggerHaptic } from "@/lib/haptics";
-import { cn } from "@/lib/utils";
+import { cn, nativeNavigate } from '@/lib/utils';
 
 
 interface FABProps {
@@ -180,7 +180,7 @@ export default function FAB({ onMainClick }: FABProps) {
         
         if (currentConfig.href && hasRoleAccess && !isMember) {
           trackSafe('direct_action', { target: currentConfig.href });
-          router.push(currentConfig.href);
+          nativeNavigate(currentConfig.href, router, 'FAB.tsx');
         } else {
           setIsOpen(true);
           broadcastThrottled('menu_opened');
@@ -285,7 +285,7 @@ export default function FAB({ onMainClick }: FABProps) {
   if (hasError) {
     return createPortal(
       <button 
-        onClick={() => router.push('/home')}
+        onClick={() => nativeNavigate('/home', router, 'FAB.tsx')}
         aria-label="Try Again"
         className="fab fixed left-1/2 bottom-8 -translate-x-1/2 w-16 h-16 rounded-full bg-slate-800 text-foreground flex flex-col items-center justify-center shadow-lg z-[110] border border-foreground/10 lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >

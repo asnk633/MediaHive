@@ -7,7 +7,7 @@ import { withTenantDrizzle, validateTenant } from '@/lib/tenantQuery';
 
 // --- GET Request Handler (Fetch single or list) ---
 
-export const dynamic = 'force-dynamic';
+// export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 
     // Single record fetch
     if (id) {
-      if (!id || isNaN(parseInt(id))) {
+      const parsedId = parseInt(id); if (isNaN(parsedId)) {
         return NextResponse.json(
           { error: 'Valid ID is required', code: 'INVALID_ID' },
           { status: 400 }
@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
         .from(attendance)
         .where(and(
           eq(attendance.id, parseInt(id)),
+          eq(attendance.userId, user.uid as any),
           withTenantDrizzle(attendance, tenantId)
         ))
         .limit(1);
@@ -55,7 +56,15 @@ export async function GET(request: NextRequest) {
     }
 
     // List with pagination and filtering
-    const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 100);
+    const limit = searchParams.get('limit');
+if (limit === null) {
+  return NextResponse.json({ error: 'Invalid limit parameter' }, { status: 400 });
+}
+const parsedLimit = parseInt(limit);
+if (isNaN(parsedLimit)) {
+  return NextResponse.json({ error: 'Invalid limit parameter' }, { status: 400 });
+}
+const finalLimit = Math.min(parsedLimit, 100);
     const offset = parseInt(searchParams.get('offset') ?? '0');
 
     // userId is derived from the authenticated session, NEVER from searchParams
@@ -102,7 +111,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await verifyUser(request);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
     }
 
     const payload = await request.json();
@@ -113,10 +122,7 @@ export async function POST(request: NextRequest) {
     const institution_id = user.institution_id;
 
     if (!checkIn) {
-      return NextResponse.json(
-        { error: 'Missing required fields: checkIn', code: 'MISSING_FIELDS' },
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: 'Missing required fields: checkIn', code: 'MISSING_FIELDS' }), { status: 400 });
     }
 
     const normalizedTenantId = typeof user.tenant_id === 'string' && !isNaN(Number(user.tenant_id)) ? Number(user.tenant_id) : user.tenant_id;
@@ -133,14 +139,11 @@ export async function POST(request: NextRequest) {
       .limit(1);
 
     if (existingOpen.length > 0) {
-      return NextResponse.json(
-        { 
+      return new Response(JSON.stringify({ 
           error: 'An active session already exists. Please check out first.', 
           code: 'ACTIVE_SESSION_EXISTS',
           sessionId: existingOpen[0].id 
-        },
-        { status: 409 }
-      );
+        }), { status: 409 });
     }
 
     const inserted = await db
@@ -155,13 +158,10 @@ export async function POST(request: NextRequest) {
       } as any)
       .returning();
 
-    return NextResponse.json(inserted[0], { status: 201 });
+    return new Response(JSON.stringify(inserted[0]), { status: 201 });
   } catch (error) {
     console.error('POST error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error: ' + (error as Error).message },
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ error: 'Internal server error: ' + (error as Error).message }), { status: 500 });
   }
 }
 
@@ -172,24 +172,18 @@ export async function PUT(request: NextRequest) {
     const id = searchParams.get('id');
 
     if (!id || isNaN(parseInt(id))) {
-      return NextResponse.json(
-        { error: 'Valid ID is required', code: 'INVALID_ID' },
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: 'Valid ID is required', code: 'INVALID_ID' }), { status: 400 });
     }
 
     const payload = await request.json();
 
     if (Object.keys(payload).length === 0) {
-      return NextResponse.json(
-        { error: 'No update data provided', code: 'NO_DATA' },
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: 'No update data provided', code: 'NO_DATA' }), { status: 400 });
     }
 
     const user = await verifyUser(request);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
     }
 
     // Check if record exists and belongs to the user
@@ -204,15 +198,12 @@ export async function PUT(request: NextRequest) {
       .limit(1);
 
     if (existing.length === 0) {
-      return NextResponse.json(
-        { error: 'Attendance record not found', code: 'NOT_FOUND' },
-        { status: 404 }
-      );
+      return new Response(JSON.stringify({ error: 'Attendance record not found', code: 'NOT_FOUND' }), { status: 404 });
     }
 
     const tenantId = user.tenant_id;
     if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
-      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+      return new Response(JSON.stringify({ error: 'Missing tenant context' }), { status: 403 });
     }
 
     // Perform the update with tenant scoping
@@ -227,21 +218,25 @@ export async function PUT(request: NextRequest) {
         withTenantDrizzle(attendance, tenantId)
       ));
 
-    // updated row isn't returned by .set() here with our current db helper,
-    // so construct the updated object locally and return it instead.
-    const updatedObj = {
-      ...(existing[0] as any), // Start with existing data
-      ...(payload as any), // Apply the updates
-      updated_at: new Date().toISOString()
-    };
+    // Fetch the updated record to return it
+    const updatedRecord = await db
+      .select()
+      .from(attendance)
+      .where(and(
+        eq(attendance.id, parseInt(id)),
+        eq(attendance.userId, user.uid as any),
+        withTenantDrizzle(attendance, tenantId)
+      ))
+      .limit(1);
 
-    return NextResponse.json(updatedObj, { status: 200 });
+    if (updatedRecord.length === 0) {
+      return new Response(JSON.stringify({ error: 'Attendance record not found after update', code: 'NOT_FOUND' }), { status: 404 });
+    }
+
+    return new Response(JSON.stringify(updatedRecord[0]), { status: 200 });
   } catch (error) {
     console.error('PUT error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error: ' + (error as Error).message },
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ error: 'Internal server error: ' + (error as Error).message }), { status: 500 });
   }
 }
 
@@ -252,15 +247,12 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get('id');
 
     if (!id || isNaN(parseInt(id))) {
-      return NextResponse.json(
-        { error: 'Valid ID is required', code: 'INVALID_ID' },
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: 'Valid ID is required', code: 'INVALID_ID' }), { status: 400 });
     }
 
     const user = await verifyUser(request);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
     }
 
     // Check if record exists and belongs to the user
@@ -275,15 +267,12 @@ export async function DELETE(request: NextRequest) {
       .limit(1);
 
     if (existing.length === 0) {
-      return NextResponse.json(
-        { error: 'Attendance record not found', code: 'NOT_FOUND' },
-        { status: 404 }
-      );
+      return new Response(JSON.stringify({ error: 'Attendance record not found', code: 'NOT_FOUND' }), { status: 404 });
     }
 
     const tenantId = user.tenant_id; // Assuming tenant_id is available on the user object
     if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
-      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+      return new Response(JSON.stringify({ error: 'Missing tenant context' }), { status: 403 });
     }
 
     const deleted = await db
@@ -294,15 +283,9 @@ export async function DELETE(request: NextRequest) {
       ))
       .returning();
 
-    return NextResponse.json(
-      { message: 'Attendance record deleted', deleted: deleted[0] },
-      { status: 200 }
-    );
+    return new Response(JSON.stringify({ message: 'Attendance record deleted', deleted: deleted[0] }), { status: 200 });
   } catch (error) {
     console.error('DELETE error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error: ' + (error as Error).message },
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ error: 'Internal server error: ' + (error as Error).message }), { status: 500 });
   }
 }

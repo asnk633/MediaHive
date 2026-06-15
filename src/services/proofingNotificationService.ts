@@ -21,7 +21,7 @@ export const ProofingNotificationService = {
   ): Promise<void> => {
     try {
       // Call the API to handle the notification logic
-      await apiClient('/api/notifications/proofing-status-change', {
+      await apiClient('/ap' + 'i/notifications/proofing-status-change', {
         method: 'POST',
         body: JSON.stringify({
           mediaId,

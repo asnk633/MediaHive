@@ -235,9 +235,9 @@ class _AddInventoryItemScreenState extends ConsumerState<AddInventoryItemScreen>
         if (result != null && result['success'] == true) {
           imageUrl = result['viewLink'] ?? result['view_link'] ?? result['web_view_link'] ?? result['thumbnail_link'];
           driveFileId = result['file_id'] ?? result['drive_file_id'];
-          print('[ADD_ASSET] Upload success. Image URL: $imageUrl, File ID: $driveFileId');
+          debugPrint('[ADD_ASSET] Upload success. Image URL: $imageUrl, File ID: $driveFileId');
         } else {
-          print('[ADD_ASSET] Upload failed or returned unexpected result: $result');
+          debugPrint('[ADD_ASSET] Upload failed or returned unexpected result: $result');
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(

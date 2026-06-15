@@ -10,6 +10,8 @@ import QueryProvider from "@/providers/QueryProvider";
 
 import { AmbientCursorLight } from '@/components/ui/AmbientCursorLight';
 import { GlobalCommandPalette } from '@/components/layout/GlobalCommandPalette';
+import { WebViewDetector } from '@/components/WebViewDetector';
+import '@/utils/safeAreaInitializer';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -93,6 +95,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body className="min-h-screen bg-transparent" suppressHydrationWarning={true}>
+        <WebViewDetector />
         <AmbientCursorLight />
         <QueryProvider>
           <RootProviders>

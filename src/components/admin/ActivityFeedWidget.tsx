@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useEffect, useState } from 'react';
 import { Layers, User, Calendar, FileText, Activity, Clock, ShieldAlert } from 'lucide-react';
@@ -27,7 +28,7 @@ export const ActivityFeedWidget = () => {
 
     const fetchFeed = async () => {
         try {
-            const data = await apiClient<{ feed: ActivityItem[] }>('/api/activity-feed');
+            const data = await apiClient<{ feed: ActivityItem[] }>(`${API_BASE}/activity-feed`);
             if (data?.feed) {
                 setFeed(data.feed);
             }

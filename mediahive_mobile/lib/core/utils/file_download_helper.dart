@@ -60,7 +60,7 @@ class FileDownloadHelper {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
       }
     } catch (e) {
-      print('[DOWNLOAD_ERROR] Failed to download file: $e\nURL: $url');
+      debugPrint('[DOWNLOAD_ERROR] Failed to download file: $e\nURL: $url');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to download file: $e\nURL: $url')),

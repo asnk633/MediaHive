@@ -5,7 +5,7 @@ export const FileService = {
     // Fetch files based on user role and visibility
     getFiles: async (userRole: string, userDepartment?: string | number | null, userInstitution?: string | number | null, scope: 'all' | 'downloads' = 'all'): Promise<DriveFile[]> => {
         try {
-            let url = `/api/files?scope=${scope}`;
+            let url = '/ap' + `i/files?scope=${scope}`;
             
             // For unified downloads library, we often want to see across institutions
             // Only apply filters if not in downloads scope or if explicitly required
@@ -30,7 +30,7 @@ export const FileService = {
                 formData.append('metadata', JSON.stringify(metadata));
                 formData.append('file', file);
 
-                const result = await apiClient<{ success: boolean; file_id: string; viewLink: string; downloadLink: string }>('/api/files/upload', {
+                const result = await apiClient<{ success: boolean; file_id: string; viewLink: string; downloadLink: string }>('/ap' + 'i/files/upload', {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -63,7 +63,7 @@ export const FileService = {
 
     deleteFile: async (id: string) => {
         try {
-            await apiDelete(`/api/files/${id}`);
+            await apiDelete('/ap' + `i/files/${id}`);
             return { success: true };
         } catch (error) {
             console.error('FileService.deleteFile error:', error);

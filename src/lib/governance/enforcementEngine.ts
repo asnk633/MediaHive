@@ -162,7 +162,7 @@ export class EnforcementEngine {
    */
   private ruleMatches(rule: PolicyRule, context: EnforcementContext): boolean {
     // Basic matching based on rule target and action
-    if (rule.target && !context.action.toLowerCase().includes(rule.target.toLowerCase())) {
+    if (rule.target && !context.action.toLowerCase().includes(rule.action.toLowerCase())) {
       return false;
     }
 

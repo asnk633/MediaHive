@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
-    const uploadedByIdRaw = formData.get("uploadedById") as string | null;
+    const uploadedByIdRaw = formData.get("uploadedById");
     const institutionIdRaw = formData.get("institution_id") as string | null;
     const folder = (formData.get("folder") as string | null) || null;
     const visibility = (formData.get("visibility") as string | null) || "all";
@@ -27,6 +27,13 @@ export async function POST(request: NextRequest) {
 
     const uploadedById = uploadedByIdRaw;
     const institution_id = institutionIdRaw;
+
+// Check if the user is authorized to upload files for the specific institution
+const userId = uploadedByIdRaw; // Assuming this is the user ID
+const { data: userInstitutions, error } = await db.from('user_institutions').select('*').eq('user_id', userId).eq('institution_id', institution_id);
+if (!userInstitutions || userInstitutions.length === 0) {
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+}
 
     // --- Dev/Local Fallback: Store small files as Base64 ---
     // If Supabase not configured, fallback to base64 (dev) for small files

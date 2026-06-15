@@ -2,6 +2,7 @@
 // AI Assistant Panel component
 
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState } from 'react';
 import { apiClient } from '@/lib/apiClient';
@@ -29,7 +30,7 @@ export function AssistantPanel() {
   const generateTaskSuggestions = async (title: string, description: string) => {
     setLoading(true);
     try {
-      const data = await apiClient('/api/ai/generate-task', {
+      const data = await apiClient(`${API_BASE}/ai/generate-task`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +48,7 @@ export function AssistantPanel() {
   const summarizeNotifications = async (notifications: any[]) => {
     setLoading(true);
     try {
-      const data = await apiClient('/api/ai/summarize-notifications', {
+      const data = await apiClient(`${API_BASE}/ai/summarize-notifications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

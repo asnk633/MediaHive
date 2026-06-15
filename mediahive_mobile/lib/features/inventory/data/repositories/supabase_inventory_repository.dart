@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dartz/dartz.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../core/error/failure.dart';
@@ -23,23 +24,23 @@ class SupabaseInventoryRepository implements InventoryRepository {
   Future<Either<Failure, List<InventoryItem>>> getInventory() async {
     try {
       final user = _supabaseClient.auth.currentUser;
-      print('[INVENTORY_REPO] Current user: ${user?.id} (${user?.email})');
+      debugPrint('[INVENTORY_REPO] Current user: ${user?.id} (${user?.email})');
       
       final localItems = await _localDataSource.getInventory();
       
 
       try {
-        print('[INVENTORY_REPO] Querying inventory_items table...');
+        debugPrint('[INVENTORY_REPO] Querying inventory_items table...');
         final response = await _supabaseClient
             .from('inventory_items')
             .select('*')
-            .order('item_name');
+            .order('name');
 
         final List<dynamic> data = response as List<dynamic>;
-        print('[INVENTORY_REPO] Received ${data.length} raw items from remote');
+        debugPrint('[INVENTORY_REPO] Received ${data.length} raw items from remote');
 
         if (data.isNotEmpty) {
-          print('[INVENTORY_REPO] First item raw sample: ${data.first}');
+          debugPrint('[INVENTORY_REPO] First item raw sample: ${data.first}');
         }
         
         final remoteItems = data.map((json) {
@@ -52,16 +53,16 @@ class SupabaseInventoryRepository implements InventoryRepository {
               'purchase_date': itemMap['purchase_date'],
               'serial_number': itemMap['serial_number'],
               'location': itemMap['location'],
-              'drive_file_id': null,
+              'drive_file_id': itemMap['drive_file_id'],
               'unit': 'piece',
             };
 
             return InventoryItem.fromJson({
               ...itemMap,
-              'item_name': itemMap['item_name'],
+              'item_name': itemMap['name'] ?? itemMap['item_name'] ?? 'Unknown Item',
               'asset_id': itemMap['asset_id'] ?? '',
-              'available_quantity': itemMap['available_quantity'] ?? itemMap['quantity'] ?? 0,
-              'purchase_amount': itemMap['purchase_amount'] != null ? (itemMap['purchase_amount'] as num).toDouble() : null,
+              'available_quantity': itemMap['quantity'] ?? itemMap['available_quantity'] ?? 0,
+              'purchase_amount': itemMap['purchase_price'] != null ? (itemMap['purchase_price'] as num).toDouble() : (itemMap['purchase_amount'] != null ? (itemMap['purchase_amount'] as num).toDouble() : null),
               'purchase_date': itemMap['purchase_date']?.toString(),
               'status': (itemMap['status'] ?? 'Available').toString(),
               'condition': (itemMap['condition'] ?? 'Good').toString(),
@@ -70,20 +71,20 @@ class SupabaseInventoryRepository implements InventoryRepository {
               'metadata': metadata,
             });
           } catch (e, stack) {
-            print('[INVENTORY_REPO] Error mapping item ${json['id']}: $e');
-            print('[INVENTORY_REPO] JSON content: $json');
-            print('[INVENTORY_REPO] Stack: $stack');
-            rethrow;
+            debugPrint('[INVENTORY_REPO] Error mapping item ${json['id']}: $e');
+            debugPrint('[INVENTORY_REPO] JSON content: $json');
+            debugPrint('[INVENTORY_REPO] Stack: $stack');
+            return null;
           }
-        }).toList();
+        }).where((item) => item != null).cast<InventoryItem>().toList();
             
         await _localDataSource.cacheInventory(remoteItems);
-        print('[INVENTORY_REPO] Successfully mapped and cached ${remoteItems.length} items');
+        debugPrint('[INVENTORY_REPO] Successfully mapped and cached ${remoteItems.length} items');
         return Right(remoteItems);
       } catch (e) {
-        print('[INVENTORY_REPO] Remote fetch failed: $e');
+        debugPrint('[INVENTORY_REPO] Remote fetch failed: $e');
         if (localItems.isNotEmpty) {
-          print('[INVENTORY_REPO] Returning ${localItems.length} cached items due to remote failure');
+          debugPrint('[INVENTORY_REPO] Returning ${localItems.length} cached items due to remote failure');
           return Right(localItems);
         }
         return Left(ServerFailure('Remote fetch failed: $e'));
@@ -101,7 +102,6 @@ class SupabaseInventoryRepository implements InventoryRepository {
       item.toJson(),
       () async {
         final payload = _mapItemToPayload(item);
-        
         await _supabaseClient.from('inventory_items').insert(payload);
         await _localDataSource.addItem(item);
       },
@@ -165,19 +165,18 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
     return {
       'id': data['id'],
-      'asset_id': data['asset_id'] ?? data['assetId'] ?? '',
-      'item_name': data['item_name'] ?? data['name'],
+      'name': data['item_name'] ?? data['name'],
       'category': data['category'] ?? 'General',
       'condition': data['condition'] ?? 'Good',
       'status': data['status'] ?? 'Available',
       'serial_number': data['serial_number'] ?? data['serialNumber'],
       'quantity': data['quantity'],
-      'available_quantity': data['available_quantity'] ?? data['availableQuantity'] ?? data['quantity'],
-      'location': data['location'],
+      'location_str': data['location'],
       'description': data['description'],
-      'purchase_amount': data['purchase_amount'] ?? data['purchaseAmount'],
+      'purchase_price': data['purchase_amount'] ?? data['purchaseAmount'],
       'purchase_date': data['purchase_date'] ?? data['purchaseDate'],
       'image_url': data['image_url'] ?? data['imageUrl'],
+      'drive_file_id': data['metadata']?['drive_file_id'] ?? data['drive_file_id'],
       'tenant_id': tenantId,
       'institution_id': instId,
       'updated_at': DateTime.now().toIso8601String(),
@@ -207,16 +206,16 @@ class SupabaseInventoryRepository implements InventoryRepository {
             'booked_by_name': bookedByName,
           });
         } catch (e) {
-          print('[INVENTORY_REPO] Error mapping booking: $e');
-          print('[INVENTORY_REPO] Booking JSON: $json');
+          debugPrint('[INVENTORY_REPO] Error mapping booking: $e');
+          debugPrint('[INVENTORY_REPO] Booking JSON: $json');
           rethrow;
         }
       }).toList();
 
       return Right(bookings);
     } catch (e, stack) {
-      print('[INVENTORY_REPO] Failed to fetch bookings: $e');
-      print('[INVENTORY_REPO] Stack: $stack');
+      debugPrint('[INVENTORY_REPO] Failed to fetch bookings: $e');
+      debugPrint('[INVENTORY_REPO] Stack: $stack');
       return Left(ServerFailure('Failed to fetch bookings: $e'));
     }
   }
@@ -258,14 +257,14 @@ class SupabaseInventoryRepository implements InventoryRepository {
             'requester_name': requesterName,
           });
         } catch (e) {
-          print('[INVENTORY_REPO] Error mapping request: $e');
+          debugPrint('[INVENTORY_REPO] Error mapping request: $e');
           rethrow;
         }
       }).toList();
 
       return Right(requests);
     } catch (e) {
-      print('[INVENTORY_REPO] Failed to fetch requests: $e');
+      debugPrint('[INVENTORY_REPO] Failed to fetch requests: $e');
       return Left(ServerFailure('Failed to fetch requests: $e'));
     }
   }
@@ -299,7 +298,7 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
       return const Right(null);
     } catch (e) {
-      print('[INVENTORY_REPO] Failed to submit request: $e');
+      debugPrint('[INVENTORY_REPO] Failed to submit request: $e');
       return Left(ServerFailure('Failed to submit request: $e'));
     }
   }
@@ -335,7 +334,7 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
       return const Right(null);
     } catch (e) {
-      print('[INVENTORY_REPO] Failed to book equipment: $e');
+      debugPrint('[INVENTORY_REPO] Failed to book equipment: $e');
       return Left(ServerFailure('Failed to book equipment: $e'));
     }
   }
@@ -362,7 +361,7 @@ class SupabaseInventoryRepository implements InventoryRepository {
           
       return const Right(null);
     } catch (e) {
-      print('[INVENTORY_REPO] Failed to update request status: $e');
+      debugPrint('[INVENTORY_REPO] Failed to update request status: $e');
       return Left(ServerFailure('Failed to update request status: $e'));
     }
   }

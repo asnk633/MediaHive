@@ -488,3 +488,5 @@ export const SortableTaskRow = memo(({
         </div>
     );
 });
+
+SortableTaskRow.displayName = 'SortableTaskRow';

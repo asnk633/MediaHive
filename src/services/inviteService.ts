@@ -36,7 +36,7 @@ export const createInvite = async (
     throw new Error('Invalid role. Must be admin, manager, team, or member');
   }
 
-  const response = await apiClient('/api/invites', {
+  const response = await apiClient('/ap' + 'i/invites', {
     method: 'POST',
     body: JSON.stringify({
       email,
@@ -58,7 +58,7 @@ export const validateInvite = async (inviteId: string): Promise<Invite | null> =
     throw new Error('Invite access layer is not enabled');
   }
 
-  const response = await apiClient(`/api/invites/${inviteId}/validate`, {
+  const response = await apiClient('/ap' + `i/invites/${inviteId}/validate`, {
     method: 'GET'
   });
 
@@ -72,7 +72,7 @@ export const useInvite = async (inviteId: string, userId: string): Promise<void>
     throw new Error('Invite access layer is not enabled');
   }
 
-  await apiClient(`/api/invites/${inviteId}/use`, {
+  await apiClient('/ap' + `i/invites/${inviteId}/use`, {
     method: 'POST',
     body: JSON.stringify({ userId })
   });
@@ -85,7 +85,7 @@ export const getInstitutionInvites = async (institution_id: string | number): Pr
     return [];
   }
 
-  const response = await apiClient(`/api/invites?institution_id=${institution_id}`, {
+  const response = await apiClient('/ap' + `i/invites?institution_id=${institution_id}`, {
     method: 'GET'
   });
 
@@ -99,7 +99,7 @@ export const deleteInvite = async (inviteId: string): Promise<void> => {
     throw new Error('Invite access layer is not enabled');
   }
 
-  await apiClient(`/api/invites/${inviteId}`, {
+  await apiClient('/ap' + `i/invites/${inviteId}`, {
     method: 'DELETE'
   });
 };

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
+import { nativeNavigate } from "@/lib/utils"
 import {
   CommandDialog,
   CommandEmpty,
@@ -29,10 +30,10 @@ export function GlobalCommandPalette() {
     return () => document.removeEventListener("keydown", down)
   }, [])
 
-  const runCommand = React.useCallback((command: () => unknown) => {
+  const runCommand = (command: () => void) => {
     setOpen(false)
     command()
-  }, [])
+  }
 
   if (!mounted) return null
 
@@ -43,16 +44,16 @@ export function GlobalCommandPalette() {
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup heading="Navigation">
-          <CommandItem onSelect={() => runCommand(() => router.push("/home"))}>
+          <CommandItem onSelect={() => runCommand(() => nativeNavigate("/home", router))}>
             Go to Home
           </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => router.push("/tasks"))}>
+          <CommandItem onSelect={() => runCommand(() => nativeNavigate("/tasks", router))}>
             Go to Tasks
           </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => router.push("/chat"))}>
+          <CommandItem onSelect={() => runCommand(() => nativeNavigate("/chat", router))}>
             Go to Chat
           </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => router.push("/calendar"))}>
+          <CommandItem onSelect={() => runCommand(() => nativeNavigate("/calendar", router))}>
             Go to Calendar
           </CommandItem>
         </CommandGroup>

@@ -11,7 +11,7 @@ export const MediaService = {
    */
   getFilesForTask: async (taskId: string): Promise<ExtendedDriveFile[]> => {
     try {
-      const response = await apiClient(`/api/files?taskId=${taskId}`, {
+      const response = await apiClient('/ap' + `i/files?taskId=${taskId}`, {
         method: 'GET'
       });
       
@@ -29,7 +29,7 @@ export const MediaService = {
    */
   getFilesForEvent: async (event_id: string): Promise<ExtendedDriveFile[]> => {
     try {
-      const response = await apiClient(`/api/files?event_id=${event_id}`, {
+      const response = await apiClient('/ap' + `i/files?event_id=${event_id}`, {
         method: 'GET'
       });
       
@@ -53,7 +53,7 @@ export const MediaService = {
     userInstitution?: string
   ): Promise<ExtendedDriveFile[]> => {
     try {
-      const response = await apiClient('/api/files', {
+      const response = await apiClient('/ap' + 'i/files', {
         method: 'GET'
       });
       

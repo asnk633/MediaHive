@@ -2,7 +2,7 @@
 import { test, expect } from '@playwright/test';
 
 const GUEST_USER = {
-    email: 'amarthaibachannel@gmail.com',
+    email: 'shuaibmse007@gmail.com',
     password: 'amarthaiba@thaiba'
 };
 
@@ -19,6 +19,7 @@ test.describe('Guest User Experience', () => {
         });
 
         await page.goto('/login');
+        await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
         await page.fill('input[type="email"]', GUEST_USER.email);
         await page.fill('input[type="password"]', GUEST_USER.password);
         await page.click('button[type="submit"]');
@@ -47,8 +48,6 @@ test.describe('Guest User Experience', () => {
         }
 
         // 3. Verify allowed UI just in case
-        await expect(page.getByRole('heading', { name: 'Active Campaigns' })).toBeVisible();
-
-
+        await expect(page.getByRole('heading', { name: 'My Requests' })).toBeVisible();
     });
 });

@@ -148,19 +148,19 @@ export default function TasksPageClient() {
         params.set('id', task.id);
 
         // Use soft navigation to avoid full page reload
-        router.replace(`/tasks?${params.toString()}`, { scroll: false });
+        nativeNavigate(`/tasks?${params.toString()}`, { scroll: false }, router, 'TasksPageClient.tsx');
     };
 
     const handleCloseModal = () => {
         const returnTo = searchParams.get('returnTo');
         if (returnTo === 'home') {
-            router.push('/home');
+            nativeNavigate('/home', router, 'TasksPageClient.tsx');
         } else {
             const params = new URLSearchParams(searchParams);
             params.delete('id');
             params.delete('returnTo');
             // Soft replace
-            router.replace(`/tasks?${params.toString()}`, { scroll: false });
+            nativeNavigate(`/tasks?${params.toString()}`, { scroll: false }, router, 'TasksPageClient.tsx');
         }
     };
 

@@ -88,6 +88,16 @@ export function FirstRunWalkthrough({ onComplete }: FirstRunWalkthroughProps) {
     setVisited(true);
   };
 
+  // Scroll to relevant section if needed
+  useEffect(() => {
+    if (currentStep !== null && walkthroughSteps[currentStep]) {
+      const element = document.getElementById(walkthroughSteps[currentStep].elementId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [currentStep]);
+
   // Only show if feature is enabled and user hasn't seen it yet
   if (!isFeatureEnabled('onboardingLayer') || !showWalkthrough || currentStep === null || visited) {
     return null;
@@ -95,16 +105,6 @@ export function FirstRunWalkthrough({ onComplete }: FirstRunWalkthroughProps) {
 
   const currentStepData = walkthroughSteps[currentStep];
   const totalSteps = walkthroughSteps.length;
-
-  // Scroll to relevant section if needed
-  useEffect(() => {
-    if (currentStepData) {
-      const element = document.getElementById(currentStepData.elementId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-  }, [currentStepData]);
 
   return (
     <div className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">

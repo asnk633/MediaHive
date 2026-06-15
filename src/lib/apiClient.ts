@@ -369,6 +369,7 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
   // 🌐 WEB or SERVER context
   else {
     const isServer = typeof window === 'undefined';
+    // eslint-disable-next-line no-restricted-syntax
     const isInternalApi = endpoint.startsWith('/api/');
 
     if (endpoint.startsWith('http')) {
@@ -392,7 +393,9 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
   // --- WORKSPACE INJECTION ---
   if (typeof window !== 'undefined') {
     const savedWorkspaceId = localStorage.getItem('mediahive_workspace');
-    if (savedWorkspaceId && !url.includes('institution_id=') && !url.includes('/api/auth')) {
+    if (savedWorkspaceId && !url.includes('institution_id=') && 
+        // eslint-disable-next-line no-restricted-syntax
+        !url.includes('/api/auth')) {
       const separator = url.includes('?') ? '&' : '?';
       // Only inject if it's an internal API call
       if (url.startsWith('/') || url.includes('api/')) {

@@ -4,6 +4,8 @@ import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { nativeNavigate } from '@/lib/utils';
 
+import { getTasksFromMe } from '@/lib/dashboardMetrics';
+
 interface TasksFromMeWidgetProps {
     tasks: Task[];
     userId: string;
@@ -14,12 +16,7 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
     const router = useRouter();
 
     // Filter: Created by me (or assigned by me legacy)
-    const myTasks = tasks.filter(task => {
-        const creatorUid = typeof task.created_by === 'string' ? task.created_by : task.created_by?.uid;
-        if (creatorUid && creatorUid === userId) return true;
-        if (task.assigned_by?.uid === userId) return true;
-        return false;
-    }).slice(0, 5); // Limit to 5
+    const myTasks = getTasksFromMe(tasks, userId).slice(0, 5); // Limit to 5
 
     const getStatusColor = (status: string) => {
         switch (status) {

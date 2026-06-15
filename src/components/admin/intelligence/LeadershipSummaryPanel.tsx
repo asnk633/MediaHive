@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useEffect, useState } from 'react';
 import { apiClient } from '@/lib/apiClient';
@@ -52,7 +53,7 @@ export function LeadershipSummaryPanel() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await apiClient('/api/admin/leadership/summary');
+                const res = await apiClient(`${API_BASE}/admin/leadership/summary`);
                 setData(res);
             } catch (err) {
                 console.error('Failed to fetch leadership summary:', err);

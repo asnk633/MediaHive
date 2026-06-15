@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../core/providers/user_provider.dart';
 import '../../../../../core/services/sync_service.dart';
@@ -85,7 +86,7 @@ InventoryRepository inventoryRepository(InventoryRepositoryRef ref) {
 class InventoryList extends _$InventoryList {
   @override
   Future<List<InventoryItem>> build() async {
-    print('[INVENTORY_PROVIDER] Building inventory list...');
+    debugPrint('[INVENTORY_PROVIDER] Building inventory list...');
     final repository = ref.watch(inventoryRepositoryProvider);
     
     // Listen for realtime updates via centralized service

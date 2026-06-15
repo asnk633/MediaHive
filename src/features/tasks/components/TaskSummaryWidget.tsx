@@ -30,7 +30,7 @@ export const TaskSummaryWidget = ({ tasks }: TaskSummaryWidgetProps) => {
         },
         { 
             label: 'Due Today', 
-            value: tasks.filter(t => t.isDueToday).length, 
+            value: tasks.filter(t => t.isDueToday !== undefined && t.isDueToday).length, 
             icon: Clock, 
             color: 'text-amber-400', 
             bg: 'bg-amber-400/10',

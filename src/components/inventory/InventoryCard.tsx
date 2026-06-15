@@ -272,3 +272,5 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
         </Link>
     );
 });
+
+InventoryCard.displayName = 'InventoryCard';

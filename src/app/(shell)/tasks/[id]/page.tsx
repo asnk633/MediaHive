@@ -1,4 +1,5 @@
 "use client";
+import { nativeNavigate } from '@/lib/utils';
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -28,12 +29,12 @@ export default function TaskStandalonePage() {
                     setTask(data);
                 } else {
                     toast.error("Task not found");
-                    router.push('/tasks');
+                    nativeNavigate('/tasks', router, 'page.tsx');
                 }
             } catch (err) {
                 console.error("Failed to fetch task for standalone page", err);
                 toast.error("An error occurred while loading the task");
-                router.push('/tasks');
+                nativeNavigate('/tasks', router, 'page.tsx');
             } finally {
                 setLoading(false);
             }
@@ -59,7 +60,7 @@ export default function TaskStandalonePage() {
             <TaskDetailModalV2
                 task={task}
                 isOpen={true}
-                onClose={() => router.push('/tasks')}
+                onClose={() => nativeNavigate('/tasks', router, 'page.tsx')}
                 onEdit={() => setIsEditDialogOpen(true)}
                 onTaskMutate={async (ids, updates, apiCall) => {
                     if (apiCall) await apiCall();

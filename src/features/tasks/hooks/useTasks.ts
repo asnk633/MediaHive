@@ -47,7 +47,7 @@ export function useCreateTask() {
                     created_at: new Date().toISOString()
                 } as Task;
 
-                queryClient.setQueryData(['tasks', 'global'], [optimisticTask, ...previousTasks]);
+                queryClient.setQueryData(['tasks', 'global'], (old: Task[] | undefined) => [optimisticTask, ...(old || [])]);
             }
 
             return { previousTasks };

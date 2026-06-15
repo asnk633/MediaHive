@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { nativeNavigate } from "@/lib/utils";
 import { 
     Calendar, 
     CheckSquare, 
@@ -86,42 +87,42 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                                 <Plus className="mr-2 h-4 w-4" />
                                 <span>Create Task</span>
                             </CommandItem>
-                            <CommandItem onSelect={() => onSelect(() => router.push("/events"))}>
+                            <CommandItem onSelect={() => onSelect(() => nativeNavigate("/events", router))}>
                                 <Plus className="mr-2 h-4 w-4" />
                                 <span>Create Event</span>
                             </CommandItem>
-                            <CommandItem onSelect={() => onSelect(() => router.push("/campaigns"))}>
+                            <CommandItem onSelect={() => onSelect(() => nativeNavigate("/campaigns", router))}>
                                 <Plus className="mr-2 h-4 w-4" />
                                 <span>Create Campaign</span>
                             </CommandItem>
-                            <CommandItem onSelect={() => onSelect(() => router.push("/notifications"))}>
+                            <CommandItem onSelect={() => onSelect(() => nativeNavigate("/notifications", router))}>
                                 <Bell className="mr-2 h-4 w-4" />
                                 <span>Notify Team</span>
                             </CommandItem>
                         </CommandGroup>
                         <CommandSeparator />
                         <CommandGroup heading="Navigation">
-                            <CommandItem onSelect={() => onSelect(() => router.push("/home"))}>
+                            <CommandItem onSelect={() => onSelect(() => nativeNavigate("/home", router))}>
                                 <LayoutDashboard className="mr-2 h-4 w-4" />
                                 <span>Dashboard</span>
                             </CommandItem>
-                            <CommandItem onSelect={() => onSelect(() => router.push("/tasks"))}>
+                            <CommandItem onSelect={() => onSelect(() => nativeNavigate("/tasks", router))}>
                                 <CheckSquare className="mr-2 h-4 w-4" />
                                 <span>Tasks</span>
                             </CommandItem>
-                            <CommandItem onSelect={() => onSelect(() => router.push("/chat"))}>
+                            <CommandItem onSelect={() => onSelect(() => nativeNavigate("/chat", router))}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-square mr-2 h-4 w-4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                                 <span>Chat</span>
                             </CommandItem>
-                            <CommandItem onSelect={() => onSelect(() => router.push("/events"))}>
+                            <CommandItem onSelect={() => onSelect(() => nativeNavigate("/events", router))}>
                                 <Calendar className="mr-2 h-4 w-4" />
                                 <span>Events</span>
                             </CommandItem>
-                            <CommandItem onSelect={() => onSelect(() => router.push("/inventory"))}>
+                            <CommandItem onSelect={() => onSelect(() => nativeNavigate("/inventory", router))}>
                                 <Package className="mr-2 h-4 w-4" />
                                 <span>Inventory</span>
                             </CommandItem>
-                            <CommandItem onSelect={() => onSelect(() => router.push("/reports"))}>
+                            <CommandItem onSelect={() => onSelect(() => nativeNavigate("/reports", router))}>
                                 <FileText className="mr-2 h-4 w-4" />
                                 <span>Reports</span>
                             </CommandItem>
@@ -139,7 +140,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                                 {results.tasks.map((task) => (
                                     <CommandItem 
                                         key={task.id} 
-                                        onSelect={() => onSelect(() => router.push(`/tasks/${task.id}`))}
+                                        onSelect={() => onSelect(() => nativeNavigate(`/tasks/${task.id}`, router))}
                                     >
                                         <CheckSquare className="mr-2 h-4 w-4" />
                                         <span>{task.title}</span>
@@ -153,7 +154,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                                 {results.events.map((event) => (
                                     <CommandItem 
                                         key={event.id} 
-                                        onSelect={() => onSelect(() => router.push(`/events/${event.id}`))}
+                                        onSelect={() => onSelect(() => nativeNavigate(`/events/${event.id}`, router))}
                                     >
                                         <Calendar className="mr-2 h-4 w-4" />
                                         <span>{event.title}</span>
@@ -167,7 +168,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                                 {results.inventory.map((item) => (
                                     <CommandItem 
                                         key={item.id} 
-                                        onSelect={() => onSelect(() => router.push(`/inventory/${item.id}`))}
+                                        onSelect={() => onSelect(() => nativeNavigate(`/inventory/${item.id}`, router))}
                                     >
                                         <Package className="mr-2 h-4 w-4" />
                                         <span>{item.name}</span>
@@ -181,7 +182,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                                 {results.users.map((user) => (
                                     <CommandItem 
                                         key={user.id} 
-                                        onSelect={() => onSelect(() => router.push(`/profiles/${user.id}`))}
+                                        onSelect={() => onSelect(() => nativeNavigate(`/profiles/${user.id}`, router))}
                                     >
                                         <Users className="mr-2 h-4 w-4" />
                                         <span>{user.full_name}</span>

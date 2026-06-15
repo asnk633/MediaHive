@@ -1,4 +1,5 @@
 "use client";
+import { nativeNavigate } from '@/lib/utils';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -7,7 +8,7 @@ export default function SystemSettingsRedirect() {
     const router = useRouter();
 
     useEffect(() => {
-        router.replace('/admin/structure');
+        nativeNavigate('/admin/structure', router, 'page.tsx');
     }, [router]);
 
     return (

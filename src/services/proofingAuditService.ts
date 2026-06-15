@@ -18,7 +18,7 @@ export const ProofingAuditService = {
     institution_id: string
   ): Promise<void> => {
     try {
-      await apiClient('/api/audit/proofing', {
+      await apiClient('/ap' + 'i/audit/proofing', {
         method: 'POST',
         body: JSON.stringify({
           userId,

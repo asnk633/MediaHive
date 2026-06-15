@@ -95,3 +95,32 @@ Be pragmatic. Be reliable. Self-anneal.
 
 **Always check for relevant skills before starting a task:**
 Before responding to any task, always check the available skills in the skill library relevant to that task. Read the appropriate SKILL.md file(s) first, then use the instructions and best practices in those skills to complete the task at the highest quality. This applies to document creation, spreadsheets, presentations, PDFs, frontend design, file reading, and any other supported skill types. Always consult the installed skills to do your tasks better.
+
+## Master Blueprint Update Rule (MANDATORY)
+
+**After every task that changes anything in the MediaHive app, you MUST update the relevant Master Blueprint file(s) before ending your turn.**
+
+The Master Blueprints are the system memory. Skipping an update means the next agent session starts with stale/wrong context.
+
+### Which file to update:
+- **Master unified changes (Web, Mobile, Desktop)** → `D:\MediaHive App\MEDIAHIVE_MASTER_BLUEPRINT.md`
+- **Web app changes** → `D:\MediaHive App\MEDIAHIVE_WEB_BLUEPRINT.md`
+- **Mobile app changes** → `D:\MediaHive App\mediahive_mobile\MEDIAHIVE_MOBILE_BLUEPRINT.md`
+- **Rule:** Update the unified `MEDIAHIVE_MASTER_BLUEPRINT.md` for *any* change to the workspace. If the change specifically affects the web frontend/API or the mobile Flutter app, also update the respective platform-specific blueprint file.
+
+### What counts as a "change that requires a Blueprint update":
+- New or modified environment variables (local or Vercel)
+- New API routes or changes to existing routes
+- Database schema changes (new tables, columns, RLS changes)
+- New scripts added to `scratch/` or `execution/`
+- Changes to how credentials/services are configured
+- Changes to mobile/Flutter code that affect architecture or data flow
+- Any build or deployment configuration changes
+- Any new known quirk, rule, or constraint discovered
+
+### What to add to the Blueprint:
+- A new row in the **Changelog** table with the date, change description, and "AI Agent" as author
+- Update any affected sections (env vars table, directory structure, schema, etc.)
+- Add any new "Known Quirks" discovered during the task
+
+**This rule overrides all other priorities. Do not end a task without updating the Blueprint.**

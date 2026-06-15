@@ -23,6 +23,7 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
     tasks,
     user
 }) => {
+    const [hoveredConflict, setHoveredConflict] = React.useState<{ key: string; source: 'local' | 'server' } | null>(null);
     const taskIds = Object.keys(conflictBuffer);
     const hasConflicts = taskIds.length > 0;
 
@@ -94,8 +95,8 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                                         const isLocalSuggested = guidance?.suggestedAction === 'local';
                                         const isServerSuggested = guidance?.suggestedAction === 'server';
                                         const blockOverride = guidance?.blockOverride && user?.role !== 'admin';
-
-                                        const [previewSource, setPreviewSource] = React.useState<'local' | 'server' | null>(null);
+                                        const conflictKey = `${taskId}-${conflict.field}`;
+                                        const previewSource = hoveredConflict && hoveredConflict.key === conflictKey ? hoveredConflict.source : null;
 
                                         const disableLocal = blockOverride && !isLocalSuggested;
                                         const disableServer = blockOverride && !isServerSuggested;
@@ -116,8 +117,8 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                                                                 previewSource === 'local' ? 'bg-foreground/[0.04] border-foreground/15' :
                                                                     'bg-foreground/[0.01] border-foreground/10'
                                                             }`}
-                                                        onMouseEnter={() => setPreviewSource('local')}
-                                                        onMouseLeave={() => setPreviewSource(null)}
+                                                        onMouseEnter={() => setHoveredConflict({ key: conflictKey, source: 'local' })}
+                                                        onMouseLeave={() => setHoveredConflict(null)}
                                                     >
                                                         {isLocalSuggested && (
                                                             <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-foreground/10 border border-foreground/20 text-foreground/80 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full whitespace-nowrap">
@@ -150,8 +151,8 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                                                                 previewSource === 'server' ? 'bg-foreground/[0.04] border-foreground/15' :
                                                                     'bg-foreground/[0.01] border-foreground/10'
                                                             }`}
-                                                        onMouseEnter={() => setPreviewSource('server')}
-                                                        onMouseLeave={() => setPreviewSource(null)}
+                                                        onMouseEnter={() => setHoveredConflict({ key: conflictKey, source: 'server' })}
+                                                        onMouseLeave={() => setHoveredConflict(null)}
                                                     >
                                                         {isServerSuggested && (
                                                             <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-foreground/10 border border-foreground/20 text-foreground/80 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full whitespace-nowrap">

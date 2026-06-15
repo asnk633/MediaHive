@@ -1,10 +1,11 @@
+'use client';
+
+import { nativeNavigate } from '@/lib/utils';
 /**
  * Phase 8B: Conflict Resolution Center Page
  * 
  * Dedicated page route for the Conflict Resolution Center
  */
-
-'use client';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -18,7 +19,7 @@ export default function ConflictResolutionPage() {
 
   useEffect(() => {
     if (!loading && role === 'member') {
-      router.replace('/home');
+      nativeNavigate('/home', router, 'page.tsx');
     }
   }, [role, loading, router]);
 

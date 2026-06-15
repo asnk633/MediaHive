@@ -1,4 +1,5 @@
 "use client";
+import { nativeNavigate } from '@/lib/utils';
 
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -25,7 +26,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 // Wait a tiny bit to avoid flickers on refresh
                 const timer = setTimeout(() => {
                     console.warn('[AdminLayout] Unauthorized access attempt. Redirecting...');
-                    router.replace('/home');
+                    nativeNavigate('/home', router, 'layout.tsx');
                 }, 1500);
                 return () => clearTimeout(timer);
             }
@@ -58,7 +59,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         </p>
                     </div>
                     <button 
-                        onClick={() => router.push('/home')}
+                        onClick={() => nativeNavigate('/home', router, 'layout.tsx')}
                         className="w-full py-3 px-4 bg-foreground/5 hover:bg-foreground/10 rounded-xl text-sm font-bold text-foreground transition-all border border-foreground/5"
                     >
                         Return to Safety

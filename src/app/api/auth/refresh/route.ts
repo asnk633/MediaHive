@@ -16,6 +16,9 @@ export async function POST(request: NextRequest) {
   try {
     // Apply rate limiting for refresh token requests
     const rateLimitResponse = await rateLimitMiddleware(request);
+if (rateLimitResponse) {
+  return rateLimitResponse;
+}
     if (rateLimitResponse) {
       return rateLimitResponse;
     }
@@ -31,7 +34,15 @@ export async function POST(request: NextRequest) {
     }
     
     // Verify refresh token
-    const payload = await verifyRefreshToken(refreshToken);
+    let payload;
+    try {
+      payload = await verifyRefreshToken(refreshToken);
+    } catch (error) {
+      return NextResponse.json(
+        { error: 'Invalid or expired refresh token' },
+        { status: 401 }
+      );
+    }
     
     if (!payload) {
       return NextResponse.json(
@@ -47,14 +58,14 @@ export async function POST(request: NextRequest) {
       .where(eq(users.id, payload.userId))
       .limit(1);
     
-    if (userResult.length === 0) {
+    const user = userResult[0];
+    
+    if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 401 }
       );
     }
-    
-    const user = userResult[0];
     
     // Remove passwordHash from response
     const { passwordHash, ...userWithoutPassword } = user;
@@ -69,7 +80,8 @@ export async function POST(request: NextRequest) {
     );
     
     // Set new secure cookies
-    setSessionCookies(response, newAccessToken, newRefreshToken);
+    response.cookies.set({ name: 'access_token', value: newAccessToken, httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+response.cookies.set({ name: 'refresh_token', value: newRefreshToken, httpOnly: true, secure: process.env.NODE_ENV === 'production' });
     
     return response;
   } catch (error) {

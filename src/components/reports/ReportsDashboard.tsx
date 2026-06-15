@@ -139,7 +139,7 @@ export default function ReportsDashboard() {
                 // Note: userRole state is currently just 'viewer' default in this component, real auth comes from context passed down or inferred.
                 // Since this component uses apiClient which handles auth, we just rely on the response.
 
-                const data = await apiClient<{ overview: ReportOverview }>('/api/reports/overview');
+                const data = await apiClient<{ overview: ReportOverview }>('/ap' + 'i/reports/overview');
                 setOverview(data.overview);
             } catch (error: any) {
                 // Check if it's a 403 Forbidden

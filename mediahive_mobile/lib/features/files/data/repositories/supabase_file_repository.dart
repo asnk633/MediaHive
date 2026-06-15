@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dartz/dartz.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/error/failure.dart';
@@ -12,13 +13,13 @@ class SupabaseFileRepository implements FileRepository {
   @override
   Future<Either<Failure, List<FileAsset>>> getFiles() async {
     try {
-      print('[FILE_REPO] Fetching files from remote...');
+      debugPrint('[FILE_REPO] Fetching files from remote...');
       final response = await _supabaseClient
           .from('files')
           .select()
           .order('created_at', ascending: false);
       
-      print('[FILE_REPO] Received response from Supabase. Count: ${(response as List).length}');
+      debugPrint('[FILE_REPO] Received response from Supabase. Count: ${(response as List).length}');
       
       final files = (response as List).map((json) {
         return FileAsset.fromJson({
@@ -51,7 +52,7 @@ class SupabaseFileRepository implements FileRepository {
       
       return Right(uniqueFiles);
     } catch (e) {
-      print('[FILE_REPO] Error: $e');
+      debugPrint('[FILE_REPO] Error: $e');
       return Left(ServerFailure(e.toString()));
     }
   }

@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState, useEffect } from 'react';
 import { FEATURE_REGISTRY, FeatureKey } from '@/system/features/featureRegistry';
@@ -28,7 +29,7 @@ export default function FeaturePermissionsClient() {
     const fetchOverrides = async () => {
         try {
             setLoading(true);
-            const res = await fetch('/api/admin/features');
+            const res = await fetch(`${API_BASE}/admin/features`);
             if (!res.ok) throw new Error('Failed to fetch overrides');
             const data = await res.json();
             setOverrides(data.featureOverrides || {});
@@ -43,7 +44,7 @@ export default function FeaturePermissionsClient() {
     const handleSave = async () => {
         try {
             setSaving(true);
-            const res = await fetch('/api/admin/features', {
+            const res = await fetch(`${API_BASE}/admin/features`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ featureOverrides: overrides })

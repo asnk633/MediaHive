@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/apiClient';
@@ -23,7 +24,7 @@ const UserRoleManager = () => {
     const loadUsers = async () => {
       try {
         // Fetch all users via API route
-        const usersData = await apiClient('/api/users', {
+        const usersData = await apiClient(`${API_BASE}/users`, {
           method: 'GET',
         });
         
@@ -38,7 +39,7 @@ const UserRoleManager = () => {
     // Load current user's role
     const loadCurrentUserRole = async () => {
       try {
-        const userData = await apiClient('/api/users/me', {
+        const userData = await apiClient(`${API_BASE}/users/me`, {
           method: 'GET',
         });
         setCurrentUserRole(userData?.role || null);

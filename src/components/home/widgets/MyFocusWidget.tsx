@@ -10,6 +10,8 @@ import { format, isSameDay, differenceInDays } from 'date-fns';
 import { useItemNavigation } from '@/hooks/useItemNavigation';
 import { supabase } from '@/lib/supabaseClient';
 
+import { getMyFocusTasks } from '@/lib/dashboardMetrics';
+
 interface MyFocusWidgetProps {
     tasks: Task[];
     userId: string;
@@ -32,29 +34,7 @@ export const MyFocusWidget = ({ tasks, userId, error, onRetry, todayOnly, maxIte
     const next48h = new Date(now.getTime() + 48 * 60 * 60 * 1000);
 
     // 29.2.4 — SORTING & FILTERING
-    const filteredTasks = tasks.filter(task => {
-        if (task.status === 'done' && !isSameDay(task.completed_at ? new Date(task.completed_at) : now, now)) {
-            return false; // Only show tasks completed TODAY if done
-        }
-
-        const isAssigned = Array.isArray(task.assignedTo) &&
-            task.assignedTo.some(a => a.uid === userId);
-        if (!isAssigned) return false;
-
-        if (todayOnly) {
-            if (!task.due_date) return false;
-            const due_date = new Date(task.due_date);
-            const isTodayToday = isSameDay(due_date, now);
-            const isOverdue = due_date < now;
-
-            // Suppress tomorrow if today has items
-            if (!isTodayToday && !isOverdue) return false;
-
-            return true;
-        }
-
-        return true;
-    });
+    const filteredTasks = getMyFocusTasks(tasks, userId, todayOnly);
 
     const sortedTasks = [...filteredTasks].sort((a, b) => {
         const getDue = (t: Task) => t.due_date ? new Date(t.due_date).getTime() : 0;

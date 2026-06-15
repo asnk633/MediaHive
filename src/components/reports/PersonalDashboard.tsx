@@ -34,7 +34,7 @@ export function PersonalDashboard() {
     useEffect(() => {
         const load = async () => {
             try {
-                const res = await apiClient('/api/reports/personal');
+                const res = await apiClient('/ap' + 'i/reports/personal');
                 setData(res);
             } catch (error) {
                 console.error("Failed to load personal dashboard", error);

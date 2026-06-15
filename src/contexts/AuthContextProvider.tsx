@@ -81,6 +81,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try {
                 console.log("[BOOT] Checking session...");
 
+                // ── E2E TEST BYPASS ──────────────────────────────────────────────────
+                // playwright_test_auth: allows Playwright tests to inject a mock auth
+                // state without real Supabase credentials. Only active in development.
+                if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+                    const isE2EAuth = localStorage.getItem('playwright_test_auth') === 'true';
+                    if (isE2EAuth) {
+                        console.log('[BOOT] E2E test auth bypass detected');
+                        const mockUser: User = {
+                            uid: 'e2e-test-user-id',
+                            id: 'e2e-test-user-id',
+                            email: 'e2e@mediahive.test',
+                            name: 'E2E Test User',
+                            role: 'member',
+                            allowed_institutions: [],
+                            institutionRoles: {},
+                        };
+                        if (mounted) {
+                            setUser(mockUser);
+                            setLoading(false);
+                        }
+                        return;
+                    }
+                }
+                // ── END E2E TEST BYPASS ──────────────────────────────────────────────
+
                 // Detect recovery mode early from URL hash/params
                 if (typeof window !== 'undefined') {
                     const hash = window.location.hash;

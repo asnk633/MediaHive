@@ -2,6 +2,7 @@
 // Feature flag context provider for the frontend
 
 'use client';
+import { API_BASE } from '@/lib/api-utils';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { FeatureFlag, isFeatureEnabled, getAllFeatureFlags } from '@/app/featureFlags';
@@ -26,7 +27,7 @@ export function FeatureFlagProvider({ children }: { children: ReactNode }) {
     try {
       // In development, we can fetch from the API
       if (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_E2E === '1') {
-        const data = await apiClient('/api/admin/feature-flags');
+        const data = await apiClient(`${API_BASE}/admin/feature-flags`);
         setFlags(data.flags);
         return;
       }

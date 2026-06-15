@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import { serverRedirect } from '@/lib/server-redirect';
 
 export default function CalendarPage() {
-  redirect('/events');
+  serverRedirect('/events');
 }

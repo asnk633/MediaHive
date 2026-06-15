@@ -15,20 +15,25 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await verifyUser(req);
+    let user;
+    try {
+      user = await verifyUser(req);
+    } catch (error) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Tenant Security Guard
-    const tenantId = user.tenant_id;
+    const tenantId = user?.tenant_id ?? null;
     if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
       console.error(`[POST /api/upload/attachment] ❌ Missing tenant context for user: ${user.uid}`);
       return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
     }
 
     const formData = await req.formData();
-    const file = formData.get('file') as File | null;
+    const file = (formData.get('file') ?? null) as File | null;
     const taskId = formData.get('taskId') as string | null;
 
     if (!file) {
@@ -109,7 +114,7 @@ export async function POST(req: NextRequest) {
  */
 export async function GET(req: NextRequest) {
   try {
-    const user = await verifyUser(req);
+    let user; try { user = await verifyUser(req); } catch (error) { return NextResponse.json({ error: 'Unauthorized' }, { status: 401 }); }
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

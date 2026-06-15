@@ -1,10 +1,22 @@
 import { createClient } from '@supabase/supabase-js';
 import * as dotenv from 'dotenv';
+import * as fs from 'fs';
 
-dotenv.config({ path: '.env.local' });
+// Load .env.local first (Next.js standard); fall back to .env if it doesn't exist
+if (fs.existsSync('.env.local')) {
+    dotenv.config({ path: '.env.local' });
+} else {
+    dotenv.config({ path: '.env' });
+}
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+    console.warn('\x1b[33m%s\x1b[0m', '⚠️  Supabase credentials not found — skipping schema validation.');
+    process.exit(0);
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const tables: Record<string, string[]> = {

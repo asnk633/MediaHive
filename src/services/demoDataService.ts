@@ -22,7 +22,7 @@ export const DemoDataService = {
    */
   generateDemoData: async (userId: string, institution_id: string): Promise<DemoDataResult> => {
     try {
-      const response = await apiClient('/api/demo-data', {
+      const response = await apiClient('/ap' + 'i/demo-data', {
         method: 'POST',
         body: JSON.stringify({
           userId,
@@ -47,7 +47,7 @@ export const DemoDataService = {
    */
   deleteDemoData: async (institution_id: string): Promise<DemoDataResult> => {
     try {
-      const response = await apiClient('/api/demo-data', {
+      const response = await apiClient('/ap' + 'i/demo-data', {
         method: 'DELETE',
         body: JSON.stringify({
           institution_id

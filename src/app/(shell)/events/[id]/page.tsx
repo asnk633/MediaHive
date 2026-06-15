@@ -1,4 +1,5 @@
 "use client";
+import { nativeNavigate } from '@/lib/utils';
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -25,12 +26,12 @@ export default function EventStandalonePage() {
                     setEvent(data);
                 } else {
                     toast.error("Event not found");
-                    router.push('/events');
+                    nativeNavigate('/events', router, 'page.tsx');
                 }
             } catch (err) {
                 console.error("Failed to fetch event for standalone page", err);
                 toast.error("An error occurred while loading the event");
-                router.push('/events');
+                nativeNavigate('/events', router, 'page.tsx');
             } finally {
                 setLoading(false);
             }
@@ -56,8 +57,8 @@ export default function EventStandalonePage() {
             <EventDetailsModal 
                 event={event}
                 isOpen={true}
-                onClose={() => router.push('/events')}
-                onEdit={() => router.push(`/events/edit?id=${event.id}`)}
+                onClose={() => nativeNavigate('/events', router, 'page.tsx')}
+                onEdit={() => nativeNavigate(`/events/edit?id=${event.id}`, router, 'page.tsx')}
             />
         </PageLayout>
     );

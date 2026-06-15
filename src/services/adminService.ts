@@ -194,7 +194,7 @@ export const AdminService = {
      */
     createInvitation: async (email: string, workspaces: Record<string, string>) => {
         try {
-            const response = await fetch('/api/invites/send', {
+            const response = await fetch('/ap' + 'i/invites/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, workspaces })

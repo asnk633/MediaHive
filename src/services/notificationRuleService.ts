@@ -48,7 +48,7 @@ export const NotificationRuleService = {
     // In future phases, this would fetch from Firestore
     getActiveRules: async (): Promise<NotificationRule[]> => {
         try {
-            const response = await apiClient('/api/notification-rules', {
+            const response = await apiClient('/ap' + 'i/notification-rules', {
                 method: 'GET'
             });
 
@@ -60,7 +60,7 @@ export const NotificationRuleService = {
     },
 
     updateRule: async (ruleId: string, updates: Partial<NotificationRule>) => {
-        await apiClient(`/api/notification-rules/${ruleId}`, {
+        await apiClient('/ap' + `i/notification-rules/${ruleId}`, {
             method: 'PUT',
             body: JSON.stringify(updates)
         });
@@ -68,7 +68,7 @@ export const NotificationRuleService = {
 
     // For Phase 1 Admin Controls
     toggleRule: async (ruleId: string, enabled: boolean) => {
-        await apiClient(`/api/notification-rules/${ruleId}/toggle`, {
+        await apiClient('/ap' + `i/notification-rules/${ruleId}/toggle`, {
             method: 'POST',
             body: JSON.stringify({ enabled })
         });

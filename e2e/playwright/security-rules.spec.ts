@@ -1,13 +1,14 @@
 import { test, expect } from '@playwright/test';
 
 // Correct credentials sourced from guest-login.spec.ts
-const GUEST = { email: 'amarthaibachannel@gmail.com', password: 'amarthaiba@thaiba' };
+const GUEST = { email: 'shuaibmse007@gmail.com', password: 'amarthaiba@thaiba' };
 
 test.describe('Firestore Security Rules Verification v1.0', () => {
 
     test('Guest: Cannot move Kanban cards', async ({ page }) => {
         // 1. Login as Guest
         await page.goto('/login');
+        await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
         await page.fill('input[type="email"]', GUEST.email);
         await page.fill('input[type="password"]', GUEST.password);
         await page.click('button[type="submit"]');
@@ -36,6 +37,7 @@ test.describe('Firestore Security Rules Verification v1.0', () => {
 
     test('Guest: Cannot see Reports', async ({ page }) => {
         await page.goto('/login');
+        await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
         await page.fill('input[type="email"]', GUEST.email);
         await page.fill('input[type="password"]', GUEST.password);
         await page.click('button[type="submit"]');
@@ -47,6 +49,7 @@ test.describe('Firestore Security Rules Verification v1.0', () => {
 
     test('Guest: Cannot see Upload Button in Files', async ({ page }) => {
         await page.goto('/login');
+        await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
         await page.fill('input[type="email"]', GUEST.email);
         await page.fill('input[type="password"]', GUEST.password);
         await page.click('button[type="submit"]');

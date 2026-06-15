@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dartz/dartz.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
@@ -21,7 +22,7 @@ class SupabaseEventRepository implements EventRepository {
   @override
   Future<Either<Failure, List<Event>>> getEvents() async {
     try {
-      print('[CALENDAR_REPO] Fetching events from remote...');
+      debugPrint('[CALENDAR_REPO] Fetching events from remote...');
       
       // 1. Try to fetch from remote first
       try {
@@ -31,7 +32,7 @@ class SupabaseEventRepository implements EventRepository {
             .eq('deleted', false)
             .order('start_at');
         
-        print('[CALENDAR_REPO] Received ${(response as List).length} events from remote');
+        debugPrint('[CALENDAR_REPO] Received ${(response as List).length} events from remote');
         
         final remoteEvents = response.map((json) {
           final startAt = DateTime.parse(json['start_at'].toString()).toLocal();
@@ -67,33 +68,33 @@ class SupabaseEventRepository implements EventRepository {
         }).toList();
             
         await _localDataSource.cacheEvents(remoteEvents);
-        print('[CALENDAR_REPO] Successfully mapped and cached ${remoteEvents.length} events');
+        debugPrint('[CALENDAR_REPO] Successfully mapped and cached ${remoteEvents.length} events');
         return Right(remoteEvents);
       } catch (e, stack) {
-        print('[CALENDAR_REPO] Remote fetch failed: $e');
-        print('[CALENDAR_REPO] Stack: $stack');
+        debugPrint('[CALENDAR_REPO] Remote fetch failed: $e');
+        debugPrint('[CALENDAR_REPO] Stack: $stack');
         
         // 2. Try to fallback to local cache
         try {
           final localEvents = await _localDataSource.getEvents();
           if (localEvents.isNotEmpty) {
-            print('[CALENDAR_REPO] Returning ${localEvents.length} cached events as fallback');
+            debugPrint('[CALENDAR_REPO] Returning ${localEvents.length} cached events as fallback');
             return Right(localEvents);
           }
         } catch (cacheEx) {
-          print('[CALENDAR_REPO] Failed to read local cache fallback: $cacheEx');
+          debugPrint('[CALENDAR_REPO] Failed to read local cache fallback: $cacheEx');
           try {
             await _localDataSource.clearCache();
-            print('[CALENDAR_REPO] Cleared corrupted local cache successfully');
+            debugPrint('[CALENDAR_REPO] Cleared corrupted local cache successfully');
           } catch (clearEx) {
-            print('[CALENDAR_REPO] Failed to clear local cache: $clearEx');
+            debugPrint('[CALENDAR_REPO] Failed to clear local cache: $clearEx');
           }
         }
         
         return Left(ServerFailure('Remote fetch failed: $e'));
       }
     } catch (e) {
-      print('[CALENDAR_REPO] Fatal repository error: $e');
+      debugPrint('[CALENDAR_REPO] Fatal repository error: $e');
       return Left(CacheFailure('Repository error: $e'));
     }
   }

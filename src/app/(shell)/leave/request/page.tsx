@@ -1,4 +1,5 @@
 'use client';
+import { nativeNavigate } from '@/lib/utils';
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
@@ -18,9 +19,9 @@ export default function RequestLeavePage() {
     React.useEffect(() => {
         if (user && user.role !== 'team') {
             if (user.role === 'admin' || user.role === 'manager') {
-                router.replace('/admin/leave-requests');
+                nativeNavigate('/admin/leave-requests', router, 'page.tsx');
             } else {
-                router.replace('/home');
+                nativeNavigate('/home', router, 'page.tsx');
             }
         }
     }, [user, router]);
@@ -49,7 +50,7 @@ export default function RequestLeavePage() {
                             </p>
                         </div>
                         <button 
-                            onClick={() => router.push('/home')}
+                            onClick={() => nativeNavigate('/home', router, 'page.tsx')}
                             className="w-full py-3 px-4 bg-foreground/5 hover:bg-foreground/10 rounded-xl text-sm font-bold text-foreground transition-all border border-foreground/5"
                         >
                             Return to Home
@@ -102,7 +103,7 @@ export default function RequestLeavePage() {
                     <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[100px] -mr-32 -mt-32 pointer-events-none" />
                     <div className="relative z-10">
                         <LeaveRequestForm
-                            onSuccess={() => router.push('/leave/my-requests')}
+                            onSuccess={() => nativeNavigate('/leave/my-requests', router, 'page.tsx')}
                             onCancel={() => router.back()}
                         />
                     </div>

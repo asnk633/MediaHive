@@ -1,5 +1,5 @@
-// e2e/smoke.spec.ts
 import { test, expect } from '@playwright/test';
+import { loginAsAdmin } from './helpers/auth';
 
 test.describe('Smoke: Basic app functionality', () => {
     test('app loads and basic navigation works', async ({ page }) => {
@@ -27,12 +27,7 @@ test.describe('Smoke: Basic app functionality', () => {
 
     test('files page loads', async ({ page }) => {
         // Login first
-        await page.goto('/login');
-        await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
-        await page.fill('input[type="email"]', 'media@thaibagarden.com');
-        await page.fill('input[type="password"]', 'media@thaiba');
-        await page.click('button[type="submit"]');
-        await expect(page).toHaveURL(/.*home/, { timeout: 10000 });
+        await loginAsAdmin(page);
 
         await page.goto('/downloads');
         await page.waitForLoadState('networkidle');

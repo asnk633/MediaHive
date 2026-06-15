@@ -36,3 +36,18 @@
 # Google Play Core (Fixes R8 missing classes error for production APK)
 -dontwarn com.google.android.play.core.**
 -keep class com.google.android.play.core.** { *; }
+
+# FCM Background Message Handler (prevents silent FCM failures in release builds)
+-keep class com.google.firebase.messaging.** { *; }
+-keep class io.flutter.plugins.firebase.messaging.** { *; }
+
+# Google Sign-In
+-keep class com.google.android.gms.auth.** { *; }
+-keep class com.google.android.gms.common.** { *; }
+-dontwarn com.google.android.gms.**
+
+# JSON Serialization (json_serializable generated classes)
+-keepattributes *Annotation*
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}

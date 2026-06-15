@@ -94,17 +94,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               FutureBuilder<PackageInfo>(
                 future: _packageInfoFuture,
                 builder: (context, snapshot) {
-                  String buildNum = '';
-                  if (snapshot.hasData) {
-                    final rawBuild = snapshot.data!.buildNumber;
-                    final code = int.tryParse(rawBuild);
-                    buildNum = (code != null && code >= 1000)
-                        ? (code % 1000).toString()
-                        : rawBuild;
-                  }
-                  
                   final version = snapshot.hasData
-                      ? 'VERSION ${snapshot.data!.version} (BETA $buildNum)'
+                      ? 'VERSION ${snapshot.data!.version}'
                       : '';
                   return Column(
                     mainAxisSize: MainAxisSize.min,

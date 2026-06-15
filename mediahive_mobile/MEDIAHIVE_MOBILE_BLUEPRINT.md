@@ -8,7 +8,7 @@
 
 This document is the single source of truth for the **MediaHive Flutter Mobile Application**.
 
-**Last Updated:** June 13, 2026
+**Last Updated:** June 15, 2026
 
 ---
 
@@ -206,6 +206,13 @@ mediahive_mobile/
 - `events`, `tasks`, and `inventory_items` listen to Supabase Realtime changes.
 - If Supabase Replication is not enabled for a table, Realtime will not fire. Check the Supabase dashboard under **Database → Replication** if live updates stop working.
 
+### 📱 16 KB Page Size Alignment
+- Starting in Android 15/16, Android supports 16 KB page size environments (e.g. Pixel 10 Pro XL API 37 emulator).
+- All native `.so` libraries must be compiled with 16 KB segment alignment.
+- Overridden `ndkVersion = "28.2.13676358"` in root and app `build.gradle.kts` to enforce NDK r28 compilation.
+- Set `jniLibs.useLegacyPackaging = false` to package `.so` files uncompressed and aligned (requires minSdk 23+).
+- Dependencies using native code (like `mobile_scanner` and `dotlottie_flutter`) must be kept upgraded to versions containing 16 KB aligned precompiled binaries.
+
 ---
 
 ## 9. Build & Run
@@ -223,7 +230,7 @@ flutter build apk --release
 APKs are output to `build/app/outputs/flutter-apk/app-release.apk`.
 
 ### APK Version History (at root `D:\MediaHive App\`)
-- Latest confirmed: `MediaHive_V1.1.6-beta_46080.apk`
+- Latest confirmed: `MediaHive_V1.2.0_51000.apk` (v1.2.0+51000, stable internal release)
 
 ---
 
@@ -231,6 +238,10 @@ APKs are output to `build/app/outputs/flutter-apk/app-release.apk`.
 
 | Date | Change | Author |
 | :--- | :--- | :--- |
+| Jun 15, 2026 | **Shift Reminders & Checkout Editing.** Implemented timezone-aware notifications, lunch break configuration settings, exact alarm permissions, reactive reminders scheduling with weekend/holiday skipping, and check-out editing with a 3-day lock window and admin bypass. | AI Agent |
+| Jun 15, 2026 | **Enforced 16 KB page compatibility.** Set `useLegacyPackaging = false` and enforced `ndkVersion = "28.2.13676358"` across the project. Upgraded native dependencies (`lottie` to `^3.3.0`, `dotlottie_flutter` to `^0.1.3`, `mobile_scanner` to `^6.0.11`) to include 16 KB aligned precompiled binaries. Verified alignment with `zipalign -c -P 16` and tested successfully on Android 17 (API 37) 16 KB emulator. | AI Agent |
+| Jun 15, 2026 | **v1.2.0 Stable Release (No Beta).** Removed `(BETA $buildNum)` suffix from the profile screen version indicator. Bumped version to `1.2.0+51000`. Built and published release using `release_app.py`. | AI Agent |
+| Jun 15, 2026 | **v1.2.0 Stable Internal Release.** Bumped version to `1.2.0+50000` (supersedes 46080). Updated release notes to cover all shipped features. Hardened `proguard-rules.pro` with FCM background handler, Google Sign-In, and JSON serialization keep rules. Created `store_assets/INTERNAL_DISTRIBUTION_README.md`. Built and published signed APK via `release_app.py`. | AI Agent |
 | Jun 15, 2026 | Added verify_cross_platform_builds.js script. Fixed missing mobile_scanner and http_parser dependencies and removed unused model_viewer_plus import in shell_screen.dart to resolve flutter analyze errors. | AI Agent |
 | Jun 13, 2026 | Resolved Flutter SDK compile error (`DisplayCornerRadii`) by updating SDK in `D:\src\flutter` and downloading engine binaries | AI Agent |
 | Jun 13, 2026 | Updated and synchronized all 2D logo assets, rebuilt launcher icons and native splash screens | AI Agent |

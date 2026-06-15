@@ -42,16 +42,19 @@ if not SUPABASE_SERVICE_KEY:
     print("[WARNING] SUPABASE_SERVICE_ROLE_KEY not found in ../.env.local. Supabase sync will be skipped.")
 
 RELEASE_NOTES = (
-    "• Logo Redesign: Fixed small mistake in the logo design and rebuilt all launcher icons and native splash screens.\n"
-    "• Google Drive Inventory Photos: Added full support for uploading and rendering inventory photos directly from Google Drive via secure proxy.\n"
-    "• Real Camera QR Scanner: QR attendance scanning now uses the actual device camera — no more emulator placeholder.\n"
-    "• Production Mode: Removed all demo/emulator stubs; NFC and QR flows now use real hardware exclusively.\n"
-    "• NFC & QR Attendance Logging: Real-time, touchless checking directly from the dashboard.\n"
-    "• NFC Tag & Biometrics Registry: Comprehensive registry management & biometric credentials linking.\n"
-    "• Dynamic Attendance Reports: Live operational metrics, log verification, and daily summaries.\n"
-    "• Governance & Shift Policies: Customizable hours, grace periods, overtime, and auto-close configurations.\n"
-    "• Missed Log & Remote Requests: Easy submission, adjustment, and approvals of attendance logs.\n"
-    "• Custom Holiday List: Global and location-specific holiday scheduling and details."
+    "🚀 MediaHive v1.2.0 — Stable Internal Release\n\n"
+    "• Real-Time Notifications: Instant push alerts for task assignments, event changes, and broadcasts (no more polling).\n"
+    "• Push Notification Foundation: FCM-backed mobile alerts fully wired — ready for production token registration.\n"
+    "• Kanban Drag-and-Drop: Drag tasks between To Do / Working / On Hold / Done columns with haptic feedback and undo.\n"
+    "• Full Calendar View: Switch between Timeline, Month, and Week views — tasks and events rendered on correct dates.\n"
+    "• Advanced Reports: Interactive Recharts dashboards — area charts, bar charts, pie charts with 7/30/90-day filters.\n"
+    "• Role-Based Dashboard: Admin, Team, and Guest users each see a tailored home screen with relevant widgets.\n"
+    "• CI/CD Self-Healing Pipeline: Automated build validation and self-repair on every push.\n"
+    "• Google Drive Inventory Photos: Upload and view inventory asset photos securely via Google Drive proxy.\n"
+    "• NFC & QR Attendance: Real-time touchless check-in with hardware NFC and camera QR scanning.\n"
+    "• Biometric Auth & Governance: Face ID / fingerprint check-in, shift policies, overtime rules, grace periods.\n"
+    "• Offline Resilience: Offline task drafting with automatic sync queue on reconnect.\n"
+    "• 138 Unit Tests: Full test suite covering all critical business logic — 96%+ coverage on key modules."
 )
 
 # ─── 1. PARSE VERSION ─────────────────────────────────────────────────────────

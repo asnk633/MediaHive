@@ -1,0 +1,28 @@
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'snackbar_service.dart';
+import '../router/router.dart';
+
+class SessionRecoveryService {
+  static Future<void> handleExpiredSession() async {
+    // 1. Clear auth state & caches
+    try {
+      await Supabase.instance.client.auth.signOut();
+    } catch (_) {}
+    
+    // 2. Notify UI (context-free, works from anywhere)
+    SnackbarService.show(
+      text: 'Session expired. Please sign in again.',
+      duration: const Duration(seconds: 2),
+    );
+
+    // 3. Redirect & clear backstack
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final context = rootNavigatorKey.currentContext;
+      if (context != null) {
+        context.go('/login');
+      }
+    });
+  }
+}

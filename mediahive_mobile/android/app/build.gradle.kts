@@ -11,7 +11,7 @@ import java.io.FileInputStream
 android {
     namespace = "com.thaibagarden.mediahive"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -62,6 +62,14 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+
+    // Disable legacy native library packaging to align .so files to 16 KB boundaries.
+    // Note: This requires minSdk 23+ for uncompressed library loading to work optimally.
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
 }

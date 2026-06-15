@@ -1,6 +1,9 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'logger_service.dart';
 import 'notification_router.dart';
 
@@ -14,6 +17,16 @@ class NotificationService {
 
   Future<void> initialize() async {
     if (_initialized) return;
+
+    // Initialize local timezone
+    try {
+      tz.initializeTimeZones();
+      final String timeZoneName = (await FlutterTimezone.getLocalTimezone()).identifier;
+      tz.setLocalLocation(tz.getLocation(timeZoneName));
+      _logger.info('NotificationService timezone initialized to $timeZoneName');
+    } catch (e, stack) {
+      _logger.error('Failed to initialize local timezone, defaulting to UTC', e, stack);
+    }
 
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('ic_stat_notification');
@@ -275,6 +288,89 @@ class NotificationService {
     } catch (e) {
       _logger.error('Error opening system settings: $e');
     }
+  }
+
+  // --- SCHEDULE & CANCEL METHODS ---
+
+  Future<void> scheduleNotification({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledDateTime,
+    required NotificationDetails notificationDetails,
+    required String payload,
+  }) async {
+    try {
+      final localTime = tz.TZDateTime.from(scheduledDateTime, tz.local);
+      
+      // Don't schedule in the past
+      if (localTime.isBefore(tz.TZDateTime.now(tz.local))) {
+        _logger.debug('Skipping schedule for ID=$id because it is in the past: $localTime');
+        return;
+      }
+
+      await _localNotifications.zonedSchedule(
+        id,
+        title,
+        body,
+        localTime,
+        notificationDetails,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        payload: payload,
+      );
+      _logger.debug('Notification scheduled: ID=$id, Time=$localTime, Title=$title');
+    } catch (e, stack) {
+      _logger.error('Error scheduling notification ID=$id', e, stack);
+    }
+  }
+
+  Future<void> cancelNotification(int id) async {
+    try {
+      await _localNotifications.cancel(id);
+      _logger.debug('Notification cancelled: ID=$id');
+    } catch (e) {
+      _logger.error('Error cancelling notification ID=$id: $e');
+    }
+  }
+
+  Future<void> scheduleShiftReminder({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledDateTime,
+    required String payload,
+  }) async {
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'mediahive_shift_reminders_v2',
+      'Shift Reminders',
+      channelDescription: 'Notifications to remind check-in, check-out, and breaks',
+      importance: Importance.max,
+      priority: Priority.high,
+      sound: RawResourceAndroidNotificationSound('event_alert'),
+      playSound: true,
+      largeIcon: DrawableResourceAndroidBitmap('ic_launcher_drawable'),
+    );
+
+    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+      sound: 'event_alert.wav',
+      presentSound: true,
+    );
+
+    const NotificationDetails details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await scheduleNotification(
+      id: id,
+      title: title,
+      body: body,
+      scheduledDateTime: scheduledDateTime,
+      notificationDetails: details,
+      payload: payload,
+    );
   }
 
   // --- PRIVATE GENERAL SHOW METHOD ---

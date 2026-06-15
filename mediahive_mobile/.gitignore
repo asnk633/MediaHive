@@ -50,3 +50,15 @@ app.*.map.json
 *.apk
 /scratch/
 .agent/
+/apk_temp/
+/.claude-flow/
+/.claude/
+/.mcp.json
+/.swarm/
+/CLAUDE.md
+/VERSION_TRACKER.md
+/ruvector.db
+/opentestai-report*
+/store_assets/
+/tasks_screen_emulator_list_verification.png
+/assets/models/

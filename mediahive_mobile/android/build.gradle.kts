@@ -27,3 +27,16 @@ subprojects {
     }
 }
 
+subprojects {
+    plugins.withId("com.android.application") {
+        extensions.configure<com.android.build.gradle.BaseExtension> {
+            ndkVersion = "28.2.13676358"
+        }
+    }
+    plugins.withId("com.android.library") {
+        extensions.configure<com.android.build.gradle.BaseExtension> {
+            ndkVersion = "28.2.13676358"
+        }
+    }
+}
+

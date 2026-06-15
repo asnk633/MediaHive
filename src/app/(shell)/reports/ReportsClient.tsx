@@ -3,6 +3,7 @@ import { API_BASE } from '@/lib/api-utils';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
 import { nativeNavigate, cn } from '@/lib/utils';
 import { PageHeader } from '@/components/ui/layout/PageHeader';
@@ -44,6 +45,7 @@ import {
 
 export default function ReportsClient() {
     const router = useRouter();
+    const { user, loading: authLoading } = useAuth();
     const { isNative } = useNative();
     const [isChecking, setIsChecking] = useState(true);
     const [activeReportId, setActiveReportId] = useState('Activity Report');
@@ -258,6 +260,19 @@ export default function ReportsClient() {
     };
 
     const activeReport = reports.find(r => r.title === activeReportId) || reports[0];
+
+    if (!authLoading && ((user?.role as string) === 'guest' || user?.role === 'member')) {
+        return (
+            <PageLayout mode="plain">
+                <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
+                    <h2 className="text-2xl font-bold text-destructive mb-2">Access Denied</h2>
+                    <p className="text-foreground/60 max-w-sm">
+                        You do not have the required permissions to view reports.
+                    </p>
+                </div>
+            </PageLayout>
+        );
+    }
 
     return (
         <PageLayout mode="plain">

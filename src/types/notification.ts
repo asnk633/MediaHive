@@ -55,6 +55,9 @@ export interface AppNotification {
     tenant_id: string;         // 🔒 Multi-tenant isolation
     created_at: TimestampLike; // Configurable for client/server
     metadata?: Record<string, any>; // Flexible payload for extra data
+    payload?: Record<string, any>;
+    silent?: boolean;
+    collapse_key?: string | null;
 }
 
 export interface CreateNotificationParams {
@@ -72,4 +75,7 @@ export interface CreateNotificationParams {
     priority?: NotificationPriority;
     tenant_id?: string;
     metadata?: Record<string, any>;
+    payload?: Record<string, any>;
+    silent?: boolean;
+    collapse_key?: string | null;
 }

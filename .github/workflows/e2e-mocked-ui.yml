@@ -10,6 +10,7 @@ permissions:
   pull-requests: write
 
 env:
+  NODE_OPTIONS: --max-old-space-size=4096
   # Force mock mode in CI so Playwright uses mocked Firebase + WebView
   NODE_ENV: test
   USE_REAL_FIREBASE: "false"
@@ -77,6 +78,7 @@ jobs:
             }
           fi
         env:
+
           NODE_ENV: development
           NPM_CONFIG_PRODUCTION: false
 
@@ -129,6 +131,7 @@ jobs:
           done
         shell: bash
         env:
+
           MOCK_FIREBASE: "true"
           USE_REAL_FIREBASE: "false"
 
@@ -138,6 +141,7 @@ jobs:
           pnpm exec playwright test smoke.spec.ts --retries=1 --reporter=list
         shell: bash
         env:
+
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
 
       - name: Stop dev server

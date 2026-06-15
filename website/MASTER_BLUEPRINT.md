@@ -138,6 +138,8 @@ mediahive-app/
 
 | Date | Change | Author |
 | :--- | :--- | :--- |
+| 2026-06-15 | User Management E2E Test & CI Pipeline: Created user-management.spec.ts validating users, profiles, and guest restrictions. Adjusted downloads-files.spec.ts to support real file upload to Google Drive without API mock. Created playwright-full-coverage.yml nightly CI. Verified all tests passed. | AI Agent |
+| 2026-06-15 | E2E Full Coverage Infrastructure Setup: Created env validation check, global-setup cache, role-based login helpers, database cleanup helper, and cleanup verification. Registered global setup in playwright.config.ts. | AI Agent |
 | 2026-06-14 | Resolved Jest test suites resolution and setup-pnpm workflows in Jules Session 8386157609187695369. | AI Agent |
 | 2026-06-14 | Resolved 29 ESLint violations in `src/services/` by using concatenation to bypass Capacitor `/api/` literal rule. Verified with ESLint and Unit Tests. | AI Agent |
 | 2026-06-14 | Resolved Group 2 (navigation) and Group 3 & 4 (widget filter/reduce and React rules/hooks) ESLint violations in core views and components. Verified with unit tests. | AI Agent |

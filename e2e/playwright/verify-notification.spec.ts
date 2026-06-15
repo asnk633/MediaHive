@@ -66,10 +66,14 @@ test('Guest Notification Flow', async ({ page }) => {
         }
     });
     await page.reload();
-    await expect(page).toHaveURL(/.*login/, { timeout: 30000 });
+    await expect(page).toHaveURL(/.*(?:login|welcome)/, { timeout: 30000 });
 
-    // 4. Login as Admin
-    await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
+    // 4. Login as Admin - navigate explicitly to /login
+    await page.goto('/login');
+    await page.evaluate(() => {
+        localStorage.setItem('mediahive_onboarding_complete', 'true');
+        localStorage.setItem('hasSeenMemberWelcome-v1', 'true');
+    });
     await page.fill('input[type="email"]', 'media@thaibagarden.com');
     await page.fill('input[type="password"]', 'media@thaiba');
     await page.click('button[type="submit"]');

@@ -25,8 +25,9 @@ import '../../../../core/providers/user_provider.dart';
 import '../../../../core/services/logger_service.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../data/services/qr_signature_service.dart';
+import '../../data/services/background_presence_service.dart';
 
-enum NfcScanStatus { idle, scanning, success, error, nfcNotAvailable, nfcDisabled, leaveConflict }
+enum NfcScanStatus { idle, scanning, success, error, nfcNotAvailable, nfcDisabled, leaveConflict, fieldWork }
 
 class NfcScanState {
   final NfcScanStatus status;
@@ -51,6 +52,7 @@ class NfcScanState {
   final String? ssidsChecked;
   final String? activeSsid;
   final String? gpsFailureReason;
+  final Map<String, dynamic>? data; // Generic data payload (used for field work tag metadata)
 
   NfcScanState({
     required this.status,
@@ -75,6 +77,7 @@ class NfcScanState {
     this.ssidsChecked,
     this.activeSsid,
     this.gpsFailureReason,
+    this.data,
   });
 
   factory NfcScanState.idle() => NfcScanState(status: NfcScanStatus.idle);
@@ -613,6 +616,22 @@ class NfcScanningNotifier extends StateNotifier<NfcScanState> {
         return;
       }
 
+      // ─── Step 1b: Field Work Tag Routing ───
+      // If this is a field work NFC tag, route to field work flow
+      // instead of normal attendance check-in/out
+      if (tagType == 'field_work') {
+        state = NfcScanState(
+          status: NfcScanStatus.fieldWork,
+          message: 'Field work tag detected.',
+          data: {
+            'tagName': tagName,
+            'tagUuid': tagUuid,
+            'physicalTagId': physicalTagId,
+          },
+        );
+        return;
+      }
+
       // ─── Step 2: GPS & WiFi Trust Verification Check ───
       int pointsNfcOrQr = 50; // Dynamic 50 points as we are triggered by tag or QR scan
       int pointsWifi = 0;
@@ -1022,6 +1041,15 @@ class NfcScanningNotifier extends StateNotifier<NfcScanState> {
             physicalTagId: physicalTagId,
             tagName: tagName,
           );
+
+          // Start background presence verification
+          BackgroundPresenceService().startTracking(
+            attendanceId: record.id,
+            userId: userId,
+            officeLatitude: tagLat,
+            officeLongitude: tagLng,
+            officeRadiusMeters: tagRadius,
+          );
         }
       } else {
         // Perform CHECK-OUT
@@ -1095,6 +1123,9 @@ class NfcScanningNotifier extends StateNotifier<NfcScanState> {
           );
 
           _ref.read(activeAttendanceSessionProvider.notifier).setSession(null);
+
+          // Stop background presence verification
+          BackgroundPresenceService().stopTracking();
           state = NfcScanState(
             status: NfcScanStatus.success,
             message: 'Checked Out Successfully',

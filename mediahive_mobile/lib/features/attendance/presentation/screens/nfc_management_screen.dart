@@ -753,6 +753,10 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
         typeColor = const Color(0xFF8B5CF6);
         typeIcon = LucideIcons.car;
         break;
+      case 'field_work':
+        typeColor = const Color(0xFF0D9488);
+        typeIcon = LucideIcons.briefcase;
+        break;
       case 'mixed':
         typeColor = AppColors.success;
         typeIcon = LucideIcons.layers;
@@ -1971,6 +1975,7 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
       {'id': 'equipment', 'label': 'EQUIPMENT', 'icon': LucideIcons.package},
       {'id': 'vehicle', 'label': 'VEHICLE', 'icon': LucideIcons.car},
       {'id': 'location', 'label': 'LOCATION', 'icon': LucideIcons.mapPin},
+      {'id': 'field_work', 'label': 'FIELD WORK', 'icon': LucideIcons.briefcase},
     ];
 
     return Wrap(

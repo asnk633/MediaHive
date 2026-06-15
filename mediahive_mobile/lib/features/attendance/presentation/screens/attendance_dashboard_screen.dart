@@ -18,6 +18,9 @@ import '../../domain/models/attendance_record.dart';
 import '../../domain/models/attendance_policy.dart';
 import '../providers/attendance_provider.dart';
 import '../../../../core/providers/user_provider.dart';
+import 'field_work_scan_screen.dart';
+import 'field_work_approval_screen.dart';
+import '../providers/field_work_provider.dart';
 import 'missed_checkin_request_sheet.dart';
 import 'remote_checkout_request_sheet.dart';
 import 'qr_scanner_overlay.dart';
@@ -91,6 +94,18 @@ class _AttendanceDashboardScreenState
     ref.listen<NfcScanState>(globalNfcScanningProvider, (prev, next) {
       if (next.status == NfcScanStatus.leaveConflict) {
         _showLeaveConflictDialog(next.physicalTagId!, next.tagName ?? 'Campus Tag');
+      }
+      // Navigate to field work screen when a field_work NFC tag is scanned
+      if (next.status == NfcScanStatus.fieldWork && next.data != null) {
+        final tagData = next.data!;
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => FieldWorkScanScreen(
+              tagUuid: tagData['tagId'] as String? ?? '',
+              tagName: tagData['tagName'] as String? ?? 'Field Work Tag',
+            ),
+          ),
+        );
       }
     });
 
@@ -193,6 +208,8 @@ class _AttendanceDashboardScreenState
                     const SizedBox(height: 24),
                     _buildWorkModePanel(context, colors, activeSessionAsync.value),
                     const SizedBox(height: 24),
+                    // Manager-only: Pending field work requests
+                    _buildFieldWorkRequestsPanel(context, colors),
                     historyAsync.when(
                       data: (records) => _buildStatsSummary(colors, records),
                       loading: () => const MhLoading(size: 60),
@@ -910,6 +927,107 @@ class _AttendanceDashboardScreenState
         ],
       ),
     ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1);
+  }
+
+  // ─── Manager: Pending Field Work Requests ────────────────────────────────
+  Widget _buildFieldWorkRequestsPanel(BuildContext context, ThemeColors colors) {
+    final profile = ref.watch(currentUserProfileProvider).valueOrNull;
+    final role = (profile?['role']?.toString() ?? 'member').toLowerCase().trim();
+    final isManagerOrAdmin = role == 'manager' || role == 'admin' || role == 'owner';
+
+    if (!isManagerOrAdmin) return const SizedBox.shrink();
+
+    final pendingAsync = ref.watch(pendingFieldWorkSessionsProvider);
+
+    return pendingAsync.when(
+      data: (sessions) {
+        if (sessions.isEmpty) return const SizedBox.shrink();
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 24),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const FieldWorkApprovalScreen(),
+                ),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: AppColors.warning.withValues(alpha: 0.4),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.warning.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      LucideIcons.briefcase,
+                      color: AppColors.warning,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Field Work Requests',
+                          style: AppTypography.bodyM.copyWith(
+                            color: colors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${sessions.length} pending approval${sessions.length > 1 ? 's' : ''}',
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.warning,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.warning,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${sessions.length}',
+                      style: AppTypography.caption.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    LucideIcons.chevronRight,
+                    color: colors.textSecondary,
+                    size: 18,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+    );
   }
 
   // ─── Work Mode Panel ────────────────────────────────────────────────────────

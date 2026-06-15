@@ -24,7 +24,7 @@ mixin _$NfcTag {
   String get tagName => throw _privateConstructorUsedError;
   String get tagId => throw _privateConstructorUsedError;
   String get tagType =>
-      throw _privateConstructorUsedError; // 'attendance', 'equipment', 'location', 'mixed'
+      throw _privateConstructorUsedError; // 'attendance', 'equipment', 'location', 'vehicle', 'field_work', 'mixed'
   String? get entityId => throw _privateConstructorUsedError;
   String? get entityType =>
       throw _privateConstructorUsedError; // 'attendance', 'equipment', 'room', 'vehicle', 'location', 'mixed'
@@ -338,7 +338,7 @@ class _$NfcTagImpl implements _NfcTag {
   @override
   @JsonKey()
   final String tagType;
-// 'attendance', 'equipment', 'location', 'mixed'
+// 'attendance', 'equipment', 'location', 'vehicle', 'field_work', 'mixed'
   @override
   final String? entityId;
   @override
@@ -476,7 +476,7 @@ abstract class _NfcTag implements NfcTag {
   String get tagId;
   @override
   String get tagType;
-  @override // 'attendance', 'equipment', 'location', 'mixed'
+  @override // 'attendance', 'equipment', 'location', 'vehicle', 'field_work', 'mixed'
   String? get entityId;
   @override
   String? get entityType;

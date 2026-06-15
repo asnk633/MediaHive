@@ -35,6 +35,8 @@ This document is the single source of truth for the **MediaHive Flutter Mobile A
 | **Image Proxy** | Google Drive via Vercel backend | See Section 6 |
 | **State Management** | Riverpod / Provider | Feature-based architecture |
 | **NFC** | `nfc_manager` v4.2.1 | Attendance check-in feature |
+| **Background Location** | `flutter_background_geolocation` | Background presence verification; geofencing; headless task |
+| **Battery** | `battery_plus` | Battery-aware polling for presence verification |
 
 ---
 
@@ -238,6 +240,8 @@ APKs are output to `build/app/outputs/flutter-apk/app-release.apk`.
 
 | Date | Change | Author |
 | :--- | :--- | :--- |
+| Jun 15, 2026 | **Presence Verification & Field Work Mode — Full Implementation.** Added `flutter_background_geolocation` + `battery_plus` deps. Created `BackgroundPresenceService` (geofence monitoring, heartbeat polling, Hive offline buffer, battery-adaptive polling) and `background_headless_task.dart` (terminated-app presence verification). Wired to check-in/check-out (start/stop tracking) and field work (pause/resume). Created `FieldWorkNotificationService` for manager/deputy/member push notifications via `notifications` table. Added `PresenceTimelineScreen` (chronological log viewer with stats bar). Added manager-only "Pending Field Work Requests" panel to attendance dashboard with badge count. Android: `ACCESS_BACKGROUND_LOCATION` + `USE_EXACT_ALARM` permissions. iOS: background modes (location/fetch/processing), `NSLocationAlwaysAndWhenInUseUsageDescription`, `NSMotionUsageDescription`, `BGTaskSchedulerPermittedIdentifiers`. Created `increment_geofence_violations` Supabase RPC function. Registered headless task in `main.dart`. `flutter analyze` clean. | AI Agent |
+| Jun 15, 2026 | **Presence Verification v3 — State Machine + Tag Registration.** Expanded field work state machine to 7 states: added `active` (member departed) and `cancelled` (member withdraws before approval). Added `manager_deputies` table with RLS for FCM fallback routing. Implemented geofence hysteresis (enter at radius, exit at radius×1.4) to prevent GPS oscillation. Formalized `locationSnapshots` JSONB shape. Added `field_work` as new NFC tag type in `nfc_management_screen.dart` tag registration selector (teal briefcase icon) and tag tile switch. Updated `NfcTag` model comment. Added `cancelFieldWork()` and `activateFieldWork()` methods to `FieldWorkService`. | AI Agent |
 | Jun 15, 2026 | **Implemented user deactivation cleanup and active filters.** Added a database trigger to clean up incomplete task assignments, future events, chat participants, and device tokens when a user is deactivated (status set to inactive/disabled), logging the details to audit_log. Updated mobile user_provider.dart/chat_providers.dart to filter user queries by status = active. | AI Agent |
 | Jun 15, 2026 | **Restored and polished Google Sign-In.** Downloaded official Google G-logo (transparent version), registered the asset in `pubspec.yaml` with correct 4-space nesting, added `_handleGoogleSignIn` callback, and updated `login_screen.dart` with a premium glassmorphic outlined Google button (subtle transparent color background and adjusted border opacity for dark/light modes) and dynamic OR divider. | AI Agent |
 | Jun 15, 2026 | **Shift Reminders & Checkout Editing.** Implemented timezone-aware notifications, lunch break configuration settings, exact alarm permissions, reactive reminders scheduling with weekend/holiday skipping, and check-out editing with a 3-day lock window and admin bypass. | AI Agent |

@@ -82,6 +82,24 @@
 		<string>We need biometric authentication to verify your identity during check-in and check-out.</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<!-- Background Geolocation: Background Modes -->
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>location</string>
+			<string>fetch</string>
+			<string>processing</string>
+		</array>
+		<!-- Background Geolocation: Always Location Permission -->
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>Your attendance is verified by confirming your location at the office. Location is checked periodically in the background.</string>
+		<!-- Background Geolocation: Motion Detection -->
+		<key>NSMotionUsageDescription</key>
+		<string>Motion detection helps reduce battery usage by only tracking location when you are moving.</string>
+		<!-- Background Geolocation: BGTaskScheduler -->
+		<key>BGTaskSchedulerPermittedIdentifiers</key>
+		<array>
+			<string>com.transistorsoft.fetch</string>
+		</array>
 		<key>CFBundleURLTypes</key>
 		<array>
 			<dict>

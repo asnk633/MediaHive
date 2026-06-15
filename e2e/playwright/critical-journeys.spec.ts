@@ -54,12 +54,14 @@ test.describe('Critical User Journeys', () => {
         // Click New Task button
         await page.getByLabel('New Task').click();
 
-        // Wait for defaults to load (Department should be auto-filled to Media & IT Department for this admin)
-        await page.getByRole('button', { name: 'Media & IT Department' }).waitFor({ state: 'visible', timeout: 20000 });
+        // Wait for task form to fully load (avoid networkidle - SSE keeps network busy)
+        await page.waitForLoadState('domcontentloaded');
+        const titleInput = page.getByPlaceholder('What needs to be done?');
+        await expect(titleInput).toBeVisible({ timeout: 15000 });
 
         // Fill task form
-        await page.fill('[placeholder="What needs to be done?"]', taskTitle);
-        await page.fill('[placeholder="Add details..."]', 'E2E test description');
+        await titleInput.fill(taskTitle);
+        await page.getByPlaceholder('Add details...').fill('E2E test description');
 
         // Set due date via shortcut Alt+ArrowRight (tomorrow)
         await page.keyboard.press('Alt+ArrowRight');

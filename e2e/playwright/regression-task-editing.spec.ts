@@ -270,15 +270,16 @@ test.describe('Task Editing Regression', () => {
             const modal = page.locator('dialog, [role="dialog"], .fixed').first();
             await expect(modal).toBeVisible();
         }
+        // Wait for form to be fully rendered
+        await page.waitForLoadState('networkidle');
 
-        // Fill properly - Selector fixed based on UI inspection
-        // Actual placeholder from TasksNewClient.tsx: COPY.placeholders.taskTitle = "What needs to be done?"
-        const titleInput = page.locator('input[placeholder="What needs to be done?"]');
-        await expect(titleInput).toBeVisible();
+        // Fill properly - use getByPlaceholder for resilient selection across input/textarea
+        const titleInput = page.getByPlaceholder('What needs to be done?');
+        await expect(titleInput).toBeVisible({ timeout: 10000 });
         await titleInput.fill(originalTitle);
 
         // Fill Description
-        await page.locator('textarea[placeholder="Add details..."]').fill('Regression test description');
+        await page.getByPlaceholder('Add details...').fill('Regression test description');
 
         // Fill Due Date (Tomorrow) using the keyboard shortcut Alt+ArrowRight
         await page.keyboard.press('Alt+ArrowRight');

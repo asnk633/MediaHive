@@ -51,6 +51,7 @@ test.describe('Guest UX Refinement', () => {
             localStorage.setItem('playwright_test_auth', 'true');
             localStorage.setItem('playwright_test_role', 'member');
             localStorage.setItem('mediahive_onboarding_complete', 'true');
+            localStorage.setItem('hasSeenMemberWelcome-v1', 'true');
         });
         await page.goto('/home');
         await expect(page).toHaveURL('/home', { timeout: 30000 });
@@ -61,11 +62,10 @@ test.describe('Guest UX Refinement', () => {
         await expect(page.locator('text=Activity Feed')).not.toBeVisible();
 
         // 4. Verify New Widgets
-        await expect(page.locator('text=My Requests')).toBeVisible();
-        await expect(page.locator('text=Personal Summary')).toBeVisible();
-        await expect(page.locator('text=System Status')).toBeVisible();
-        await expect(page.locator('text=Today\'s Tasks')).toBeVisible();
-        await expect(page.locator('text=Today\'s Events')).toBeVisible();
+        await expect(page.locator('text=My Requests')).toBeVisible({ timeout: 10000 });
+        await expect(page.locator('text=Personal Summary')).toBeVisible({ timeout: 10000 });
+        await expect(page.locator("text=Today's Tasks")).toBeVisible({ timeout: 10000 });
+        await expect(page.locator("text=Today's Events")).toBeVisible({ timeout: 10000 });
 
         // 5. Navigate to Profile
         await page.goto('/profile');

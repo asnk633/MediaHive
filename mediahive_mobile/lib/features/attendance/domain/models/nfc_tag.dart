@@ -9,7 +9,7 @@ class NfcTag with _$NfcTag {
     required String id,
     required String tagName,
     required String tagId,
-    @Default('attendance') String tagType, // 'attendance', 'equipment', 'location', 'mixed'
+    @Default('attendance') String tagType, // 'attendance', 'equipment', 'location', 'vehicle', 'field_work', 'mixed'
     String? entityId,
     String? entityType, // 'attendance', 'equipment', 'room', 'vehicle', 'location', 'mixed'
     required double latitude,

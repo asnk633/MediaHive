@@ -3,6 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: 'e2e/playwright',
   testIgnore: ['**/_*.spec.ts', '**/ui/**/*.spec.ts'], // Ignore underscore-prefixed and archived UI tests
+  globalSetup: require.resolve('./e2e/playwright/global-setup'),
   timeout: 120_000,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,

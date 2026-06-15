@@ -56,7 +56,7 @@ final inventoryRequestListProvider = AutoDisposeAsyncNotifierProvider<
 
 typedef _$InventoryRequestList
     = AutoDisposeAsyncNotifier<List<InventoryRequest>>;
-String _$inventoryListHash() => r'32b7f36928fdee2873e3fd8e98d9ff798d32a271';
+String _$inventoryListHash() => r'2242eaf33cd76e65d442850b1b8b4b21f84a06ef';
 
 /// See also [InventoryList].
 @ProviderFor(InventoryList)

@@ -46,7 +46,7 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
   const currentRouteName = pathname.split('/').pop()?.replace(/-/g, ' ') || 'Dashboard';
 
   return (
-    <header className="fixed top-0 inset-x-0 z-[50] h-[var(--header-height)] bg-sidebar border-b border-border flex items-center justify-between px-6 shadow-tier2 lg:hidden transition-all duration-300">
+    <header className="topbar fixed top-0 inset-x-0 z-[50] h-[var(--header-height)] bg-sidebar border-b border-border flex items-center justify-between px-6 shadow-tier2 lg:hidden transition-all duration-300">
 
       {/* 1. Mobile Branding (Strictly Mobile Only) */}
       <div className="flex items-center gap-3 lg:hidden">

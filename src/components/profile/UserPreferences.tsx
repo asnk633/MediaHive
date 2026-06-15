@@ -3,13 +3,26 @@ import { Bell, Palette } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { useTheme } from '@/contexts/ThemeContext';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 interface UserPreferencesProps {
     notifications: boolean;
     setNotifications: (v: boolean) => void;
+    expoPushToken: string;
+    setExpoPushToken: (v: string) => void;
+    onSavePushToken: () => Promise<void>;
+    savingToken?: boolean;
 }
 
-export function UserPreferences({ notifications, setNotifications }: UserPreferencesProps) {
+export function UserPreferences({
+    notifications,
+    setNotifications,
+    expoPushToken,
+    setExpoPushToken,
+    onSavePushToken,
+    savingToken
+}: UserPreferencesProps) {
     const { theme, setTheme } = useTheme();
 
     return (
@@ -21,6 +34,35 @@ export function UserPreferences({ notifications, setNotifications }: UserPrefere
                 checked={notifications}
                 onChange={setNotifications}
             />
+
+            <div className="flex flex-col gap-4 py-1 border-t border-border pt-6">
+                <div className="flex items-center gap-4">
+                    <div className="p-2 rounded-lg bg-surface text-muted">
+                        <Bell size={18} className="text-blue-400" />
+                    </div>
+                    <div>
+                        <p className="text-sm font-medium text-foreground">Expo Push Token (Foundation)</p>
+                        <p className="text-xs text-muted-foreground">For simulated pushes and testing admin/guest mobile alerts</p>
+                    </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 mt-1">
+                    <Input
+                        id="expoPushToken"
+                        placeholder="ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]"
+                        value={expoPushToken}
+                        onChange={(e) => setExpoPushToken(e.target.value)}
+                        className="bg-foreground/[0.03] border-foreground/10 rounded-xl focus:bg-foreground/[0.08] transition-all flex-1 h-11"
+                    />
+                    <Button
+                        onClick={onSavePushToken}
+                        isLoading={savingToken}
+                        className="rounded-xl font-bold bg-blue-600 hover:bg-blue-500 text-white h-11 px-6"
+                    >
+                        Save Token
+                    </Button>
+                </div>
+            </div>
             
             <div className="flex flex-col gap-4 py-1">
                 <div className="flex items-center gap-4">

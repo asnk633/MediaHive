@@ -313,7 +313,7 @@ export default function FAB({ onMainClick }: FABProps) {
         )}
       </AnimatePresence>
       <div
-        className="fab fixed left-1/2 z-[110] flex flex-col-reverse items-center gap-4 pointer-events-auto lg:hidden"
+        className="fab fab-root fixed left-1/2 z-[110] flex flex-col-reverse items-center gap-4 pointer-events-auto lg:hidden"
         style={{ 
           bottom: 'calc(var(--bottom-nav-height, 4.5rem) + var(--safe-bottom, 1.5rem))',
           transform: 'translate(-50%, 50%) translateY(calc(-1 * var(--keyboard-offset, 0px))) translateY(var(--fab-optical-offset, 2px))',

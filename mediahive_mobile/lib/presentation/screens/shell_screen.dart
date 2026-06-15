@@ -17,7 +17,6 @@ import '../../shared/widgets/ambient_canvas_background.dart';
 import '../../core/providers/update_provider.dart';
 import '../../core/services/update_service.dart';
 import '../../features/chat/presentation/providers/chat_providers.dart';
-import 'package:model_viewer_plus/model_viewer_plus.dart';
 import '../../features/attendance/presentation/providers/attendance_provider.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:intl/intl.dart';

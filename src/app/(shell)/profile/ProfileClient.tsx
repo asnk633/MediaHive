@@ -30,6 +30,36 @@ export default function ProfileClient() {
     const [newName, setNewName] = useState(user?.name || '');
     const [updatingName, setUpdatingName] = useState(false);
 
+    const [expoPushToken, setExpoPushToken] = useState(user?.expo_push_token || '');
+    const [savingToken, setSavingToken] = useState(false);
+
+    useEffect(() => {
+        if (user?.expo_push_token) {
+            setExpoPushToken(user.expo_push_token);
+        }
+    }, [user?.expo_push_token]);
+
+    const handleSavePushToken = async () => {
+        if (!user) return;
+        setSavingToken(true);
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({ expo_push_token: expoPushToken.trim() || null })
+                .eq('id', user.uid);
+
+            if (error) throw error;
+
+            toast.success('Push token updated!');
+            if (refreshUser) await refreshUser();
+        } catch (error: any) {
+            console.error('Failed to update push token:', error);
+            toast.error(error.message || 'Failed to update push token.');
+        } finally {
+            setSavingToken(false);
+        }
+    };
+
     // Image Upload State
     const [showCropper, setShowCropper] = useState(false);
     const [tempImageUrl, setTempImageUrl] = useState<string | null>(null);
@@ -143,6 +173,10 @@ export default function ProfileClient() {
                 <UserPreferences
                     notifications={notifications}
                     setNotifications={setNotifications}
+                    expoPushToken={expoPushToken}
+                    setExpoPushToken={setExpoPushToken}
+                    onSavePushToken={handleSavePushToken}
+                    savingToken={savingToken}
                 />
 
                 {/* Account Security */}

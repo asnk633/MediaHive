@@ -231,6 +231,7 @@ APKs are output to `build/app/outputs/flutter-apk/app-release.apk`.
 
 | Date | Change | Author |
 | :--- | :--- | :--- |
+| Jun 15, 2026 | Added verify_cross_platform_builds.js script. Fixed missing mobile_scanner and http_parser dependencies and removed unused model_viewer_plus import in shell_screen.dart to resolve flutter analyze errors. | AI Agent |
 | Jun 13, 2026 | Resolved Flutter SDK compile error (`DisplayCornerRadii`) by updating SDK in `D:\src\flutter` and downloading engine binaries | AI Agent |
 | Jun 13, 2026 | Updated and synchronized all 2D logo assets, rebuilt launcher icons and native splash screens | AI Agent |
 | Jun 13, 2026 | Released mobile version `1.1.6-beta+40080` (build 40080) to supersede user's 39080 local build | AI Agent |

@@ -2,6 +2,7 @@ import { TaskRatingService } from '@/features/tasks/services/taskRatingService';
 import { Task } from '@/features/tasks/types/task';
 import { TaskService } from '@/services/tasks';
 import { apiClient } from '@/lib/apiClient';
+import { API_BASE } from '@/lib/api-utils';
 
 // Mock dependencies
 jest.mock('@/services/tasks', () => ({
@@ -188,11 +189,11 @@ describe('TaskRatingService', () => {
 
             await TaskRatingService.updatePerformanceStats('assignee-1', 5);
 
-            expect(apiClient).toHaveBeenCalledWith('/api/user-performance-stats/assignee-1/2026', expect.objectContaining({
+            expect(apiClient).toHaveBeenCalledWith(`${API_BASE}/user-performance-stats/assignee-1/2026`, expect.objectContaining({
                 method: 'GET'
             }));
 
-            expect(apiClient).toHaveBeenCalledWith('/api/user-performance-stats/assignee-1/2026', expect.objectContaining({
+            expect(apiClient).toHaveBeenCalledWith(`${API_BASE}/user-performance-stats/assignee-1/2026`, expect.objectContaining({
                 method: 'PATCH',
                 body: expect.stringContaining('"totalRatedTasks":3')
             }));
@@ -214,8 +215,8 @@ describe('TaskRatingService', () => {
 
             await TaskRatingService.updatePerformanceStats('assignee-1', 4);
 
-            expect(apiClient).toHaveBeenCalledWith('/api/user-performance-stats/assignee-1/2026', { method: 'GET' });
-            expect(apiClient).toHaveBeenCalledWith('/api/user-performance-stats', expect.objectContaining({
+            expect(apiClient).toHaveBeenCalledWith(`${API_BASE}/user-performance-stats/assignee-1/2026`, { method: 'GET' });
+            expect(apiClient).toHaveBeenCalledWith(`${API_BASE}/user-performance-stats`, expect.objectContaining({
                 method: 'POST',
                 body: expect.stringContaining('"totalStars":4')
             }));
@@ -238,7 +239,7 @@ describe('TaskRatingService', () => {
 
             const result = await TaskRatingService.getUserStats('user-1');
             expect(result).toEqual(mockStats);
-            expect(apiClient).toHaveBeenCalledWith('/api/user-performance-stats/user-1/2026', { method: 'GET' });
+            expect(apiClient).toHaveBeenCalledWith(`${API_BASE}/user-performance-stats/user-1/2026`, { method: 'GET' });
         });
 
         test('calls apiClient with correct URL for specified year', async () => {
@@ -247,7 +248,7 @@ describe('TaskRatingService', () => {
 
             const result = await TaskRatingService.getUserStats('user-1', 2025);
             expect(result).toEqual(mockStats);
-            expect(apiClient).toHaveBeenCalledWith('/api/user-performance-stats/user-1/2025', { method: 'GET' });
+            expect(apiClient).toHaveBeenCalledWith(`${API_BASE}/user-performance-stats/user-1/2025`, { method: 'GET' });
         });
 
         test('returns null if fetch fails', async () => {

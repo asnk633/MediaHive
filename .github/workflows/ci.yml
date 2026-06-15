@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NODE_OPTIONS: --max-old-space-size=2048
       BASE_URL: http://127.0.0.1:3000
 
@@ -42,6 +43,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm (if using pnpm)
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -55,9 +61,6 @@ jobs:
           ls -la
           echo "show root file list:"
           ls -la .
-
-      - name: Setup pnpm (if using pnpm)
-        uses: pnpm/action-setup@v4
 
       - name: Install dependencies (robust)
         shell: bash
@@ -79,6 +82,7 @@ jobs:
             }
           fi
         env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           NODE_ENV: development
           NPM_CONFIG_PRODUCTION: false
 

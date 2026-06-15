@@ -10,6 +10,7 @@ permissions:
   pull-requests: write
 
 env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   # Force mock mode in CI so Playwright uses mocked Firebase + WebView
   NODE_ENV: test
   USE_REAL_FIREBASE: "false"
@@ -41,6 +42,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -76,6 +79,7 @@ jobs:
             }
           fi
         env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           NODE_ENV: development
           NPM_CONFIG_PRODUCTION: false
 
@@ -128,6 +132,7 @@ jobs:
           done
         shell: bash
         env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           MOCK_FIREBASE: "true"
           USE_REAL_FIREBASE: "false"
 
@@ -137,6 +142,7 @@ jobs:
           pnpm exec playwright test smoke.spec.ts --retries=1 --reporter=list
         shell: bash
         env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
 
       - name: Stop dev server

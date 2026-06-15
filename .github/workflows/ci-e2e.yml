@@ -12,6 +12,7 @@ jobs:
     timeout-minutes: 30
 
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NODE_OPTIONS: --max-old-space-size=2048
       BASE_URL: http://127.0.0.1:3000
 
@@ -37,6 +38,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -50,6 +53,7 @@ jobs:
       - name: Decode service account (Linux / macOS)
         if: runner.os != 'Windows'
         env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
         run: |
           if [ -z "${FIREBASE_ADMIN_SA:-}" ]; then
@@ -63,6 +67,7 @@ jobs:
       - name: Decode service account (Windows)
         if: runner.os == 'Windows'
         env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
         run: |
           if (-not "$env:FIREBASE_ADMIN_SA") {

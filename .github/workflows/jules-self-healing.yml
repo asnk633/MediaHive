@@ -21,10 +21,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Run Self-Healing Trigger Script
         env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_REF_NAME: ${{ github.event.workflow_run.head_branch }}

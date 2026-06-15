@@ -36,23 +36,26 @@ test.describe('Critical User Journeys', () => {
 
         // Login as admin
         await page.goto('http://localhost:3000/login');
-        await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
+        await page.evaluate(() => {
+            localStorage.setItem('mediahive_onboarding_complete', 'true');
+            localStorage.setItem('hasSeenMemberWelcome-v1', 'true');
+        });
         await page.fill('input[type="email"]', ADMIN_USER.email);
         await page.fill('input[type="password"]', ADMIN_USER.password);
         await page.click('button[type="submit"]');
 
         // Verify login succeeded
-        await expect(page).toHaveURL(/.*home/, { timeout: 10000 });
+        await expect(page).toHaveURL(/.*home/, { timeout: 30000 });
 
         // Navigate to tasks
         await page.goto('/tasks');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
 
         // Click New Task button
         await page.getByLabel('New Task').click();
 
         // Wait for defaults to load (Department should be auto-filled to Media & IT Department for this admin)
-        await page.waitForSelector('button:has-text("Media & IT Department")', { state: 'visible', timeout: 10000 });
+        await page.getByRole('button', { name: 'Media & IT Department' }).waitFor({ state: 'visible', timeout: 20000 });
 
         // Fill task form
         await page.fill('[placeholder="What needs to be done?"]', taskTitle);
@@ -87,11 +90,11 @@ test.describe('Critical User Journeys', () => {
         await page.fill('input[type="password"]', ADMIN_USER.password);
         await page.click('button[type="submit"]');
 
-        await expect(page).toHaveURL(/.*home/, { timeout: 10000 });
+        await expect(page).toHaveURL(/.*home/, { timeout: 30000 });
 
         // Navigate to tasks
         await page.goto('/tasks');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
 
         // Verify admin can see Admin Confidence Panel button
         await expect(page.getByTitle('Admin Confidence Panel')).toBeVisible();

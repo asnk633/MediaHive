@@ -48,6 +48,7 @@ class AttendanceReminderService {
   final Ref _ref;
   final _logger = LoggerService();
   static const int _notificationIdOffset = 2000;
+  Timer? _debounceTimer;
 
   AttendanceReminderService(this._ref);
 
@@ -73,7 +74,15 @@ class AttendanceReminderService {
   }
 
   /// Reactively schedules and cancels check-in/out and lunch reminders.
-  Future<void> updateReminders(AttendanceRecord? activeSession, {AttendancePolicy? policyOverride}) async {
+  /// Uses debounce to coalesce rapid-fire calls from multiple provider listeners.
+  void updateReminders(AttendanceRecord? activeSession, {AttendancePolicy? policyOverride}) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      _executeUpdateReminders(activeSession, policyOverride: policyOverride);
+    });
+  }
+
+  Future<void> _executeUpdateReminders(AttendanceRecord? activeSession, {AttendancePolicy? policyOverride}) async {
     try {
       final AttendancePolicy policy = policyOverride ?? await _ref.read(attendancePolicyProvider.future);
       final notificationService = _ref.read(notificationServiceProvider);

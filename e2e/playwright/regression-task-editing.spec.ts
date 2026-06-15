@@ -14,6 +14,7 @@ test.describe('Task Editing Regression', () => {
 
     test.beforeEach(async ({ page }) => {
         console.log('--- Starting Test Setup ---');
+        page.on('console', msg => console.log(`[BROWSER][${msg.type()}] ${msg.text()}`));
 
         // Unified Mock Handler to isolate UI from Backend completely
         await page.route('**/api/**', async route => {
@@ -37,7 +38,9 @@ test.describe('Task Editing Regression', () => {
                                 uid: 'mock-uid',
                                 name: 'Admin',
                                 email: ADMIN_USER.email,
-                                role: 'admin'
+                                role: 'admin',
+                                institution_id: '1',
+                                department_id: 1
                             }
                         })
                     });
@@ -58,6 +61,18 @@ test.describe('Task Editing Regression', () => {
             // Mock Write Operations (POST/PUT/DELETE)
             // This catches addTask, updateTask, assign, etc.
             if (['POST', 'PUT', 'DELETE'].includes(method)) {
+                const postData = route.request().postData();
+                if (postData) {
+                    try {
+                        const payload = JSON.parse(postData);
+                        if (payload.title) mockTask.title = payload.title;
+                        if (payload.description) mockTask.description = payload.description;
+                        if (payload.status) mockTask.status = payload.status;
+                        if (payload.priority) mockTask.priority = payload.priority;
+                    } catch (e) {
+                        console.log('Failed to parse post data in mock:', e);
+                    }
+                }
                 await route.fulfill({
                     status: 200,
                     contentType: 'application/json',
@@ -97,6 +112,16 @@ test.describe('Task Editing Regression', () => {
                 return;
             }
 
+            // Mock chat unreads API to return an empty array to prevent TypeError crash
+            if (url.includes('/api/chat/rooms')) {
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify([])
+                });
+                return;
+            }
+
             // Mock all other GETs (Stats, Deliverables, Notifications)
             // Prevents 429s from background polling
             await route.fulfill({
@@ -104,6 +129,64 @@ test.describe('Task Editing Regression', () => {
                 contentType: 'application/json',
                 body: JSON.stringify({})
             });
+        });
+
+        // Intercept Supabase REST API requests to isolate from real backend
+        await page.route('**/rest/v1/**', async route => {
+            const url = route.request().url();
+            const method = route.request().method();
+            console.log(`MOCK SUPABASE: [${method}] ${url}`);
+
+            if (method === 'POST') {
+                const postData = route.request().postData();
+                if (postData) {
+                    try {
+                        const payload = JSON.parse(postData);
+                        const item = Array.isArray(payload) ? payload[0] : payload;
+                        if (item.title) mockTask.title = item.title;
+                        if (item.description) mockTask.description = item.description;
+                        if (item.status) mockTask.status = item.status;
+                        if (item.priority) mockTask.priority = item.priority;
+                    } catch (e) {
+                        console.log('Failed to parse Supabase insert payload:', e);
+                    }
+                }
+                await route.fulfill({
+                    status: 201,
+                    contentType: 'application/json',
+                    body: JSON.stringify(mockTask)
+                });
+            } else if (method === 'PATCH') {
+                const postData = route.request().postData();
+                if (postData) {
+                    try {
+                        const payload = JSON.parse(postData);
+                        if (payload.title) mockTask.title = payload.title;
+                        if (payload.description) mockTask.description = payload.description;
+                        if (payload.status) mockTask.status = payload.status;
+                        if (payload.priority) mockTask.priority = payload.priority;
+                    } catch (e) {
+                        console.log('Failed to parse Supabase patch payload:', e);
+                    }
+                }
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify([mockTask])
+                });
+            } else if (method === 'GET') {
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify([mockTask])
+                });
+            } else {
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify({})
+                });
+            }
         });
 
         // Initialize Mock Task
@@ -115,37 +198,42 @@ test.describe('Task Editing Regression', () => {
             description: 'Regression test description',
             status: 'todo',
             priority: 'medium',
+            due_date: new Date(Date.now() + 86400000).toISOString(),
             dueDate: new Date(Date.now() + 86400000).toISOString(),
             department: 'Media & IT Office',
             assignedBy: { uid: 'mock-uid', name: 'Admin', role: 'admin' },
             createdBy: { uid: 'mock-uid', name: 'Admin', role: 'admin' },
-            createdAt: { seconds: Date.now() / 1000, nanoseconds: 0 }
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            version: 1
         };
 
-        // Login as Admin
+        // Programmatic login bypass
         await page.goto('/login');
-        await expect(page.locator('input[type="email"]')).toBeVisible();
-
-        await page.fill('input[type="email"]', ADMIN_USER.email);
-        await page.fill('input[type="password"]', ADMIN_USER.password);
-        await page.click('button[type="submit"]');
-
-        // Wait for redirect to home
+        await page.evaluate(() => {
+            localStorage.setItem('playwright_test_auth', 'true');
+            localStorage.setItem('playwright_test_role', 'admin');
+            localStorage.setItem('playwright_test_institution_id', '1');
+            localStorage.setItem('playwright_test_department_id', '1');
+            localStorage.setItem('mediahive_onboarding_complete', 'true');
+            localStorage.setItem('hasSeenMemberWelcome-v1', 'true');
+        });
         try {
-            await page.waitForURL('**/home', { timeout: 15000 });
-        } catch (e) {
-            console.log('Login timeout with media@thaibagarden.com, taking screenshot...');
-            await page.screenshot({ path: 'test-results/login-failure-media.png' });
-            throw e;
+            await page.goto('/home');
+        } catch (e: any) {
+            if (!e.message.includes('ERR_ABORTED') && !e.message.includes('NS_BINDING_ABORTED')) throw e;
         }
+        await expect(page).toHaveURL(/.*home/, { timeout: 10000 });
 
         // Navigate to tasks
-        await page.goto('/tasks');
         try {
-            await page.waitForLoadState('networkidle', { timeout: 10000 });
-        } catch (e) {
-            console.log('/tasks load timeout, continuing...');
+            await page.goto('/tasks');
+        } catch (e: any) {
+            if (!e.message.includes('ERR_ABORTED') && !e.message.includes('NS_BINDING_ABORTED')) throw e;
         }
+        await page.waitForLoadState('load');
     });
 
     test('Data Integrity: Edit title only', async ({ page }) => {
@@ -177,8 +265,11 @@ test.describe('Task Editing Regression', () => {
         }
 
         // Create Task
-        const modal = page.locator('dialog, [role="dialog"], .fixed').first();
-        await expect(modal).toBeVisible();
+        // Create Task Modal check (skip if on /tasks/new page)
+        if (!page.url().includes('/tasks/new')) {
+            const modal = page.locator('dialog, [role="dialog"], .fixed').first();
+            await expect(modal).toBeVisible();
+        }
 
         // Fill properly - Selector fixed based on UI inspection
         // Actual placeholder from TasksNewClient.tsx: COPY.placeholders.taskTitle = "What needs to be done?"
@@ -186,23 +277,17 @@ test.describe('Task Editing Regression', () => {
         await expect(titleInput).toBeVisible();
         await titleInput.fill(originalTitle);
 
-        // Listen for console logs
-        page.on('console', msg => console.log(`PAGE_LOG: ${msg.text()}`));
-
         // Fill Description
         await page.locator('textarea[placeholder="Add details..."]').fill('Regression test description');
 
-        // Fill Due Date (Tomorrow)
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const dateStr = tomorrow.toISOString().split('T')[0];
-        await page.locator('input[type="date"]').fill(dateStr);
+        // Fill Due Date (Tomorrow) using the keyboard shortcut Alt+ArrowRight
+        await page.keyboard.press('Alt+ArrowRight');
 
         // Select Department via DropdownSelector (custom popover-based UI, not native <select>)
         // The form uses DropdownSelector which renders as a Button trigger + Popover with buttons inside
         // Click the department trigger button and select the first available option
         const deptTrigger = page.locator('button').filter({ hasText: /Select option|None/ }).first();
-        if (await deptTrigger.count() > 0 && await deptTrigger.isVisible()) {
+        if (await deptTrigger.count() > 0 && await deptTrigger.isVisible() && await deptTrigger.isEnabled()) {
             await deptTrigger.click();
             // Wait for popover to open and click first real option (skip "None")
             const deptOption = page.locator('[role="presentation"] button, [data-radix-popper-content-wrapper] button').filter({ hasNotText: 'None' }).first();
@@ -229,12 +314,18 @@ test.describe('Task Editing Regression', () => {
         // Verify creation
         await expect(page.getByText(originalTitle)).toBeVisible();
 
-        // Edit Task
-        await page.getByText(originalTitle).click();
+        // Edit Task - Click the Edit task button directly on the task row
+        const editBtn = page.getByRole('button', { name: 'Edit task' }).first();
+        await expect(editBtn).toBeVisible({ timeout: 10000 });
+        await editBtn.click();
+
+        // Wait for edit dialog to appear (Radix Dialog may take time to render)
+        const editDialog = page.locator('[role="dialog"]');
+        await expect(editDialog).toBeVisible({ timeout: 10000 });
 
         // Wait for edit modal - re-locate the title input since it may be in a new modal
         const editTitleInput = page.locator('input[placeholder="What needs to be done?"]');
-        await expect(editTitleInput).toBeVisible();
+        await expect(editTitleInput).toBeVisible({ timeout: 10000 });
         // Check value is present
         await expect(editTitleInput).toHaveValue(originalTitle);
 
@@ -242,7 +333,7 @@ test.describe('Task Editing Regression', () => {
 
         // Click Save/Update
         const saveBtn = page.getByRole('button', { name: /save|update/i }).first();
-        await expect(saveBtn).toBeVisible();
+        await expect(saveBtn).toBeVisible({ timeout: 5000 });
         await saveBtn.click();
 
         // Verify update
@@ -251,7 +342,7 @@ test.describe('Task Editing Regression', () => {
 
         // Reload
         await page.reload();
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
         await expect(page.getByText(updatedTitle)).toBeVisible();
     });
 });

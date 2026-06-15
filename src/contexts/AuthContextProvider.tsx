@@ -88,14 +88,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     const isE2EAuth = localStorage.getItem('playwright_test_auth') === 'true';
                     if (isE2EAuth) {
                         console.log('[BOOT] E2E test auth bypass detected');
+                        const mockRole = (localStorage.getItem('playwright_test_role') || 'member') as any;
+                        const mockInstitutionId = localStorage.getItem('playwright_test_institution_id') || undefined;
+                        const mockDeptIdStr = localStorage.getItem('playwright_test_department_id');
+                        const mockDepartmentId = mockDeptIdStr ? parseInt(mockDeptIdStr, 10) : undefined;
                         const mockUser: User = {
                             uid: 'e2e-test-user-id',
                             id: 'e2e-test-user-id',
                             email: 'e2e@mediahive.test',
                             name: 'E2E Test User',
-                            role: 'member',
+                            role: mockRole,
                             allowed_institutions: [],
                             institutionRoles: {},
+                            institution_id: mockInstitutionId,
+                            department_id: mockDepartmentId,
                         };
                         if (mounted) {
                             setUser(mockUser);

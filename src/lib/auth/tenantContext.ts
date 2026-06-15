@@ -9,6 +9,17 @@ import { supabase } from '@/lib/supabaseClient';
  * @returns {Promise<{ tenantId: string, userId: string, institutionId: string | null }>}
  */
 export async function tenantContext(): Promise<{ tenantId: string, userId: string, institutionId: string | null }> {
+    if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+        const isE2EAuth = localStorage.getItem('playwright_test_auth') === 'true';
+        if (isE2EAuth) {
+            return {
+                tenantId: 'mock-tenant-id',
+                userId: 'e2e-test-user-id',
+                institutionId: localStorage.getItem('playwright_test_institution_id') || '1'
+            };
+        }
+    }
+
     const { data: { session }, error } = await supabase.auth.getSession();
 
     if (error) {

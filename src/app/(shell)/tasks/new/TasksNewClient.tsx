@@ -194,7 +194,9 @@ export default function TasksNewClient() {
         if (!due_date) {
             throw new Error("Please select a due date.");
         }
-        if (!formData.selectedInstitutionId && !formData.selectedDepartmentId) {
+        const hasInstitution = formData.selectedInstitutionId || (!formData.isDelegating && user.institution_id);
+        const hasDepartment = formData.selectedDepartmentId || (!formData.isDelegating && user.department_id);
+        if (!hasInstitution && !hasDepartment) {
             throw new Error("Please select either an Institution or a Department.");
         }
 
@@ -235,15 +237,15 @@ export default function TasksNewClient() {
             }
  
             // Resolve Structure IDs
-            const institution_id = formData.selectedInstitutionId || null;
-            const department_id = formData.selectedDepartmentId ? parseInt(formData.selectedDepartmentId) : null;
-            const dept = departmentsList.find(d => String(d.id) === formData.selectedDepartmentId);
+            const institution_id = formData.selectedInstitutionId || (!formData.isDelegating ? String(user.institution_id || '') : null) || null;
+            const department_id = formData.selectedDepartmentId ? parseInt(formData.selectedDepartmentId) : (!formData.isDelegating ? user.department_id : null) || null;
+            const dept = departmentsList.find(d => String(d.id) === (formData.selectedDepartmentId || (!formData.isDelegating ? String(user.department_id || '') : '')));
             const departmentName = dept ? dept.name : '';
  
             const newTaskData = {
                 title,
                 description,
-                status: isMember ? 'pending' : 'todo',
+                status: 'todo',
                 priority: isMember ? 'low' : priority,
                 due_date: due_date ? (typeof due_date === 'string' ? new Date(due_date).toISOString() : (due_date as Date).toISOString()) : new Date().toISOString(),
                 department: departmentName,

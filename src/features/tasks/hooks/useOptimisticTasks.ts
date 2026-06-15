@@ -355,13 +355,10 @@ export function useOptimisticTasks(
         }
 
         // Check if the action is allowed in the current connectivity state
+        let actionCheck = { allowed: true, reason: '' };
         if (!isAuthPaused) {
-  const actionCheck = canPerformAction(actionType, isOnline);
-  if (!actionCheck.allowed) {
-    toast.error(actionCheck.reason || `Action "${actionType}" is not allowed in offline mode`);
-    return;
-  }
-}
+            actionCheck = canPerformAction(actionType, isOnline);
+        }
         if (!actionCheck.allowed) {
             toast.error(actionCheck.reason || `Action "${actionType}" is not allowed in offline mode`);
             return;

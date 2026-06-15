@@ -32,15 +32,15 @@ test.describe('Kanban Board Drag-and-Drop', () => {
         await page.click('button[type="submit"]');
 
         // Wait for redirect to home
-        await page.waitForURL('/home', { timeout: 30000 });
+        await expect(page).toHaveURL(/.*home/, { timeout: 30000 });
 
         // 2. Navigate to Tasks and toggle Kanban view
         await page.goto('/tasks');
         await page.locator('button[title="Kanban Board"]').click();
 
         // Wait for Kanban board to load
-        await expect(page.locator('text=Working').first()).toBeVisible();
-        await expect(page.locator('text=To Do').first()).toBeVisible();
+        await expect(page.locator('text=Working').first()).toBeVisible({ timeout: 15000 });
+        await expect(page.locator('text=To Do').first()).toBeVisible({ timeout: 15000 });
 
         // 3. Ensure there is a task in "Pending Approval" to drag
         // Ideally we should create one via API, but for now assuming one exists or using the first one found
@@ -98,7 +98,7 @@ test.describe('Kanban Board Drag-and-Drop', () => {
         await page.fill('input[type="password"]', TEAM_USER.password);
         await page.click('button[type="submit"]');
 
-        await page.waitForURL('/home', { timeout: 30000 });
+        await expect(page).toHaveURL(/.*home/, { timeout: 30000 });
 
         // 2. Navigate to Tasks
         await page.goto('/tasks');

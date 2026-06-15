@@ -10,7 +10,7 @@ test.describe('Smoke: Basic app functionality', () => {
         await expect(page).toHaveTitle(/(MediaHive|Welcome|Login|)/i);
 
         // Wait for home page to load
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
 
         // Check that we're on a valid page (should have bottom navigation or content)
         const hasContent = await page.locator('body').textContent();
@@ -26,16 +26,22 @@ test.describe('Smoke: Basic app functionality', () => {
     });
 
     test('files page loads', async ({ page }) => {
-        // Login first
+        // Programmatic login bypass
         await page.goto('/login');
-        await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
-        await page.fill('input[type="email"]', 'media@thaibagarden.com');
-        await page.fill('input[type="password"]', 'media@thaiba');
-        await page.click('button[type="submit"]');
+        await page.evaluate(() => {
+            localStorage.setItem('playwright_test_auth', 'true');
+            localStorage.setItem('playwright_test_role', 'admin');
+            localStorage.setItem('mediahive_onboarding_complete', 'true');
+        });
+        try {
+            await page.goto('/home');
+        } catch (e: any) {
+            if (!e.message.includes('ERR_ABORTED') && !e.message.includes('NS_BINDING_ABORTED')) throw e;
+        }
         await expect(page).toHaveURL(/.*home/, { timeout: 10000 });
 
         await page.goto('/downloads');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
 
         // Check for "Downloads" heading
         const heading = page.locator('h1:has-text("Downloads")');

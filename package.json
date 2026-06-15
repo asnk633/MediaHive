@@ -188,7 +188,7 @@
     "@firebase/rules-unit-testing": "^5.0.0",
     "@lhci/cli": "^0.15.1",
     "@next/bundle-analyzer": "^16.0.4",
-    "@playwright/test": "^1.56.1",
+    "@playwright/test": "^1.61.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@swc/jest": "^0.2.39",

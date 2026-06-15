@@ -58,6 +58,8 @@ jobs:
 
       - name: Setup pnpm (if using pnpm)
         uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
 
       - name: Install dependencies (robust)
         shell: bash

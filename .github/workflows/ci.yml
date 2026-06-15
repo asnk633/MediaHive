@@ -42,9 +42,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
+          node-version: 22
           cache: pnpm
 
       - name: Show repo root (diagnostics)
@@ -55,9 +61,6 @@ jobs:
           ls -la
           echo "show root file list:"
           ls -la .
-
-      - name: Setup pnpm (if using pnpm)
-        uses: pnpm/action-setup@v4
 
       - name: Install dependencies (robust)
         shell: bash
@@ -75,7 +78,7 @@ jobs:
               echo "pnpm install failed; printing pnpm version and list"
               pnpm -v
               pnpm list --depth 0 || true
-              exit 1
+              return 1
             }
           fi
         env:
@@ -89,7 +92,7 @@ jobs:
           else
             echo "jest missing — listing node_modules top level"
             ls -la node_modules | sed -n '1,200p'
-            exit 1
+            return 1
           fi
 
       - name: Verify installed (diagnostics)

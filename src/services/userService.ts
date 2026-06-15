@@ -159,6 +159,9 @@ export const UserService = {
                 // Security boundary: same tenant only
                 if (p.tenant_id !== requesterProfile?.tenant_id) return acc;
 
+                // Only show active users in team lists
+                if (p.status !== 'active') return acc;
+
                 // Visibility logic:
                 // - forceMediaIT: only show Media & IT department members
                 // - contextId provided: strictly filter by that institution
@@ -231,9 +234,10 @@ export const UserService = {
 
             const { data, error } = await safeQuery(() => supabase
                 .from(TABLES.USERS)
-                .select('id, name, full_name')
+                .select('id, full_name, official_name')
                 .eq('tenant_id', tenantId)
                 .eq('role', 'admin')
+                .eq('status', 'active')
             );
 
             if (error) throw error;
@@ -241,7 +245,7 @@ export const UserService = {
             const users = Array.isArray(data) ? data : (data ? [data] : []);
             return users.map((p: any) => ({
                 uid: p.id,
-                name: p.full_name || p.name || 'Admin User'
+                name: p.full_name || p.official_name || 'Admin User'
             }));
         } catch (error) {
             console.error("Failed to fetch admins:", error);
@@ -255,9 +259,10 @@ export const UserService = {
 
             const { data, error } = await safeQuery(() => supabase
                 .from(TABLES.USERS)
-                .select('id, name, full_name')
+                .select('id, full_name, official_name')
                 .eq('tenant_id', tenantId)
                 .eq('role', 'manager')
+                .eq('status', 'active')
             );
 
             if (error) throw error;
@@ -265,7 +270,7 @@ export const UserService = {
             const users = Array.isArray(data) ? data : (data ? [data] : []);
             return users.map((p: any) => ({
                 uid: p.id,
-                name: p.full_name || p.name || 'Manager User'
+                name: p.full_name || p.official_name || 'Manager User'
             }));
         } catch (error) {
             console.error("Failed to fetch managers:", error);

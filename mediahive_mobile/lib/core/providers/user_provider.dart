@@ -226,6 +226,7 @@ final allUsersProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async 
     final response = await Supabase.instance.client
         .from('profiles')
         .select('id, full_name, role, avatar_url, email, department_id, institution_id')
+        .eq('status', 'active')
         .order('full_name', ascending: true);
         
     return List<Map<String, dynamic>>.from(response);

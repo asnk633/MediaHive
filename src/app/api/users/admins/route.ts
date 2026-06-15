@@ -11,7 +11,8 @@ export async function GET() {
             .from('profiles')
             .select('id, role, full_name, official_name, email, avatar_url')
             .eq('tenant_id', tenantId)
-            .eq('role', 'admin');
+            .eq('role', 'admin')
+            .eq('status', 'active');
 
         if (error) return handleApiError('ADMINS_FETCH', error);
 

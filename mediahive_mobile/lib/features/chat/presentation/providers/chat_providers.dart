@@ -849,6 +849,7 @@ class ChatCreationService {
         .from('profiles')
         .select('id')
         .eq('role', 'admin')
+        .eq('status', 'active')
         .limit(1)
         .maybeSingle();
 
@@ -899,7 +900,7 @@ class ChatCreationService {
     );
 
     // Automatically add all other Media & IT Team members as default participants
-    final profilesRes = await client.from('profiles').select('id');
+    final profilesRes = await client.from('profiles').select('id').eq('status', 'active');
     final profiles = profilesRes as List;
     final List<Map<String, dynamic>> participants = [];
     for (final p in profiles) {

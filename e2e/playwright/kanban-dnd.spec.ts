@@ -1,5 +1,5 @@
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/db-fixture';
 
 // Credentials provided by the user
 const ADMIN_USER = {
@@ -27,9 +27,16 @@ test.describe('Kanban Board Drag-and-Drop', () => {
         // 1. Login as Admin
         await page.goto('/login');
         await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
-        await page.fill('input[type="email"]', ADMIN_USER.email);
-        await page.fill('input[type="password"]', ADMIN_USER.password);
-        await page.click('button[type="submit"]');
+        const emailInput = page.locator('input[type="email"]');
+        const passwordInput = page.locator('input[type="password"]');
+        await emailInput.click();
+        await emailInput.fill(ADMIN_USER.email);
+        await passwordInput.click();
+        await passwordInput.fill(ADMIN_USER.password);
+        
+        const submitButton = page.locator('button[type="submit"]');
+        await expect(submitButton).toBeEnabled();
+        await submitButton.click();
 
         // Wait for redirect to home
         await expect(page).toHaveURL(/.*home/, { timeout: 30000 });
@@ -67,14 +74,14 @@ test.describe('Kanban Board Drag-and-Drop', () => {
         if (await firstCard.count() > 0) {
             // Perform click to open modal and check for Key Error
             await firstCard.click();
-            await page.waitForTimeout(1000); // Allow modal to animate
+            await expect(page.locator('[role="dialog"]').first()).toBeVisible();
 
             const keyError = consoleErrors.find(e => e.includes('Encountered two children with the same key'));
             expect(keyError).toBeUndefined();
 
             // Close modal
             await page.keyboard.press('Escape');
-            await page.waitForTimeout(500);
+            await expect(page.locator('[role="dialog"]')).toBeHidden();
 
             // Resume drag test
             await firstCard.dragTo(toDoColumnHeader);
@@ -94,9 +101,16 @@ test.describe('Kanban Board Drag-and-Drop', () => {
         // 1. Login as Team Member
         await page.goto('/login');
         await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
-        await page.fill('input[type="email"]', TEAM_USER.email);
-        await page.fill('input[type="password"]', TEAM_USER.password);
-        await page.click('button[type="submit"]');
+        const emailInput = page.locator('input[type="email"]');
+        const passwordInput = page.locator('input[type="password"]');
+        await emailInput.click();
+        await emailInput.fill(TEAM_USER.email);
+        await passwordInput.click();
+        await passwordInput.fill(TEAM_USER.password);
+        
+        const submitButton = page.locator('button[type="submit"]');
+        await expect(submitButton).toBeEnabled();
+        await submitButton.click();
 
         await expect(page).toHaveURL(/.*home/, { timeout: 30000 });
 

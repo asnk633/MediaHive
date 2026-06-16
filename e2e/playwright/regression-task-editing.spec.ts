@@ -270,8 +270,7 @@ test.describe('Task Editing Regression', () => {
             const modal = page.locator('dialog, [role="dialog"], .fixed').first();
             await expect(modal).toBeVisible();
         }
-        // Wait for form to be fully rendered
-        await page.waitForLoadState('networkidle');
+        // Wait for form to be fully rendered (relying on explicit visibility assertion instead)
 
         // Fill properly - use getByPlaceholder for resilient selection across input/textarea
         const titleInput = page.getByPlaceholder('What needs to be done?');

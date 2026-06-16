@@ -44,6 +44,17 @@ async function verifyCleanup() {
       const residueCount = count ?? 0;
       if (residueCount > 0) {
         console.warn(`⚠️  [FAILED] Table '${table}' has ${residueCount} leftover E2E entries!`);
+        console.log(`🧹 Cleaning up leftovers in '${table}'...`);
+        const { error: deleteError } = await supabaseAdmin
+          .from(table)
+          .delete()
+          .like(column, 'E2E-%');
+        
+        if (deleteError) {
+          console.error(`❌ Failed to delete leftovers in '${table}':`, deleteError.message);
+        } else {
+          console.log(`✅ Successfully cleaned up ${residueCount} leftovers in '${table}'.`);
+        }
         overallPassed = false;
       } else {
         console.log(`✅  [PASSED] Table '${table}' is clean (0 E2E leftovers).`);

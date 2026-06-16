@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/db-fixture';
 
 /**
  * Phase 3: Critical User Journeys - E2E Tests
@@ -40,11 +40,16 @@ test.describe('Critical User Journeys', () => {
             localStorage.setItem('mediahive_onboarding_complete', 'true');
             localStorage.setItem('hasSeenMemberWelcome-v1', 'true');
         });
-        await page.fill('input[type="email"]', ADMIN_USER.email);
-        await page.fill('input[type="password"]', ADMIN_USER.password);
-        await page.click('button[type="submit"]');
-
-        // Verify login succeeded
+        const emailInput = page.locator('input[type="email"]');
+        const passwordInput = page.locator('input[type="password"]');
+        await emailInput.click();
+        await emailInput.fill(ADMIN_USER.email);
+        await passwordInput.click();
+        await passwordInput.fill(ADMIN_USER.password);
+        
+        const submitButton = page.locator('button[type="submit"]');
+        await expect(submitButton).toBeEnabled();
+        await submitButton.click();
         await expect(page).toHaveURL(/.*home/, { timeout: 30000 });
 
         // Navigate to tasks
@@ -88,10 +93,16 @@ test.describe('Critical User Journeys', () => {
         // Login as admin
         await page.goto('http://localhost:3000/login');
         await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
-        await page.fill('input[type="email"]', ADMIN_USER.email);
-        await page.fill('input[type="password"]', ADMIN_USER.password);
-        await page.click('button[type="submit"]');
-
+        const emailInput = page.locator('input[type="email"]');
+        const passwordInput = page.locator('input[type="password"]');
+        await emailInput.click();
+        await emailInput.fill(ADMIN_USER.email);
+        await passwordInput.click();
+        await passwordInput.fill(ADMIN_USER.password);
+        
+        const submitButton = page.locator('button[type="submit"]');
+        await expect(submitButton).toBeEnabled();
+        await submitButton.click();
         await expect(page).toHaveURL(/.*home/, { timeout: 30000 });
 
         // Navigate to tasks

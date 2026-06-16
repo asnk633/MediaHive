@@ -1,5 +1,5 @@
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/db-fixture';
 
 const GUEST_USER = {
     email: 'shuaibmse007@gmail.com',
@@ -20,12 +20,17 @@ test.describe('Guest User Experience', () => {
 
         await page.goto('/login');
         await page.evaluate(() => localStorage.setItem('mediahive_onboarding_complete', 'true'));
-        await page.fill('input[type="email"]', GUEST_USER.email);
-        await page.fill('input[type="password"]', GUEST_USER.password);
-        await page.click('button[type="submit"]');
-
-        // Wait for Home
-        await page.waitForURL('/home', { timeout: 30000 });
+        const emailInput = page.locator('input[type="email"]');
+        const passwordInput = page.locator('input[type="password"]');
+        await emailInput.click();
+        await emailInput.fill(GUEST_USER.email);
+        await passwordInput.click();
+        await passwordInput.fill(GUEST_USER.password);
+        
+        const submitButton = page.locator('button[type="submit"]');
+        await expect(submitButton).toBeEnabled();
+        await submitButton.click();
+        await expect(page).toHaveURL(/.*home/, { timeout: 30000 });
 
         // 2. Open a Task (to trigger TaskDetailsModal)
         // Guest sees "My Requests". We need to find a task card to click.
@@ -37,8 +42,8 @@ test.describe('Guest User Experience', () => {
         if (await taskCard.count() > 0) {
             await taskCard.click();
 
-            // Wait a bit for modal animation
-            await page.waitForTimeout(1000);
+            // Wait for the modal dialog to be visible to ensure animation finishes
+            await expect(page.locator('[role="dialog"]').first()).toBeVisible();
 
             // Check for specific error
             const keyError = consoleErrors.find(e => e.includes('Encountered two children with the same key'));
@@ -48,6 +53,6 @@ test.describe('Guest User Experience', () => {
         }
 
         // 3. Verify allowed UI just in case
-        await expect(page.getByRole('heading', { name: 'My Requests' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'My Requests' })).toBeVisible({ timeout: 15000 });
     });
 });

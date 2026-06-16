@@ -26,9 +26,9 @@ test('login debug', async ({ page }) => {
 
         fs.appendFileSync('login_debug.log', 'Clicked submit\n');
 
-        // Wait 5s and check URL
-        await page.waitForTimeout(5000);
-        fs.appendFileSync('login_debug.log', `URL after 5s: ${page.url()}\n`);
+        // Wait for URL to change away from login, or timeout after 5s
+        await page.waitForURL(url => !url.toString().includes('login'), { timeout: 5000 }).catch(() => {});
+        fs.appendFileSync('login_debug.log', `URL after waiting: ${page.url()}\n`);
 
         if (page.url().includes('login')) {
             fs.appendFileSync('login_debug.log', 'Still on login. Checking for errors...\n');

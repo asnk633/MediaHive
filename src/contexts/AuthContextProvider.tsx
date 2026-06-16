@@ -93,8 +93,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         const mockDeptIdStr = localStorage.getItem('playwright_test_department_id');
                         const mockDepartmentId = mockDeptIdStr ? parseInt(mockDeptIdStr, 10) : undefined;
                         const mockUser: User = {
-                            uid: 'e2e-test-user-id',
-                            id: 'e2e-test-user-id',
+                            uid: '00000000-0000-0000-0000-000000000001',
+                            id: '00000000-0000-0000-0000-000000000001',
                             email: 'e2e@mediahive.test',
                             name: 'E2E Test User',
                             role: mockRole,

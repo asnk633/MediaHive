@@ -13,8 +13,8 @@ export async function tenantContext(): Promise<{ tenantId: string, userId: strin
         const isE2EAuth = localStorage.getItem('playwright_test_auth') === 'true';
         if (isE2EAuth) {
             return {
-                tenantId: 'mock-tenant-id',
-                userId: 'e2e-test-user-id',
+                tenantId: '00000000-0000-0000-0000-000000000000',
+                userId: '00000000-0000-0000-0000-000000000001',
                 institutionId: localStorage.getItem('playwright_test_institution_id') || '1'
             };
         }

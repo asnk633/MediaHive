@@ -1,7 +1,6 @@
-// src/app/api/files/[id]/download/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { files } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -14,6 +13,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const id = parseInt(idString, 10);
     if (Number.isNaN(id)) return NextResponse.json({ error: "Invalid file id" }, { status: 400 });
 
+    const db = await getDb();
     const [fileRecord] = await db.select().from(files).where(eq(files.id, id)).limit(1);
 
     if (!fileRecord) return NextResponse.json({ error: "Not found" }, { status: 404 });

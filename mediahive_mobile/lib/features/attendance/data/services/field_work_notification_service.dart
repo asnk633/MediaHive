@@ -62,12 +62,12 @@ class FieldWorkNotificationService {
       // Store notification in database for each manager
       for (final managerId in managerIds) {
         await _client.from('notifications').insert({
-          'userId': managerId,
+          'user_id': managerId,
           'title': 'Field Work Request',
-          'message': '$userName has requested field work${reason != null ? ': $reason' : ''}',
+          'body': '$userName has requested field work${reason != null ? ': $reason' : ''}',
           'type': 'field_work',
           'route': '/attendance',
-          'isRead': false,
+          'read': false,
           'metadata': {
             'sessionId': sessionId,
             'requesterId': userId,
@@ -89,12 +89,12 @@ class FieldWorkNotificationService {
   }) async {
     try {
       await _client.from('notifications').insert({
-        'userId': userId,
+        'user_id': userId,
         'title': 'Field Work Approved',
-        'message': 'Your field work request has been approved. You may now depart.',
+        'body': 'Your field work request has been approved. You may now depart.',
         'type': 'field_work',
         'route': '/attendance',
-        'isRead': false,
+        'read': false,
         'metadata': {
           'sessionId': sessionId,
           'action': 'field_work_approved',
@@ -121,12 +121,12 @@ class FieldWorkNotificationService {
           : '';
 
       await _client.from('notifications').insert({
-        'userId': userId,
+        'user_id': userId,
         'title': 'Field Work Rejected',
-        'message': 'Your field work request was rejected.${rejectionReason != null ? ' Reason: $rejectionReason.' : ''}$graceMsg',
+        'body': 'Your field work request was rejected.${rejectionReason != null ? ' Reason: $rejectionReason.' : ''}$graceMsg',
         'type': 'field_work',
         'route': '/attendance',
-        'isRead': false,
+        'read': false,
         'metadata': {
           'sessionId': sessionId,
           'action': 'field_work_rejected',
@@ -147,12 +147,12 @@ class FieldWorkNotificationService {
   }) async {
     try {
       await _client.from('notifications').insert({
-        'userId': userId,
+        'user_id': userId,
         'title': 'Field Work Auto-Approved',
-        'message': 'Your field work request was automatically approved (manager timeout).',
+        'body': 'Your field work request was automatically approved (manager timeout).',
         'type': 'field_work',
         'route': '/attendance',
-        'isRead': false,
+        'read': false,
         'metadata': {
           'sessionId': sessionId,
           'action': 'field_work_auto_approved',
@@ -186,12 +186,12 @@ class FieldWorkNotificationService {
       for (final deputy in deputies) {
         final deputyId = deputy['deputyId'] as String;
         await _client.from('notifications').insert({
-          'userId': deputyId,
+          'user_id': deputyId,
           'title': 'Field Work Request (Deputy)',
-          'message': '$userName has requested field work${reason != null ? ': $reason' : ''} (routed to you as deputy)',
+          'body': '$userName has requested field work${reason != null ? ': $reason' : ''} (routed to you as deputy)',
           'type': 'field_work',
           'route': '/attendance',
-          'isRead': false,
+          'read': false,
           'metadata': {
             'sessionId': sessionId,
             'action': 'field_work_request_deputy',

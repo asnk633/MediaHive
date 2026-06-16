@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -58,6 +61,10 @@ class PresenceTimelineScreen extends ConsumerWidget {
         centerTitle: true,
         iconTheme: IconThemeData(color: colors.textPrimary),
         actions: [
+          IconButton(
+            icon: Icon(LucideIcons.download, size: 20, color: colors.textSecondary),
+            onPressed: () => _exportPresenceLogs(context, logsAsync.valueOrNull ?? []),
+          ),
           IconButton(
             icon: Icon(LucideIcons.refreshCw, size: 20, color: colors.textSecondary),
             onPressed: () => ref.invalidate(presenceLogsProvider(attendanceId)),
@@ -285,5 +292,59 @@ class PresenceTimelineScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _exportPresenceLogs(BuildContext context, List<Map<String, dynamic>> logs) async {
+    if (logs.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No logs to export.')),
+      );
+      return;
+    }
+
+    try {
+      final csvBuffer = StringBuffer();
+      
+      // Header
+      csvBuffer.writeln('Timestamp (UTC),Timestamp (Local),Status,Distance from Office (m),Accuracy (m),Method,WiFi SSID,Battery Level (%)');
+      
+      for (final log in logs) {
+        final createdAtStr = log['createdAt'] as String? ?? '';
+        final createdAt = DateTime.tryParse(createdAtStr);
+        final localTimeStr = createdAt != null ? DateFormat('yyyy-MM-dd HH:mm:ss').format(createdAt.toLocal()) : '';
+        
+        final isWithin = log['isWithinGeofence'] == true;
+        final isMock = log['isMockLocation'] == true;
+        final status = isMock ? 'Mock GPS' : (isWithin ? 'Inside Zone' : 'Violation');
+        
+        final distance = (log['distanceFromOffice'] as num?)?.toDouble().toStringAsFixed(1) ?? '';
+        final accuracy = (log['accuracy'] as num?)?.toDouble().toStringAsFixed(1) ?? '';
+        final method = log['verificationMethod'] as String? ?? 'gps';
+        final wifiSsid = log['wifiSsid'] as String? ?? '';
+        final battery = log['batteryLevel']?.toString() ?? '';
+        
+        // Escape wifi SSID if it contains commas or quotes
+        var escapedWifi = wifiSsid;
+        if (escapedWifi.contains(',') || escapedWifi.contains('"')) {
+          escapedWifi = '"${escapedWifi.replaceAll('"', '""')}"';
+        }
+        
+        csvBuffer.writeln('$createdAtStr,$localTimeStr,$status,$distance,$accuracy,$method,$escapedWifi,$battery');
+      }
+
+      final directory = await getTemporaryDirectory();
+      final path = '${directory.path}/presence_logs_$attendanceId.csv';
+      final file = File(path);
+      await file.writeAsString(csvBuffer.toString());
+
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        subject: 'Presence Logs Report - Session ${attendanceId.substring(0, 8)}',
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to export CSV: $e'), backgroundColor: AppColors.error),
+      );
+    }
   }
 }

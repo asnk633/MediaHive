@@ -277,6 +277,15 @@ class CommandCenterScreen extends ConsumerWidget {
           onTap: () => context.push('/governance/attendance-policy'),
         ),
         const SizedBox(height: 12),
+        _buildActionCard(
+          'MANAGER DEPUTIES', 
+          'Configure fallback approval routes when primary managers are offline', 
+          LucideIcons.users, 
+          colors,
+          isFullWidth: true,
+          onTap: () => context.push('/governance/deputies'),
+        ),
+        const SizedBox(height: 12),
         Row(
           children: [
             Expanded(

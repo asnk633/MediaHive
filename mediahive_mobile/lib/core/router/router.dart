@@ -33,6 +33,7 @@ import '../../features/campaigns/presentation/screens/create_campaign_screen.dar
 import '../../features/governance/presentation/screens/command_center_screen.dart';
 import '../../features/tasks/presentation/screens/task_details_screen.dart';
 import '../../features/governance/presentation/screens/user_management_screen.dart';
+import '../../features/governance/presentation/screens/manager_deputies_screen.dart';
 import '../../features/system/presentation/screens/system_health_screen.dart';
 import '../providers/user_provider.dart';
 import '../../features/attendance/presentation/providers/attendance_provider.dart';
@@ -247,6 +248,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/governance/users',
             builder: (context, state) => const UserManagementScreen(),
+          ),
+          GoRoute(
+            path: '/governance/deputies',
+            builder: (context, state) => const ManagerDeputiesScreen(),
           ),
           GoRoute(
             path: '/governance/system-health',

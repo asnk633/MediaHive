@@ -112,15 +112,15 @@ jobs:
           nohup pnpm dev > dev-server.log 2>&1 &
           echo $! > dev-server.pid
           
-          # Wait for server to be ready (max 60 seconds)
+          # Wait for server to be ready (max 120 seconds)
           echo "Waiting for dev server to start..."
-          for i in {1..60}; do
+          for i in {1..120}; do
             if curl -s http://127.0.0.1:3000 > /dev/null; then
               echo "Dev server is ready!"
               break
             fi
-            if [ $i -eq 60 ]; then
-              echo "Dev server failed to start within 60 seconds"
+            if [ $i -eq 120 ]; then
+              echo "Dev server failed to start within 120 seconds"
               cat dev-server.log
               exit 1
             fi

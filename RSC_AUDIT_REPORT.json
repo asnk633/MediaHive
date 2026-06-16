@@ -1,0 +1,268 @@
+{
+  "src\\components\\admin\\ActivityFeedWidget.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'useEffect' for fetching data, which is unnecessary in a React Server Component. Data should be fetched on the server side."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "The component fetches data using 'apiClient', which should ideally be done on the server side to avoid client-side rendering of sensitive data."
+    }
+  ],
+  "src\\components\\admin\\AdminSidebar.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'useState' and 'useEffect', which are unnecessary for a React Server Component. These hooks should be removed to make the component a pure server-side component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is being done on the client side using 'localStorage'. This data should be fetched on the server side instead to improve performance and SEO."
+    }
+  ],
+  "src\\components\\admin\\AutomationRulesView.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not contain any hooks like useState/useEffect or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "large_client_props",
+      "description": "The RuleEditor component receives large props (formData) that may cause performance issues when serialized and sent from the server to the client. Consider breaking down the data into smaller chunks or using server-side rendering for this component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side within the useEffect hook. This can lead to unnecessary re-renders and performance issues. Fetching data should be done on the server side if possible."
+    }
+  ],
+  "src\\components\\admin\\CalendarMasterList.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not contain any React hooks or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side using useEffect and fetchEvents function. This should be moved to a server component or an API route for better performance and security."
+    }
+  ],
+  "src\\components\\admin\\DepartmentManagement.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not use any React hooks or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side using useEffect and fetchDepartments function. This should be moved to a server component or a custom hook that runs on the server."
+    }
+  ],
+  "src\\components\\admin\\DriveQueueView.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses the 'use client' directive, but it does not contain any hooks like useState/useEffect or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side using useEffect and apiClient calls. This data should be fetched on the server side instead to improve performance and SEO."
+    }
+  ],
+  "src\\components\\admin\\InstitutionManagement.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not use any hooks or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side using useEffect and fetchInstitutions function. This should be moved to a server component to improve performance and SEO."
+    }
+  ],
+  "src\\components\\admin\\intelligence\\AuditLogTable.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not contain any hooks like useState/useEffect or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side using useEffect and fetchLogs function. This should be moved to a server component to improve performance and SEO."
+    }
+  ],
+  "src\\components\\admin\\intelligence\\ExportModal.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not contain any hooks like useState/useEffect, no browser APIs, and no event listeners. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side within the handleExport function. This should be moved to a server component or an API route to improve performance and security."
+    }
+  ],
+  "src\\components\\admin\\intelligence\\LeadershipSummaryPanel.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not use any React hooks or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side using useEffect. This data should be fetched on the server side to improve performance and SEO."
+    }
+  ],
+  "src\\components\\admin\\intelligence\\PerformanceChart.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not use any React hooks or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is happening on the client side within the component. This data should be fetched on the server side using Next.js's data fetching capabilities like getServerSideProps or useServerAction."
+    }
+  ],
+  "src\\components\\admin\\intelligence\\PerformanceHistoryModal.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, which is unnecessary since it does not use any hooks or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching logic (fetchHistory and fetchInterventions) is performed on the client side using useEffect. This should be moved to the server side to improve performance and SEO."
+    }
+  ],
+  "src\\components\\admin\\intelligence\\TeamContributionChart.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses the 'use client' directive, but it does not contain any hooks or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching should ideally happen on the server side instead of being passed as props from a Client Component. Consider using server actions or fetching data in a parent component and passing it down as props."
+    }
+  ],
+  "src\\components\\admin\\InviteUserPanel.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not contain any hooks like useState/useEffect or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side using useEffect and fetchInvites function. This should be moved to the server side to improve performance and SEO."
+    }
+  ],
+  "src\\components\\admin\\NotificationPolicyView.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'useState' and 'useEffect', which are unnecessary for a React Server Component. These hooks should be removed to make the component a pure server-side component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side using 'useEffect'. This can be moved to the server side by fetching data in a server action or during the initial render of the component."
+    }
+  ],
+  "src\\components\\admin\\RoleEditor.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not contain any hooks like useState/useEffect or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching (updateRole) is done on the client side. This should be moved to a server component or an API route to improve performance and security."
+    }
+  ],
+  "src\\components\\admin\\RolePolicyEditor.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not contain any hooks like useState/useEffect or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side using useEffect. This can be moved to the server side to improve performance and SEO."
+    }
+  ],
+  "src\\components\\admin\\structure\\ResolvedStructureName.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'useEffect' and 'useState', which are unnecessary for a React Server Component. This can be converted to a server-side component by removing these hooks."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is being done on the client side within the useEffect hook. This should be moved to the server side to improve performance and SEO."
+    }
+  ],
+  "src\\components\\admin\\StructurePolicyEditor.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not contain any hooks like useState/useEffect or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side using useEffect and apiClient. This should be moved to a server component to improve performance and SEO."
+    }
+  ],
+  "src\\components\\admin\\SystemHealthPanel.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not use any hooks like useState/useEffect or interact with browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "large_client_props",
+      "description": "The component receives large props (tasks, events, mediaFiles, users) that are likely causing performance issues when passed from the server to the client. Consider fetching this data on the server side instead of passing it as props."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "The component fetches data using useEffect and EdgeCaseService.analyze, which is done on the client side. This can be moved to a Server Component or an API route to improve performance."
+    }
+  ],
+  "src\\components\\admin\\SystemUpdatesView.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not contain any hooks like useState/useEffect or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side using useEffect. This should be moved to a server component to improve performance and security."
+    }
+  ],
+  "src\\components\\admin\\UserManagementPanel.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not contain any hooks like useState/useEffect or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "large_client_props",
+      "description": "The component receives 'institution_id' as a prop, which is likely large and non-serializable. Consider fetching this data on the server side instead of passing it as a prop."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching logic (fetchUsers, fetchMetaData) is performed in useEffect, which runs on the client side. This can be moved to the server side using Server Actions or other server-side data fetching techniques."
+    }
+  ],
+  "src\\components\\admin\\UserRoleManager.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not contain any hooks like useState/useEffect or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side using useEffect and apiClient. This data should be fetched on the server side to improve performance and SEO."
+    }
+  ],
+  "src\\components\\admin\\users\\InviteUserModal.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not contain any hooks like useState/useEffect or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "large_client_props",
+      "description": "The component receives large props (workspaces) that are likely fetched from the server. These should be passed down as minimal data as possible and fetched on the server side if not already done."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is being done on the client side within useEffect, which can lead to unnecessary re-renders and performance issues. This data should be fetched on the server side."
+    }
+  ],
+  "src\\components\\activity\\SmartActivityFeed.tsx": [
+    {
+      "type": "unnecessary_use_client",
+      "description": "The component uses 'use client' directive, but it does not contain any hooks like useState/useEffect or browser APIs. It can be converted to a Server Component."
+    },
+    {
+      "type": "client_data_fetch",
+      "description": "Data fetching is done on the client side using useEffect. This should be moved to the server side to improve performance and SEO."
+    }
+  ]
+}

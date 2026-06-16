@@ -138,6 +138,7 @@ mediahive-app/
 
 | Date | Change | Author |
 | :--- | :--- | :--- |
+| 2026-06-16 | **Three.js Marketing Site Optimization:** Implemented `IntersectionObserver` wrappers around continuous `requestAnimationFrame` loops in `website/main.js`. Paused the 3D WebGL device renders (`initDevice`) and the iPhone 2D video-to-canvas offscreen texture updates (`createIphoneVideoTexture`) whenever they scroll out of view. Kept `global-silk-canvas` background continuous but reliant on native `document.hidden` throttling. Drastically reduced baseline GPU/CPU usage and extended mobile battery life. | AI Agent |
 | 2026-06-16 | Resolve CI/CD Next.js Build and E2E Test Failures: Refactored `/api/files/[id]/download/route.ts` to use `getDb()` asynchronously, avoiding uninitialized `db` proxy errors during Next.js page collection. Replaced mock user and tenant IDs with valid UUID formats in `tenantContext.ts` and `AuthContextProvider.tsx` to fix PostgreSQL query syntax exceptions. | AI Agent |
 | 2026-06-15 | User Management E2E Test & CI Pipeline: Created user-management.spec.ts validating users, profiles, and guest restrictions. Adjusted downloads-files.spec.ts to support real file upload to Google Drive without API mock. Created playwright-full-coverage.yml nightly CI. Verified all tests passed. | AI Agent |
 | 2026-06-15 | E2E Full Coverage Infrastructure Setup: Created env validation check, global-setup cache, role-based login helpers, database cleanup helper, and cleanup verification. Registered global setup in playwright.config.ts. | AI Agent |

@@ -34,6 +34,9 @@ jobs:
   E2E_GUEST_EMAIL: "guest@example.com"
 
   E2E_GUEST_PASSWORD: "password"
+  E2E_MEMBER_EMAIL: "member@example.com"
+
+  E2E_MEMBER_PASSWORD: "password"
 
   SUPABASE_URL: "http://localhost:54321"
 

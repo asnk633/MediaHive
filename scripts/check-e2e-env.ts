@@ -8,6 +8,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 const REQUIRED = [
   'E2E_ADMIN_EMAIL', 'E2E_ADMIN_PASSWORD',
   'E2E_GUEST_EMAIL', 'E2E_GUEST_PASSWORD',
+  'E2E_MEMBER_EMAIL', 'E2E_MEMBER_PASSWORD',
   'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'
 ];
 

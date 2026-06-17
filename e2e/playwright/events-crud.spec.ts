@@ -6,168 +6,170 @@ import { safeGoto } from './helpers/navigation';
 let testPrefix: string;
 
 test.beforeEach(async () => {
-    testPrefix = getTestPrefix('events');
+  testPrefix = getTestPrefix('events');
 });
 
 test.afterEach(async () => {
-    await cleanupByPrefix('events', 'title', testPrefix);
+  await cleanupByPrefix('events', 'title', testPrefix);
 });
 
 test.describe('Events CRUD', () => {
-    test('Event page loads with calendar', async ({ page }) => {
-        await loginAsAdmin(page);
-        await safeGoto(page, '/events');
-        // We ensure a hard check without any catch is here as per Code Review feedback
-        await expect(page.locator('body')).toBeVisible();
-    });
+  test('Event page loads with calendar', async ({ page }) => {
+    await loginAsAdmin(page);
+    await safeGoto(page, '/events');
 
-    test('Toggle view modes', async ({ page }) => {
-        await loginAsAdmin(page);
-        await safeGoto(page, '/events');
+    // Check that we're on the page and the calendar is visible
+    await expect(page.locator('text=/events/i, .calendar-container').first()).toBeVisible();
+    await expect(page.locator('body')).toBeVisible();
+  });
 
-        const monthBtn = page.getByRole('button', { name: /month/i }).first();
-        if (await monthBtn.isVisible().catch(() => false)) await monthBtn.click();
+  test('Toggle view modes', async ({ page }) => {
+    await loginAsAdmin(page);
+    await safeGoto(page, '/events');
 
-        const weekBtn = page.getByRole('button', { name: /week/i }).first();
-        if (await weekBtn.isVisible().catch(() => false)) await weekBtn.click();
+    // Attempt to toggle different views
+    const monthBtn = page.getByRole('button', { name: /month/i }).first();
+    if (await monthBtn.isVisible().catch(() => false)) await monthBtn.click();
 
-        const listBtn = page.getByRole('button', { name: /list/i }).first();
-        if (await listBtn.isVisible().catch(() => false)) await listBtn.click();
+    const weekBtn = page.getByRole('button', { name: /week/i }).first();
+    if (await weekBtn.isVisible().catch(() => false)) await weekBtn.click();
 
-        const timelineBtn = page.getByRole('button', { name: /timeline/i }).first();
-        if (await timelineBtn.isVisible().catch(() => false)) await timelineBtn.click();
-    });
+    const listBtn = page.getByRole('button', { name: /list/i }).first();
+    if (await listBtn.isVisible().catch(() => false)) await listBtn.click();
 
-    test('Create new event', async ({ page }) => {
-        await loginAsAdmin(page);
-        await safeGoto(page, '/events');
+    const timelineBtn = page.getByRole('button', { name: /timeline/i }).first();
+    if (await timelineBtn.isVisible().catch(() => false)) await timelineBtn.click();
+  });
 
-        const createBtn = page.getByRole('button', { name: /create event|add event/i }).first();
-        if (await createBtn.isVisible().catch(() => false)) {
-            await createBtn.click();
+  test('Create new event', async ({ page }) => {
+    await loginAsAdmin(page);
+    await safeGoto(page, '/events');
 
-            const title = `${testPrefix} Test Event`;
-            const titleInput = page.getByLabel(/title/i).or(page.locator('input[name="title"]')).first();
-            await titleInput.fill(title);
+    const createBtn = page.getByRole('button', { name: /create event|add event/i }).first();
+    if (await createBtn.isVisible().catch(() => false)) {
+      await createBtn.click();
 
-            const submitBtn = page.getByRole('button', { name: /submit|save|create/i }).first();
-            await submitBtn.click();
+      const title = `${testPrefix} Test Event`;
+      const titleInput = page.getByLabel(/title/i).or(page.locator('input[name="title"]')).first();
+      await titleInput.fill(title);
 
-            await expect(page.getByText(title).first()).toBeVisible({ timeout: 10000 });
-        }
-    });
+      const submitBtn = page.getByRole('button', { name: /submit|save|create/i }).first();
+      await submitBtn.click();
 
-    test('View event detail modal', async ({ page }) => {
-        await loginAsAdmin(page);
-        await safeGoto(page, '/events');
+      await expect(page.getByText(title).first()).toBeVisible({ timeout: 10000 });
+    }
+  });
 
-        const createBtn = page.getByRole('button', { name: /create event|add event/i }).first();
-        if (await createBtn.isVisible().catch(() => false)) {
-            await createBtn.click();
+  test('View event detail modal', async ({ page }) => {
+    await loginAsAdmin(page);
+    await safeGoto(page, '/events');
 
-            const title = `${testPrefix} Detail Test Event`;
-            const titleInput = page.getByLabel(/title/i).or(page.locator('input[name="title"]')).first();
-            await titleInput.fill(title);
+    const createBtn = page.getByRole('button', { name: /create event|add event/i }).first();
+    if (await createBtn.isVisible().catch(() => false)) {
+      await createBtn.click();
 
-            const submitBtn = page.getByRole('button', { name: /submit|save|create/i }).first();
-            await submitBtn.click();
+      const title = `${testPrefix} Detail Test Event`;
+      const titleInput = page.getByLabel(/title/i).or(page.locator('input[name="title"]')).first();
+      await titleInput.fill(title);
 
-            const eventItem = page.getByText(title).first();
-            await eventItem.click();
+      const submitBtn = page.getByRole('button', { name: /submit|save|create/i }).first();
+      await submitBtn.click();
 
-            await expect(page.locator('.modal-content, [role="dialog"], .modal').first()).toBeVisible({ timeout: 10000 });
-        }
-    });
+      const eventItem = page.getByText(title).first();
+      await eventItem.click();
 
-    test('Edit event', async ({ page }) => {
-        await loginAsAdmin(page);
-        await safeGoto(page, '/events');
+      await expect(page.locator('.modal-content, [role="dialog"], .modal').first()).toBeVisible({ timeout: 10000 });
+    }
+  });
 
-        const createBtn = page.getByRole('button', { name: /create event|add event/i }).first();
-        if (await createBtn.isVisible().catch(() => false)) {
-            await createBtn.click();
+  test('Edit event', async ({ page }) => {
+    await loginAsAdmin(page);
+    await safeGoto(page, '/events');
 
-            const title = `${testPrefix} Edit Test Event`;
-            const titleInput = page.getByLabel(/title/i).or(page.locator('input[name="title"]')).first();
-            await titleInput.fill(title);
+    const createBtn = page.getByRole('button', { name: /create event|add event/i }).first();
+    if (await createBtn.isVisible().catch(() => false)) {
+      await createBtn.click();
 
-            const submitBtn = page.getByRole('button', { name: /submit|save|create/i }).first();
-            await submitBtn.click();
+      const title = `${testPrefix} Edit Test Event`;
+      const titleInput = page.getByLabel(/title/i).or(page.locator('input[name="title"]')).first();
+      await titleInput.fill(title);
 
-            const eventItem = page.getByText(title).first();
-            await eventItem.click();
+      const submitBtn = page.getByRole('button', { name: /submit|save|create/i }).first();
+      await submitBtn.click();
 
-            const editBtn = page.getByRole('button', { name: /edit/i }).first();
-            if (await editBtn.isVisible().catch(() => false)) {
-                await editBtn.click();
+      const eventItem = page.getByText(title).first();
+      await eventItem.click();
 
-                const newTitle = `${testPrefix} Edited Test Event`;
-                await titleInput.fill(newTitle);
+      const editBtn = page.getByRole('button', { name: /edit/i }).first();
+      if (await editBtn.isVisible().catch(() => false)) {
+        await editBtn.click();
 
-                const saveBtn = page.getByRole('button', { name: /save|submit/i }).first();
-                await saveBtn.click();
+        const newTitle = `${testPrefix} Edited Test Event`;
+        await titleInput.fill(newTitle);
 
-                await expect(page.getByText(newTitle).first()).toBeVisible({ timeout: 10000 });
-            }
-        }
-    });
+        const saveBtn = page.getByRole('button', { name: /save|submit/i }).first();
+        await saveBtn.click();
 
-    test('Delete event', async ({ page }) => {
-        await loginAsAdmin(page);
-        await safeGoto(page, '/events');
+        await expect(page.getByText(newTitle).first()).toBeVisible({ timeout: 10000 });
+      }
+    }
+  });
 
-        const createBtn = page.getByRole('button', { name: /create event|add event/i }).first();
-        if (await createBtn.isVisible().catch(() => false)) {
-            await createBtn.click();
+  test('Delete event', async ({ page }) => {
+    await loginAsAdmin(page);
+    await safeGoto(page, '/events');
 
-            const title = `${testPrefix} Delete Test Event`;
-            const titleInput = page.getByLabel(/title/i).or(page.locator('input[name="title"]')).first();
-            await titleInput.fill(title);
+    const createBtn = page.getByRole('button', { name: /create event|add event/i }).first();
+    if (await createBtn.isVisible().catch(() => false)) {
+      await createBtn.click();
 
-            const submitBtn = page.getByRole('button', { name: /submit|save|create/i }).first();
-            await submitBtn.click();
+      const title = `${testPrefix} Delete Test Event`;
+      const titleInput = page.getByLabel(/title/i).or(page.locator('input[name="title"]')).first();
+      await titleInput.fill(title);
 
-            const eventItem = page.getByText(title).first();
-            await eventItem.click();
+      const submitBtn = page.getByRole('button', { name: /submit|save|create/i }).first();
+      await submitBtn.click();
 
-            const deleteBtn = page.getByRole('button', { name: /delete|remove/i }).first();
-            if (await deleteBtn.isVisible().catch(() => false)) {
-                await deleteBtn.click();
+      const eventItem = page.getByText(title).first();
+      await eventItem.click();
 
-                const confirmBtn = page.getByRole('button', { name: /confirm|yes/i }).first();
-                if (await confirmBtn.isVisible().catch(() => false)) await confirmBtn.click();
+      const deleteBtn = page.getByRole('button', { name: /delete|remove/i }).first();
+      if (await deleteBtn.isVisible().catch(() => false)) {
+        await deleteBtn.click();
 
-                await expect(page.getByText(title).first()).not.toBeVisible({ timeout: 10000 });
-            }
-        }
-    });
+        const confirmBtn = page.getByRole('button', { name: /confirm|yes/i }).first();
+        if (await confirmBtn.isVisible().catch(() => false)) await confirmBtn.click();
 
-    test('Validation: empty/invalid fields block submission', async ({ page }) => {
-        await loginAsAdmin(page);
-        await safeGoto(page, '/events');
+        await expect(page.getByText(title).first()).not.toBeVisible({ timeout: 10000 });
+      }
+    }
+  });
 
-        const createBtn = page.getByRole('button', { name: /create event|add event/i }).first();
-        if (await createBtn.isVisible().catch(() => false)) {
-            await createBtn.click();
+  test('Validation: empty/invalid fields block submission', async ({ page }) => {
+    await loginAsAdmin(page);
+    await safeGoto(page, '/events');
 
-            const submitBtn = page.getByRole('button', { name: /submit|save|create/i }).first();
-            await submitBtn.click();
+    const createBtn = page.getByRole('button', { name: /create event|add event/i }).first();
+    if (await createBtn.isVisible().catch(() => false)) {
+      await createBtn.click();
 
-            // Check if validation message appears
-            await expect(page.locator('text=/required|cannot be empty/i, .text-red-500, [role="alert"]').first()).toBeVisible({ timeout: 10000 });
-        }
-    });
+      const submitBtn = page.getByRole('button', { name: /submit|save|create/i }).first();
+      await submitBtn.click();
 
-    test('Guest cannot create events', async ({ page }) => {
-        await loginAsGuest(page);
-        await safeGoto(page, '/events');
+      await expect(page.locator('text=/required|cannot be empty/i, .text-red-500, [role="alert"]').first()).toBeVisible({ timeout: 10000 });
+    }
+  });
 
-        const createBtn = page.locator('button', { hasText: /create event|add event/i }).first();
+  test('Guest cannot create events', async ({ page }) => {
+    await loginAsGuest(page);
+    await safeGoto(page, '/events');
 
-        if (await createBtn.isVisible().catch(() => false)) {
-            await expect(createBtn).toBeDisabled();
-        } else {
-            await expect(createBtn).not.toBeVisible();
-        }
-    });
+    const createBtn = page.locator('button', { hasText: /create event|add event/i }).first();
+
+    if (await createBtn.isVisible().catch(() => false)) {
+      await expect(createBtn).toBeDisabled();
+    } else {
+      await expect(createBtn).not.toBeVisible();
+    }
+  });
 });

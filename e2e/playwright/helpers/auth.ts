@@ -29,6 +29,21 @@ export async function loginWithCredentials(page: Page, role: 'admin' | 'guest' |
   // Reload to ensure flags are active
   await page.reload();
 
+  if (process.env.PLAYWRIGHT_TEST_MOCK_AUTH === 'true') {
+    // Inject mock authentication state for purely UI-mocked runs
+    await page.evaluate((r) => {
+      localStorage.setItem('playwright_test_auth', 'true');
+      localStorage.setItem('playwright_test_role', r);
+    }, role);
+    try {
+      await page.goto(`${baseUrl}/home`);
+    } catch (e: any) {
+      if (!e.message.includes('ERR_ABORTED') && !e.message.includes('NS_BINDING_ABORTED')) throw e;
+    }
+    await expect(page).toHaveURL(/.*home/, { timeout: 10000 });
+    return;
+  }
+
   // Fill credentials and login
   await page.fill('input[type="email"]', email);
   await page.fill('input[type="password"]', password);

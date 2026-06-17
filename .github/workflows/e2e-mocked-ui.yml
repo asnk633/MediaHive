@@ -145,7 +145,8 @@ jobs:
           pnpm exec playwright test smoke.spec.ts --retries=1 --reporter=list
         shell: bash
         env:
-          PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
+          PLAYWRIGHT_BASE_URL: "http://127.0.0.1:3000"
+          E2E_BASE_URL: "http://127.0.0.1:3000"
 
       - name: Stop dev server
         if: always()

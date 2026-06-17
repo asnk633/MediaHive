@@ -27,6 +27,20 @@ env:
   # Provide a file DB so DB seeding/connection checks don't blow up
   DATABASE_URL: "file:./ci.db"
 
+  # Provide dummy credentials so check-envs doesn't fail
+  # The tests use valid dummy credentials
+  E2E_ADMIN_EMAIL: "admin@example.com"
+  E2E_ADMIN_PASSWORD: "password"
+  E2E_GUEST_EMAIL: "guest@example.com"
+  E2E_GUEST_PASSWORD: "password"
+  E2E_MEMBER_EMAIL: "member@example.com"
+  E2E_MEMBER_PASSWORD: "password"
+  PLAYWRIGHT_TEST_MOCK_AUTH: "true"
+  SUPABASE_URL: "https://dummy.supabase.co"
+  SUPABASE_SERVICE_ROLE_KEY: "dummy_key"
+  NEXT_PUBLIC_SUPABASE_URL: "https://dummy.supabase.co"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy_key"
+
 jobs:
   e2e-mocked:
     name: E2E - Mocked UI Tests
@@ -104,6 +118,21 @@ jobs:
           # Create an empty sqlite file (used by DATABASE_URL file:./ci.db)
           mkdir -p .ci
           touch ci.db || true
+        shell: bash
+
+      - name: Install Python dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          cd scripts
+          python3 -m pip install -r requirements.txt
+
+      - name: Start Python face recognition service
+        run: |
+          cd scripts
+          python3 face_service.py &
+          echo "Waiting for Python service to start..."
+          sleep 10
         shell: bash
 
       - name: Start dev server in background

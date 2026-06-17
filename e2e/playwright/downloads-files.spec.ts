@@ -9,8 +9,9 @@ test.describe('Downloads/Files Feature', () => {
   test.setTimeout(120_000);
 
   test('Downloads page loads', async ({ page }) => {
-    // Standard auth login for the E2E framework
+    // 1. Setup programmatic auth mock directly in evaluate to bypass UI login
     await loginAsAdmin(page);
+
     await safeGoto(page, '/downloads');
 
     const heading = page.locator('h1').filter({ hasText: /Downloads|Media Library/i }).first();
@@ -18,8 +19,9 @@ test.describe('Downloads/Files Feature', () => {
   });
 
   test('Upload file to Google Drive', async ({ page }) => {
-    // Standard auth login for the E2E framework
+    // 1. Setup programmatic auth mock directly in evaluate to bypass UI login
     await loginAsAdmin(page);
+
     await safeGoto(page, '/downloads');
 
     const tempDir = os.tmpdir();
@@ -56,6 +58,8 @@ test.describe('Downloads/Files Feature', () => {
     // Ensure the modal eventually closes, indicating processing is done
     await expect(modal).toBeHidden({ timeout: 45000 });
 
+    expect(consoleLogTriggered).toBe(true);
+
     try {
       if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
     } catch (e) {
@@ -64,8 +68,9 @@ test.describe('Downloads/Files Feature', () => {
   });
 
   test('Download a file', async ({ page }) => {
-    // Standard auth login for the E2E framework
+    // 1. Setup programmatic auth mock directly in evaluate to bypass UI login
     await loginAsAdmin(page);
+
     await safeGoto(page, '/downloads');
 
     const downloadAnchor = page.locator('a[download], a:has-text("Download")').first();
@@ -83,8 +88,9 @@ test.describe('Downloads/Files Feature', () => {
   });
 
   test('Guest cannot upload', async ({ page }) => {
-    // Standard auth login for the E2E framework
+    // 1. Setup programmatic auth mock directly in evaluate to bypass UI login
     await loginAsGuest(page);
+
     await safeGoto(page, '/downloads');
 
     const uploadButton = page.locator('button').filter({ hasText: /^Upload$/i }).first();
@@ -92,8 +98,9 @@ test.describe('Downloads/Files Feature', () => {
   });
 
   test('Upload unsupported file type', async ({ page }) => {
-    // Standard auth login for the E2E framework
+    // 1. Setup programmatic auth mock directly in evaluate to bypass UI login
     await loginAsAdmin(page);
+
     await safeGoto(page, '/downloads');
 
     const tempDir = os.tmpdir();

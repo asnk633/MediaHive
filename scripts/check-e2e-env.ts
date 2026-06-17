@@ -12,6 +12,10 @@ const REQUIRED = [
 ];
 
 export function checkEnv() {
+  if (process.env.MOCK_FIREBASE === 'true') {
+    return;
+  }
+
   const missing: string[] = [];
   for (const key of REQUIRED) {
     if (!process.env[key]) {

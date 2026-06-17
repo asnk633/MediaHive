@@ -1,0 +1,30 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "playwright_test_role",
+          "value": "member"
+        },
+        {
+          "name": "hasSeenMemberWelcome-v1",
+          "value": "true"
+        },
+        {
+          "name": "playwright_test_email",
+          "value": "dummy@example.com"
+        },
+        {
+          "name": "mediahive_onboarding_complete",
+          "value": "true"
+        },
+        {
+          "name": "playwright_test_auth",
+          "value": "true"
+        }
+      ]
+    }
+  ]
+}

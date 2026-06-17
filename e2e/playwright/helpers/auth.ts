@@ -30,6 +30,7 @@ export async function loginWithCredentials(page: Page, role: 'admin' | 'guest' |
   await page.reload();
 
   // Fill credentials and login
+  await page.waitForSelector('input[type="email"]', { timeout: 30000 });
   await page.fill('input[type="email"]', email);
   await page.fill('input[type="password"]', password);
   await page.click('button[type="submit"]');

@@ -30,6 +30,8 @@ env:
   E2E_GUEST_EMAIL: "guest@example.com"
   E2E_GUEST_PASSWORD: "password"
   SUPABASE_URL: "http://localhost:54321"
+  NEXT_PUBLIC_SUPABASE_URL: "http://localhost:54321"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy_anon_key"
   SUPABASE_SERVICE_ROLE_KEY: "dummy_key"
 
   # Provide a file DB so DB seeding/connection checks don't blow up
@@ -145,8 +147,8 @@ jobs:
           pnpm exec playwright test smoke.spec.ts --retries=1 --reporter=list
         shell: bash
         env:
-          PLAYWRIGHT_BASE_URL: "http://127.0.0.1:3000"
           E2E_BASE_URL: "http://127.0.0.1:3000"
+          PLAYWRIGHT_BASE_URL: "http://127.0.0.1:3000"
 
       - name: Stop dev server
         if: always()

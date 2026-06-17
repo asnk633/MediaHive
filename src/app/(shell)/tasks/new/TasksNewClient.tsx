@@ -53,6 +53,8 @@ export default function TasksNewClient() {
     const isAdmin = currentRole?.toLowerCase() === 'admin';
     const isTeam = currentRole?.toLowerCase() === 'manager' || currentRole?.toLowerCase() === 'team';
     const isMember = currentRole?.toLowerCase() === 'member';
+    const isGuest = currentRole?.toLowerCase() === 'guest';
+    const isMemberOrGuest = isMember || isGuest;
     const canCreateOnBehalf = isAdmin || isTeam;
 
     const { state: formData, setState: setFormData, clearDraft, isDraftSaved } = useFormState({
@@ -242,11 +244,12 @@ export default function TasksNewClient() {
             const dept = departmentsList.find(d => String(d.id) === (formData.selectedDepartmentId || (!formData.isDelegating ? String(user.department_id || '') : '')));
             const departmentName = dept ? dept.name : '';
  
+            console.log("[TasksNew] submitTask triggered! isMemberOrGuest:", isMemberOrGuest);
             const newTaskData = {
                 title,
                 description,
                 status: 'todo',
-                priority: isMember ? 'low' : priority,
+                priority: isMemberOrGuest ? 'low' : priority,
                 due_date: due_date ? (typeof due_date === 'string' ? new Date(due_date).toISOString() : (due_date as Date).toISOString()) : new Date().toISOString(),
                 department: departmentName,
                 department_id: department_id,
@@ -275,36 +278,37 @@ export default function TasksNewClient() {
             const newTaskId = newTask?.id || uuidv4(); // Fallback ID for offline attachments if needed
  
             // Trigger Background Work (Notifications)
-            // We do NOT await this to ensure the UI closes immediately as requested.
-            // Trigger Background Work (Notifications) - Offloaded to macrotask
-            if (isMember) {
-                setTimeout(async () => {
-                    try {
-                        const { pushNotification } = await import('@/services/alertService');
-                        const [admins, managers] = await Promise.all([
-                            UserService.getAdmins(),
-                            UserService.getManagers()
-                        ]);
+            if (isMemberOrGuest) {
+                try {
+                    const { pushNotification } = await import('@/services/alertService');
+                    const { UserService } = await import('@/services/userService');
+                    const [admins, managers] = await Promise.all([
+                        UserService.getAdmins(),
+                        UserService.getManagers()
+                    ]);
 
-                        const recipients = [...admins, ...managers];
+                    const recipients = [...admins, ...managers];
+                    const uniqueRecipients = Array.from(new Set(recipients.map(u => u.uid)))
+                                                .map(uid => recipients.find(u => u.uid === uid))
+                                                .filter(Boolean) as any[];
 
-                        await Promise.all(recipients.map(recipient =>
-                            pushNotification({
-                                user_id: recipient.uid,
-                                created_by: user.uid,
-                                type: 'task_assigned',
-                                title: 'Task Assignment Required',
-                                body: `${user.official_name || user.name || 'A member'} has created "${title}" and a team member needs to be assigned to the task`,
-                                entity_type: 'task',
-                                entity_id: newTaskId,
-                                action_url: `/tasks/view?id=${newTaskId}`,
-                                priority: 'medium'
-                            })
-                        ));
-                    } catch (e) {
-                        console.error("[TasksNew] Background notification failed:", e);
-                    }
-                }, 0);
+                    console.log(`[TasksNew] Sending notification to ${uniqueRecipients.length} admins/managers`);
+                    await Promise.allSettled(uniqueRecipients.map(recipient => 
+                        pushNotification({
+                            user_id: recipient.uid,
+                            type: 'system_alert',
+                            title: 'Task Assignment Required',
+                            body: `${user.full_name || 'A user'} created a task: "${title}"`,
+                            priority: 'high',
+                            entity_type: 'task',
+                            entity_id: newTaskId,
+                            institution_id: dept?.institution_id || undefined,
+                            department_id: dept?.id ? Number(dept.id) : undefined
+                        }).catch(e => console.error(`[TasksNew] Notification failed for ${recipient.uid}`, e))
+                    ));
+                } catch (err) {
+                    console.error('[TasksNew] Background notification failed:', err);
+                }
             }
 
             // Phase 28: Immediate Navigation for better UX

@@ -10,28 +10,29 @@ export function getCredentials(role: 'admin' | 'guest' | 'member') {
 }
 
 export async function loginWithCredentials(page: Page, role: 'admin' | 'guest' | 'member') {
+  const { email, password } = getCredentials(role);
+
   // Clear browser storage/cache
   await page.context().clearCookies();
   
   const baseUrl = process.env.E2E_BASE_URL || 'http://localhost:3000';
   await page.goto(`${baseUrl}/login`);
   
-  // Use playwright_test_auth to bypass login
-  await page.evaluate((r) => {
+  // Set onboarding completion and welcome flags
+  await page.evaluate(() => {
     localStorage.clear();
     sessionStorage.clear();
     localStorage.setItem('mediahive_onboarding_complete', 'true');
     localStorage.setItem('hasSeenMemberWelcome-v1', 'true');
-    localStorage.setItem('playwright_test_auth', 'true');
-    localStorage.setItem('playwright_test_role', r);
-  }, role);
+  });
 
   // Reload to ensure flags are active
-  try {
-    await page.goto(`${baseUrl}/home`);
-  } catch (e: any) {
-    if (!e.message.includes('ERR_ABORTED') && !e.message.includes('NS_BINDING_ABORTED')) throw e;
-  }
+  await page.reload();
+
+  // Fill credentials and login
+  await page.fill('input[type="email"]', email);
+  await page.fill('input[type="password"]', password);
+  await page.click('button[type="submit"]');
 
   // Wait for home page navigation
   await expect(page).toHaveURL(/.*home/, { timeout: 30000 });

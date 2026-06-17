@@ -8,11 +8,14 @@ async function globalSetup(config: FullConfig) {
   console.log('🏁 Starting E2E Global Setup...');
   
   // 1. Validate environment variables
-  try {
-    checkEnv();
-  } catch (error: any) {
-    console.error('❌ E2E Preflight Check Failed:', error.message);
-    process.exit(1);
+  // In CI we might be running mocked UI tests without real Firebase credentials
+  if (process.env.MOCK_FIREBASE !== 'true') {
+    try {
+      checkEnv();
+    } catch (error: any) {
+      console.error('❌ E2E Preflight Check Failed:', error.message);
+      process.exit(1);
+    }
   }
 
   // 2. Set unique run ID

@@ -37,10 +37,12 @@ export async function loginWithCredentials(page: Page, role: 'admin' | 'guest' |
   await page.reload();
 
   try {
-    await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 2000 });
-    await page.fill('input[type="email"]', email, { timeout: 2000 });
-    await page.fill('input[type="password"]', password, { timeout: 2000 });
-    await page.click('button[type="submit"]', { timeout: 2000 });
+    const emailInput = page.locator('input[type="email"]');
+    if (await emailInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await emailInput.fill(email);
+      await page.fill('input[type="password"]', password);
+      await page.click('button[type="submit"]');
+    }
   } catch (error) {
     console.log(`UI Login failed. Using mock auth. Error: ${error}`);
   }

@@ -17,6 +17,10 @@
           "value": "true"
         },
         {
+          "name": "mediahive-theme",
+          "value": "midnight"
+        },
+        {
           "name": "playwright_test_auth",
           "value": "true"
         }

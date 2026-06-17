@@ -26,6 +26,12 @@ env:
 
   # Provide a file DB so DB seeding/connection checks don't blow up
   DATABASE_URL: "file:./ci.db"
+  E2E_ADMIN_EMAIL: "admin@example.com"
+  E2E_ADMIN_PASSWORD: "password"
+  E2E_GUEST_EMAIL: "guest@example.com"
+  E2E_GUEST_PASSWORD: "password"
+  SUPABASE_URL: "http://localhost"
+  SUPABASE_SERVICE_ROLE_KEY: "dummy"
 
 jobs:
   e2e-mocked:
@@ -138,6 +144,13 @@ jobs:
         shell: bash
         env:
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
+          SKIP_PREFLIGHT_CHECK: "true"
+          E2E_ADMIN_EMAIL: "admin@example.com"
+          E2E_ADMIN_PASSWORD: "password"
+          E2E_GUEST_EMAIL: "guest@example.com"
+          E2E_GUEST_PASSWORD: "password"
+          SUPABASE_URL: "http://localhost"
+          SUPABASE_SERVICE_ROLE_KEY: "dummy"
 
       - name: Stop dev server
         if: always()

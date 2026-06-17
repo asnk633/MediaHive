@@ -10,6 +10,23 @@ export function getCredentials(role: 'admin' | 'guest' | 'member') {
 }
 
 export async function loginWithCredentials(page: Page, role: 'admin' | 'guest' | 'member') {
+
+
+  // Skip real UI login if mock backend and skip_preflight is enabled
+  // (Prevents tests hanging on /login when backend connection fails in CI)
+  if (process.env.SKIP_PREFLIGHT_CHECK === 'true') {
+    const baseUrl = process.env.E2E_BASE_URL || 'http://localhost:3000';
+    await page.goto(baseUrl);
+    await page.evaluate(({ role }) => {
+      const email = 'dummy@example.com';
+      localStorage.setItem('playwright_test_auth', 'true');
+      localStorage.setItem('playwright_test_role', role);
+      localStorage.setItem('playwright_test_email', email);
+      localStorage.setItem('mediahive_onboarding_complete', 'true');
+      localStorage.setItem('hasSeenMemberWelcome-v1', 'true');
+    }, { role });
+    return;
+  }
   const { email, password } = getCredentials(role);
   
   // Clear browser storage/cache

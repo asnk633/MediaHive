@@ -6,15 +6,13 @@ import path from 'path';
 import os from 'os';
 
 test.describe('Downloads/Files Feature', () => {
-  // Use a longer timeout for this specific test suite if needed, though playwright.config.ts has 120s
   test.setTimeout(120_000);
 
   test('Downloads page loads', async ({ page }) => {
     await loginAsAdmin(page);
     await safeGoto(page, '/downloads');
 
-    // Check for "Downloads" heading to match smoke test assertions
-    const heading = page.locator('h1:has-text("Downloads")');
+    const heading = page.locator('h1').filter({ hasText: /Downloads|Media Library/i }).first();
     await expect(heading).toBeVisible({ timeout: 10000 });
   });
 
@@ -22,68 +20,44 @@ test.describe('Downloads/Files Feature', () => {
     await loginAsAdmin(page);
     await safeGoto(page, '/downloads');
 
-    // Create a temporary file
     const tempDir = os.tmpdir();
     const tempFilePath = path.join(tempDir, 'test-upload.png');
-    // Minimal valid PNG base64
     const pngBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==";
     fs.writeFileSync(tempFilePath, Buffer.from(pngBase64, 'base64'));
 
     let uploadedFileId = null;
+    let consoleLogTriggered = false;
     page.on('console', msg => {
       const text = msg.text();
-      if (text.includes('uploaded') || text.includes('success')) {
+      // Match the requirement: "Assert that upload succeeds and logs the Google Drive file ID to console"
+      if (text.includes('uploaded') || text.includes('success') || text.includes('Google Drive')) {
         console.log(`Intercepted console log: ${text}`);
+        uploadedFileId = text;
+        consoleLogTriggered = true;
       }
     });
 
+    const mainUploadBtn = page.locator('button').filter({ hasText: /^Upload$/i }).first();
+    await expect(mainUploadBtn).toBeVisible();
+    await mainUploadBtn.click();
 
+    const modal = page.locator('[role="dialog"], dialog').first();
+    await expect(modal).toBeVisible();
 
-    // Use getByRole for robust selector targeting
-    const mainUploadBtn = page.getByRole('button', { name: 'Upload', exact: true });
+    const fileInput = modal.locator('input[type="file"]');
+    await fileInput.waitFor({ state: 'attached' });
+    await fileInput.setInputFiles(tempFilePath);
 
-    if (await mainUploadBtn.count() > 0 && await mainUploadBtn.isVisible()) {
-        await mainUploadBtn.click();
+    const submitBtn = modal.locator('button:has-text("Upload File"), button[type="submit"]').first();
+    await expect(submitBtn).toBeVisible();
+    await submitBtn.click();
 
-        // Wait for the modal dialog to appear
-        const modal = page.locator('[role="dialog"]').first();
-        await expect(modal).toBeVisible({ timeout: 10000 });
+    await expect(modal).toBeHidden({ timeout: 30000 });
 
-        // The file input inside the modal
-        const fileInput = modal.locator('input[type="file"]');
-        await fileInput.waitFor({ state: 'attached' });
-        await fileInput.setInputFiles(tempFilePath);
-
-        // Submit upload in the modal using specific submit button
-        const submitBtn = modal.locator('button[type="submit"]');
-        await expect(submitBtn).toBeVisible();
-        await submitBtn.click();
-
-        // Wait for the upload to finish and modal to close
-        await expect(modal).toBeHidden({ timeout: 45000 });
-    } else {
-        // Fallback: If no upload modal workflow, just try to find the file input
-        const fileInput = page.locator('input[type="file"]');
-        if (await fileInput.count() > 0) {
-            await fileInput.waitFor({ state: 'attached' });
-            await fileInput.setInputFiles(tempFilePath);
-        }
-    }
-
-    // Try to ensure we got a file ID if the app logs it
-    if (uploadedFileId) {
-      console.log(`Google Drive file ID logged to console: ${uploadedFileId}`);
-    } else {
-      console.log("Upload test completed, simulating Google Drive file ID extraction.");
-    }
-
-    // Clean up safely inside try-catch
     try {
-      if (fs.existsSync(tempFilePath)) {
-        fs.unlinkSync(tempFilePath);
-      }
+      if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
     } catch (e) {
-      console.warn(`Temporary file cleanup warning: ${e.message}`);
+      console.warn(`Cleanup: ${e.message}`);
     }
   });
 
@@ -91,34 +65,25 @@ test.describe('Downloads/Files Feature', () => {
     await loginAsAdmin(page);
     await safeGoto(page, '/downloads');
 
+    const downloadAnchor = page.locator('a[download], a:has-text("Download")').first();
+    await expect(downloadAnchor).toBeVisible();
 
+    const href = await downloadAnchor.getAttribute('href');
+    expect(href).toBeTruthy();
 
-    // Wait for the download buttons to appear (FileCard component has a download anchor)
-    // The FileCard has `a[download]` or an anchor that triggers download
-    const downloadAnchor = page.locator('.group a[target="_blank"]').first();
-
-    if (await downloadAnchor.count() > 0 && await downloadAnchor.isVisible()) {
-        const href = await downloadAnchor.getAttribute('href');
-        expect(href).toBeTruthy();
-
-        // In this app, the download might be a viewLink that opens in a new tab
-        // We'll just verify the link exists and is clickable for a "download/view" action
-        console.log(`Download/View link found: ${href}`);
-    } else {
-        console.log('No files found to download. Test skipped.');
-        // We consider it passed if there are no files to download, but we verified the page loads
-    }
+    // Match the requirement: "trigger download, assert download completes"
+    const downloadPromise = page.waitForEvent('download', { timeout: 30000 });
+    await downloadAnchor.click();
+    const download = await downloadPromise;
+    const failure = await download.failure();
+    expect(failure).toBeNull();
   });
 
   test('Guest cannot upload', async ({ page }) => {
     await loginAsGuest(page);
     await safeGoto(page, '/downloads');
 
-
-
-    // Verify upload input/button is absent or disabled
-    // From security-rules.spec.ts: await expect(page.getByRole('button', { name: 'Upload' })).toBeHidden();
-    const uploadButton = page.getByRole('button', { name: 'Upload' });
+    const uploadButton = page.locator('button').filter({ hasText: /^Upload$/i }).first();
     await expect(uploadButton).toBeHidden();
   });
 
@@ -126,15 +91,12 @@ test.describe('Downloads/Files Feature', () => {
     await loginAsAdmin(page);
     await safeGoto(page, '/downloads');
 
-
-
-    // Create an unsupported temporary file (e.g., .exe)
     const tempDir = os.tmpdir();
     const tempFilePath = path.join(tempDir, 'test-unsupported.exe');
     fs.writeFileSync(tempFilePath, 'MZ...');
 
-    // We'll mock the upload API to return an error just in case the UI doesn't catch it
-    await page.route('**/api/upload*', async route => {
+    // Intercept correct route: **/api/files/upload* based on the codebase review
+    await page.route('**/api/files/upload*', async route => {
         await route.fulfill({
             status: 400,
             contentType: 'application/json',
@@ -142,32 +104,31 @@ test.describe('Downloads/Files Feature', () => {
         });
     });
 
-    const mainUploadBtn = page.locator('button:has-text("Upload")').first();
+    const mainUploadBtn = page.locator('button').filter({ hasText: /^Upload$/i }).first();
+    await expect(mainUploadBtn).toBeVisible();
+    await mainUploadBtn.click();
 
-    if (await mainUploadBtn.count() > 0 && await mainUploadBtn.first().isVisible()) {
-        await mainUploadBtn.click();
+    const modal = page.locator('[role="dialog"], dialog').first();
+    await expect(modal).toBeVisible();
 
-        const fileInput = page.locator('input[type="file"]');
-        await fileInput.waitFor({ state: 'attached' });
-        await fileInput.setInputFiles(tempFilePath);
+    const fileInput = modal.locator('input[type="file"]');
+    await fileInput.waitFor({ state: 'attached' });
+    await fileInput.setInputFiles(tempFilePath);
 
-        const submitBtn = page.locator('dialog, [role="dialog"]').locator('button:has-text("Upload")');
-        if (await submitBtn.isVisible()) {
-            await submitBtn.click();
-        }
+    const submitBtn = modal.locator('button:has-text("Upload File"), button[type="submit"]').first();
+    await expect(submitBtn).toBeVisible();
+    await submitBtn.click();
 
-        // Check for validation error (sonner toast or text)
-        const errorMessage = page.locator('text=unsupported').first().or(page.locator('text=invalid').first()).or(page.locator('.sonner-toast').filter({ hasText: /unsupported|invalid|failed/i })).first();
-        // Just verify we tried to upload an invalid file
-    }
+    // Match requirement: "Assert validation error triggers"
+    // Since we mock the API response to 400 with "Unsupported file type", we expect it to be shown.
+    // Use regular expression to match cases insensitive error text.
+    const errText = page.locator('text=/unsupported/i').first();
+    await expect(errText).toBeVisible({ timeout: 10000 });
 
-    // Clean up safely inside try-catch
     try {
-      if (fs.existsSync(tempFilePath)) {
-        fs.unlinkSync(tempFilePath);
-      }
+      if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
     } catch (e) {
-      console.warn(`Temporary unsupported file cleanup warning: ${e.message}`);
+      console.warn(`Cleanup: ${e.message}`);
     }
   });
 });

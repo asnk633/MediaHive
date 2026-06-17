@@ -9,7 +9,6 @@ test.describe('Downloads/Files Feature', () => {
   test.setTimeout(120_000);
 
   test('Downloads page loads', async ({ page }) => {
-    // 1. Setup programmatic auth mock directly in evaluate to bypass UI login
     await loginAsAdmin(page);
 
     await safeGoto(page, '/downloads');
@@ -19,7 +18,6 @@ test.describe('Downloads/Files Feature', () => {
   });
 
   test('Upload file to Google Drive', async ({ page }) => {
-    // 1. Setup programmatic auth mock directly in evaluate to bypass UI login
     await loginAsAdmin(page);
 
     await safeGoto(page, '/downloads');
@@ -68,7 +66,6 @@ test.describe('Downloads/Files Feature', () => {
   });
 
   test('Download a file', async ({ page }) => {
-    // 1. Setup programmatic auth mock directly in evaluate to bypass UI login
     await loginAsAdmin(page);
 
     await safeGoto(page, '/downloads');
@@ -88,7 +85,6 @@ test.describe('Downloads/Files Feature', () => {
   });
 
   test('Guest cannot upload', async ({ page }) => {
-    // 1. Setup programmatic auth mock directly in evaluate to bypass UI login
     await loginAsGuest(page);
 
     await safeGoto(page, '/downloads');
@@ -98,7 +94,6 @@ test.describe('Downloads/Files Feature', () => {
   });
 
   test('Upload unsupported file type', async ({ page }) => {
-    // 1. Setup programmatic auth mock directly in evaluate to bypass UI login
     await loginAsAdmin(page);
 
     await safeGoto(page, '/downloads');

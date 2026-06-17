@@ -24,33 +24,18 @@ export async function loginWithCredentials(page: Page, role: 'admin' | 'guest' |
     sessionStorage.clear();
     localStorage.setItem('mediahive_onboarding_complete', 'true');
     localStorage.setItem('hasSeenMemberWelcome-v1', 'true');
-    // Set Playwright mock auth flag to bypass fetch errors
-    localStorage.setItem('playwright_test_auth', 'true');
   });
-
-  // Specifically set the role after evaluating
-  await page.evaluate((r) => {
-    localStorage.setItem('playwright_test_role', r);
-  }, role);
 
   // Reload to ensure flags are active
   await page.reload();
 
-  try {
-    const emailInput = page.locator('input[type="email"]');
-    if (await emailInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await emailInput.fill(email);
-      await page.fill('input[type="password"]', password);
-      await page.click('button[type="submit"]');
-    }
-  } catch (error) {
-    console.log(`UI Login failed. Using mock auth. Error: ${error}`);
-  }
+  // Fill credentials and login
+  await page.fill('input[type="email"]', email);
+  await page.fill('input[type="password"]', password);
+  await page.click('button[type="submit"]');
 
-  await page.goto(`${baseUrl}/home`);
-  try {
-     await expect(page).toHaveURL(/.*home/, { timeout: 5000 });
-  } catch(e) {}
+  // Wait for home page navigation
+  await expect(page).toHaveURL(/.*home/, { timeout: 30000 });
 }
 
 export async function loginAsAdmin(page: Page) {
@@ -58,14 +43,6 @@ export async function loginAsAdmin(page: Page) {
 }
 
 export async function loginAsGuest(page: Page) {
-  // Guest login should explicitly clear the role if guest mock role isn't recognized by the app
-  const baseUrl = process.env.E2E_BASE_URL || 'http://localhost:3000';
-  await page.goto(`${baseUrl}/login`);
-  await page.evaluate(() => {
-    localStorage.clear();
-    sessionStorage.clear();
-    localStorage.setItem('playwright_test_auth', 'false');
-  });
   await loginWithCredentials(page, 'guest');
 }
 

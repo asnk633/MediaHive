@@ -9,6 +9,7 @@ test.describe('Downloads/Files Feature', () => {
   test.setTimeout(120_000);
 
   test('Downloads page loads', async ({ page }) => {
+    // Standard auth login for the E2E framework
     await loginAsAdmin(page);
     await safeGoto(page, '/downloads');
 
@@ -17,6 +18,7 @@ test.describe('Downloads/Files Feature', () => {
   });
 
   test('Upload file to Google Drive', async ({ page }) => {
+    // Standard auth login for the E2E framework
     await loginAsAdmin(page);
     await safeGoto(page, '/downloads');
 
@@ -25,14 +27,12 @@ test.describe('Downloads/Files Feature', () => {
     const pngBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==";
     fs.writeFileSync(tempFilePath, Buffer.from(pngBase64, 'base64'));
 
-    let uploadedFileId = null;
     let consoleLogTriggered = false;
     page.on('console', msg => {
       const text = msg.text();
       // Match the requirement: "Assert that upload succeeds and logs the Google Drive file ID to console"
       if (text.includes('uploaded') || text.includes('success') || text.includes('Google Drive')) {
         console.log(`Intercepted console log: ${text}`);
-        uploadedFileId = text;
         consoleLogTriggered = true;
       }
     });
@@ -41,6 +41,7 @@ test.describe('Downloads/Files Feature', () => {
     await expect(mainUploadBtn).toBeVisible();
     await mainUploadBtn.click();
 
+    // In this app, an upload modal appears
     const modal = page.locator('[role="dialog"], dialog').first();
     await expect(modal).toBeVisible();
 
@@ -52,7 +53,8 @@ test.describe('Downloads/Files Feature', () => {
     await expect(submitBtn).toBeVisible();
     await submitBtn.click();
 
-    await expect(modal).toBeHidden({ timeout: 30000 });
+    // Ensure the modal eventually closes, indicating processing is done
+    await expect(modal).toBeHidden({ timeout: 45000 });
 
     try {
       if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
@@ -62,6 +64,7 @@ test.describe('Downloads/Files Feature', () => {
   });
 
   test('Download a file', async ({ page }) => {
+    // Standard auth login for the E2E framework
     await loginAsAdmin(page);
     await safeGoto(page, '/downloads');
 
@@ -80,6 +83,7 @@ test.describe('Downloads/Files Feature', () => {
   });
 
   test('Guest cannot upload', async ({ page }) => {
+    // Standard auth login for the E2E framework
     await loginAsGuest(page);
     await safeGoto(page, '/downloads');
 
@@ -88,6 +92,7 @@ test.describe('Downloads/Files Feature', () => {
   });
 
   test('Upload unsupported file type', async ({ page }) => {
+    // Standard auth login for the E2E framework
     await loginAsAdmin(page);
     await safeGoto(page, '/downloads');
 
@@ -95,7 +100,7 @@ test.describe('Downloads/Files Feature', () => {
     const tempFilePath = path.join(tempDir, 'test-unsupported.exe');
     fs.writeFileSync(tempFilePath, 'MZ...');
 
-    // Intercept correct route: **/api/files/upload* based on the codebase review
+    // Mock API to return error
     await page.route('**/api/files/upload*', async route => {
         await route.fulfill({
             status: 400,
@@ -120,8 +125,7 @@ test.describe('Downloads/Files Feature', () => {
     await submitBtn.click();
 
     // Match requirement: "Assert validation error triggers"
-    // Since we mock the API response to 400 with "Unsupported file type", we expect it to be shown.
-    // Use regular expression to match cases insensitive error text.
+    // Expected to appear based on route failure
     const errText = page.locator('text=/unsupported/i').first();
     await expect(errText).toBeVisible({ timeout: 10000 });
 

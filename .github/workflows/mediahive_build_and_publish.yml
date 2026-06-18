@@ -9,6 +9,9 @@ on:
       - '.github/workflows/mediahive_build_and_publish.yml'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build and Publish Android APK

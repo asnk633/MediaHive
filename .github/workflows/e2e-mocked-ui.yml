@@ -23,6 +23,20 @@ env:
   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: "ci_dummy_bucket"
   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "1234567890"
   NEXT_PUBLIC_FIREBASE_APP_ID: "1:123:web:ci_dummy"
+  E2E_ADMIN_EMAIL: "admin@example.com"
+
+  E2E_ADMIN_PASSWORD: "password"
+
+  E2E_GUEST_EMAIL: "guest@example.com"
+
+  E2E_GUEST_PASSWORD: "password"
+  E2E_MEMBER_EMAIL: "member@example.com"
+
+  E2E_MEMBER_PASSWORD: "password"
+
+  SUPABASE_URL: "http://localhost:54321"
+
+  SUPABASE_SERVICE_ROLE_KEY: "testkey"
 
   # Provide a file DB so DB seeding/connection checks don't blow up
   DATABASE_URL: "file:./ci.db"

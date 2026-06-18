@@ -1,6 +1,6 @@
 name: mediahive_mobile
 description: A new Flutter project for MediaHive.
-version: 1.2.0+51000
+version: 1.2.2-beta+53000
 
 
 environment:
@@ -76,6 +76,7 @@ dependencies:
   http_parser: ^4.0.0
   flutter_timezone: ^5.1.0
   flutter_background_geolocation: ^5.2.1
+  app_settings: ^5.1.1
 
 
 
@@ -96,6 +97,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
+  remove_alpha_ios: true
   image_path: "assets/images/app_icon.png"
   adaptive_icon_background: "#000000"
   adaptive_icon_foreground: "assets/images/app_icon_padded.png"

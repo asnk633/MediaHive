@@ -331,8 +331,8 @@ class _AttendanceDashboardScreenState
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
             onPressed: () async {
               Navigator.pop(ctx);
-              ref.read(globalNfcScanningProvider.notifier).startScan(
-                workMode: activeSession.workMode,
+              ref.read(globalNfcScanningProvider.notifier).performManualCheckout(
+                source: 'geofence_exit_dialog',
               );
             },
             child: const Text('Check Out', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
@@ -796,6 +796,89 @@ class _AttendanceDashboardScreenState
             ),
           ),
         ],
+
+        // ─ Quick Check Out Button (shown only when checked in) ─
+        if (isCheckedIn) ...[
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: isScanning
+                ? null
+                : () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        backgroundColor: colors.backgroundSecondary,
+                        title: Row(
+                          children: [
+                            const Icon(LucideIcons.logOut, color: AppColors.warning, size: 22),
+                            const SizedBox(width: 8),
+                            Text('Quick Check Out',
+                                style: TextStyle(
+                                    color: colors.textPrimary,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        content: Text(
+                          'This will check you out immediately without scanning an NFC tag or QR code.\n\nAre you sure?',
+                          style: TextStyle(color: colors.textSecondary, fontSize: 13),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text('Cancel',
+                                style: TextStyle(
+                                    color: colors.textSecondary, fontSize: 12)),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.warning),
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              ref
+                                  .read(globalNfcScanningProvider.notifier)
+                                  .performManualCheckout(
+                                      source: 'quick_checkout_button');
+                            },
+                            child: const Text('Check Out Now',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.warning.withValues(alpha: 0.5), width: 1.5),
+                borderRadius: BorderRadius.circular(18),
+                color: AppColors.warning.withValues(alpha: 0.08),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(LucideIcons.logOut, color: AppColors.warning, size: 18),
+                  SizedBox(width: 10),
+                  Text(
+                    'QUICK CHECK OUT',
+                    style: TextStyle(
+                      color: AppColors.warning,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+
         if (isCheckedIn && session.workMode == 'field') ...[
             const SizedBox(height: 12),
             GestureDetector(

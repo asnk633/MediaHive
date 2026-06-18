@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import '../../../../core/services/notification_service.dart';
 
 /// Headless task handler for when the app is terminated.
 ///
@@ -64,6 +65,13 @@ void backgroundGeolocationHeadlessTask(bg.HeadlessEvent headlessEvent) async {
     case bg.Event.GEOFENCE:
       final event = headlessEvent.event as bg.GeofenceEvent;
       if (event.action == 'EXIT') {
+        // Fire an immediate local notification (works without Riverpod in headless isolate)
+        await NotificationService.showNotificationDirect(
+          title: 'Left Office Area',
+          body: 'You appear to have left the office. Did you forget to check out?',
+          payload: '/attendance?triggerCheckoutReminder=true',
+        );
+
         // Buffer the exit event — will be processed when app opens
         try {
           final eventBox = await Hive.openBox('bg_geofence_events');

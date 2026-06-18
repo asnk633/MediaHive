@@ -42,19 +42,13 @@ if not SUPABASE_SERVICE_KEY:
     print("[WARNING] SUPABASE_SERVICE_ROLE_KEY not found in ../.env.local. Supabase sync will be skipped.")
 
 RELEASE_NOTES = (
-    "🚀 MediaHive v1.2.0 — Stable Internal Release\n\n"
-    "• Real-Time Notifications: Instant push alerts for task assignments, event changes, and broadcasts (no more polling).\n"
-    "• Push Notification Foundation: FCM-backed mobile alerts fully wired — ready for production token registration.\n"
-    "• Kanban Drag-and-Drop: Drag tasks between To Do / Working / On Hold / Done columns with haptic feedback and undo.\n"
-    "• Full Calendar View: Switch between Timeline, Month, and Week views — tasks and events rendered on correct dates.\n"
-    "• Advanced Reports: Interactive Recharts dashboards — area charts, bar charts, pie charts with 7/30/90-day filters.\n"
-    "• Role-Based Dashboard: Admin, Team, and Guest users each see a tailored home screen with relevant widgets.\n"
-    "• CI/CD Self-Healing Pipeline: Automated build validation and self-repair on every push.\n"
-    "• Google Drive Inventory Photos: Upload and view inventory asset photos securely via Google Drive proxy.\n"
-    "• NFC & QR Attendance: Real-time touchless check-in with hardware NFC and camera QR scanning.\n"
-    "• Biometric Auth & Governance: Face ID / fingerprint check-in, shift policies, overtime rules, grace periods.\n"
-    "• Offline Resilience: Offline task drafting with automatic sync queue on reconnect.\n"
-    "• 138 Unit Tests: Full test suite covering all critical business logic — 96%+ coverage on key modules."
+    "🚀 MediaHive v1.2.2-beta — Notification Fix + Quick Checkout\n\n"
+    "• Fixed Push Notifications: All field work and geofence notifications now fire correctly (resolved DB schema mismatch).\n"
+    "• Shift Reminders on Boot: Check-in/out reminders now schedule immediately on app launch, not just on state changes.\n"
+    "• Geofence Exit Alerts: Immediate local notification when you leave the office area — works even when app is killed.\n"
+    "• Quick Check Out: New frictionless checkout button — check out instantly without NFC/GPS/WiFi verification.\n"
+    "• Timezone Robustness: Fixed scheduled notification timing on Android devices where timezone detection fails.\n"
+    "• Audit Trail: Quick checkouts log location (if available) and source for manager visibility.\n"
 )
 
 # ─── 1. PARSE VERSION ─────────────────────────────────────────────────────────

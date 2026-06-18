@@ -9,6 +9,12 @@ class FieldWorkNotificationService {
   final SupabaseClient _client;
   final _logger = LoggerService();
 
+  static FieldWorkNotificationService? _instance;
+  static FieldWorkNotificationService get instance {
+    _instance ??= FieldWorkNotificationService(Supabase.instance.client);
+    return _instance!;
+  }
+
   FieldWorkNotificationService(this._client);
 
   /// Notify the user's manager(s) about a new field work request.
@@ -66,9 +72,9 @@ class FieldWorkNotificationService {
           'title': 'Field Work Request',
           'body': '$userName has requested field work${reason != null ? ': $reason' : ''}',
           'type': 'field_work',
-          'route': '/attendance',
           'read': false,
           'metadata': {
+            'route': '/attendance',
             'sessionId': sessionId,
             'requesterId': userId,
             'action': 'field_work_request',
@@ -93,9 +99,9 @@ class FieldWorkNotificationService {
         'title': 'Field Work Approved',
         'body': 'Your field work request has been approved. You may now depart.',
         'type': 'field_work',
-        'route': '/attendance',
         'read': false,
         'metadata': {
+          'route': '/attendance',
           'sessionId': sessionId,
           'action': 'field_work_approved',
         },
@@ -125,9 +131,9 @@ class FieldWorkNotificationService {
         'title': 'Field Work Rejected',
         'body': 'Your field work request was rejected.${rejectionReason != null ? ' Reason: $rejectionReason.' : ''}$graceMsg',
         'type': 'field_work',
-        'route': '/attendance',
         'read': false,
         'metadata': {
+          'route': '/attendance',
           'sessionId': sessionId,
           'action': 'field_work_rejected',
           'gracePeriodMinutes': gracePeriodMinutes,
@@ -151,9 +157,9 @@ class FieldWorkNotificationService {
         'title': 'Field Work Auto-Approved',
         'body': 'Your field work request was automatically approved (manager timeout).',
         'type': 'field_work',
-        'route': '/attendance',
         'read': false,
         'metadata': {
+          'route': '/attendance',
           'sessionId': sessionId,
           'action': 'field_work_auto_approved',
         },
@@ -190,9 +196,9 @@ class FieldWorkNotificationService {
           'title': 'Field Work Request (Deputy)',
           'body': '$userName has requested field work${reason != null ? ': $reason' : ''} (routed to you as deputy)',
           'type': 'field_work',
-          'route': '/attendance',
           'read': false,
           'metadata': {
+            'route': '/attendance',
             'sessionId': sessionId,
             'action': 'field_work_request_deputy',
           },
@@ -202,6 +208,32 @@ class FieldWorkNotificationService {
       _logger.info('FIELD_WORK_NOTIFY: Notified ${deputies.length} deputies');
     } catch (e) {
       _logger.error('FIELD_WORK_NOTIFY: Deputy notification failed: $e');
+    }
+  }
+
+  /// Send a notification to the user about exiting a geofence.
+  Future<void> sendGeofenceExitAlert(
+    String userId,
+    String locationName,
+    DateTime exitTime,
+  ) async {
+    try {
+      await _client.from('notifications').insert({
+        'user_id': userId,
+        'title': 'Geofence Exit Alert',
+        'body': 'You departed from $locationName at ${exitTime.toLocal().toString().substring(11, 16)}.',
+        'type': 'geofence_exit',
+        'read': false,
+        'metadata': {
+          'route': '/attendance',
+          'locationName': locationName,
+          'exitTime': exitTime.toIso8601String(),
+          'action': 'geofence_exit',
+        },
+      });
+      _logger.info('FIELD_WORK_NOTIFY: Geofence exit alert sent to user $userId');
+    } catch (e) {
+      _logger.error('FIELD_WORK_NOTIFY: Failed to send geofence exit alert: $e');
     }
   }
 }

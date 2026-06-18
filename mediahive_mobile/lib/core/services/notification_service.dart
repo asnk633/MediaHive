@@ -15,6 +15,54 @@ class NotificationService {
 
   NotificationService(this._ref, this._logger);
 
+  /// Show a local notification immediately from any context (headless isolate, singleton, etc.).
+  ///
+  /// This is a static method that creates its own [FlutterLocalNotificationsPlugin] instance,
+  /// so it does NOT require Riverpod or an initialized [NotificationService] singleton.
+  /// Use this from background headless tasks, background geolocation callbacks, etc.
+  static Future<void> showNotificationDirect({
+    required String title,
+    required String body,
+    String channelId = 'mediahive_attendance_alerts_v2',
+    String channelName = 'Attendance Alerts',
+    String? payload,
+  }) async {
+    try {
+      final plugin = FlutterLocalNotificationsPlugin();
+
+      // Minimal initialization (no tap handler needed for fire-and-forget alerts)
+      const androidInit = AndroidInitializationSettings('ic_stat_notification');
+      const darwinInit = DarwinInitializationSettings();
+      const initSettings = InitializationSettings(android: androidInit, iOS: darwinInit);
+      await plugin.initialize(initSettings);
+
+      final androidDetails = AndroidNotificationDetails(
+        channelId,
+        channelName,
+        channelDescription: 'Alerts from attendance tracking and geofence monitoring',
+        importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
+      );
+      const darwinDetails = DarwinNotificationDetails(
+        presentSound: true,
+        presentAlert: true,
+        presentBadge: true,
+      );
+      final details = NotificationDetails(android: androidDetails, iOS: darwinDetails);
+
+      await plugin.show(
+        DateTime.now().millisecondsSinceEpoch.remainder(100000),
+        title,
+        body,
+        details,
+        payload: payload ?? '/attendance',
+      );
+    } catch (e) {
+      // Silently fail in headless context — cannot log without LoggerService
+    }
+  }
+
   Future<void> initialize() async {
     if (_initialized) return;
 
@@ -301,10 +349,24 @@ class NotificationService {
     required String payload,
   }) async {
     try {
-      final localTime = tz.TZDateTime.from(scheduledDateTime, tz.local);
-      
+      // Robust timezone handling: if tz.local fell back to UTC (common on Android),
+      // map the local DateTime to its correct UTC instant so the OS fires at the right wall-clock time.
+      tz.TZDateTime localTime;
+      final localLocation = tz.local;
+      if (localLocation.name == 'UTC' || localLocation.name == 'Etc/UTC') {
+        // tz.local is incorrectly UTC — treat scheduledDateTime as already in local wall-clock time
+        // and compute the correct UTC instant by subtracting the device's UTC offset.
+        final deviceOffset = DateTime.now().timeZoneOffset;
+        final correctedUtc = scheduledDateTime.subtract(deviceOffset);
+        localTime = tz.TZDateTime.from(correctedUtc, tz.UTC);
+        _logger.warning('Timezone fallback detected (tz.local=UTC). '
+            'Applied device offset ${deviceOffset.inHours}h for ID=$id');
+      } else {
+        localTime = tz.TZDateTime.from(scheduledDateTime, localLocation);
+      }
+
       // Don't schedule in the past
-      if (localTime.isBefore(tz.TZDateTime.now(tz.local))) {
+      if (localTime.isBefore(tz.TZDateTime.now(localLocation))) {
         _logger.debug('Skipping schedule for ID=$id because it is in the past: $localTime');
         return;
       }

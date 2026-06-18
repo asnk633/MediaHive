@@ -108,7 +108,9 @@ final leaveConflictServiceProvider = Provider<LeaveConflictService>((ref) {
 // Offline Queue Provider
 final offlineAttendanceQueueProvider = Provider<OfflineAttendanceQueue>((ref) {
   final repo = ref.watch(attendanceRepositoryProvider);
-  return OfflineAttendanceQueue(repo);
+  final queue = OfflineAttendanceQueue(repo);
+  ref.onDispose(() => queue.dispose());
+  return queue;
 });
 
 // User Attendance Requests Provider
@@ -1144,6 +1146,138 @@ class NfcScanningNotifier extends StateNotifier<NfcScanState> {
       state = NfcScanState(
         status: NfcScanStatus.error,
         message: 'Transaction Failed: $e',
+      );
+    }
+  }
+
+  /// Perform a frictionless manual checkout — no NFC, GPS, or WiFi verification required.
+  ///
+  /// This is used for:
+  /// - "Quick Check Out" button on the dashboard
+  /// - Geofence exit dialog's "Check Out" button (user already left the office)
+  ///
+  /// If location services are available, coordinates are captured for audit logging.
+  /// If not, the checkout proceeds anyway with null coordinates.
+  Future<void> performManualCheckout({String source = 'manual_checkout'}) async {
+    try {
+      final activeSession = _ref.read(activeAttendanceSessionProvider).value;
+      if (activeSession == null || activeSession.attendanceState != 'active') {
+        state = NfcScanState(
+          status: NfcScanStatus.error,
+          message: 'No active session to check out from.',
+        );
+        return;
+      }
+
+      final profileAsync = _ref.read(currentUserProfileProvider);
+      final profile = profileAsync.value;
+      if (profile == null) {
+        state = NfcScanState(status: NfcScanStatus.error, message: 'User is not authenticated.');
+        return;
+      }
+
+      final userId = profile['id'] as String;
+      state = NfcScanState(status: NfcScanStatus.scanning, message: 'Checking out...');
+
+      // Attempt to capture location for audit trail (best-effort, non-blocking)
+      double? latitude;
+      double? longitude;
+      try {
+        final permission = await Geolocator.checkPermission();
+        if (permission != LocationPermission.denied && permission != LocationPermission.deniedForever) {
+          final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+          if (serviceEnabled) {
+            final pos = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.low,
+              timeLimit: const Duration(seconds: 3),
+            );
+            latitude = pos.latitude;
+            longitude = pos.longitude;
+          }
+        }
+      } catch (e) {
+        _logger.info('QUICK_CHECKOUT: Location capture failed (proceeding without): $e');
+      }
+
+      // Get server time
+      final serverTime = await _ref.read(serverTimeServiceProvider).getServerTime();
+
+      // Check connectivity
+      final connectivityResult = await Connectivity().checkConnectivity();
+      final isOffline = connectivityResult == ConnectivityResult.none;
+
+      String deviceId = 'unknown_id';
+      String deviceName = Platform.isAndroid ? 'Android Device' : 'iOS Device';
+
+      if (isOffline) {
+        // Queue offline checkout
+        await _queue.queueScan(
+          type: 'check_out',
+          userId: userId,
+          userName: profile['full_name'] as String? ?? 'Unknown',
+          physicalTagId: 'manual_checkout',
+          latitude: latitude,
+          longitude: longitude,
+          deviceId: deviceId,
+          deviceName: deviceName,
+          workMode: activeSession.workMode,
+          source: source,
+        );
+
+        _ref.read(activeAttendanceSessionProvider.notifier).setSession(null);
+        state = NfcScanState(
+          status: NfcScanStatus.success,
+          message: 'Saved Offline. Checking out...',
+          record: activeSession.copyWith(
+            checkOutTime: serverTime.toIso8601String(),
+            checkOutSource: source,
+            attendanceState: 'closed',
+          ),
+        );
+      } else {
+        // Online checkout
+        final record = await _repo.checkOut(
+          attendanceId: activeSession.id,
+          userId: userId,
+          nfcTagId: activeSession.nfcTagId,
+          latitude: latitude,
+          longitude: longitude,
+          source: source,
+          serverTime: serverTime,
+          checkOutDeviceId: deviceId,
+          checkOutDeviceName: deviceName,
+        );
+
+        // Log audit event noting this was a manual/quick checkout
+        await _repo.logTimelineEvent(
+          attendanceId: activeSession.id,
+          userId: userId,
+          eventType: 'manual_checkout',
+          notes: 'User performed quick checkout via $source. Location: ${latitude != null ? '($latitude, $longitude)' : 'unavailable'}.',
+          eventTime: serverTime,
+          latitude: latitude,
+          longitude: longitude,
+        );
+
+        _ref.read(activeAttendanceSessionProvider.notifier).setSession(null);
+        state = NfcScanState(
+          status: NfcScanStatus.success,
+          message: 'Checked Out Successfully',
+          record: record,
+        );
+      }
+
+      // Stop background presence verification
+      BackgroundPresenceService().stopTracking();
+
+      // Refresh listings
+      _ref.invalidate(personalAttendanceHistoryProvider);
+      _ref.invalidate(attendanceRequestsProvider);
+    } catch (e) {
+      _logger.error('QUICK_CHECKOUT: Error performing manual checkout: $e');
+      state = NfcScanState(
+        status: NfcScanStatus.error,
+        message: 'Checkout Failed: $e',
       );
     }
   }

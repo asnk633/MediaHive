@@ -4,6 +4,8 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../../../core/services/logger_service.dart';
+import '../../../../core/services/notification_service.dart';
+import 'field_work_notification_service.dart';
 
 /// Background presence verification service using flutter_background_geolocation.
 ///
@@ -21,6 +23,12 @@ class BackgroundPresenceService {
   static final BackgroundPresenceService _instance = BackgroundPresenceService._internal();
   factory BackgroundPresenceService() => _instance;
   BackgroundPresenceService._internal();
+
+  // --- Battery Optimization Toggle ---
+  // Note: Since this is a static const, flipping it requires a re-compile. 
+  // Future improvement: move to RemoteConfig for dynamic over-the-air updates.
+  static const bool optimizeBattery = true;
+
 
   bool _isConfigured = false;
   String? _activeAttendanceId;
@@ -149,7 +157,11 @@ class BackgroundPresenceService {
       enableHeadless: true,
 
       // Battery
-      preventSuspend: true,
+      // preventSuspend: false relies on WorkManager/JobScheduler to allow the CPU 
+      // to sleep instead of holding a wake lock. Note: Android Doze mode may delay 
+      // background pings by >15 mins when idle.
+      preventSuspend: optimizeBattery ? false : true,
+      useSignificantChangesOnly: optimizeBattery ? true : false,
 
       // Android foreground notification
       notification: bg.Notification(
@@ -205,6 +217,11 @@ class BackgroundPresenceService {
 
   void _onProviderChange(bg.ProviderChangeEvent event) {
     _logger.info('BG_PRESENCE: Provider changed: enabled=${event.enabled}, status=${event.status}');
+    if (event.status == bg.ProviderChangeEvent.AUTHORIZATION_STATUS_RESTRICTED || 
+        event.status == bg.ProviderChangeEvent.AUTHORIZATION_STATUS_DENIED) {
+      _logger.warning('BG_PRESENCE: Background Refresh or Location is restricted/denied!');
+      // Note: Ideally, this logs to an external service like Crashlytics or Supabase diagnostics
+    }
   }
 
   // ─── Presence Logging ──────────────────────────────────────
@@ -272,13 +289,31 @@ class BackgroundPresenceService {
     }
   }
 
-  void _handleGeofenceExit(bg.GeofenceEvent event) {
+  void _handleGeofenceExit(bg.GeofenceEvent event) async {
     _logger.warning('BG_PRESENCE: User exited office geofence!');
+
+    // Always show an immediate local notification so the user knows they left
+    await NotificationService.showNotificationDirect(
+      title: 'Left Office Area',
+      body: 'You appear to have left the office. Did you forget to check out?',
+      payload: '/attendance?triggerCheckoutReminder=true',
+    );
+
     if (_shadowMode) {
-      _logger.info('BG_PRESENCE: Shadow mode — logging exit, no enforcement.');
+      _logger.info('BG_PRESENCE: Shadow mode — logged exit, no enforcement.');
+    } else {
+      // In enforcement mode, also send a persistent DB notification (triggers FCM push)
+      final userId = _activeUserId;
+      if (userId != null) {
+        await FieldWorkNotificationService.instance.sendGeofenceExitAlert(
+          userId,
+          event.identifier,
+          DateTime.now(),
+        );
+      }
     }
-    // TODO: Trigger push notification to user + manager if not shadow mode
   }
+
 
   void _handleGeofenceEntry(bg.GeofenceEvent event) {
     _logger.info('BG_PRESENCE: User returned to office geofence.');

@@ -41,6 +41,14 @@ final attendanceReminderServiceProvider = Provider<AttendanceReminderService>((r
     });
   });
 
+  // Eagerly fire an initial reminder update if the session provider is already loaded.
+  // ref.listen does NOT trigger on the initial value — only on subsequent changes.
+  // This ensures shift reminders are scheduled on boot/login without waiting for a state change.
+  final initialSessionState = ref.read(activeAttendanceSessionProvider);
+  initialSessionState.whenData((session) {
+    service.updateReminders(session);
+  });
+
   return service;
 });
 

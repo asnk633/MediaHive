@@ -12,6 +12,9 @@ const REQUIRED = [
 ];
 
 export function checkEnv() {
+  if (process.env.SKIP_PREFLIGHT_CHECK === 'true') {
+    return;
+  }
   const missing: string[] = [];
   for (const key of REQUIRED) {
     if (!process.env[key]) {

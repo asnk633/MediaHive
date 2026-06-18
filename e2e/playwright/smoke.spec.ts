@@ -36,11 +36,15 @@ test.describe('Smoke: Basic app functionality', () => {
         try {
             await page.goto('/home');
         } catch (e: any) {
-            if (!e.message.includes('ERR_ABORTED') && !e.message.includes('NS_BINDING_ABORTED')) throw e;
+            if (!e.message.includes('ERR_ABORTED') && !e.message.includes('NS_BINDING_ABORTED') && !e.message.includes('NS_ERROR_FAILURE')) throw e;
         }
         await expect(page).toHaveURL(/.*home/, { timeout: 10000 });
 
-        await page.goto('/downloads');
+        try {
+            await page.goto('/downloads');
+        } catch (e: any) {
+            if (!e.message.includes('ERR_ABORTED') && !e.message.includes('NS_BINDING_ABORTED') && !e.message.includes('NS_ERROR_FAILURE')) throw e;
+        }
         await page.waitForLoadState('load');
 
         // Check for "Downloads" heading

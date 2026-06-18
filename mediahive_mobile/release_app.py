@@ -31,7 +31,7 @@ local_env = load_env(ENV_PATH)
 parent_env = load_env(PARENT_ENV_PATH)
 
 GITHUB_TOKEN = local_env.get("GITHUB_TOKEN") or parent_env.get("GITHUB_TOKEN") or os.environ.get("GITHUB_TOKEN")
-SUPABASE_SERVICE_KEY = parent_env.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+SUPABASE_SERVICE_KEY = local_env.get("SUPABASE_SERVICE_ROLE_KEY") or parent_env.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
 
 if not GITHUB_TOKEN:
     print("[ERROR] GITHUB_TOKEN not found in .env, ../.env.local or environment!")

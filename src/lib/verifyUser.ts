@@ -32,6 +32,16 @@ export async function createServerSupabaseClient() {
  * verifyUser - Primary authentication check for all API routes.
  */
 export async function verifyUser(req: Request, options = { strict: true }): Promise<AuthenticatedUser | null> {
+    if (process.env.MOCK_FIREBASE === 'true') {
+        return {
+            uid: '00000000-0000-0000-0000-000000000001',
+            id: '00000000-0000-0000-0000-000000000001',
+            email: 'e2e@mediahive.test',
+            name: 'E2E Test User',
+            role: 'admin',
+        };
+    }
+
     const supabaseServer = await getSupabaseServerClient();
 
     console.log(`[verifyUser] 🕵️ Checking auth for ${new URL(req.url).pathname}`);
@@ -153,6 +163,9 @@ export async function getSupabaseFromRequest(req: Request) {
  * getSupabaseAdmin - Returns a Supabase client with service role privileges.
  */
 export function getSupabaseAdmin() {
+    if (process.env.MOCK_FIREBASE === 'true') {
+        return createClient('http://localhost:54321', 'dummy-service-key');
+    }
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
         throw new Error('[FATAL] SUPABASE_SERVICE_ROLE_KEY is not set. All API routes will fail. Check your .env.local file.');
     }

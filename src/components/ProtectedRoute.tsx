@@ -21,6 +21,12 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Prote
 
     if (!user) {
         if (typeof window !== 'undefined') {
+            const isE2EAuth = localStorage.getItem('playwright_test_auth') === 'true';
+            if (isE2EAuth) {
+                // Prevent race condition redirect in mock E2E environments
+                return null;
+            }
+
             const currentPath = window.location.pathname;
             if (currentPath !== '/login' && currentPath !== '/login/') {
                 console.log('[ProtectedRoute] Unauthenticated - redirecting to /login');

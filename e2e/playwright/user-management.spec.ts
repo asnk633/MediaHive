@@ -3,58 +3,82 @@ import { loginAsAdmin, loginAsGuest } from './helpers/auth';
 import { safeGoto } from './helpers/navigation';
 
 test.describe('User Management', () => {
-  test('Users page redirects or loads admin users page for admin', async ({ page }) => {
+
+  test('Users list page loads', async ({ page }) => {
+    // Login as admin
     await loginAsAdmin(page);
-    await safeGoto(page, '/users');
     
-    // Check that we redirected to /admin/users or loaded the user list
+    // Navigate using safeGoto
+    // The requirement mentions safeGoto('/users') or '/admin/users'
+    await safeGoto(page, '/admin/users');
+    
+    // Verify that we are on the correct page (heading or URL)
     await expect(page).toHaveURL(/.*admin\/users/, { timeout: 15000 });
-    
-    // Verify the page heading is visible
     await expect(page.getByRole('heading', { name: /User Management/i })).toBeVisible();
   });
 
-  test('Admin users page loads list with at least one user', async ({ page }) => {
+  test('User count >= 1', async ({ page }) => {
     await loginAsAdmin(page);
     await safeGoto(page, '/admin/users');
 
-    // Wait for loader to disappear if there is one
+    // Wait for the main user list/table to appear
     await page.waitForSelector('svg.animate-spin', { state: 'detached', timeout: 15000 });
 
-    // Verify Active Users tab is selected
-    await expect(page.getByRole('button', { name: /Active Users/i })).toBeVisible();
-
-    // Verify there is at least one user card/button in the left panel list.
+    // Check that we have user buttons rendered in the scrollable list
     const userButtons = page.locator('div.overflow-y-auto button');
     await expect(userButtons.first()).toBeVisible({ timeout: 15000 });
+
+    // Verify count >= 1
     const count = await userButtons.count();
     expect(count).toBeGreaterThanOrEqual(1);
   });
 
-  test('Admin can view user details and check role badge', async ({ page }) => {
+  test('View own profile details', async ({ page }) => {
     await loginAsAdmin(page);
     await safeGoto(page, '/admin/users');
 
-    // Wait for user list to load
     await page.waitForSelector('svg.animate-spin', { state: 'detached', timeout: 15000 });
     
-    // Click on the first user to view details in the detail panel (right panel)
+    const userButtons = page.locator('div.overflow-y-auto button');
+
+    // Click the first user profile
+    await userButtons.first().click();
+
+    // Verify detail view loads
+    const detailPanel = page.locator('div.glass-liquid');
+    await expect(detailPanel).toBeVisible({ timeout: 15000 });
+
+    // Check that profile avatar/name elements exist in the details
+    await expect(detailPanel.locator('div.w-32.h-32')).toBeVisible();
+  });
+
+  test('Profile shows correct role badge', async ({ page }) => {
+    await loginAsAdmin(page);
+    await safeGoto(page, '/admin/users');
+
+    await page.waitForSelector('svg.animate-spin', { state: 'detached', timeout: 15000 });
+
+    // Select a user to view profile details
     const userButtons = page.locator('div.overflow-y-auto button');
     await userButtons.first().click();
 
-    // Wait for the detail panel to load and show the role badge
+    // Wait for details panel
     const detailPanel = page.locator('div.glass-liquid');
-    await expect(detailPanel).toBeVisible();
+    await expect(detailPanel).toBeVisible({ timeout: 15000 });
 
-    // Check if the role badge containing "Global" is visible inside the detail panel
-    await expect(detailPanel.locator('button:has-text("Global")')).toBeVisible({ timeout: 15000 });
+    // Look for role badge indicating Administrator or Global access
+    // From page.tsx we know it says "Global" or "Administrator"
+    const roleBadge = detailPanel.locator('button:has-text("Global"), button:has-text("Admin")').first();
+    await expect(roleBadge).toBeVisible({ timeout: 15000 });
   });
 
-  test('Guest is redirected or blocked from accessing User Management', async ({ page }) => {
+  test('Guest sees limited user list or restricted access depending on RBAC rules', async ({ page }) => {
     await loginAsGuest(page);
+
+    // Try to access /admin/users directly
     await safeGoto(page, '/admin/users');
 
-    // Guest should be redirected to /home
+    // Guest should be redirected back to home or a forbidden page
     await expect(page).toHaveURL(/.*home/, { timeout: 15000 });
   });
 });

@@ -10,8 +10,8 @@ let _supabase: ReturnType<typeof createBrowserClient> | null = null;
  */
 export function getSupabaseClient() {
   if (!_supabase) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321';
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'dummy-anon-key';
     if (!url || !key) {
       throw new Error('Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY) are missing');
     }

@@ -51,6 +51,20 @@ jobs:
           echo "SUPABASE_URL=https://fcctcorycpvebupluzpe.supabase.co" > .env
           echo "SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" >> .env
           echo "GITHUB_TOKEN=${{ secrets.RELEASE_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}" >> .env
+          echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" >> .env
+
+      - name: Setup Android Signing
+        run: |
+          cd mediahive_mobile/android
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > app/upload-keystore.jks
+          cat > key.properties << EOF
+          storePassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=../app/upload-keystore.jks
+          EOF
+          # Trim leading whitespace from heredoc
+          sed -i 's/^          //' key.properties
 
       - name: Run Build and Release Script
         env:

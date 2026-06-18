@@ -166,3 +166,5 @@ flutter:
         - asset: assets/fonts/Muli-SemiBoldItalic.ttf
           weight: 600
           style: italic
+
+# Build trigger v2

@@ -124,7 +124,6 @@ flutter:
     - assets/images/app_icon_padded.png
     - assets/images/app_name_dark.png
     - assets/images/app_name_light.png
-    - assets/models/logo.glb
     - assets/animations/honey_bee.json
     - assets/animations/bee_looking.json
     - assets/sounds/task_added.wav

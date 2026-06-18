@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/services/auth_helper.dart';
 import 'package:uuid/uuid.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -224,12 +224,12 @@ class _AddInventoryItemScreenState extends ConsumerState<AddInventoryItemScreen>
         final profile = ref.read(currentUserProfileProvider).valueOrNull;
         final apiService = InventoryApiService(ref.read(loggerProvider.notifier));
         
-        final session = Supabase.instance.client.auth.currentSession;
+        final token = await getFreshAccessToken();
         final result = await apiService.uploadImage(
           _selectedImage!, 
           profile?['id'] ?? 'unknown',
           profile?['full_name'] ?? profile?['email'] ?? 'Mobile User',
-          token: session?.accessToken,
+          token: token,
         );
 
         if (result != null && result['success'] == true) {

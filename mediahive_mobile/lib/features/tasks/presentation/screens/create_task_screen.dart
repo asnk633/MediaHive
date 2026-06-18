@@ -120,62 +120,66 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
       }
 
       // 2. Resolve Institutional Context
-      final allInsts = await ref.read(institutionsProvider.future);
-      final allDepts = await ref.read(departmentsProvider.future);
-      
-      // If editing, try to extract from metadata first
-      if (widget.taskToEdit != null && widget.taskToEdit!.onBehalfOf != null && widget.taskToEdit!.onBehalfOf!.startsWith('{')) {
-        try {
-          final metadata = jsonDecode(widget.taskToEdit!.onBehalfOf!);
-          final instId = metadata['institution_id'];
-          final deptId = metadata['department_id'];
-          
-          if (instId != null) {
-            try {
-              final inst = allInsts.firstWhere((i) => i.id.toString() == instId.toString());
-              setState(() => _selectedInstitution = inst);
-            } catch (_) {}
-          }
-          if (deptId != null) {
-            try {
-              final dept = allDepts.firstWhere((d) => d.id.toString() == deptId.toString());
-              setState(() => _selectedDepartment = dept);
-            } catch (_) {}
-          }
-        } catch (e) {
-          debugPrint('[CREATE_TASK] Error parsing task metadata: $e');
-        }
-      }
-
-      // Enforce mutual exclusivity for loaded context (prefer department if both exist)
-      if (_selectedDepartment != null && _selectedInstitution != null) {
-        setState(() => _selectedInstitution = null);
-      }
-
-      // If still null, default to current user's profile context (mutually exclusive)
-      if (_selectedDepartment == null && _selectedInstitution == null) {
-        final profile = await ref.read(currentUserProfileProvider.future);
-        if (profile != null) {
-          if (profile['department_id'] != null) {
-            final deptId = profile['department_id'].toString();
-            try {
-              final dept = allDepts.firstWhere((d) => d.id.toString() == deptId);
-              setState(() {
-                _selectedDepartment = dept;
-                _selectedInstitution = null;
-              });
-            } catch (_) {}
-          } else if (profile['institution_id'] != null) {
-            final instId = profile['institution_id'].toString();
-            try {
-              final inst = allInsts.firstWhere((i) => i.id.toString() == instId);
-              setState(() {
-                _selectedInstitution = inst;
-                _selectedDepartment = null;
-              });
-            } catch (_) {}
+      try {
+        final allInsts = await ref.read(institutionsProvider.future);
+        final allDepts = await ref.read(departmentsProvider.future);
+        
+        // If editing, try to extract from metadata first
+        if (widget.taskToEdit != null && widget.taskToEdit!.onBehalfOf != null && widget.taskToEdit!.onBehalfOf!.startsWith('{')) {
+          try {
+            final metadata = jsonDecode(widget.taskToEdit!.onBehalfOf!);
+            final instId = metadata['institution_id'];
+            final deptId = metadata['department_id'];
+            
+            if (instId != null) {
+              try {
+                final inst = allInsts.firstWhere((i) => i.id.toString() == instId.toString());
+                setState(() => _selectedInstitution = inst);
+              } catch (_) {}
+            }
+            if (deptId != null) {
+              try {
+                final dept = allDepts.firstWhere((d) => d.id.toString() == deptId.toString());
+                setState(() => _selectedDepartment = dept);
+              } catch (_) {}
+            }
+          } catch (e) {
+            debugPrint('[CREATE_TASK] Error parsing task metadata: $e');
           }
         }
+
+        // Enforce mutual exclusivity for loaded context (prefer department if both exist)
+        if (_selectedDepartment != null && _selectedInstitution != null) {
+          setState(() => _selectedInstitution = null);
+        }
+
+        // If still null, default to current user's profile context (mutually exclusive)
+        if (_selectedDepartment == null && _selectedInstitution == null) {
+          final profile = await ref.read(currentUserProfileProvider.future);
+          if (profile != null) {
+            if (profile['department_id'] != null) {
+              final deptId = profile['department_id'].toString();
+              try {
+                final dept = allDepts.firstWhere((d) => d.id.toString() == deptId);
+                setState(() {
+                  _selectedDepartment = dept;
+                  _selectedInstitution = null;
+                });
+              } catch (_) {}
+            } else if (profile['institution_id'] != null) {
+              final instId = profile['institution_id'].toString();
+              try {
+                final inst = allInsts.firstWhere((i) => i.id.toString() == instId);
+                setState(() {
+                  _selectedInstitution = inst;
+                  _selectedDepartment = null;
+                });
+              } catch (_) {}
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('[CREATE_TASK] Error resolving context (offline mode?): $e');
       }
     });
   }
@@ -183,7 +187,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   bool get _isEditingAllowed {
     if (widget.taskToEdit == null) return true;
     
-    final profile = ref.read(currentUserProfileProvider).value;
+    final profile = ref.read(currentUserProfileProvider).valueOrNull;
     final role = profile?['role']?.toString().toLowerCase() ?? 'member';
     final currentUserId = Supabase.instance.client.auth.currentUser?.id;
     
@@ -194,13 +198,13 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   }
 
   bool get _canAssignOthers {
-    final profile = ref.read(currentUserProfileProvider).value;
+    final profile = ref.read(currentUserProfileProvider).valueOrNull;
     final role = profile?['role']?.toString().toLowerCase() ?? 'member';
     return role == 'admin' || role == 'manager';
   }
 
   bool get _canAssignSelf {
-    final profile = ref.read(currentUserProfileProvider).value;
+    final profile = ref.read(currentUserProfileProvider).valueOrNull;
     final role = profile?['role']?.toString().toLowerCase() ?? 'member';
     
     if (role == 'admin' || role == 'manager') return true;
@@ -325,7 +329,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
 
     String assigneeName = 'Unassigned';
     if (_assignedUserIds.isNotEmpty) {
-      final allUsers = ref.read(allUsersProvider).value ?? [];
+      final allUsers = ref.read(allUsersProvider).valueOrNull ?? [];
       final assignedUsers = allUsers.where((u) => _assignedUserIds.contains(u['id'])).toList();
       assigneeName = assignedUsers.map((u) => u['full_name'] ?? 'Assigned User').join(', ');
     }
@@ -1175,7 +1179,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
       data: (users) {
         // Filter users for IT & Media department
         Department? mediaItDept;
-        for (final d in (deptsAsync.value ?? [])) {
+        for (final d in (deptsAsync.valueOrNull ?? [])) {
           final name = d.name.toLowerCase();
           if (name.contains('media') || name.contains('it')) {
             mediaItDept = d;
@@ -1202,7 +1206,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
             if (_canAssignSelf) return userId == currentUserId;
             
             // Allow members to propose any target team user
-            final currentUserProfile = ref.read(currentUserProfileProvider).value;
+            final currentUserProfile = ref.read(currentUserProfileProvider).valueOrNull;
             final currentUserRole = currentUserProfile?['role']?.toString().toLowerCase() ?? 'member';
             if (currentUserRole == 'member' || currentUserRole == 'guest') return true;
             
@@ -1211,7 +1215,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
         }
 
         if (filteredUsers.isEmpty) {
-          final profile = ref.read(currentUserProfileProvider).value;
+          final profile = ref.read(currentUserProfileProvider).valueOrNull;
           final role = profile?['role']?.toString().toLowerCase() ?? 'member';
           String message = 'No team members found';
           if (role == 'team' && !_canAssignSelf) message = 'You can only assign yourself to tasks they created';
@@ -1347,8 +1351,8 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
 
       return GestureDetector(
         onTap: (isLoading || !_isEditingAllowed) ? null : () {
-          final insts = instsAsync.value ?? [];
-          final depts = deptsAsync.value ?? [];
+          final insts = instsAsync.valueOrNull ?? [];
+          final depts = deptsAsync.valueOrNull ?? [];
           _showInstitutionalPicker(context, insts, depts, colors);
         },
         child: Container(

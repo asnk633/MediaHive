@@ -91,70 +91,100 @@ class MhGlobalErrorScreen extends StatelessWidget {
                            errorString.contains('network') ||
                            errorString.contains('connection');
 
-    if (isOfflineError) {
-      return Directionality(
-        textDirection: TextDirection.ltr,
-        child: Material(
-          color: Colors.transparent,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.l),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(LucideIcons.wifiOff, size: 40, color: AppColors.textSecondary),
-                  const SizedBox(height: AppSpacing.m),
-                  Text(
-                    'No Connection',
-                    style: AppTypography.h3,
-                    textAlign: TextAlign.center,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 150 || constraints.maxHeight < 150;
+
+        if (isOfflineError) {
+          if (isCompact) {
+            return const Directionality(
+              textDirection: TextDirection.ltr,
+              child: Material(
+                color: Colors.transparent,
+                child: Center(
+                  child: Icon(LucideIcons.wifiOff, size: 24, color: AppColors.textSecondary),
+                ),
+              ),
+            );
+          }
+
+          return Directionality(
+            textDirection: TextDirection.ltr,
+            child: Material(
+              color: Colors.transparent,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.l),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(LucideIcons.wifiOff, size: 40, color: AppColors.textSecondary),
+                      const SizedBox(height: AppSpacing.m),
+                      Text(
+                        'No Connection',
+                        style: AppTypography.h3,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        'Please check your internet connection.',
+                        style: AppTypography.bodyS.copyWith(color: AppColors.textSecondary),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    'Please check your internet connection.',
-                    style: AppTypography.bodyS.copyWith(color: AppColors.textSecondary),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        if (isCompact) {
+          return const Directionality(
+            textDirection: TextDirection.ltr,
+            child: Material(
+              color: AppColors.backgroundPrimary,
+              child: Center(
+                child: Icon(LucideIcons.bug, size: 24, color: AppColors.error),
+              ),
+            ),
+          );
+        }
+
+        return Directionality(
+          textDirection: TextDirection.ltr,
+          child: Material(
+            color: AppColors.backgroundPrimary,
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.l),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(LucideIcons.bug, size: 40, color: AppColors.error),
+                    const SizedBox(height: AppSpacing.m),
+                    Text('Widget Error', style: AppTypography.h3),
+                    const SizedBox(height: AppSpacing.s),
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.s),
+                      decoration: BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.circular(AppRadius.m),
+                      ),
+                      child: Text(
+                        details.exceptionAsString(),
+                        style: AppTypography.caption.copyWith(color: AppColors.error.withValues(alpha: 0.8), fontFamily: 'monospace'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
-    }
-
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Material(
-        color: AppColors.backgroundPrimary,
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.l),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(LucideIcons.bug, size: 40, color: AppColors.error),
-                const SizedBox(height: AppSpacing.m),
-                Text('Widget Error', style: AppTypography.h3),
-                const SizedBox(height: AppSpacing.s),
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.s),
-                  decoration: BoxDecoration(
-                    color: Colors.black12,
-                    borderRadius: BorderRadius.circular(AppRadius.m),
-                  ),
-                  child: Text(
-                    details.exceptionAsString(),
-                    style: AppTypography.caption.copyWith(color: AppColors.error.withValues(alpha: 0.8), fontFamily: 'monospace'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

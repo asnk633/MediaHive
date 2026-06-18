@@ -35,6 +35,7 @@ import '../../features/tasks/presentation/screens/task_details_screen.dart';
 import '../../features/governance/presentation/screens/user_management_screen.dart';
 import '../../features/governance/presentation/screens/manager_deputies_screen.dart';
 import '../../features/system/presentation/screens/system_health_screen.dart';
+import '../../features/system/presentation/screens/sync_errors_screen.dart';
 import '../providers/user_provider.dart';
 import '../../features/attendance/presentation/providers/attendance_provider.dart';
 import '../../features/chat/presentation/screens/chat_rooms_screen.dart';
@@ -213,6 +214,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                 );
               },
             ),
+          ),
+          GoRoute(
+            path: '/profile/sync-errors',
+            builder: (context, state) => const SyncErrorsScreen(),
           ),
           GoRoute(
             path: '/notifications',

@@ -123,13 +123,12 @@ class SupabaseTaskRepository implements TaskRepository {
 
   @override
   Future<Either<Failure, void>> addTask(Task task) async {
+    final payload = _mapTaskToPayload(task);
     final success = await _syncService.executeImmediate(
       'tasks',
       'create',
-      task.toJson(),
+      payload,
       () async {
-        final payload = _mapTaskToPayload(task);
-        
         // Add tenant and creator info for new tasks
         final userMetadata = _supabaseClient.auth.currentUser?.userMetadata ?? {};
         final currentUserId = _supabaseClient.auth.currentUser?.id;
@@ -161,12 +160,12 @@ class SupabaseTaskRepository implements TaskRepository {
     final previousTask = (await _localDataSource.getTasks()).firstWhere((t) => t.id == task.id);
     await _localDataSource.updateTask(task);
 
+    final payload = _mapTaskToPayload(task);
     final success = await _syncService.executeImmediate(
       'tasks',
       'update',
-      task.toJson(),
+      payload,
       () async {
-        final payload = _mapTaskToPayload(task);
         // Remove immutable fields
         payload.remove('created_by');
         payload.remove('tenant_id');

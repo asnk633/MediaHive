@@ -34,7 +34,7 @@ class SnackbarListener extends StatelessWidget {
         if (snapshot.hasData) {
           // addPostFrameCallback ensures ScaffoldMessenger is mounted in the next frame
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            ScaffoldMessenger.of(context).showSnackBar(
+            ScaffoldMessenger.maybeOf(context)?.showSnackBar(
               SnackBar(
                 content: Text(snapshot.data!.text),
                 duration: snapshot.data!.duration,

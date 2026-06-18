@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/services/auth_helper.dart';
 import 'package:uuid/uuid.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:mediahive_mobile/core/providers/user_provider.dart';
@@ -351,8 +352,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
     }
 
     try {
-      final client = _ref.read(supabaseClientProvider);
-      final token = client.auth.currentSession?.accessToken;
+      final token = await getFreshAccessToken();
       final Map<String, String> headers = {};
       if (token != null) {
         headers['Authorization'] = 'Bearer $token';
@@ -393,8 +393,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
       if (uploadUrl != liveUploadUrl) {
         debugPrint('[CHAT_UPLOAD] Failover: Attempting direct upload to live production proxy: $liveUploadUrl');
         try {
-          final client = _ref.read(supabaseClientProvider);
-          final token = client.auth.currentSession?.accessToken;
+          final token = await getFreshAccessToken();
           final Map<String, String> headers = {};
           if (token != null) {
             headers['Authorization'] = 'Bearer $token';

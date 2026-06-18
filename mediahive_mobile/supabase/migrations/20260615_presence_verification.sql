@@ -157,9 +157,19 @@ CREATE POLICY "Users can read own presence logs"
   ON presence_logs FOR SELECT TO authenticated
   USING ("userId" = auth.uid());
 
-CREATE POLICY "Managers can read all presence logs"
+CREATE POLICY "Managers can read tenant presence logs"
   ON presence_logs FOR SELECT TO authenticated
-  USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role IN ('manager', 'admin')));
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+        AND profiles.role IN ('manager', 'admin')
+        AND profiles.tenant_id = (
+          SELECT tenant_id FROM profiles
+          WHERE profiles.id = presence_logs."userId"
+        )
+    )
+  );
 
 ALTER TABLE field_work_sessions ENABLE ROW LEVEL SECURITY;
 
@@ -171,9 +181,19 @@ CREATE POLICY "Users can read own field work sessions"
   ON field_work_sessions FOR SELECT TO authenticated
   USING ("userId" = auth.uid());
 
-CREATE POLICY "Managers can read all field work sessions"
+CREATE POLICY "Managers can read tenant field work sessions"
   ON field_work_sessions FOR SELECT TO authenticated
-  USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role IN ('manager', 'admin')));
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+        AND profiles.role IN ('manager', 'admin')
+        AND profiles.tenant_id = (
+          SELECT tenant_id FROM profiles
+          WHERE profiles.id = field_work_sessions."userId"
+        )
+    )
+  );
 
 CREATE POLICY "Managers can update field work sessions"
   ON field_work_sessions FOR UPDATE TO authenticated

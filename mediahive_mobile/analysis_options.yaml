@@ -13,7 +13,7 @@ analyzer:
     - "**/*.g.dart"
   errors:
     invalid_annotation_target: ignore
-    avoid_print: ignore
+    avoid_print: error
     unused_local_variable: ignore
     dead_null_aware_expression: ignore
     use_build_context_synchronously: ignore
@@ -40,8 +40,7 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    prefer_const_constructors: error  # Enforced: improves widget rebuild efficiency
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

@@ -2,6 +2,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 enum AppFlavor { development, staging, production }
 
+String _getSupabaseAnonKey() {
+  final key = dotenv.env['SUPABASE_ANON_KEY'];
+  if (key == null || key.isEmpty) {
+    throw StateError('SUPABASE_ANON_KEY is missing from .env. App cannot start.');
+  }
+  return key;
+}
+
 class EnvConfig {
   final AppFlavor flavor;
   final String apiBaseUrl;
@@ -28,7 +36,7 @@ class EnvConfig {
           flavor: AppFlavor.production,
           apiBaseUrl: 'https://thaiba-garden-media-manager.vercel.app',
           supabaseUrl: dotenv.env['SUPABASE_URL'] ?? 'https://fcctcorycpvebupluzpe.supabase.co',
-          supabaseAnonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjY3Rjb3J5Y3B2ZWJ1cGx1enBlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyNjQ1NDEsImV4cCI6MjA4Nzg0MDU0MX0.D2X24KYzoN5tNXZgPaVT7cMWDE2TxYlCeFEa5DHcn1M',
+          supabaseAnonKey: _getSupabaseAnonKey(),
           enableAnalytics: true,
           enableDetailedLogging: false,
         );
@@ -44,9 +52,9 @@ class EnvConfig {
       default:
         return EnvConfig(
           flavor: AppFlavor.development,
-          apiBaseUrl: 'http://localhost:3000',
+          apiBaseUrl: 'http://10.0.2.2:3000',
           supabaseUrl: dotenv.env['SUPABASE_URL'] ?? 'https://fcctcorycpvebupluzpe.supabase.co',
-          supabaseAnonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjY3Rjb3J5Y3B2ZWJ1cGx1enBlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyNjQ1NDEsImV4cCI6MjA4Nzg0MDU0MX0.D2X24KYzoN5tNXZgPaVT7cMWDE2TxYlCeFEa5DHcn1M',
+          supabaseAnonKey: _getSupabaseAnonKey(),
           enableAnalytics: false,
           enableDetailedLogging: true,
         );

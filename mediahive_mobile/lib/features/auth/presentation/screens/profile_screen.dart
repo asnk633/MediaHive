@@ -12,6 +12,7 @@ import '../../../../core/providers/user_provider.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/providers/labs_provider.dart';
 import '../../../../core/providers/update_provider.dart';
+import '../../../../core/providers/sync_errors_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import '../../../../core/services/media_service.dart';
@@ -19,6 +20,7 @@ import 'dart:io';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../../dashboard/presentation/providers/dashboard_providers.dart';
 import '../../../chat/presentation/providers/chat_providers.dart';
+import 'package:app_settings/app_settings.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -75,6 +77,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               const SizedBox(height: 24),
               _buildSectionLabel(colors, 'ACCOUNT & SECURITY'),
               _buildSecurityTile(),
+              const SizedBox(height: 16),
+              _buildBatteryDisclaimerTile(),
+              const SizedBox(height: 16),
+              _buildSyncErrorsTile(),
               const SizedBox(height: 24),
               _buildSectionLabel(colors, 'PREFERENCES'),
               _buildThemeToggleTile(),
@@ -568,6 +574,122 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             child: Text('Change Password', style: TextStyle(color: colors.textPrimary, fontSize: 12)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSyncErrorsTile() {
+    final colors = ref.watch(themeColorsProvider);
+    final syncErrors = ref.watch(syncErrorsProvider);
+    final hasErrors = syncErrors.hasSyncErrors;
+
+    return GestureDetector(
+      onTap: () => context.push('/profile/sync-errors'),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: hasErrors ? Colors.orangeAccent.withValues(alpha: 0.3) : colors.border),
+          boxShadow: colors.cardShadow,
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: hasErrors ? Colors.orangeAccent.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                LucideIcons.refreshCcw, 
+                size: 18, 
+                color: hasErrors ? Colors.orangeAccent : colors.textSecondary,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Sync Errors', style: TextStyle(fontWeight: FontWeight.bold, color: colors.textPrimary)),
+                  Text(
+                    hasErrors 
+                      ? '${syncErrors.failedItems.length} failed offline mutation(s)' 
+                      : 'All offline changes synced', 
+                    style: TextStyle(
+                      fontSize: 11, 
+                      color: hasErrors ? Colors.orangeAccent : colors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (hasErrors)
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Colors.orangeAccent,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            const SizedBox(width: 8),
+            Icon(LucideIcons.chevronRight, size: 16, color: colors.textSecondary),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBatteryDisclaimerTile() {
+    final colors = ref.watch(themeColorsProvider);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.border),
+        boxShadow: colors.cardShadow,
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.green.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(LucideIcons.battery, size: 18, color: Colors.green),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Background Presence', style: TextStyle(fontWeight: FontWeight.bold, color: colors.textPrimary)),
+                const SizedBox(height: 4),
+                Text(
+                  'Background tracking uses location services and may affect battery life.',
+                  style: TextStyle(fontSize: 11, color: colors.textSecondary),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          TextButton(
+            onPressed: () {
+              AppSettings.openAppSettings(type: AppSettingsType.location);
+            },
+            style: TextButton.styleFrom(
+              backgroundColor: colors.textPrimary.withValues(alpha: 0.05),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: Text('Manage', style: TextStyle(color: colors.textPrimary, fontSize: 12)),
           ),
         ],
       ),

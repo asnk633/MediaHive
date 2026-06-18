@@ -9,6 +9,7 @@ import '../providers/navigation_provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/design_tokens.dart';
 import '../../core/theme_provider.dart';
+import '../../core/providers/sync_errors_provider.dart';
 import '../../core/providers/user_provider.dart';
 import '../../features/system/presentation/providers/notifications_provider.dart';
 import 'dart:io';
@@ -332,6 +333,8 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
 
                           builder: (context, ref, _) {
                             final unreadCount = ref.watch(unreadNotificationsCountProvider);
+                            final hasSyncErrors = ref.watch(syncErrorsProvider).hasSyncErrors;
+                            
                             return GestureDetector(
                               onTap: () {
                                 if (currentRoute.startsWith('/notifications')) {
@@ -348,6 +351,20 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                                     color: colors.iconColor.withValues(alpha: 0.7),
                                     size: 22,
                                   ),
+                                  if (hasSyncErrors)
+                                    Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                          color: Colors.orangeAccent,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: colors.surface, width: 1.5),
+                                        ),
+                                      ),
+                                    ),
                                   if (unreadCount > 0)
                                     Positioned(
                                       top: -2,

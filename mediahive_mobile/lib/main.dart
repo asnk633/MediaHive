@@ -46,6 +46,7 @@ void main() async {
   ErrorWidget.builder = (details) => MhGlobalErrorScreen(details: details);
   
   await Hive.initFlutter();
+  await Hive.openBox<bool>('sync_notifications');
   
   await Supabase.initialize(
     url: config.supabaseUrl,

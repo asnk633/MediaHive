@@ -175,9 +175,9 @@ class TasksScreen extends ConsumerWidget {
             ),
             MhButton(
               label: 'Add Task',
-              onTap: isOffline ? null : () => context.push('/create-task'),
+              onTap: () => context.push('/create-task'),
               height: 40,
-              type: isOffline ? MhButtonType.secondary : MhButtonType.primary,
+              type: MhButtonType.primary,
             ),
           ],
         ),
@@ -959,8 +959,8 @@ class TasksScreen extends ConsumerWidget {
         ref.read(tasksListProvider.notifier).deleteTask(task.id);
       },
       child: GestureDetector(
-        onTap: isOffline ? null : () => context.push('/task-details', extra: task),
-        onLongPress: isOffline ? null : () {
+        onTap: () => context.push('/task-details', extra: task),
+        onLongPress: () {
           final canDelete = _canEditDelete(ref, task);
           if (!canDelete) return; // Prevent action sheet if no permissions
           
@@ -1133,7 +1133,7 @@ class TasksScreen extends ConsumerWidget {
     final color = isDone ? colors.emerald : (isOverdue ? colors.error : _getStatusColor(task.status, colors));
     
     return GestureDetector(
-      onTap: (isOffline || isDone || !_canUpdateStatus(ref, task)) ? null : () {
+      onTap: (isDone || !_canUpdateStatus(ref, task)) ? null : () {
         final profile = ref.read(currentUserProfileProvider).valueOrNull;
         final fullName = profile?['full_name'] as String?;
         final updatedTask = task.copyWith(status: 'done', completedByName: fullName);
@@ -1187,10 +1187,10 @@ class TasksScreen extends ConsumerWidget {
     }
 
     return GestureDetector(
-      onTap: (isOffline || !_canUpdateStatus(ref, task)) ? null : () => _showStatusPicker(context, ref, task, colors),
+      onTap: (!_canUpdateStatus(ref, task)) ? null : () => _showStatusPicker(context, ref, task, colors),
       child: Semantics(
         label: 'Status: $label',
-        button: !(isOffline || !_canUpdateStatus(ref, task)),
+        button: !(!_canUpdateStatus(ref, task)),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(

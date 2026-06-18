@@ -10,6 +10,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/providers/user_provider.dart';
 import '../../../../core/providers/ui_providers.dart';
 import '../providers/tasks_provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../domain/models/task.dart';
 
 class TaskDetailsScreen extends ConsumerStatefulWidget {
@@ -26,6 +27,53 @@ class TaskDetailsScreen extends ConsumerStatefulWidget {
 
 class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
   bool _isLoading = false;
+
+  Future<void> _dismissSyncNotification(String taskId) async {
+    try {
+      final box = Hive.box<bool>('sync_notifications');
+      await box.delete(taskId);
+    } catch (e) {
+      // Ignore
+    }
+  }
+
+  Widget _buildSyncNotificationBanner(ThemeColors colors, String taskId) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.indigo.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.indigo.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(LucideIcons.info, size: 20, color: colors.indigo),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'This task was updated with changes from the server while you were offline.',
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontSize: 14,
+                height: 1.4,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          GestureDetector(
+            onTap: () => _dismissSyncNotification(taskId),
+            child: Icon(
+              LucideIcons.x,
+              size: 20,
+              color: colors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   bool get _isEditingAllowed {
     final profile = ref.read(currentUserProfileProvider).valueOrNull;
@@ -191,14 +239,20 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = ref.watch(themeColorsProvider);
-    final isDone = widget.task.status.toLowerCase() == 'done';
+    final tasksAsync = ref.watch(tasksListProvider);
+    final currentTask = tasksAsync.valueOrNull?.firstWhere(
+      (t) => t.id == widget.task.id, 
+      orElse: () => widget.task,
+    ) ?? widget.task;
+    
+    final isDone = currentTask.status.toLowerCase() == 'done';
     
     // Formatting completion info if done
     String? completionText;
     if (isDone) {
-      String name = widget.task.completedByName ?? '';
+      String name = currentTask.completedByName ?? '';
       if (name.trim().isEmpty) {
-        name = widget.task.assignee ?? '';
+        name = currentTask.assignee ?? '';
       }
       if (name.trim().toLowerCase() == 'unassigned') {
         name = '';
@@ -206,9 +260,9 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
       final namePart = name.isNotEmpty ? ' by $name' : '';
       
       String timePart = '';
-      if (widget.task.completionDate != null) {
+      if (currentTask.completionDate != null) {
         try {
-          final dt = DateTime.parse(widget.task.completionDate!).toLocal();
+          final dt = DateTime.parse(currentTask.completionDate!).toLocal();
           timePart = ' at ${DateFormat('MMM d, h:mm a').format(dt)}';
         } catch (_) {}
       }
@@ -237,7 +291,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
               icon: Icon(LucideIcons.edit2, color: colors.textPrimary),
               tooltip: 'Edit Task',
               onPressed: () {
-                context.push('/create-task', extra: widget.task);
+                context.push('/create-task', extra: currentTask);
               },
             ),
             IconButton(
@@ -266,8 +320,16 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  ValueListenableBuilder<Box<bool>>(
+                    valueListenable: Hive.box<bool>('sync_notifications').listenable(),
+                    builder: (context, box, child) {
+                      final hasNotification = box.containsKey(currentTask.id);
+                      if (!hasNotification) return const SizedBox.shrink();
+                      return _buildSyncNotificationBanner(colors, currentTask.id);
+                    },
+                  ),
                   Text(
-                    widget.task.title,
+                    currentTask.title,
                     style: AppTypography.h2.copyWith(
                       color: colors.textPrimary,
                       fontWeight: FontWeight.w900,
@@ -325,14 +387,14 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                       border: Border.all(color: colors.border.withValues(alpha: 0.5)),
                     ),
                     child: Text(
-                      (widget.task.description != null && widget.task.description!.trim().isNotEmpty)
-                          ? widget.task.description!
+                      (currentTask.description != null && currentTask.description!.trim().isNotEmpty)
+                          ? currentTask.description!
                           : 'No description provided.',
                       style: TextStyle(
-                        color: (widget.task.description != null && widget.task.description!.trim().isNotEmpty)
+                        color: (currentTask.description != null && currentTask.description!.trim().isNotEmpty)
                             ? colors.textSecondary
                             : colors.textSecondary.withValues(alpha: 0.5),
-                        fontStyle: (widget.task.description != null && widget.task.description!.trim().isNotEmpty)
+                        fontStyle: (currentTask.description != null && currentTask.description!.trim().isNotEmpty)
                             ? FontStyle.normal
                             : FontStyle.italic,
                         fontSize: 14,
@@ -363,26 +425,26 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                       children: [
                         _buildDetailRow(
                           'Priority',
-                          widget.task.priority.toUpperCase(),
-                          _getPriorityIcon(widget.task.priority),
+                          currentTask.priority.toUpperCase(),
+                          _getPriorityIcon(currentTask.priority),
                           colors,
-                          iconColor: _getPriorityColor(widget.task.priority, colors),
-                          valueColor: _getPriorityColor(widget.task.priority, colors),
+                          iconColor: _getPriorityColor(currentTask.priority, colors),
+                          valueColor: _getPriorityColor(currentTask.priority, colors),
                         ),
                         Divider(color: colors.border.withValues(alpha: 0.3), height: 1),
                         _buildDetailRow(
                           'Status',
-                          widget.task.status.toUpperCase(),
+                          currentTask.status.toUpperCase(),
                           LucideIcons.activity,
                           colors,
-                          iconColor: _getStatusColor(widget.task.status, colors),
-                          valueColor: _getStatusColor(widget.task.status, colors),
+                          iconColor: _getStatusColor(currentTask.status, colors),
+                          valueColor: _getStatusColor(currentTask.status, colors),
                         ),
                         Divider(color: colors.border.withValues(alpha: 0.3), height: 1),
-                        if (widget.task.department != null && widget.task.department!.isNotEmpty) ...[
+                        if (currentTask.department != null && currentTask.department!.isNotEmpty) ...[
                           _buildDetailRow(
                             'Department / Inst.',
-                            widget.task.department!.toUpperCase(),
+                            currentTask.department!.toUpperCase(),
                             LucideIcons.building2,
                             colors,
                             iconColor: colors.indigo,
@@ -391,7 +453,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                         ],
                         _buildDetailRow(
                           'Due Date',
-                          _formatDate(widget.task.dueDate),
+                          _formatDate(currentTask.dueDate),
                           LucideIcons.calendar,
                           colors,
                           iconColor: colors.indigo,
@@ -399,7 +461,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                         Divider(color: colors.border.withValues(alpha: 0.3), height: 1),
                         _buildDetailRow(
                           'Assignee',
-                          widget.task.assignee ?? 'Unassigned',
+                          currentTask.assignee ?? 'Unassigned',
                           LucideIcons.user,
                           colors,
                           iconColor: colors.honey,
@@ -407,7 +469,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                         Divider(color: colors.border.withValues(alpha: 0.3), height: 1),
                         _buildDetailRow(
                           'Requested By',
-                          widget.task.requester ?? 'Unknown',
+                          currentTask.requester ?? 'Unknown',
                           LucideIcons.userPlus,
                           colors,
                           iconColor: colors.emerald,
@@ -415,7 +477,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                         Divider(color: colors.border.withValues(alpha: 0.3), height: 1),
                         _buildDetailRow(
                           'Created On',
-                          _formatDate(widget.task.createdAt),
+                          _formatDate(currentTask.createdAt),
                           LucideIcons.calendarPlus,
                           colors,
                           iconColor: colors.textSecondary,

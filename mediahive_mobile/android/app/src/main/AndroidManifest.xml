@@ -30,7 +30,8 @@
         android:label="MediaHive"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:appCategory="productivity">
+        android:appCategory="productivity"
+        android:usesCleartextTraffic="true">
 
         <!-- FileProvider for installing updates -->
         <provider

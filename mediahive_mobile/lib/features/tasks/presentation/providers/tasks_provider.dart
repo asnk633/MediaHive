@@ -32,6 +32,15 @@ class TasksList extends _$TasksList {
   @override
   Future<List<Task>> build() async {
     final repository = ref.watch(taskRepositoryProvider);
+    final syncService = ref.watch(syncServiceProvider);
+    
+    // Listen for offline queue sync completion
+    final subscription = syncService.syncCompleteStream.listen((entity) {
+      if (entity == 'tasks') {
+        ref.invalidateSelf();
+      }
+    });
+    ref.onDispose(() => subscription.cancel());
     
     // Listen for realtime updates via centralized service
     // This ensures we don't recreate the subscription on every data refresh

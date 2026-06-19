@@ -75,7 +75,7 @@ dependencies:
   mobile_scanner: ^6.0.11
   http_parser: ^4.0.0
   flutter_timezone: ^5.1.0
-  flutter_background_geolocation: ^5.2.1
+  # flutter_background_geolocation removed — paid license required for release builds
   app_settings: ^5.1.1
 
 

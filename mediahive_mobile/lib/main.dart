@@ -21,9 +21,9 @@ import 'core/services/fcm_service.dart';
 import 'core/providers/update_provider.dart';
 import 'features/attendance/presentation/providers/attendance_provider.dart';
 import 'features/attendance/data/services/attendance_reminder_service.dart';
-import 'features/attendance/data/services/background_headless_task.dart';
+// background_headless_task import removed — BGGeo headless tasks no longer used
 import 'features/attendance/data/services/background_presence_service.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg;
+// flutter_background_geolocation removed (paid license required)
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'dart:ui';
@@ -90,10 +90,7 @@ void main() async {
 
   logger.info('APPLICATION_START: Flavor=development');
 
-  // Register background geolocation headless task (must be before runApp)
-  bg.BackgroundGeolocation.registerHeadlessTask(backgroundGeolocationHeadlessTask);
-
-  // Sync any buffered presence logs from offline/headless sessions
+  // Sync any buffered presence logs from offline sessions
   BackgroundPresenceService().syncBufferedLogs();
 
   runApp(

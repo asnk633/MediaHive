@@ -1,48 +1,31 @@
-import 'dart:async';
 import 'dart:math';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg;
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/services/logger_service.dart';
-import '../../../../core/services/notification_service.dart';
-import 'field_work_notification_service.dart';
 
-/// Background presence verification service using flutter_background_geolocation.
+/// Background presence verification service — STUB implementation.
 ///
-/// Replaces the Timer.periodic stub with a real background service that:
-/// - Runs even when the app is closed/killed
-/// - Survives device reboot (startOnBoot)
-/// - Uses geofence monitoring for office boundary detection
-/// - Uses heartbeat for periodic presence checks
-/// - Battery-aware adaptive polling
-/// - Headless task execution for terminated app state
+/// The original implementation used `flutter_background_geolocation` (Transistorsoft),
+/// which is a paid plugin that blocks release builds with a license validation dialog.
+///
+/// This stub preserves the public interface so callers (attendance check-in/out flows)
+/// continue to work without changes. Background presence verification is disabled
+/// until Phase 2 replaces this with `geolocator` + `workmanager`.
 class BackgroundPresenceService {
   static final _logger = LoggerService();
 
-  // Singleton pattern for global access from headless task
+  // Singleton pattern for global access
   static final BackgroundPresenceService _instance = BackgroundPresenceService._internal();
   factory BackgroundPresenceService() => _instance;
   BackgroundPresenceService._internal();
 
-  // --- Battery Optimization Toggle ---
-  // Note: Since this is a static const, flipping it requires a re-compile. 
-  // Future improvement: move to RemoteConfig for dynamic over-the-air updates.
-  static const bool optimizeBattery = true;
-
-
-  bool _isConfigured = false;
   String? _activeAttendanceId;
   String? _activeUserId;
-  double? _officeLatitude;
-  double? _officeLongitude;
-  double _officeRadius = 50.0;
-  bool _shadowMode = true;
-  bool _isPaused = false; // True during field work
-  int _checkIntervalSeconds = 600; // 10 min default
 
-  // ─── Configuration ─────────────────────────────────────────
+  // ─── Public Interface (unchanged signatures) ──────────────
 
   /// Initialize and start background tracking for an active attendance session.
+  /// STUB: Stores config in Hive for future use but does NOT start background tracking.
   Future<void> startTracking({
     required String attendanceId,
     required String userId,
@@ -55,44 +38,29 @@ class BackgroundPresenceService {
   }) async {
     _activeAttendanceId = attendanceId;
     _activeUserId = userId;
-    _officeLatitude = officeLatitude;
-    _officeLongitude = officeLongitude;
-    _officeRadius = officeRadiusMeters;
-    _shadowMode = shadowMode;
-    _checkIntervalSeconds = checkIntervalMinutes * 60;
-    _isPaused = false;
 
-    // Store session info in Hive for headless task access
-    final box = await Hive.openBox('bg_presence_config');
-    await box.putAll({
-      'attendanceId': attendanceId,
-      'userId': userId,
-      'officeLatitude': officeLatitude,
-      'officeLongitude': officeLongitude,
-      'officeRadius': officeRadiusMeters,
-      'shadowMode': shadowMode,
-      'checkIntervalSeconds': _checkIntervalSeconds,
-      'isPaused': false,
-    });
-
-    if (!_isConfigured) {
-      await _configure();
+    // Store session info in Hive (will be used by Phase 2 WorkManager implementation)
+    try {
+      final box = await Hive.openBox('bg_presence_config');
+      await box.putAll({
+        'attendanceId': attendanceId,
+        'userId': userId,
+        'officeLatitude': officeLatitude,
+        'officeLongitude': officeLongitude,
+        'officeRadius': officeRadiusMeters,
+        'shadowMode': shadowMode,
+        'checkIntervalSeconds': checkIntervalMinutes * 60,
+        'isPaused': false,
+      });
+    } catch (e) {
+      _logger.warning('BG_PRESENCE: Failed to persist config: $e');
     }
 
-    // Add office geofence
-    await bg.BackgroundGeolocation.addGeofence(bg.Geofence(
-      identifier: officeGeofenceId ?? 'office_main',
-      radius: officeRadiusMeters,
-      latitude: officeLatitude,
-      longitude: officeLongitude,
-      notifyOnEntry: true,
-      notifyOnExit: true,
-      notifyOnDwell: true,
-    ));
-
-    // Start tracking
-    final state = await bg.BackgroundGeolocation.start();
-    _logger.info('BG_PRESENCE: Started tracking. State enabled=${state.enabled}');
+    _logger.warning(
+      'BG_PRESENCE: Background geolocation plugin removed (paid license required). '
+      'Presence verification is temporarily disabled. '
+      'Session stored for attendanceId=$attendanceId',
+    );
   }
 
   /// Stop all background tracking (e.g., on checkout).
@@ -106,24 +74,19 @@ class BackgroundPresenceService {
       await box.clear();
     } catch (_) {}
 
-    // Remove geofences and stop
-    await bg.BackgroundGeolocation.removeGeofences();
-    await bg.BackgroundGeolocation.stop();
-    _logger.info('BG_PRESENCE: Stopped tracking.');
+    _logger.info('BG_PRESENCE: Stopped tracking (stub).');
   }
 
-  /// Pause tracking during field work (geofence exits won't trigger violations).
+  /// Pause tracking during field work.
   void pauseForFieldWork() {
-    _isPaused = true;
     _persistPauseState(true);
-    _logger.info('BG_PRESENCE: Paused for field work.');
+    _logger.info('BG_PRESENCE: Paused for field work (stub).');
   }
 
   /// Resume tracking after field work ends.
   void resumeAfterFieldWork() {
-    _isPaused = false;
     _persistPauseState(false);
-    _logger.info('BG_PRESENCE: Resumed after field work.');
+    _logger.info('BG_PRESENCE: Resumed after field work (stub).');
   }
 
   Future<void> _persistPauseState(bool paused) async {
@@ -133,237 +96,56 @@ class BackgroundPresenceService {
     } catch (_) {}
   }
 
-  // ─── Private: Plugin Configuration ─────────────────────────
+  // ─── Buffered Log Sync ────────────────────────────────────
 
-  Future<void> _configure() async {
-    // Register event listeners BEFORE calling ready()
-    bg.BackgroundGeolocation.onLocation(_onLocation);
-    bg.BackgroundGeolocation.onGeofence(_onGeofence);
-    bg.BackgroundGeolocation.onHeartbeat(_onHeartbeat);
-    bg.BackgroundGeolocation.onProviderChange(_onProviderChange);
-
-    await bg.BackgroundGeolocation.ready(bg.Config(
-      // Accuracy & Distance
-      desiredAccuracy: bg.Config.DESIRED_ACCURACY_MEDIUM,
-      distanceFilter: 50.0,
-
-      // Timing
-      locationUpdateInterval: _checkIntervalSeconds * 1000, // ms
-      heartbeatInterval: _checkIntervalSeconds, // seconds
-
-      // Background persistence
-      stopOnTerminate: false,
-      startOnBoot: true,
-      enableHeadless: true,
-
-      // Battery
-      // preventSuspend: false relies on WorkManager/JobScheduler to allow the CPU 
-      // to sleep instead of holding a wake lock. Note: Android Doze mode may delay 
-      // background pings by >15 mins when idle.
-      preventSuspend: optimizeBattery ? false : true,
-      useSignificantChangesOnly: optimizeBattery ? true : false,
-
-      // Android foreground notification
-      notification: bg.Notification(
-        title: 'MediaHive Attendance',
-        text: 'Verifying your office presence',
-        channelName: 'Attendance Tracking',
-        smallIcon: 'drawable/ic_notification',
-        sticky: true,
-      ),
-
-      // Logging
-      debug: false,
-      logLevel: bg.Config.LOG_LEVEL_WARNING,
-    ));
-
-    _isConfigured = true;
-    _logger.info('BG_PRESENCE: Plugin configured. heartbeat=${_checkIntervalSeconds}s');
-  }
-
-  // ─── Event Handlers ────────────────────────────────────────
-
-  void _onLocation(bg.Location location) {
-    if (_isPaused || _activeAttendanceId == null) return;
-    _logger.info('BG_PRESENCE: Location update: ${location.coords.latitude}, ${location.coords.longitude}');
-    _logPresenceFromLocation(location);
-  }
-
-  void _onGeofence(bg.GeofenceEvent event) {
-    if (_isPaused || _activeAttendanceId == null) return;
-
-    _logger.info('BG_PRESENCE: Geofence ${event.identifier} → ${event.action}');
-
-    if (event.action == 'EXIT') {
-      _handleGeofenceExit(event);
-    } else if (event.action == 'ENTER') {
-      _handleGeofenceEntry(event);
-    }
-  }
-
-  void _onHeartbeat(bg.HeartbeatEvent event) {
-    if (_isPaused || _activeAttendanceId == null) return;
-
-    _logger.info('BG_PRESENCE: Heartbeat — requesting current position');
-    bg.BackgroundGeolocation.getCurrentPosition(
-      samples: 1,
-      persist: true,
-    ).then((bg.Location location) {
-      _logPresenceFromLocation(location);
-    }).catchError((e) {
-      _logger.error('BG_PRESENCE: Heartbeat position error: $e');
-    });
-  }
-
-  void _onProviderChange(bg.ProviderChangeEvent event) {
-    _logger.info('BG_PRESENCE: Provider changed: enabled=${event.enabled}, status=${event.status}');
-    if (event.status == bg.ProviderChangeEvent.AUTHORIZATION_STATUS_RESTRICTED || 
-        event.status == bg.ProviderChangeEvent.AUTHORIZATION_STATUS_DENIED) {
-      _logger.warning('BG_PRESENCE: Background Refresh or Location is restricted/denied!');
-      // Note: Ideally, this logs to an external service like Crashlytics or Supabase diagnostics
-    }
-  }
-
-  // ─── Presence Logging ──────────────────────────────────────
-
-  Future<void> _logPresenceFromLocation(bg.Location location) async {
-    if (_officeLatitude == null || _officeLongitude == null) return;
-
-    final coords = location.coords;
-    final distance = _calculateDistance(
-      coords.latitude, coords.longitude,
-      _officeLatitude!, _officeLongitude!,
-    );
-
-    final isInside = distance <= _officeRadius;
-    // Hysteresis: exit at radius × 1.4
-    final exitRadius = _officeRadius * 1.4;
-    final isDefinitelyOutside = distance > exitRadius;
-    final isMocked = location.mock;
-
-    try {
-      final client = Supabase.instance.client;
-      await client.from('presence_logs').insert({
-        'attendanceId': _activeAttendanceId,
-        'userId': _activeUserId,
-        'latitude': coords.latitude,
-        'longitude': coords.longitude,
-        'accuracy': coords.accuracy,
-        'isWithinGeofence': isInside,
-        'isMockLocation': isMocked,
-        'verificationMethod': 'background_gps',
-        'distanceFromOffice': distance,
-        'networkState': 'online',
-        'batteryLevel': (location.battery.level * 100).round(),
-        'createdAt': DateTime.now().toUtc().toIso8601String(),
-      });
-
-      // Update attendance last verified
-      await client.from('attendance').update({
-        'lastVerifiedAt': DateTime.now().toUtc().toIso8601String(),
-        'presenceStatus': isInside ? 'verified' : (_isPaused ? 'field_work' : 'absent'),
-      }).eq('id', _activeAttendanceId!);
-
-      if (isDefinitelyOutside && !_shadowMode && !_isPaused) {
-        // Increment violation counter
-        await client.rpc('increment_geofence_violations', params: {
-          'attendance_id': _activeAttendanceId,
-        });
-      }
-    } catch (e) {
-      _logger.error('BG_PRESENCE: Failed to log presence: $e');
-      // Buffer to Hive for later sync
-      await _bufferPresenceLog({
-        'attendanceId': _activeAttendanceId,
-        'userId': _activeUserId,
-        'latitude': coords.latitude,
-        'longitude': coords.longitude,
-        'accuracy': coords.accuracy,
-        'isWithinGeofence': isInside,
-        'isMockLocation': isMocked,
-        'verificationMethod': 'background_gps',
-        'distanceFromOffice': distance,
-        'batteryLevel': (location.battery.level * 100).round(),
-        'createdAt': DateTime.now().toUtc().toIso8601String(),
-      });
-    }
-  }
-
-  void _handleGeofenceExit(bg.GeofenceEvent event) async {
-    _logger.warning('BG_PRESENCE: User exited office geofence!');
-
-    // Always show an immediate local notification so the user knows they left
-    await NotificationService.showNotificationDirect(
-      title: 'Left Office Area',
-      body: 'You appear to have left the office. Did you forget to check out?',
-      payload: '/attendance?triggerCheckoutReminder=true',
-    );
-
-    if (_shadowMode) {
-      _logger.info('BG_PRESENCE: Shadow mode — logged exit, no enforcement.');
-    } else {
-      // In enforcement mode, also send a persistent DB notification (triggers FCM push)
-      final userId = _activeUserId;
-      if (userId != null) {
-        await FieldWorkNotificationService.instance.sendGeofenceExitAlert(
-          userId,
-          event.identifier,
-          DateTime.now(),
-        );
-      }
-    }
-  }
-
-
-  void _handleGeofenceEntry(bg.GeofenceEvent event) {
-    _logger.info('BG_PRESENCE: User returned to office geofence.');
-  }
-
-  // ─── Offline Buffer ────────────────────────────────────────
-
-  Future<void> _bufferPresenceLog(Map<String, dynamic> log) async {
-    try {
-      final box = await Hive.openBox('presence_log_buffer');
-      await box.add(log);
-      _logger.info('BG_PRESENCE: Buffered log (${box.length} pending)');
-    } catch (e) {
-      _logger.error('BG_PRESENCE: Buffer write failed: $e');
-    }
-  }
-
-  /// Flush any buffered presence logs to Supabase.
+  /// Sync any presence logs buffered during offline/headless sessions.
+  /// This reads from the Hive 'presence_log_buffer' box and uploads to Supabase.
   Future<void> syncBufferedLogs() async {
     try {
-      final box = await Hive.openBox('presence_log_buffer');
-      if (box.isEmpty) return;
+      final buffer = await Hive.openBox('presence_log_buffer');
+      if (buffer.isEmpty) return;
 
       final client = Supabase.instance.client;
-      final logs = box.values.toList().cast<Map>();
+      final keys = buffer.keys.toList();
 
-      for (final log in logs) {
+      for (final key in keys) {
         try {
-          await client.from('presence_logs').insert(Map<String, dynamic>.from(log));
+          final entry = Map<String, dynamic>.from(buffer.get(key) as Map);
+          // Map camelCase keys to snake_case for Supabase
+          await client.from('presence_logs').insert({
+            'attendance_id': entry['attendanceId'],
+            'user_id': entry['userId'],
+            'latitude': entry['latitude'],
+            'longitude': entry['longitude'],
+            'accuracy': entry['accuracy'],
+            'is_within_geofence': entry['isWithinGeofence'],
+            'is_mock_location': entry['isMockLocation'],
+            'verification_method': entry['verificationMethod'],
+            'distance_from_office': entry['distanceFromOffice'],
+          });
+          await buffer.delete(key);
         } catch (e) {
-          _logger.error('BG_PRESENCE: Failed to sync log: $e');
-          return; // Stop on first failure, retry later
+          _logger.warning('BG_PRESENCE: Failed to sync buffered log: $e');
+          break; // Stop on first failure, retry later
         }
       }
 
-      await box.clear();
-      _logger.info('BG_PRESENCE: Synced ${logs.length} buffered logs.');
+      if (keys.isNotEmpty) {
+        _logger.info('BG_PRESENCE: Synced ${keys.length} buffered presence logs.');
+      }
     } catch (e) {
-      _logger.error('BG_PRESENCE: Buffer sync error: $e');
+      _logger.warning('BG_PRESENCE: Buffer sync error: $e');
     }
   }
 
-  // ─── Utilities ─────────────────────────────────────────────
+  // ─── Utilities ────────────────────────────────────────────
 
-  /// Haversine distance calculation (meters)
-  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+  /// Haversine distance calculation (meters) — kept for Phase 2
+  static double haversineDistance(double lat1, double lon1, double lat2, double lon2) {
     const p = 0.017453292519943295; // Pi/180
     final a = 0.5
         - cos((lat2 - lat1) * p) / 2
         + cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2;
-    return 12742000 * asin(sqrt(a)); // 2 * R * asin(sqrt(a)), R = 6371km
+    return 12742000 * asin(sqrt(a)); // 2 * R * asin(sqrt(a))
   }
 }

@@ -51,3 +51,11 @@
 -keepclassmembers class * {
     @com.google.gson.annotations.SerializedName <fields>;
 }
+
+# Flutter Local Notifications & Gson (Fix TypeToken exception on Release)
+-keepattributes Signature
+-keep class com.google.gson.** { *; }
+-keep class com.google.gson.stream.** { *; }
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class com.dexterous.flutterlocalnotifications.** { *; }
+-keep class com.dexterous.flutterlocalnotifications.models.** { *; }

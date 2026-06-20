@@ -130,7 +130,7 @@ jobs:
         run: |
           pnpm start &> server.log &
           echo "Waiting for server to be ready..."
-          pnpm exec wait-on http://localhost:3000 --timeout 60000
+          pnpm exec wait-on http://127.0.0.1:3000 --timeout 60000
         shell: bash
 
       - name: Debug (non-secret)

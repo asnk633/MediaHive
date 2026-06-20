@@ -16,7 +16,7 @@ module.exports = defineConfig({
   ],
 
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3000',
     actionTimeout: 10_000,
     navigationTimeout: 60_000,
     trace: 'on-first-retry',

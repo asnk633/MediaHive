@@ -188,6 +188,7 @@ The app breaks out of normal web lifecycle constraints using a suite of native T
 
 | Date | Description | Author |
 | :--- | :--- | :--- |
+| 2026-06-20 | **Desktop Version Bump to 0.1.2.** Bumped version in `package.json` and `tauri.conf.json` to 0.1.2 to prepare for the signed release. | AI Agent |
 | 2026-06-20 | **Windows Self-Signed Code Signing Setup.** Generated a self-signed code signing certificate and configured `tauri.conf.json` with its thumbprint to enable signed Windows builds. Added automatic certificate decoding and installation to the GitHub Actions release workflow. | AI Agent |
 | 2026-06-20 | **Desktop Version Bump to 0.1.1.** Bumped version in `package.json` and `tauri.conf.json` to 0.1.1 to avoid tag collisions during the automated GitHub release build. | AI Agent |
 | 2026-06-20 | **Automated OTA Releases.** Configured .github/workflows/desktop_release.yml and pointed the 	auri.conf.json updater endpoint to the GitHub Releases repository to automate OTA updates. | AI Agent |

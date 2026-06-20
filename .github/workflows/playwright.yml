@@ -24,6 +24,8 @@ jobs:
       NEXT_PUBLIC_E2E: 1
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      FIREBASE_ADMIN_SA_PATH: ${{ github.workspace }}/service-account.json
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,6 +40,35 @@ jobs:
 
       - name: Install deps
         run: pnpm install --frozen-lockfile
+
+      - name: Decode service account (Linux / macOS)
+        if: runner.os != 'Windows'
+        env:
+          FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
+        run: |
+          if [ -z "${FIREBASE_ADMIN_SA:-}" ]; then
+            echo "FIREBASE_ADMIN_SA secret is missing"
+            exit 1
+          fi
+          if echo "$FIREBASE_ADMIN_SA" | grep -q '^{'; then
+            echo "$FIREBASE_ADMIN_SA" > "$FIREBASE_ADMIN_SA_PATH"
+          else
+            echo "$FIREBASE_ADMIN_SA" | base64 --decode > "$FIREBASE_ADMIN_SA_PATH"
+          fi
+          ls -la "$FIREBASE_ADMIN_SA_PATH"
+
+      - name: Decode service account (Windows)
+        if: runner.os == 'Windows'
+        env:
+          FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
+        run: |
+          if (-not "$env:FIREBASE_ADMIN_SA") {
+            Write-Host "FIREBASE_ADMIN_SA secret is missing"
+            exit 1
+          }
+          Set-Content -Path $env:FIREBASE_ADMIN_SA_PATH -Value $env:FIREBASE_ADMIN_SA -Encoding UTF8
+          Get-Item $env:FIREBASE_ADMIN_SA_PATH | Format-List
+        shell: pwsh
 
       - name: Create .env.local
         run: |

@@ -102,7 +102,7 @@ jobs:
           E2E_ADMIN_PASSWORD=testpassword123
           E2E_GUEST_EMAIL=guest@mediahive.test
           E2E_GUEST_PASSWORD=testpassword123
-          EOF
+EOF
 
       - name: Install Playwright browsers
         run: |

@@ -32,6 +32,7 @@ export type NotificationType =
     | 'inventory_overdue'      // Phase 6.3
     | 'inventory_escalated'    // Phase 6.3
     | 'system_update'          // System Updates Feature
+    | 'system_alert'           // System Alerts
     | 'info';                  // Generic info
 
 export type NotificationEntityType = 'task' | 'event' | 'announcement' | 'file' | 'device_request' | 'system_update';

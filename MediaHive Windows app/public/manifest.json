@@ -1,0 +1,18 @@
+{
+  "name": "MediaHive Enterprise",
+  "short_name": "MediaHive",
+  "description": "Enterprise Media and Operations Management Portal",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030305",
+  "theme_color": "#14b8a6",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ]
+}

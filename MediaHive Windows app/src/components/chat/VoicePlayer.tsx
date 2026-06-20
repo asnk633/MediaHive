@@ -1,0 +1,215 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { Play, Pause, Volume2 } from 'lucide-react';
+
+interface VoicePlayerProps {
+  src: string;
+  durationSeconds?: number | null;
+}
+
+export const VoicePlayer: React.FC<VoicePlayerProps> = ({ src, durationSeconds }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(durationSeconds || 0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const progressRef = useRef<HTMLDivElement | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (durationSeconds) {
+      setDuration(durationSeconds);
+    }
+  }, [durationSeconds]);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (audioRef.current) {
+        try {
+          audioRef.current.pause();
+        } catch (_) {}
+      }
+    };
+  }, []);
+
+  const startPlaybackTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCurrentTime(prev => {
+        const nextTime = prev + 0.1;
+        if (nextTime >= duration) {
+          if (timerRef.current) clearInterval(timerRef.current);
+          setIsPlaying(false);
+          if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.loop = false;
+            audioRef.current.currentTime = 0;
+          }
+          return duration;
+        }
+        return nextTime;
+      });
+    }, 100);
+  };
+
+  const stopPlaybackTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    const isRealFile = src.includes('google') || src.includes('api/') || src.includes('localhost') || src.includes('10.0.2.2') || src.includes('vercel.app');
+
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      if (typeof window !== 'undefined') {
+        const globalWin = window as any;
+        if (globalWin.activeAudio && globalWin.activeAudio !== audioRef.current) {
+          try {
+            globalWin.activeAudio.pause();
+          } catch (e) {
+            console.error('Failed to pause background audio:', e);
+          }
+        }
+        globalWin.activeAudio = audioRef.current;
+      }
+
+      let startingPos = currentTime;
+      if (currentTime >= duration) {
+        startingPos = 0;
+        setCurrentTime(0);
+      }
+      
+      if (durationSeconds && !isRealFile) {
+        audioRef.current.loop = true;
+        const dur = audioRef.current.duration && audioRef.current.duration > 0 ? audioRef.current.duration : 1.0;
+        audioRef.current.currentTime = startingPos % dur;
+      } else {
+        audioRef.current.loop = false;
+        audioRef.current.currentTime = startingPos;
+      }
+      
+      audioRef.current.play().catch(err => {
+        console.error('Playback failed:', err);
+      });
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (!audioRef.current) return;
+    const isRealFile = src.includes('google') || src.includes('api/') || src.includes('localhost') || src.includes('10.0.2.2') || src.includes('vercel.app');
+    if (!durationSeconds || isRealFile) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (!audioRef.current) return;
+    if (audioRef.current.duration && !isNaN(audioRef.current.duration) && audioRef.current.duration > 0) {
+      setDuration(audioRef.current.duration);
+    } else if (durationSeconds) {
+      setDuration(durationSeconds);
+    }
+  };
+
+  const handleEnded = () => {
+    const isRealFile = src.includes('google') || src.includes('api/') || src.includes('localhost') || src.includes('10.0.2.2') || src.includes('vercel.app');
+    if (!durationSeconds || isRealFile) {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    }
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current || !progressRef.current || duration === 0) return;
+    const isRealFile = src.includes('google') || src.includes('api/') || src.includes('localhost') || src.includes('10.0.2.2') || src.includes('vercel.app');
+    const rect = progressRef.current.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const width = rect.width;
+    const percentage = Math.max(0, Math.min(1, clickX / width));
+    const seekTime = percentage * duration;
+    
+    if (durationSeconds && !isRealFile) {
+      setCurrentTime(seekTime);
+      if (audioRef.current) {
+        const dur = audioRef.current.duration && audioRef.current.duration > 0 ? audioRef.current.duration : 1.0;
+        audioRef.current.currentTime = seekTime % dur;
+      }
+    } else {
+      audioRef.current.currentTime = seekTime;
+      setCurrentTime(seekTime);
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const percentage = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+  return (
+    <div className="flex items-center gap-3 py-2 px-3.5 bg-black/35 border border-white/5 rounded-2xl w-[240px] shadow-lg select-none backdrop-blur-md">
+      <audio
+        ref={audioRef}
+        src={src}
+        onPlay={() => {
+          setIsPlaying(true);
+          const isRealFile = src.includes('google') || src.includes('api/') || src.includes('localhost') || src.includes('10.0.2.2') || src.includes('vercel.app');
+          if (durationSeconds && !isRealFile) {
+            startPlaybackTimer();
+          }
+        }}
+        onPause={() => {
+          setIsPlaying(false);
+          stopPlaybackTimer();
+        }}
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onEnded={handleEnded}
+        preload="metadata"
+      />
+
+      <button
+        type="button"
+        onClick={togglePlay}
+        className="w-8 h-8 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer"
+      >
+        {isPlaying ? (
+          <Pause className="w-3.5 h-3.5 fill-zinc-950 stroke-zinc-950" />
+        ) : (
+          <Play className="w-3.5 h-3.5 fill-zinc-950 stroke-zinc-950 translate-x-[1px]" />
+        )}
+      </button>
+
+      <div className="flex-1 flex flex-col gap-1.5 justify-center py-1">
+        <div
+          ref={progressRef}
+          onClick={handleSeek}
+          className="h-1.5 w-full bg-white/10 hover:bg-white/15 rounded-full relative cursor-pointer group"
+        >
+          <div
+            className="h-full bg-indigo-400 rounded-full relative transition-all duration-75"
+            style={{ width: `${percentage}%` }}
+          >
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white border border-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-[9px] text-zinc-400 font-mono tabular-nums">
+          <span>{formatTime(currentTime)}</span>
+          <div className="flex items-center gap-1">
+            <Volume2 className="w-2.5 h-2.5 opacity-40 shrink-0" />
+            <span>{formatTime(duration)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

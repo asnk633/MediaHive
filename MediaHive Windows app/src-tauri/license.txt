@@ -1,0 +1,10 @@
+MediaHive End User License Agreement (EULA)
+
+By installing and using the MediaHive application, you agree to these terms:
+
+1. LICENSE: MediaHive grants you a personal, non-exclusive license to use the Software.
+2. RESTRICTIONS: You may not reverse engineer, decompile, or disassemble the Software.
+3. DATA: We collect telemetry and crash reports to improve the Software.
+4. "AS-IS": The Software is provided "AS-IS" without warranty of any kind.
+
+Copyright (c) 2026 MediaHive. All rights reserved.

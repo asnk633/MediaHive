@@ -1,0 +1,19 @@
+{
+  "agents": {
+    "agent-1781192407988-80y0pd": {
+      "agentId": "agent-1781192407988-80y0pd",
+      "agentType": "coder",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic",
+        "task": "Analyze the dashboard home page code at src/app/page.tsx. Review the layout, aesthetic tokens, visual structure, animations, and suggest concrete scopes of improvement for aesthetic perfection. Present the recommendations in a nice format."
+      },
+      "createdAt": "2026-06-11T15:40:08.009Z",
+      "model": "opus",
+      "modelRoutedBy": "router"
+    }
+  },
+  "version": "3.0.0"
+}

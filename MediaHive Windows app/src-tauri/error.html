@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Error - MediaHive</title>
+    <style>
+        /* Base aesthetics mimicking globals.css */
+        :root {
+            --bg-app: #030305;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --accent-primary: #14b8a6;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --radius: 1rem;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: var(--bg-app);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Background glow */
+            background-image: radial-gradient(circle at center, rgba(20, 184, 166, 0.05) 0%, transparent 60%);
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.4), inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Floating Cloud Icon */
+        .icon-container {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem auto;
+            border-radius: 50%;
+            background: rgba(20, 184, 166, 0.1);
+            border: 1px solid rgba(20, 184, 166, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: float 6s ease-in-out infinite, pulse-glow 2s infinite;
+        }
+
+        .icon-container svg {
+            width: 40px;
+            height: 40px;
+            color: var(--accent-primary);
+            filter: drop-shadow(0 0 8px rgba(20, 184, 166, 0.5));
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(0.5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.2); }
+            70% { box-shadow: 0 0 0 15px rgba(20, 184, 166, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0); }
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0 0 2rem 0;
+        }
+
+        .error-code {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            user-select: text;
+        }
+
+        /* Buttons */
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .actions-row {
+            display: flex;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .glass-button {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border-radius: 12px;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-smooth);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-button.primary {
+            background: rgba(20, 184, 166, 0.15);
+            border-color: rgba(20, 184, 166, 0.4);
+            color: var(--accent-primary);
+        }
+
+        .glass-button.primary:hover {
+            background: rgba(20, 184, 166, 0.25);
+            border-color: rgba(20, 184, 166, 0.6);
+            box-shadow: 0 0 25px rgba(20, 184, 166, 0.12);
+        }
+
+        .glass-button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Utility for copy toast */
+        .toast {
+            position: fixed;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 184, 166, 0.2);
+            border: 1px solid rgba(20, 184, 166, 0.4);
+            color: var(--accent-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.show {
+            bottom: 30px;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-card">
+        <div class="icon-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+                <path d="m14 10-4 4"/>
+                <path d="m10 10 4 4"/>
+            </svg>
+        </div>
+        <h1>System Offline</h1>
+        <p>MediaHive cannot connect to its core services. Please check your connection and try again.</p>
+        
+        <div class="error-code" id="errorCode">ERR_CONNECTION_REFUSED</div>
+
+        <div class="actions">
+            <button class="glass-button primary" onclick="reloadApp()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                Try Again
+            </button>
+            <div class="actions-row">
+                <button class="glass-button" onclick="contactSupport()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    Contact Support
+                </button>
+                <button class="glass-button" onclick="copyDetails()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                    Copy Details
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Error details copied!</div>
+
+    <script>
+        // Tauri exposes window.__TAURI__ when IPC is available
+        const isTauri = window.__TAURI__ !== undefined;
+
+        function reloadApp() {
+            // If running in Tauri, we might need a specific reload command, 
+            // or we can just reload the location
+            if (isTauri && window.__TAURI__.core && window.__TAURI__.core.invoke) {
+                // If we implement a specific restart command in Rust:
+                window.__TAURI__.core.invoke('retry_connection').catch(err => {
+                    window.location.reload();
+                });
+            } else {
+                window.location.reload();
+            }
+        }
+
+        function contactSupport() {
+            const subject = encodeURIComponent("MediaHive Desktop Error: ERR_CONNECTION_REFUSED");
+            const body = encodeURIComponent("I encountered a connection error in the MediaHive desktop app.\n\nError Code: ERR_CONNECTION_REFUSED\n");
+            window.location.href = `mailto:support@mediahive.com?subject=${subject}&body=${body}`;
+        }
+
+        function copyDetails() {
+            const errorDetails = `MediaHive Desktop Error\nCode: ERR_CONNECTION_REFUSED\nTime: ${new Date().toISOString()}`;
+            navigator.clipboard.writeText(errorDetails).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2500);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+    </script>
+</body>
+</html>

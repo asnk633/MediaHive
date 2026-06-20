@@ -5,10 +5,12 @@ import path from 'path';
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
+// Only the app-level Supabase URL is required for E2E.
+// Credentials (E2E_ADMIN_EMAIL etc.) are no longer required because
+// global-setup uses the playwright_test_auth localStorage bypass instead
+// of real form logins.
 const REQUIRED = [
-  'E2E_ADMIN_EMAIL', 'E2E_ADMIN_PASSWORD',
-  'E2E_GUEST_EMAIL', 'E2E_GUEST_PASSWORD',
-  'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'
+  'NEXT_PUBLIC_SUPABASE_URL',
 ];
 
 export function checkEnv() {

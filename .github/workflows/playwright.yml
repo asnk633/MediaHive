@@ -81,7 +81,7 @@ jobs:
           echo "E2E_GUEST_EMAIL=guest@mediahive.test" >> .env.local
           echo "E2E_GUEST_PASSWORD=testpassword123" >> .env.local
 
-      # 🔥 This is what was missing for this workflow
+      # Install Playwright browsers
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
 
@@ -91,25 +91,11 @@ jobs:
           echo "Waiting for Next.js to start..."
           sleep 25
 
-      - name: Seed test users
-        run: |
-          for role in admin guest member; do
-            echo "Seeding $role..."
-            for i in 1 2 3 4; do
-              HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-                -X POST http://127.0.0.1:3000/api/test-utils/seed-user \
-                -H "Content-Type: application/json" \
-                -d "{\"email\":\"${role}@mediahive.test\",\"password\":\"testpassword123\",\"role\":\"${role}\"}" || true)
-              echo "Status: $HTTP_STATUS"
-              if [ "$HTTP_STATUS" = "201" ] || [ "$HTTP_STATUS" = "200" ]; then
-                echo "$role seeded"
-                break
-              fi
-              sleep 5
-            done
-          done
+      # NOTE: No user seeding step needed. global-setup.ts uses the
+      # playwright_test_auth localStorage bypass so no real Supabase
+      # credentials are required during E2E tests.
 
-      # Only run the Playwright UI tests here
+      # Run Playwright tests (uses playwright.config.ts which runs global-setup first)
       - name: Run Playwright tests
         run: pnpm exec playwright test --retries=0
 

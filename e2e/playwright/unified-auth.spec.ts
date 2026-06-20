@@ -16,6 +16,7 @@ async function safeGoto(page: any, url: string) {
       msg.includes('ERR_ABORTED') ||
       msg.includes('NS_BINDING_ABORTED') ||
       msg.includes('interrupted by another navigation') ||
+      msg.includes('Frame load interrupted') ||
       msg.includes('Navigation timeout')
     ) {
       await page.waitForLoadState('load').catch(() => {});

@@ -41,12 +41,7 @@ test.describe('Guest UX Refinement', () => {
         }
 
         // Bypass and login programmatically as Member to continue the journey
-        try {
-            await page.goto('/login');
-        } catch (e: any) {
-            if (!e.message.includes('ERR_ABORTED') && !e.message.includes('NS_BINDING_ABORTED')) throw e;
-        }
-        await page.waitForURL('**/login', { timeout: 10000 }).catch(() => {});
+        // We are already on the correct origin (after signup / welcome), so we can inject localStorage directly
         await page.evaluate(() => {
             localStorage.setItem('playwright_test_auth', 'true');
             localStorage.setItem('playwright_test_role', 'member');

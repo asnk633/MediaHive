@@ -40,10 +40,11 @@ export async function POST(request: NextRequest) {
     console.log('[DB] Ensuring core tables exist...');
 
     // Drop existing tables to enforce schema updates during debugging
-    await dbInstance.run(sql`DROP TABLE IF EXISTS users`);
-    await dbInstance.run(sql`DROP TABLE IF EXISTS departments`);
-    await dbInstance.run(sql`DROP TABLE IF EXISTS institutions`);
-    await dbInstance.run(sql`DROP TABLE IF EXISTS tenants`);
+    // WARNING: Do NOT drop tables here, as it deletes previously seeded users!
+    // await dbInstance.run(sql`DROP TABLE IF EXISTS users`);
+    // await dbInstance.run(sql`DROP TABLE IF EXISTS departments`);
+    // await dbInstance.run(sql`DROP TABLE IF EXISTS institutions`);
+    // await dbInstance.run(sql`DROP TABLE IF EXISTS tenants`);
 
     await dbInstance.run(sql`CREATE TABLE IF NOT EXISTS tenants (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -173,6 +174,29 @@ export async function POST(request: NextRequest) {
         created_at: users.created_at,
         updated_at: users.updated_at
       });
+
+    // Create user in Supabase Auth if service role key is available
+    if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.log(`[DB] Creating user in Supabase Auth: ${email}`);
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseAdmin = createClient(
+        process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321',
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+      const { error: authError } = await supabaseAdmin.auth.admin.createUser({
+        email: email,
+        password: password,
+        email_confirm: true,
+        user_metadata: { role }
+      });
+      if (authError && !authError.message.includes('already exists')) {
+        console.error('[DB] Failed to create user in Supabase Auth:', authError);
+      } else if (authError && authError.message.includes('already exists')) {
+        console.log(`[DB] User ${email} already exists in Supabase Auth.`);
+      } else {
+        console.log(`[DB] Successfully created user ${email} in Supabase Auth.`);
+      }
+    }
 
     return NextResponse.json(newUser, { status: 201 });
   } catch (error: any) {

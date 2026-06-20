@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
       institution_id INTEGER NOT NULL REFERENCES institutions(id),
       department_id INTEGER REFERENCES departments(id),
       tenant_id INTEGER NOT NULL REFERENCES tenants(id),
+      expo_push_token TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     )`);

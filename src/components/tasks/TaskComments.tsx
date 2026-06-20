@@ -5,9 +5,10 @@ import { useAuth } from '@/contexts/AuthContextProvider';
 import { apiClient } from '@/lib/apiClient';
 import { supabase } from '@/lib/supabaseClient';
 import { SafeAvatar } from '@/components/ui/SafeAvatar';
-import { MessageSquare, Send } from 'lucide-react';
+import { MessageSquare, Send, Sparkles } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
+import { useAI } from '@/lib/hooks/useAI';
 
 interface Comment {
     id: string;
@@ -28,9 +29,20 @@ export function TaskComments({ taskId, activity, onCommentAdded }: TaskCommentsP
     const { user } = useAuth();
     const [newComment, setNewComment] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [summary, setSummary] = useState<string | null>(null);
+    const { generateContent, isLoading: isAILoading } = useAI();
 
     // Filter only comment-type activities
     const comments = activity.filter((a) => a.type === 'comment');
+
+    const handleGenerateSummary = async () => {
+        if (comments.length === 0) return;
+        const prompt = `Summarize the following comments on a task:\n${comments.map(c => `${c.userName}: ${c.content}`).join('\n')}`;
+        const generatedSummary = await generateContent(prompt, 'You are an AI assistant that summarizes comments concisely.');
+        if (generatedSummary) {
+            setSummary(generatedSummary);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -76,12 +88,33 @@ export function TaskComments({ taskId, activity, onCommentAdded }: TaskCommentsP
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center gap-2">
-                <MessageSquare size={18} className="text-primary" />
-                <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                    Comments ({comments.length})
-                </h3>
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <MessageSquare size={18} className="text-primary" />
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                        Comments ({comments.length})
+                    </h3>
+                </div>
+                {comments.length > 0 && (
+                    <button
+                        onClick={handleGenerateSummary}
+                        disabled={isAILoading}
+                        className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 disabled:opacity-50"
+                    >
+                        <Sparkles size={12} />
+                        {isAILoading ? 'Summarizing...' : 'Summarize'}
+                    </button>
+                )}
             </div>
+
+            {summary && (
+                <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm text-blue-800 dark:text-blue-200">
+                    <div className="flex items-center gap-2 mb-2 font-semibold">
+                        <Sparkles size={14} /> AI Summary
+                    </div>
+                    {summary}
+                </div>
+            )}
 
             {/* Comment List */}
             <div className="space-y-4 max-h-96 overflow-y-auto">

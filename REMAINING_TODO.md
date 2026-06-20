@@ -21,11 +21,11 @@
 ## 🔥 REMAINING GAPS (Found in June 2026 Audit)
 
 ### 1. Login → Signup Link
-**Status**: May be missing  
-**Estimated Time**: 5 minutes  
+**Status**: ✅ Done  
+**Estimated Time**: 0 minutes  
 **Tasks**:
-- [ ] Verify "Don't have an account? Sign up" link is visible on `/login` page
-- [ ] Add link to `/signup` if missing
+- [x] Verify "Don't have an account? Sign up" link is visible on `/login` page
+- [x] Add link to `/signup` if missing
 
 **Files to Modify**:
 - `src/components/auth/LoginClient.tsx`

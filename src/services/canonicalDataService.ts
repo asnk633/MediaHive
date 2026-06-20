@@ -230,7 +230,7 @@ export class CanonicalDataService {
                 const tableObj = (db as any)[table];
                 if (tableObj) {
                     const existing = await tableObj.get(id);
-                    await tableObj.put({ ...existing, ...finalPayload });
+                    await tableObj.put({ id, ...existing, ...finalPayload });
                 }
             }
         } catch (err) {
@@ -303,17 +303,17 @@ export class CanonicalDataService {
 
     const { tenantId, userId, institutionId } = await tenantContext();
     
-    const finalInstitutionId = data.institution_id || data.institutionId || institutionId;
+    const actualInstitutionId = data.institution_id || data.institutionId || institutionId;
 
     // Validation Guard: Relaxed to support 'Either-Or' logic for Tasks and Events
     const tablesRequiringInstitution = [TABLES.INVENTORY, TABLES.EQUIPMENT_BOOKINGS];
     const isOptionalInstitutionTable = [TABLES.TASKS, TABLES.EVENTS].includes(table as any);
     
     // If it's a mandatory table and no ID, or if it's optional but we have NEITHER inst nor dept
-    const hasOrgContext = finalInstitutionId || data.department_id || data.departmentId;
+    const hasOrgContext = actualInstitutionId || data.department_id || data.departmentId || tenantId;
 
-    if ((tablesRequiringInstitution.includes(table as any) && !finalInstitutionId) || (isOptionalInstitutionTable && !hasOrgContext)) {
-       const errorMsg = `[CanonicalDataService] Cannot create ${entityType || table} without organizational context (Institution or Department).`;
+    if ((tablesRequiringInstitution.includes(table as any) && !hasOrgContext) || (isOptionalInstitutionTable && !hasOrgContext)) {
+       const errorMsg = `[CanonicalDataService] Cannot create ${entityType || table} without organizational context (Institution, Department, or Tenant).`;
        MonitoringService.error(errorMsg, { table, entityId: data.id });
        return { data: null, error: new Error(errorMsg) };
     }
@@ -325,7 +325,7 @@ export class CanonicalDataService {
       id: sanitizeUUID(data.id) || crypto.randomUUID(),
       ...data, 
       tenant_id: sanitizeUUID(tenantId), 
-      institution_id: sanitizeUUID(finalInstitutionId),
+      institution_id: sanitizeUUID(actualInstitutionId),
       created_at: data.created_at || new Date().toISOString(), 
       created_by: sanitizeUUID(userId),
       updated_at: new Date().toISOString()

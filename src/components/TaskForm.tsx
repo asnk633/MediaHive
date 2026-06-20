@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
-import { Flag } from 'lucide-react';
+import { Flag, Sparkles } from 'lucide-react';
+import { useAI } from '@/lib/hooks/useAI';
 
 export default function TaskForm({ onCancel, onSubmit }: { onCancel: () => void; onSubmit: (d: any) => Promise<void> }) {
   const [title, setTitle] = useState('');
@@ -11,6 +12,19 @@ export default function TaskForm({ onCancel, onSubmit }: { onCancel: () => void;
   const [priority, setPriority] = useState('medium');
   const { user } = useAuth();
   const isMember = user?.role === 'member';
+  const { generateContent, isLoading: isAILoading } = useAI();
+
+  const handleSuggestPriority = async () => {
+    if (!title && !description) return;
+    const prompt = `Based on the following task, suggest a priority (high, medium, or low). Reply with ONLY the word "high", "medium", or "low".\nTitle: ${title}\nDescription: ${description}`;
+    const suggestion = await generateContent(prompt, 'You are an AI task assistant.');
+    if (suggestion) {
+      const cleanSuggestion = suggestion.trim().toLowerCase();
+      if (['high', 'medium', 'low'].includes(cleanSuggestion)) {
+        setPriority(cleanSuggestion);
+      }
+    }
+  };
 
   return (
     <form className="p-4 bg-white rounded shadow" onSubmit={async (e) => { e.preventDefault(); await onSubmit({ title, description, priority }); }}>
@@ -43,6 +57,17 @@ export default function TaskForm({ onCancel, onSubmit }: { onCancel: () => void;
               { id: 'low', label: 'Low', icon: <Flag className="text-blue-500" size={14} /> },
             ]}
           />
+          {!isMember && (
+            <button 
+              type="button" 
+              onClick={handleSuggestPriority} 
+              disabled={isAILoading || (!title && !description)}
+              className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 disabled:opacity-50 ml-1 mt-1"
+            >
+              <Sparkles size={12} />
+              {isAILoading ? 'Suggesting...' : 'Suggest Priority'}
+            </button>
+          )}
         </div>
  
         <div className="flex justify-end gap-2">

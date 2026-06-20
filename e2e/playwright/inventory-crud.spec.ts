@@ -6,8 +6,8 @@ import { safeGoto } from './helpers/navigation';
 test.describe('Inventory CRUD', () => {
     let testPrefix: string;
 
-    test.beforeEach(async () => {
-        testPrefix = getTestPrefix('inventory');
+    test.beforeEach(async ({}, testInfo) => {
+        testPrefix = getTestPrefix('inventory') + '-' + testInfo.testId;
     });
 
     test.afterEach(async () => {
@@ -23,6 +23,9 @@ test.describe('Inventory CRUD', () => {
     });
 
     test('Add new item', async ({ page }) => {
+        // Log all browser console messages
+        page.on('console', msg => console.log('BROWSER CONSOLE:', msg.type(), msg.text()));
+
         await loginAsAdmin(page);
         await safeGoto(page, '/inventory');
 
@@ -31,24 +34,38 @@ test.describe('Inventory CRUD', () => {
         await addButton.click();
 
         const itemName = `${testPrefix}TestItem`;
-        await page.fill('input[name="name"]', itemName);
+        await page.getByPlaceholder('e.g. Sony A7 III Body').fill(itemName);
+
+        // Select Category
+        await page.getByText('Select Category').click();
+        await page.getByRole('option').first().click();
 
         // Fill other required fields if any (guessing basic ones)
-        const descInput = page.locator('textarea[name="description"]');
+        const descInput = page.getByPlaceholder('Additional notes about the asset...');
         if (await descInput.isVisible()) {
             await descInput.fill('Test description');
         }
 
-        const quantityInput = page.locator('input[name="quantity"]');
+        const quantityInput = page.getByPlaceholder('1');
         if (await quantityInput.isVisible()) {
             await quantityInput.fill('10');
         }
-
         await page.getByRole('button', { name: /Submit|Save/i }).click();
 
-        // Verify item is visible in the list
-        await safeGoto(page, '/inventory');
-        await expect(page.locator(`text=${itemName}`)).toBeVisible();
+        // Wait for a toast message to see if creation was successful or failed
+        const toastLocator = page.locator('.toast, [role="status"], [role="alert"]').first();
+        await expect(toastLocator).toBeVisible({ timeout: 10000 });
+        const toastText = await toastLocator.textContent();
+        console.log('Toast message after submit:', toastText);
+        
+        // Wait for it to navigate if successful
+        await page.waitForURL('**/inventory', { timeout: 10000 });
+        await page.reload();
+
+        // Use the search bar to find the item
+        await page.getByPlaceholder(/Search assets by name/i).fill(itemName);
+
+        await expect(page.getByText(itemName).first()).toBeVisible({ timeout: 10000 });
     });
 
     test('View item detail modal', async ({ page }) => {
@@ -79,7 +96,7 @@ test.describe('Inventory CRUD', () => {
 
              // Modify name
              const newName = `${testPrefix}EditedItem`;
-             await page.fill('input[name="name"]', newName);
+             await page.getByPlaceholder('e.g. Sony A7 III Body').fill(newName);
              await page.getByRole('button', { name: /Submit|Save/i }).click();
 
              // Verify item is updated in the list

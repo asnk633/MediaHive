@@ -53,6 +53,22 @@ export async function verifyUser(req: Request, options = { strict: true }): Prom
         email = cookieUser.email;
     }
 
+    // 2. Fallback: Bearer token from Authorization header (used by mobile app sync queue)
+    if (!userId) {
+        const authHeader = req.headers.get('Authorization') || req.headers.get('authorization');
+        const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+        if (bearerToken) {
+            const supabaseAdmin = getSupabaseAdmin();
+            const { data: { user: bearerUser }, error: bearerError } = await supabaseAdmin.auth.getUser(bearerToken);
+            if (!bearerError && bearerUser) {
+                userId = bearerUser.id;
+                email = bearerUser.email;
+                console.log(`[verifyUser] 📱 Authenticated via Bearer token: ${userId}`);
+            } else {
+                console.warn(`[verifyUser] ❌ Bearer token invalid:`, bearerError?.message);
+            }
+        }
+    }
 
     if (!userId) return null;
 

@@ -24,6 +24,7 @@ import '../providers/field_work_provider.dart';
 import 'missed_checkin_request_sheet.dart';
 import 'remote_checkout_request_sheet.dart';
 import 'qr_scanner_overlay.dart';
+import 'offline_dead_letter_sheet.dart';
 import '../../../../core/services/snackbar_service.dart';
 
 class AttendanceDashboardScreen extends ConsumerStatefulWidget {
@@ -166,6 +167,17 @@ class _AttendanceDashboardScreenState
     final otMins = overtimeToday.inMinutes.remainder(60);
     final todayOvertimeStr = otHours > 0 ? '${otHours}h ${otMins}m' : '${otMins}m';
 
+    final dlqAsync = ref.watch(deadLetterQueueProvider);
+    final profileAsync = ref.watch(currentUserProfileProvider);
+    final role = (profileAsync.value?['role']?.toString() ?? 'member').toLowerCase().trim();
+    final department = (profileAsync.value?['department_name']?.toString() ?? 'None').toLowerCase().trim();
+
+    final isTeam = role == 'team';
+    final isMediaItManager = role == 'manager' && 
+        (department.contains('media') && department.contains('it'));
+        
+    final hasCheckInPermission = isTeam || isMediaItManager;
+
     return Scaffold(
       backgroundColor: colors.backgroundPrimary,
       body: Container(
@@ -192,6 +204,53 @@ class _AttendanceDashboardScreenState
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
                     _buildHeader(context, colors),
+                    
+                    // DLQ Banner (Only visible to Team/Managers and if DLQ has items)
+                    if (hasCheckInPermission && dlqAsync.value != null && dlqAsync.value!.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (ctx) => const OfflineDeadLetterSheet(),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.error.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(LucideIcons.alertOctagon, color: AppColors.error, size: 24),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'SYNC FAILURES DETECTED',
+                                      style: TextStyle(color: AppColors.error, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '${dlqAsync.value!.length} offline scan(s) failed to sync to the server. Tap to review.',
+                                      style: TextStyle(color: colors.textSecondary, fontSize: 11),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(LucideIcons.chevronRight, color: colors.textSecondary, size: 16),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+
                     const SizedBox(height: 24),
                     activeSessionAsync.when(
                       data: (session) => _buildActiveSessionCard(

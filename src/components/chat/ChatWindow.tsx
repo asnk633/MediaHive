@@ -1292,6 +1292,7 @@ export default function ChatWindow({
               <Button 
                 type="submit" 
                 size="icon" 
+                aria-label="Send"
                 className="shrink-0 h-9 w-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/10 cursor-pointer disabled:bg-indigo-600/20 disabled:text-indigo-500/40 transition-all" 
                 disabled={!inputText.trim() || uploading || isInitializingSupport}
               >

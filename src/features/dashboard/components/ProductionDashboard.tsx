@@ -9,17 +9,86 @@ import {
     Plus, 
     Zap,
     RefreshCcw,
-    LayoutDashboard
+    LayoutDashboard,
+    GripVertical
 } from 'lucide-react';
 import { cn, nativeNavigate } from '@/lib/utils';
 import { CanonicalDataService, OperationalSummary } from '@/services/canonicalDataService';
 import { synergySyncManager } from '@/system/realtimeSync';
 import { TodayEventsCard } from './TodayEventsCard';
 import { TodayTasksCard } from './TodayTasksCard';
-import { CrewScheduleCard } from './CrewScheduleCard';
-import { EquipmentUsageCard } from './EquipmentUsageCard';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContextProvider';
+import { 
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+interface Widget {
+  id: string;
+  type: 'events' | 'tasks';
+}
+
+const DEFAULT_LAYOUT: Widget[] = [
+  { id: 'widget-events', type: 'events' },
+  { id: 'widget-tasks', type: 'tasks' }
+];
+
+function SortableWidget({ widget, data, isLoading, router }: { widget: Widget; data: any; isLoading: boolean; router: any }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: widget.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 10 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className={cn("relative h-full min-h-[400px]", isDragging && "opacity-50")}>
+      <div 
+        {...attributes} 
+        {...listeners} 
+        className="absolute top-4 right-4 z-20 cursor-grab active:cursor-grabbing p-1 bg-surface/80 rounded-md hover:bg-surface text-muted-foreground"
+      >
+        <GripVertical size={16} />
+      </div>
+      {widget.type === 'events' ? (
+        <TodayEventsCard 
+            events={data.events} 
+            tasks={data.tasks}
+            isLoading={isLoading} 
+            onViewEvent={(id) => nativeNavigate(`/calendar?id=${id}`, router, 'ProductionDashboard (View Event)')}
+        />
+      ) : (
+        <TodayTasksCard 
+            tasks={data.tasks} 
+            isLoading={isLoading} 
+            onViewTask={(id) => nativeNavigate(`/tasks?id=${id}`, router, 'ProductionDashboard (View Task)')}
+        />
+      )}
+    </div>
+  );
+}
 
 export const ProductionDashboard: React.FC = () => {
     const { user } = useAuth();
@@ -32,6 +101,45 @@ export const ProductionDashboard: React.FC = () => {
     });
     const [isLoading, setIsLoading] = useState(true);
     const [isSyncing, setIsSyncing] = useState(false);
+    const [widgets, setWidgets] = useState<Widget[]>(DEFAULT_LAYOUT);
+
+    const sensors = useSensors(
+      useSensor(PointerSensor, {
+        activationConstraint: {
+          distance: 5,
+        },
+      }),
+      useSensor(KeyboardSensor, {
+        coordinateGetter: sortableKeyboardCoordinates,
+      })
+    );
+
+    const loadLayout = useCallback(async () => {
+      try {
+        const res = await fetch('/api/dashboard/layout');
+        if (res.ok) {
+          const { layout } = await res.json();
+          if (layout && Array.isArray(layout) && layout.length > 0) {
+            setWidgets(layout);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load dashboard layout", err);
+      }
+    }, []);
+
+    const saveLayout = async (newLayout: Widget[]) => {
+      try {
+        await fetch('/api/dashboard/layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ layout: newLayout }),
+        });
+      } catch (err) {
+        console.error("Failed to save dashboard layout", err);
+        toast.error("Failed to save layout");
+      }
+    };
 
     const fetchOperationalData = useCallback(async () => {
         setIsSyncing(true);
@@ -49,6 +157,7 @@ export const ProductionDashboard: React.FC = () => {
 
     useEffect(() => {
         fetchOperationalData();
+        loadLayout();
 
         // Real-time synchronization
         if (!user?.institution_id) return;
@@ -71,32 +180,47 @@ export const ProductionDashboard: React.FC = () => {
         return () => {
             synergySyncManager.unsubscribe(subscriptionId);
         };
-    }, [user?.institution_id, user?.tenant_id, fetchOperationalData]);
+    }, [user?.institution_id, user?.tenant_id, fetchOperationalData, loadLayout]);
 
-    const handleQuickAction = (route: string) => {
-        nativeNavigate(route, router, 'ProductionDashboard (Quick Action)');
+    const handleDragEnd = (event: DragEndEvent) => {
+      const { active, over } = event;
+
+      if (over && active.id !== over.id) {
+        setWidgets((items) => {
+          const oldIndex = items.findIndex((w) => w.id === active.id);
+          const newIndex = items.findIndex((w) => w.id === over.id);
+
+          const newLayout = arrayMove(items, oldIndex, newIndex);
+          saveLayout(newLayout);
+          return newLayout;
+        });
+      }
     };
 
     return (
         <div className="space-y-6 animate-in fade-in duration-700">
-            {/* Dashboard Grid - Now 2-column for today's focus */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="h-full min-h-[400px]">
-                    <TodayEventsCard 
-                        events={data.events} 
-                        tasks={data.tasks}
-                        isLoading={isLoading} 
-                        onViewEvent={(id) => nativeNavigate(`/calendar?id=${id}`, router, 'ProductionDashboard (View Event)')}
-                    />
+            <DndContext 
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext 
+                items={widgets.map(w => w.id)}
+                strategy={rectSortingStrategy}
+              >
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {widgets.map((widget) => (
+                      <SortableWidget 
+                        key={widget.id}
+                        widget={widget}
+                        data={data}
+                        isLoading={isLoading}
+                        router={router}
+                      />
+                    ))}
                 </div>
-                <div className="h-full min-h-[400px]">
-                    <TodayTasksCard 
-                        tasks={data.tasks} 
-                        isLoading={isLoading} 
-                        onViewTask={(id) => nativeNavigate(`/tasks?id=${id}`, router, 'ProductionDashboard (View Task)')}
-                    />
-                </div>
-            </div>
+              </SortableContext>
+            </DndContext>
 
             {/* Footer Summary */}
             <div className="p-4 rounded-[18px] bg-foreground/[0.02] border border-foreground/5 flex items-center justify-between">

@@ -1,6 +1,15 @@
 // @ts-nocheck
 import React, { useMemo, useRef, useEffect, useState } from 'react';
-import { DndContext, useSensor, useSensors, PointerSensor, DragEndEvent } from '@dnd-kit/core';
+import { 
+    DndContext, 
+    useSensor, 
+    useSensors, 
+    PointerSensor, 
+    KeyboardSensor,
+    KeyboardCode,
+    KeyboardCoordinateGetter,
+    DragEndEvent 
+} from '@dnd-kit/core';
 import { useDroppable, useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Task } from "@/features/tasks/types/task";
@@ -37,6 +46,74 @@ const COLUMNS = [
     { id: 'done', label: 'Done', color: 'emerald', icon: CheckCircle2, status: 'done' }
 ];
 
+// Custom coordinate getter to navigate tasks between Kanban columns using Arrow keys
+const kanbanKeyboardCoordinates = (
+    tasks: Task[],
+    tasksByColumn: Record<string, Task[]>
+): KeyboardCoordinateGetter => {
+    return (event, { active, context, currentCoordinates }) => {
+        const { code } = event;
+        if (
+            code === KeyboardCode.ArrowRight ||
+            code === KeyboardCode.ArrowLeft ||
+            code === KeyboardCode.ArrowDown ||
+            code === KeyboardCode.ArrowUp
+        ) {
+            event.preventDefault();
+
+            const columnIds = COLUMNS.map(col => col.id);
+
+            // 1. Determine the current column ID
+            let currentColumnId = context.over?.id ? String(context.over.id) : '';
+            if (!currentColumnId) {
+                const foundEntry = Object.entries(tasksByColumn).find(([_, list]) =>
+                    list.some(t => String(t.id) === String(active.id))
+                );
+                if (foundEntry) {
+                    currentColumnId = foundEntry[0];
+                }
+            }
+
+            const currentIndex = columnIds.indexOf(currentColumnId);
+            if (currentIndex === -1) return currentCoordinates;
+
+            // 2. Map arrow keys to adjacent column index
+            let nextIndex = currentIndex;
+            if (code === KeyboardCode.ArrowRight || code === KeyboardCode.ArrowDown) {
+                nextIndex = Math.min(currentIndex + 1, columnIds.length - 1);
+            } else if (code === KeyboardCode.ArrowLeft || code === KeyboardCode.ArrowUp) {
+                nextIndex = Math.max(currentIndex - 1, 0);
+            }
+
+            const nextColumnId = columnIds[nextIndex];
+            if (nextColumnId === currentColumnId) return currentCoordinates;
+
+            // 3. Find target container and calculate its coordinates
+            const targetContainer = context.droppableContainers.get(nextColumnId);
+            if (targetContainer) {
+                const targetRect = context.droppableRects.get(nextColumnId);
+                if (targetRect) {
+                    // Smoothly scroll the container horizontally into view if needed
+                    if (targetContainer.node.current) {
+                        targetContainer.node.current.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'nearest',
+                            inline: 'nearest'
+                        });
+                    }
+
+                    return {
+                        x: targetRect.left + targetRect.width / 2,
+                        y: targetRect.top + targetRect.height / 2
+                    };
+                }
+            }
+        }
+
+        return undefined;
+    };
+};
+
 // Droppable Column Component
 function KanbanColumn({ col, children }: { col: typeof COLUMNS[0]; children: React.ReactNode }) {
     const { setNodeRef, isOver } = useDroppable({
@@ -55,6 +132,7 @@ function KanbanColumn({ col, children }: { col: typeof COLUMNS[0]; children: Rea
     return (
         <div 
             ref={setNodeRef}
+            aria-label={`${col.label} column, ${count} task${count === 1 ? '' : 's'}`}
             className={cn(
                 "flex flex-col h-full min-h-[500px] w-full bg-[#ffffff02] border rounded-2xl p-4 backdrop-blur-md transition-all duration-200",
                 borderColors[col.color as keyof typeof borderColors],
@@ -78,7 +156,11 @@ function KanbanColumn({ col, children }: { col: typeof COLUMNS[0]; children: Rea
             </div>
 
             {/* Cards List */}
-            <div className="flex-1 flex flex-col gap-3 overflow-y-auto max-h-[700px] pr-1">
+            <div 
+                role="list"
+                aria-label={`Tasks in ${col.label}`}
+                className="flex-1 flex flex-col gap-3 overflow-y-auto max-h-[700px] pr-1"
+            >
                 {children}
                 {count === 0 && (
                     <div className="flex-1 flex items-center justify-center py-12 border-2 border-dashed border-foreground/[0.03] rounded-xl text-center text-foreground/30 text-[10px] font-bold uppercase tracking-wider select-none">
@@ -148,6 +230,25 @@ function KanbanCard({ task, canDrag, onClick }: { task: Task; canDrag: boolean; 
         <div
             ref={setNodeRef}
             style={style}
+            {...(canDrag ? attributes : {})}
+            {...(canDrag ? listeners : {})}
+            tabIndex={0}
+            role="listitem"
+            data-testid="kanban-card"
+            data-draggable="true"
+            data-draggable-id={task.id}
+            data-dnd-sortable-id={task.id}
+            aria-label={`Task: ${task.title}. Priority: ${task.priority || 'low'}. Status: ${task.status}.`}
+            onKeyDown={(e) => {
+                if (e.key === ' ') {
+                    // Prevent page scroll when spacebar is pressed to toggle drag
+                    e.preventDefault();
+                }
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    onClick();
+                }
+            }}
             onClick={(e) => {
                 // Prevent detail modal from launching when dragging starts
                 if (transform) return;
@@ -155,6 +256,7 @@ function KanbanCard({ task, canDrag, onClick }: { task: Task; canDrag: boolean; 
             }}
             className={cn(
                 "group relative bg-foreground/[0.01] hover:bg-foreground/[0.02] border border-foreground/[0.05] hover:border-foreground/[0.08] p-4 rounded-xl shadow-sm transition-all duration-200 select-none text-left flex flex-col justify-between gap-4 cursor-pointer active:scale-[0.98]",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 isDragging && "shadow-2xl border-primary/20 bg-background/80 cursor-grabbing",
                 justMoved && "animate-kanban-card-in"
             )}
@@ -163,11 +265,8 @@ function KanbanCard({ task, canDrag, onClick }: { task: Task; canDrag: boolean; 
             <div className="flex items-start gap-2">
                 {canDrag && (
                     <div 
-                        {...attributes} 
-                        {...listeners}
-                        onClick={(e) => e.stopPropagation()}
-                        className="cursor-grab active:cursor-grabbing p-1 -ml-1.5 -mt-1 rounded hover:bg-foreground/5 text-foreground/30 hover:text-foreground/60 transition-colors duration-200"
-                        title="Drag to reorder"
+                        className="p-1 -ml-1.5 -mt-1 rounded text-foreground/30 transition-colors duration-200"
+                        title="Drag task (Spacebar when focused)"
                     >
                         <GripVertical size={14} />
                     </div>
@@ -237,6 +336,21 @@ function KanbanCard({ task, canDrag, onClick }: { task: Task; canDrag: boolean; 
     );
 }
 
+class SpaceKeyboardSensor extends KeyboardSensor {
+    static activators = [
+        {
+            eventName: 'onKeyDown' as const,
+            handler: (event: React.KeyboardEvent) => {
+                const { key } = event;
+                if (key === ' ' || key === 'Spacebar') {
+                    return true;
+                }
+                return false;
+            }
+        }
+    ];
+}
+
 export function TaskKanbanViewComponent({ tasks, loading = false, onTaskClick, onTaskMutate }: TaskKanbanViewProps) {
     const { role: userRole } = usePermissions();
 
@@ -245,14 +359,6 @@ export function TaskKanbanViewComponent({ tasks, loading = false, onTaskClick, o
         return ['admin', 'manager', 'team'].includes(userRole?.toLowerCase());
     }, [userRole]);
 
-    // Sensors setup (prevents accidental drag during taps)
-    const sensors = useSensors(
-        useSensor(PointerSensor, {
-            activationConstraint: {
-                distance: 8
-            }
-        })
-    );
 
     // Group tasks into column status buckets
     const tasksByColumn = useMemo(() => {
@@ -277,6 +383,18 @@ export function TaskKanbanViewComponent({ tasks, loading = false, onTaskClick, o
 
         return buckets;
     }, [tasks]);
+
+    // Sensors setup (prevents accidental drag during taps, adds keyboard accessibility)
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8
+            }
+        }),
+        useSensor(SpaceKeyboardSensor, {
+            coordinateGetter: useMemo(() => kanbanKeyboardCoordinates(tasks, tasksByColumn), [tasks, tasksByColumn])
+        })
+    );
 
     const handleDragEnd = async (event: DragEndEvent) => {
         const { active, over } = event;
@@ -371,8 +489,39 @@ export function TaskKanbanViewComponent({ tasks, loading = false, onTaskClick, o
         );
     }
 
+    const announcements = {
+        onDragStart({ active }: { active: any }) {
+            const task = tasks.find(t => t.id === active.id);
+            return `Picked up task: ${task?.title || active.id}`;
+        },
+        onDragOver({ active, over }: { active: any; over: any }) {
+            const task = tasks.find(t => t.id === active.id);
+            const col = COLUMNS.find(c => c.id === over?.id);
+            if (over) {
+                return `Moved to ${col?.label || over.id}`;
+            }
+            return `Moved outside columns`;
+        },
+        onDragEnd({ active, over }: { active: any; over: any }) {
+            const task = tasks.find(t => t.id === active.id);
+            const col = COLUMNS.find(c => c.id === over?.id);
+            if (over) {
+                return `Dropped in ${col?.label || over.id}`;
+            }
+            return `Dropped task: ${task?.title || active.id}`;
+        },
+        onDragCancel({ active }: { active: any }) {
+            const task = tasks.find(t => t.id === active.id);
+            return `Cancelled dragging task: ${task?.title || active.id}`;
+        }
+    };
+
     return (
-        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+        <DndContext 
+            sensors={sensors} 
+            onDragEnd={handleDragEnd}
+            accessibility={{ announcements }}
+        >
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch w-full min-h-[600px]">
                 {COLUMNS.map(col => (
                     <KanbanColumn key={col.id} col={col}>

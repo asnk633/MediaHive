@@ -99,6 +99,7 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
             <Button 
               variant="ghost" 
               size="icon" 
+              aria-label="New Chat Room"
               className="h-8 w-8 rounded-lg border border-foreground/10 bg-foreground/[0.01] hover:bg-foreground/5 text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-all cursor-pointer"
             >
               <PlusIcon className="h-4 w-4" />

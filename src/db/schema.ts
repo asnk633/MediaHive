@@ -423,3 +423,21 @@ export const chatMessages = sqliteTable('chat_messages', {
   tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   created_at: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
 });
+
+// Processed Mutations table for Offline Sync Idempotency
+export const processedMutations = sqliteTable('processed_mutations', {
+  idempotency_key: text('idempotency_key').primaryKey(),
+  entity_id: text('entity_id').notNull(),
+  resolved_at: text('resolved_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+// Dashboard Layouts table
+export const dashboardLayouts = sqliteTable('dashboard_layouts', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  roleContext: text('role_context').notNull(), // 'manager', 'admin', 'member'
+  layoutJson: text('layout_json').notNull(), // JSON string representing widget positions
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
+  updated_at: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+

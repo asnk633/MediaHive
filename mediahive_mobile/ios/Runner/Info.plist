@@ -98,7 +98,7 @@
 		<!-- Background Geolocation: BGTaskScheduler -->
 		<key>BGTaskSchedulerPermittedIdentifiers</key>
 		<array>
-			<string>com.transistorsoft.fetch</string>
+			<string>bg_presence_ping</string>
 		</array>
 		<key>CFBundleURLTypes</key>
 		<array>

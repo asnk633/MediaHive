@@ -113,6 +113,59 @@ final offlineAttendanceQueueProvider = Provider<OfflineAttendanceQueue>((ref) {
   return queue;
 });
 
+// Dead Letter Queue Provider
+final deadLetterQueueProvider = StateNotifierProvider<DeadLetterQueueNotifier, AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final queue = ref.watch(offlineAttendanceQueueProvider);
+  return DeadLetterQueueNotifier(queue);
+});
+
+class DeadLetterQueueNotifier extends StateNotifier<AsyncValue<List<Map<String, dynamic>>>> {
+  final OfflineAttendanceQueue _queue;
+  StreamSubscription? _boxSubscription;
+  
+  DeadLetterQueueNotifier(this._queue) : super(const AsyncValue.loading()) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    await refresh();
+    try {
+      final box = await Hive.openBox<String>('dead_letter_queue');
+      _boxSubscription = box.watch().listen((event) {
+        refresh();
+      });
+    } catch (_) {
+      // Ignored
+    }
+  }
+
+  @override
+  void dispose() {
+    _boxSubscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> refresh() async {
+    try {
+      if (mounted) state = const AsyncValue.loading();
+      final items = await _queue.getDeadLetters();
+      if (mounted) state = AsyncValue.data(items);
+    } catch (e, st) {
+      if (mounted) state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> retryItem(String key) async {
+    await _queue.retryDeadLetter(key);
+    await refresh(); // Immediately refresh so the UI updates
+  }
+
+  Future<void> clearItem(String key) async {
+    await _queue.clearDeadLetter(key);
+    await refresh(); // Immediately refresh so the UI updates
+  }
+}
+
 // User Attendance Requests Provider
 final attendanceRequestsProvider = FutureProvider<List<AttendanceRequest>>((ref) async {
   final repo = ref.watch(attendanceRepositoryProvider);

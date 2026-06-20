@@ -38,7 +38,7 @@ async function initializeDatabase() {
         ? `file:${path.join(process.cwd(), 'dev3.db')}`
         : rawDbUrl;
 
-      const dbPath = finalDbUrl.replace(/^file:/, '');
+      const dbPath = finalDbUrl.replace(/^(file:|sqlite:)/, '');
       console.log(`[DB] Final resolved path: ${dbPath}`);
 
       const dbDir = path.dirname(dbPath);

@@ -83,8 +83,14 @@ test.describe('Kanban Board Drag-and-Drop', () => {
             await page.keyboard.press('Escape');
             await expect(page.locator('[role="dialog"]')).toBeHidden();
 
-            // Resume drag test
-            await firstCard.dragTo(toDoColumnHeader);
+            // Resume drag test using keyboard navigation (fully testing our new accessibility implementation)
+            await firstCard.focus();
+            await page.keyboard.press('Space');
+            await page.waitForTimeout(200);
+            await page.keyboard.press('ArrowRight');
+            await page.waitForTimeout(200);
+            await page.keyboard.press('Space');
+            await page.waitForTimeout(500);
 
             // 5. Verify it moved (or at least toast didn't show error)
             await expect(page.locator('text=Cannot revert approved task')).toBeHidden();

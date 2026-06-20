@@ -5,19 +5,29 @@ import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { cn } from "@/lib/utils";
 
 export function OfflineBanner() {
-    const state = useNetworkStatus();
+    const rawState = useNetworkStatus();
     const [mounted, setMounted] = useState(false);
+    const [debouncedState, setDebouncedState] = useState(rawState);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    if (!mounted || state === "online") return null;
+    useEffect(() => {
+        if (rawState === "offline") {
+            // Debounce network drops by 1500ms to prevent UI flicker
+            const timer = setTimeout(() => {
+                setDebouncedState("offline");
+            }, 1500);
+            return () => clearTimeout(timer);
+        } else {
+            setDebouncedState("online");
+        }
+    }, [rawState]);
 
-    const copy =
-        state === "offline"
-            ? "You’re offline. Changes will sync when you’re back online."
-            : "Back online. Syncing…";
+    if (!mounted || debouncedState === "online") return null;
+
+    const copy = "You’re offline. Changes will sync when you’re back online.";
 
     return (
         <div
@@ -28,9 +38,7 @@ export function OfflineBanner() {
                 "flex justify-center px-4 py-3 text-xs font-semibold tracking-wide uppercase",
                 "transition-all duration-300 ease-out shadow-lg backdrop-blur-md",
                 "motion-reduce:transition-none",
-                state === "offline"
-                    ? "bg-red-500/90 text-foreground border-b border-red-500/50"
-                    : "bg-emerald-500/90 text-foreground border-b border-emerald-500/50"
+                "bg-red-500/90 text-foreground border-b border-red-500/50"
             )}
         >
             {copy}

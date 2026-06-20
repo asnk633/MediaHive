@@ -172,13 +172,20 @@ export const inventoryService = {
         }
     },
 
-    async create(data: Partial<EquipmentItem> & { institutionId: string }): Promise<string> {
+    async create(data: Partial<EquipmentItem> & { institutionId?: string }): Promise<string> {
         if (!data.institutionId) {
-            throw new Error("[InventoryService] Cannot create item without institutionId");
+            console.warn("[InventoryService] No institutionId provided, relying on tenantContext");
         }
+        
+        // Auto-generate asset_id if not provided, since DB requires it
+        const rowData = mapEquipToRow(data);
+        if (!rowData.asset_id) {
+            rowData.asset_id = `INV-${Date.now().toString(36).toUpperCase()}-${Math.floor(Math.random() * 1000)}`;
+        }
+        
         const { data: result, error } = await CanonicalDataService.createRecord(
             TABLES.INVENTORY,
-            mapEquipToRow(data),
+            rowData,
             'inventory'
         );
 

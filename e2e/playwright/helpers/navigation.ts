@@ -63,7 +63,7 @@ export async function retryAction<T>(
  */
 export async function waitForMessage(page: Page, text: string, timeout = 10000) {
   await expect.poll(async () => {
-    return page.locator(`text=${text}`).isVisible();
+    return page.locator(`text=${text}`).first().isVisible();
   }, {
     timeout,
     intervals: [500, 1000, 2000]

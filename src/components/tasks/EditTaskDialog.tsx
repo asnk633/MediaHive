@@ -145,7 +145,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                 setDescription(task.description || "");
                 setPriority(task.priority || "medium");
                 setStatus(task.status || "todo");
-                setCampaignId(task.campaign_id || "");
+                setCampaignId(task.campaign_id || "none");
                 setDueDate(task.due_date ? new Date(task.due_date) : undefined);
                 setIsDemoData(!!task.is_demo_data);
 

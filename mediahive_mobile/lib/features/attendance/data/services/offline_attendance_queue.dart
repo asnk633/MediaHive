@@ -290,4 +290,53 @@ class OfflineAttendanceQueue {
       _syncSemaphore.release();
     }
   }
+
+  /// Retrieves all items currently trapped in the DLQ.
+  Future<List<Map<String, dynamic>>> getDeadLetters() async {
+    final deadBox = await Hive.openBox<String>('dead_letter_queue');
+    final List<Map<String, dynamic>> items = [];
+    for (var key in deadBox.keys) {
+      final dataStr = deadBox.get(key);
+      if (dataStr != null) {
+        final data = Map<String, dynamic>.from(jsonDecode(dataStr));
+        // Add the storage key to the map so the UI knows which item to retry/clear.
+        data['_dlqKey'] = key;
+        items.add(data);
+      }
+    }
+    return items;
+  }
+
+  /// Moves an item from the DLQ back to the active queue.
+  /// Resets its retries count to 0 and updates the local timestamp to ensure data integrity.
+  Future<void> retryDeadLetter(String key) async {
+    final deadBox = await Hive.openBox<String>('dead_letter_queue');
+    final dataStr = deadBox.get(key);
+    if (dataStr == null) return;
+
+    final data = Map<String, dynamic>.from(jsonDecode(dataStr));
+    data.remove('_dlqKey'); // Remove any UI-injected keys just in case
+    
+    // Reset retries and update timestamp
+    data['retries'] = 0;
+    data['timestamp'] = DateTime.now().toUtc().toIso8601String();
+
+    _queueBox ??= await Hive.openBox(_queueBoxName);
+    await _queueBox!.put(key, data);
+    await deadBox.delete(key);
+
+    _logger.info('[OFFLINE_QUEUE] Retrying dead letter item $key');
+    
+    // Reset backoff and trigger sync immediately
+    _retryCount = 0;
+    _nextRetryTime = null;
+    syncQueue();
+  }
+
+  /// Permanently deletes a poisoned item from the DLQ.
+  Future<void> clearDeadLetter(String key) async {
+    final deadBox = await Hive.openBox<String>('dead_letter_queue');
+    await deadBox.delete(key);
+    _logger.info('[OFFLINE_QUEUE] Cleared dead letter item $key permanently');
+  }
 }

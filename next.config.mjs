@@ -1,4 +1,21 @@
 import { withSentryConfig } from "@sentry/nextjs";
+import withPWAInit from "@ducanh2912/next-pwa";
+
+const withPWA = withPWAInit({
+  dest: "public",
+  cacheOnFrontEndNav: false,
+  reloadOnOnline: false,
+  disable: process.env.NODE_ENV === "development",
+  extendDefaultRuntimeCaching: true,
+  workboxOptions: {
+    runtimeCaching: [
+      {
+        urlPattern: /^https?.*\/api\/.*/i,
+        handler: 'NetworkOnly',
+      }
+    ]
+  }
+});
 
 // For Android Capacitor builds, we need static export to generate the out/ directory
 const isMobile = process.env.IS_MOBILE === 'true';
@@ -58,4 +75,4 @@ const sentryConfig = {
   disableClientWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
 };
 
-export default withSentryConfig(nextConfig, sentryConfig);
+export default withSentryConfig(withPWA(nextConfig), sentryConfig);

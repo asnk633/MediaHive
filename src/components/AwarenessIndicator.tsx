@@ -76,46 +76,46 @@ export function AwarenessIndicator() {
 
   return (
     <div className="fixed bottom-24 right-4 z-50 animate-in slide-in-from-right duration-300">
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 max-w-sm">
+      <div className="glass-card rounded-xl p-4 max-w-sm w-80">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 mt-0.5">
-            <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-              <Eye className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <div className="w-8 h-8 bg-primary/15 rounded-full flex items-center justify-center">
+              <Eye className="w-4 h-4 text-primary" />
             </div>
           </div>
           
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-foreground/20 dark:text-foreground">
+              <h3 className="text-sm font-semibold text-foreground">
                 Activity Update
               </h3>
               <button
                 onClick={handleClose}
-                className="text-foreground/60 hover:text-foreground/40 dark:hover:text-foreground"
+                className="text-foreground/60 hover:text-foreground/80 transition-colors p-1 rounded-lg hover:bg-white/5"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
             
-            <p className="mt-1 text-sm text-foreground/40 dark:text-foreground">
-              <span className="font-medium">{latestUpdate.updated_by.name}</span> updated "
-              <span className="font-medium text-blue-600 dark:text-blue-400">{latestUpdate.title}</span>"
+            <p className="mt-1 text-sm text-foreground/85">
+              <span className="font-semibold text-foreground">{latestUpdate.updated_by.name}</span> updated "
+              <span className="font-medium text-primary">{latestUpdate.title}</span>"
             </p>
             
-            <div className="mt-2 flex items-center text-xs text-foreground/50 dark:text-foreground/60">
+            <div className="mt-2 flex items-center text-xs text-foreground/50">
               <span>{formatTimeAgo(latestUpdate.updated_at)}</span>
               {updates.length > 1 && (
-                <span className="ml-2">• {updates.length - 1} more updates</span>
+                <span className="ml-2 text-primary/80 font-medium">• {updates.length - 1} more updates</span>
               )}
             </div>
           </div>
         </div>
         
         {updates.length > 1 && (
-          <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+          <div className="mt-3 pt-3 border-t border-white/10">
             <button
               onClick={handleClose}
-              className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
+              className="text-xs text-primary hover:text-primary/80 transition-colors font-medium"
             >
               Dismiss all
             </button>

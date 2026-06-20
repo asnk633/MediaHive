@@ -70,6 +70,8 @@ export interface TaskDetailsModalProps {
     ) => Promise<void>;
 }
 
+import { syncQueueDb } from '@/lib/db/syncQueueDb';
+
 export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpen, onClose, onEdit, onTaskMutate }) => {
     const { user } = useAuth();
     const router = useRouter();
@@ -80,6 +82,34 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
 
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const [showOfflineAlert, setShowOfflineAlert] = useState(false);
+
+    useEffect(() => {
+        if (!isOpen || !task?.id) return;
+        const checkNotification = async () => {
+            try {
+                const hasNotification = await syncQueueDb.syncNotifications.get(task.id);
+                if (hasNotification) {
+                    setShowOfflineAlert(true);
+                }
+            } catch (err) {
+                console.error("Failed to query sync notifications:", err);
+            }
+        };
+        checkNotification();
+    }, [isOpen, task?.id]);
+
+    const dismissOfflineAlert = async () => {
+        if (task?.id) {
+            try {
+                await syncQueueDb.syncNotifications.delete(task.id);
+            } catch (err) {
+                console.error("Failed to delete sync notification:", err);
+            }
+        }
+        setShowOfflineAlert(false);
+    };
 
     // Real-time Presence
     const { activeUsers } = useEntityPresence('task', task?.id);
@@ -564,6 +594,23 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                         <div
                             className="flex-1 overflow-y-auto px-8 py-8 bg-transparent"
                         >
+                            {showOfflineAlert && (
+                                <div className="mb-6 p-4 rounded-xl border border-blue-500/20 bg-blue-500/10 flex items-start justify-between gap-4 text-sm text-foreground/90">
+                                    <div className="flex items-start gap-3">
+                                        <AlertCircle size={16} className="text-blue-400 mt-0.5 shrink-0" />
+                                        <div>
+                                            This task was updated with changes from the server while you were offline.
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={dismissOfflineAlert}
+                                        className="text-foreground/50 hover:text-foreground transition-colors shrink-0"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            )}
+
                             <TaskRatingComponent
                                 task={task}
                                 onRatingSubmitted={onClose}

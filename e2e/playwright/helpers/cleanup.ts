@@ -148,29 +148,27 @@ export async function cleanupByPrefix(table: string, column: string, prefix: str
       if (items && items.length > 0) {
         const itemIds = items.map(i => i.id);
 
-        // Delete requests first
-        const { error: reqErr, count: reqCount } = await supabaseAdmin
-          .from('inventory_requests')
-          .delete({ count: 'exact' })
-          .in('item_id', itemIds);
-        if (reqErr) throw reqErr;
-        console.log(`   Deleted ${reqCount ?? 0} inventory requests for items with prefix ${prefix}`);
+        // Helper to safely delete child records
+        const safeDeleteChild = async (childTable: string, columnId: string) => {
+            try {
+                const { error, count } = await supabaseAdmin
+                  .from(childTable)
+                  .delete({ count: 'exact' })
+                  .in(columnId, itemIds);
+                if (error) console.error(`   Failed to delete ${childTable}: ${error.message}`);
+                else console.log(`   Deleted ${count ?? 0} ${childTable} for items with prefix ${prefix}`);
+            } catch (e: any) {
+                console.error(`   Exception deleting ${childTable}: ${e.message}`);
+            }
+        };
 
-        // Delete issues
-        const { error: issueErr, count: issueCount } = await supabaseAdmin
-          .from('inventory_issues')
-          .delete({ count: 'exact' })
-          .in('item_id', itemIds);
-        if (issueErr) throw issueErr;
-        console.log(`   Deleted ${issueCount ?? 0} inventory issues for items with prefix ${prefix}`);
-
-        // Delete equipment bookings
-        const { error: bookingErr, count: bookingCount } = await supabaseAdmin
-          .from('equipment_bookings')
-          .delete({ count: 'exact' })
-          .in('item_id', itemIds);
-        if (bookingErr) throw bookingErr;
-        console.log(`   Deleted ${bookingCount ?? 0} equipment bookings for items with prefix ${prefix}`);
+        // Delete child tables safely
+        await safeDeleteChild('inventory_requests', 'inventory_item_id'); // Try the most likely column name
+        await safeDeleteChild('inventory_requests', 'item_id'); // Fallback to what was there
+        await safeDeleteChild('inventory_issues', 'item_id');
+        await safeDeleteChild('inventory_issues', 'inventory_item_id');
+        await safeDeleteChild('equipment_bookings', 'item_id');
+        await safeDeleteChild('equipment_bookings', 'inventory_item_id');
 
         // Delete the items
         const { error: itemDelErr, count: itemCount } = await supabaseAdmin

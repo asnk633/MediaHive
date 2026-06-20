@@ -186,6 +186,11 @@ mediahive_mobile/
 
 ## 8. Known Quirks & Important Rules
 
+### 🛡️ App Permission & Role Constraints
+- **Team, Manager, Admin (Media Department):** Have full access to the app, including internal tools like the Attendance feature, offline queues, and administrative functions.
+- **Guests / Members:** Use the app strictly as a service portal (submitting tasks, registering events, downloading media, requesting inventory). **Guests do not use or have access to the Attendance feature.**
+- **Rule:** UI components (like the offline sync error banner for attendance) must be scoped correctly so Guests do not see features irrelevant to their role.
+
 ### Android Emulator Networking
 - `localhost` inside an Android emulator refers to the emulator itself, not the host machine.
 - The host machine is reachable at `10.0.2.2` from inside the emulator.
@@ -222,7 +227,7 @@ mediahive_mobile/
 - In `SyncService._syncTaskMutation()`, `chat_providers.dart`, and other direct HTTP/Dio REST calls, the app extracts the session access token directly. This bypasses Supabase's automatic token refresh. If a session expires (typically after 1 hour), these direct calls fail with `401/403 Unauthorized`. Future refactoring should use a token helper that calls `await Supabase.instance.client.auth.refreshSession()` if the session is expired.
 
 ### Presence & Field Work RLS Isolation Leaks
-- The RLS policies in `supabase/migrations/20260615_presence_verification.sql` for `presence_logs` and `field_work_sessions` allow any authenticated manager/admin to read and write records. They do not scope checks to the manager's tenant/organization ID. This permits managers from Org A to access Org B's log data. A database migration is required to enforce tenant boundaries.
+- **[FIXED]** The RLS policies in `supabase/migrations/20260615_presence_verification.sql` originally allowed cross-tenant access. This was fixed in `20260619_fix_rls_isolation_leak.sql` which enforces tenant boundaries using `get_auth_tenant_id()`.
 
 ### 📱 16 KB Page Size Alignment
 - Starting in Android 15/16, Android supports 16 KB page size environments (e.g. Pixel 10 Pro XL API 37 emulator).
@@ -251,6 +256,12 @@ mediahive_mobile/
 
 | Date | Change | Author |
 | :--- | :--- | :--- |
+| Jun 19, 2026 | **Database / Security: Fixed RLS Isolation Leak:** Enforced `get_auth_tenant_id()` isolation in RLS for `presence_logs`, `field_work_sessions`, `presence_verification_settings`, and `manager_deputies`. | AI Agent |
+| Jun 19, 2026 | **Authentication: Fixed JWT Expiry Race:** Implemented thread-safe `Completer` for `getFreshAccessToken` to prevent token expiry race conditions on concurrent REST API requests. Added `MockGoTrueClient` test. | AI Agent |
+| 2026-06-19 | UI / State Management | **Offline Attendance DLQ Surface.** Built `offline_dead_letter_sheet.dart` to expose attendance sync failures (Dead Letter Queue) trapped after 5 retries. Surfaced reactive Warning Banner in `AttendanceDashboardScreen` using `deadLetterQueueProvider` based on Hive Box events. Restricted visibility to Team and Media IT Manager roles based on permission scoping. | AI Agent |
+| 2026-06-19 | Background Processing | **Phase 2 Migration: Workmanager & Geolocator.** Removed the deprecated `flutter_background_geolocation` plugin and migrated the headless background presence tracking to `workmanager`. Implemented a safe `SupabaseClient` instantiation in the headless isolate to prevent singleton collisions. Stored configuration in `bg_presence_config` Hive box. Updated Android manifest with `RECEIVE_BOOT_COMPLETED` and iOS `Info.plist` with `bg_presence_ping` identifier. Added safe buffer flushing for offline queues. Upgraded `workmanager` to `v0.9.0` and fixed API breaking change to use `ExistingPeriodicWorkPolicy.update`. Successfully manually verified offline task queuing and reconnection behavior via ADB. | AI Agent |
+| 2026-06-18 | Linting | **P2 — Const Lint Enforcement (Task 11).** Promoted `avoid_print` from `ignore` to `error` and added `prefer_const_constructors: error` in `analysis_options.yaml`. `flutter analyze` passes clean. | AI Agent |
+| 2026-06-18 | Offline Sync | **P2 — Timeline Log Ordering (Task 10).** Moved `offline_queued` `logTimelineEvent` to fire **before** the network `checkIn`/`checkOut` call in `offline_attendance_queue.dart`, ensuring the audit trail is correct even if the sync call fails mid-flight. | AI Agent |
 | Jun 19, 2026 | **v1.2.4-beta+56000 — Fixed CI/CD `.env` injection (Black Screen Fix):** The release app was hanging on a black screen because the `NEXT_PUBLIC_SUPABASE_ANON_KEY` GitHub Action secret was missing. Added the secret and triggered a new build to correctly inject `SUPABASE_ANON_KEY` into the `.env` file generated during CI. | AI Agent |
 | Jun 19, 2026 | **v1.2.3-beta+55000 — Removed paid `flutter_background_geolocation` plugin:** The Transistorsoft BGGeo plugin ($300/yr license) was blocking real phone release builds with a native license validation dialog on the splash screen. Removed the dependency entirely (78 insertions, 451 deletions). Replaced `BackgroundPresenceService` and `background_headless_task.dart` with no-op stubs that preserve the public interface. Ran `flutter clean` to clear cached native builds. Background presence verification temporarily disabled — Phase 2 will replace with free `geolocator` + `workmanager`. **Known Quirk:** BGGeo works in debug/emulator mode but blocks release builds without a paid license key. | AI Agent |
 | Jun 18, 2026 | **v1.2.2-beta+54000 OTA Release (Release-Signed):** Fixed all attendance notifications (DB schema mismatch in `field_work_notification_service.dart`), added `showNotificationDirect` static method for headless contexts, fixed timezone scheduling robustness, added boot-time reminder scheduling, geofence exit alerts in foreground+headless modes, and Quick Checkout button bypassing NFC/GPS/WiFi. **CI Pipeline Fixes (11 runs to green):** Removed hardcoded Windows `org.gradle.java.home`, committed 78 missing files, removed gitignored `logo.glb` from pubspec, added `permissions: contents: write`, added Android keystore signing via `ANDROID_KEYSTORE_BASE64`/`ANDROID_KEY_PASSWORD`/`ANDROID_KEY_ALIAS` GitHub Secrets, fixed `release_app.py` Supabase key lookup to read from `.env`. Full end-to-end pipeline: APK build → GitHub Release → Supabase `system_config` OTA sync. | AI Agent |

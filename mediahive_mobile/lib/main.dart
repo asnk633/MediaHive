@@ -21,15 +21,20 @@ import 'core/services/fcm_service.dart';
 import 'core/providers/update_provider.dart';
 import 'features/attendance/presentation/providers/attendance_provider.dart';
 import 'features/attendance/data/services/attendance_reminder_service.dart';
-// background_headless_task import removed — BGGeo headless tasks no longer used
+import 'features/attendance/data/services/background_headless_task.dart';
+import 'package:workmanager/workmanager.dart';
 import 'features/attendance/data/services/background_presence_service.dart';
-// flutter_background_geolocation removed (paid license required)
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'dart:ui';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  Workmanager().initialize(
+    callbackDispatcher,
+    isInDebugMode: false, // Turn off in production
+  );
   
   try {
     await Firebase.initializeApp(

@@ -37,14 +37,31 @@ export async function GET(req: NextRequest) {
     const localTenantId = localUser?.tenantId || 1;
     const localUserId = localUser?.id;
 
-    // RBAC Check - only admin can access audit logs
-    const { authorized } = await authorizeByPermission(req, 'manage:users');
-    if (!authorized) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     // Get query parameters
     const { searchParams } = new URL(req.url);
+    const resourceType = searchParams.get('resourceType');
+
+    // RBAC Check - only admin can access full audit logs, but managers/members can read task/event history
+    const { authorized: canManageUsers } = await authorizeByPermission(req, 'manage:users');
+    const { authorized: canReadAuditLog } = await authorizeByPermission(req, 'read:audit_log');
+    
+    let isAuthorized = canManageUsers || canReadAuditLog;
+    
+    if (!isAuthorized && resourceType === 'task') {
+      const { authorized: canReadTasks } = await authorizeByPermission(req, 'read:tasks');
+      if (canReadTasks) {
+        isAuthorized = true;
+      }
+    } else if (!isAuthorized && resourceType === 'event') {
+      const { authorized: canReadEvents } = await authorizeByPermission(req, 'read:events');
+      if (canReadEvents) {
+        isAuthorized = true;
+      }
+    }
+
+    if (!isAuthorized) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     // Check if this is a stats request
     if (searchParams.get('stats') === 'true') {
@@ -172,7 +189,6 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50', 10);
     const userIdFilter = searchParams.get('userId');
     const action = searchParams.get('action');
-    const resourceType = searchParams.get('resourceType');
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
     const includeUserDetails = searchParams.get('includeUserDetails') === 'true';

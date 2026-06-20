@@ -182,8 +182,9 @@ export default function DesktopSideNav() {
                 ...(currentRole === 'team' ? [
                     { id: 'leave', label: 'Request Leave', icon: Coffee, path: '/leave/request', feature: 'leave_management' as FeatureKey }
                 ] : []),
-                // Admin & Manager: Leave Management
+                // Admin & Manager: Leave Management & Analytics
                 ...(currentRole === 'admin' || currentRole === 'manager' ? [
+                    { id: 'manager-analytics', label: 'Team Analytics', icon: Activity, path: '/manager-analytics' },
                     { id: 'leave-requests', label: 'Leave Requests', icon: Coffee, path: '/admin/leave-requests', feature: 'leave_management' as FeatureKey },
                     { id: 'leave-analytics', label: 'Leave Analytics', icon: BarChart3, path: '/admin/leave-analytics', feature: 'leave_management' as FeatureKey }
                 ] : []),

@@ -38,7 +38,6 @@ jobs:
           targets: x86_64-pc-windows-msvc
 
       - name: Install Frontend Dependencies
-        working-directory: "MediaHive Windows app"
         run: pnpm install --no-frozen-lockfile
 
       - name: Build Next.js Frontend

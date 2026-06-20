@@ -93,6 +93,17 @@ jobs:
         run: echo "FIREBASE_ADMIN_SA_PATH=$(pwd)/service-account.json" >> $GITHUB_ENV
         shell: bash
 
+      - name: Create .env.local
+        run: |
+          cat <<EOF > .env.local
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_ADMIN_EMAIL=admin@mediahive.test
+          E2E_ADMIN_PASSWORD=testpassword123
+          E2E_GUEST_EMAIL=guest@mediahive.test
+          E2E_GUEST_PASSWORD=testpassword123
+          EOF
+
       - name: Install Playwright browsers
         run: |
           pnpm exec playwright install --with-deps

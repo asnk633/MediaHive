@@ -298,11 +298,11 @@ export default function TasksNewClient() {
                             user_id: recipient.uid,
                             type: 'system_alert',
                             title: 'Task Assignment Required',
-                            body: `${user.full_name || 'A user'} created a task: "${title}"`,
+                            body: `${user.fullName || 'A user'} created a task: "${title}"`,
                             priority: 'high',
                             entity_type: 'task',
                             entity_id: newTaskId,
-                            institution_id: dept?.institution_id || undefined,
+                            institution_id: user?.institution_id || undefined,
                             department_id: dept?.id ? Number(dept.id) : undefined
                         }).catch(e => console.error(`[TasksNew] Notification failed for ${recipient.uid}`, e))
                     ));

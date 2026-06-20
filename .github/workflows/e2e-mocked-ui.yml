@@ -132,9 +132,7 @@ jobs:
           USE_REAL_FIREBASE: "false"
 
       - name: Run Playwright tests
-        run: |
-          # Run smoke tests from correct directory (matches testDir config)
-          pnpm exec playwright test smoke.spec.ts --retries=1 --reporter=list
+        run: pnpm exec playwright test smoke.spec.ts --config=playwright.config.cjs --retries=1 --reporter=list
         shell: bash
         env:
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000

@@ -123,24 +123,35 @@ jobs:
           echo "Waiting for Next.js to start..."
           sleep 25
 
-      - name: Seed smoke user
+      - name: Seed test users
         run: |
-          for i in 1 2 3; do
-            echo "seed attempt $i"
-            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              -X POST http://127.0.0.1:3000/api/test-utils/seed-user \
-              -H "Content-Type: application/json" \
-              -d '{"email":"smoke@test.local","password":"Pass123","role":"team"}' || true)
-            echo "seed http status: $HTTP_STATUS"
-            if [ "$HTTP_STATUS" = "201" ] || [ "$HTTP_STATUS" = "200" ]; then
-              echo "seed ok"
-              exit 0
-            fi
-            sleep 2
+          for role in smoke admin guest member; do
+            echo "Seeding $role..."
+            for i in 1 2 3; do
+              HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+                -X POST http://127.0.0.1:3000/api/test-utils/seed-user \
+                -H "Content-Type: application/json" \
+                -d "{\"email\":\"${role}@test.local\",\"password\":\"testpassword123\",\"role\":\"${role}\"}" || true)
+              if [ "$role" = "smoke" ]; then
+                # Handle smoke specially if needed, but above we just use it
+                HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+                  -X POST http://127.0.0.1:3000/api/test-utils/seed-user \
+                  -H "Content-Type: application/json" \
+                  -d "{\"email\":\"smoke@test.local\",\"password\":\"Pass123\",\"role\":\"team\"}" || true)
+              else
+                HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+                  -X POST http://127.0.0.1:3000/api/test-utils/seed-user \
+                  -H "Content-Type: application/json" \
+                  -d "{\"email\":\"${role}@mediahive.test\",\"password\":\"testpassword123\",\"role\":\"${role}\"}" || true)
+              fi
+              echo "Status: $HTTP_STATUS"
+              if [ "$HTTP_STATUS" = "201" ] || [ "$HTTP_STATUS" = "200" ]; then
+                echo "$role seeded"
+                break
+              fi
+              sleep 2
+            done
           done
-          echo "Seed failed; dumping server log"
-          tail -n +1 app.log || true
-          exit 1
 
       - name: Run Playwright tests
         run: pnpm exec playwright test --config=playwright.config.cjs

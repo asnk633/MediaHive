@@ -1,4 +1,6 @@
 // playwright.config.cjs
+require('dotenv').config({ path: '.env.local' });
+require('dotenv').config({ path: '.env' });
 const { defineConfig, devices } = require('@playwright/test');
 
 const isCI = !!process.env.CI;

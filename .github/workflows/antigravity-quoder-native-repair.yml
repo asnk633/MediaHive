@@ -7,7 +7,7 @@ on:
 permissions: read-all
 env:
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-  SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
   APP_SECRET: ${{ secrets.APP_SECRET }}
   FIREBASE_ADMIN_SA_BASE64: ${{ secrets.FIREBASE_ADMIN_SA }}
 jobs:

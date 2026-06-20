@@ -39,14 +39,12 @@ jobs:
 
       - name: Create .env.local
         run: |
-          cat <<'EOF' > .env.local
-          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          E2E_ADMIN_EMAIL=admin@mediahive.test
-          E2E_ADMIN_PASSWORD=testpassword123
-          E2E_GUEST_EMAIL=guest@mediahive.test
-          E2E_GUEST_PASSWORD=testpassword123
-          EOF
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env.local
+          echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" >> .env.local
+          echo "E2E_ADMIN_EMAIL=admin@mediahive.test" >> .env.local
+          echo "E2E_ADMIN_PASSWORD=testpassword123" >> .env.local
+          echo "E2E_GUEST_EMAIL=guest@mediahive.test" >> .env.local
+          echo "E2E_GUEST_PASSWORD=testpassword123" >> .env.local
 
       # 🔥 This is what was missing for this workflow
       - name: Install Playwright browsers

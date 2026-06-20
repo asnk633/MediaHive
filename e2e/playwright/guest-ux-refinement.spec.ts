@@ -1,5 +1,24 @@
 import { test, expect } from '@playwright/test';
 
+async function safeGoto(page: any, url: string) {
+  try {
+    await page.goto(url, { timeout: 30000, waitUntil: 'load' });
+  } catch (e: any) {
+    const msg = e.message || '';
+    if (
+      msg.includes('ERR_ABORTED') ||
+      msg.includes('NS_BINDING_ABORTED') ||
+      msg.includes('interrupted by another navigation') ||
+      msg.includes('Frame load interrupted') ||
+      msg.includes('Navigation timeout')
+    ) {
+      await page.waitForLoadState('load').catch(() => {});
+      return;
+    }
+    throw e;
+  }
+}
+
 test.describe('Guest UX Refinement', () => {
 
 
@@ -48,7 +67,7 @@ test.describe('Guest UX Refinement', () => {
             localStorage.setItem('mediahive_onboarding_complete', 'true');
             localStorage.setItem('hasSeenMemberWelcome-v1', 'true');
         });
-        await page.goto('/home');
+        await safeGoto(page, '/home');
         await expect(page).toHaveURL('/home', { timeout: 30000 });
 
         // 3. Verify clean home page (Elements that should NOT be there)

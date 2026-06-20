@@ -44,8 +44,8 @@ jobs:
       - name: Build Next.js Frontend
         working-directory: "MediaHive Windows app"
         env:
-          NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co"
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: "placeholder"
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: pnpm run build
 
       - name: Build Tauri App & Publish Release
@@ -54,8 +54,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
-          NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co"
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: "placeholder"
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         with:
           tauriScript: pnpm tauri
           tagName: desktop-v__VERSION__

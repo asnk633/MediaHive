@@ -51,6 +51,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Create .env.local
+        run: |
+          cat <<'EOF' > .env.local
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_ADMIN_EMAIL=admin@mediahive.test
+          E2E_ADMIN_PASSWORD=testpassword123
+          E2E_GUEST_EMAIL=guest@mediahive.test
+          E2E_GUEST_PASSWORD=testpassword123
+          EOF
+
       - name: Preflight Env Check
         run: npx tsx scripts/check-e2e-env.ts
 
@@ -63,7 +74,7 @@ jobs:
       - name: Start app in background
         run: |
           pnpm run start &
-          npx wait-on http://localhost:3000 --timeout 60000
+          npx wait-on http://127.0.0.1:3000 --timeout 60000
 
       - name: Run E2E tests
         run: pnpm exec playwright test

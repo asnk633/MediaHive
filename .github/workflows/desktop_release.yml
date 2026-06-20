@@ -37,6 +37,23 @@ jobs:
         with:
           targets: x86_64-pc-windows-msvc
 
+      - name: Import Code Signing Certificate
+        shell: pwsh
+        run: |
+          $pfxBase64 = "${{ secrets.WINDOWS_PFX_BASE64 }}"
+          if ([string]::IsNullOrEmpty($pfxBase64)) {
+            Write-Error "WINDOWS_PFX_BASE64 secret is not configured in this repository. Please configure it under Secrets."
+            exit 1
+          }
+          $pfxPassword = "${{ secrets.WINDOWS_PFX_PASSWORD }}"
+          $pfxBytes = [System.Convert]::FromBase64String($pfxBase64)
+          $pfxPath = Join-Path $env:TEMP "mediahive-signer.pfx"
+          [System.IO.File]::WriteAllBytes($pfxPath, $pfxBytes)
+          
+          $securePassword = ConvertTo-SecureString $pfxPassword -AsPlainText -Force
+          Import-PfxCertificate -CertStoreLocation Cert:\CurrentUser\My -FilePath $pfxPath -Password $securePassword
+          Write-Host "Successfully imported certificate into Cert:\CurrentUser\My"
+
       - name: Install Frontend Dependencies
         working-directory: "MediaHive Windows app"
         run: pnpm install --no-frozen-lockfile

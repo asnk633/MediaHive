@@ -23,7 +23,11 @@ jobs:
           if [ -z "${FIREBASE_ADMIN_SA_BASE64:-}" ]; then
             echo "FIREBASE_ADMIN_SA_BASE64 secret missing - skipping decode"
           else
-            echo "$FIREBASE_ADMIN_SA_BASE64" | base64 --decode > service-account.json
+            if echo "$FIREBASE_ADMIN_SA_BASE64" | grep -q '^{'; then
+              echo "$FIREBASE_ADMIN_SA_BASE64" > service-account.json
+            else
+              echo "$FIREBASE_ADMIN_SA_BASE64" | base64 --decode > service-account.json
+            fi
             ls -la service-account.json
           fi
         shell: bash

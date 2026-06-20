@@ -58,7 +58,11 @@ jobs:
             echo "FIREBASE_ADMIN_SA secret is missing"
             exit 1
           fi
-          printf '%s\n' "$FIREBASE_ADMIN_SA" > "$FIREBASE_ADMIN_SA_PATH"
+          if echo "$FIREBASE_ADMIN_SA" | grep -q '^{'; then
+            echo "$FIREBASE_ADMIN_SA" > "$FIREBASE_ADMIN_SA_PATH"
+          else
+            echo "$FIREBASE_ADMIN_SA" | base64 --decode > "$FIREBASE_ADMIN_SA_PATH"
+          fi
           ls -la "$FIREBASE_ADMIN_SA_PATH"
 
       # (Optional Windows step kept for completeness; you'll only hit this if you ever switch runner)

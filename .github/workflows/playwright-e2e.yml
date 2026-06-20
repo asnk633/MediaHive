@@ -73,13 +73,19 @@ jobs:
 
       - name: Decode service account (bash)
         if: runner.os != 'Windows'
+        env:
+          SA_SECRET: ${{ secrets.FIREBASE_ADMIN_SA }}
         run: |
-          if [ -z '${{ secrets.FIREBASE_ADMIN_SA }}' ]; then
+          if [ -z "$SA_SECRET" ]; then
             echo "FIREBASE_ADMIN_SA secret is missing"
             exit 1
           fi
-          # Decode BASE64 secret to JSON file
-          echo "${{ secrets.FIREBASE_ADMIN_SA }}" | base64 --decode > service-account.json
+          # Check if it looks like plain JSON
+          if echo "$SA_SECRET" | grep -q '^{'; then
+            echo "$SA_SECRET" > service-account.json
+          else
+            echo "$SA_SECRET" | base64 --decode > service-account.json
+          fi
           ls -la service-account.json
         shell: bash
 

@@ -188,6 +188,7 @@ The app breaks out of normal web lifecycle constraints using a suite of native T
 
 | Date | Description | Author |
 | :--- | :--- | :--- |
+| 2026-06-20 | **Desktop Version Bump to 0.1.1.** Bumped version in `package.json` and `tauri.conf.json` to 0.1.1 to avoid tag collisions during the automated GitHub release build. | AI Agent |
 | 2026-06-20 | **Automated OTA Releases.** Configured .github/workflows/desktop_release.yml and pointed the 	auri.conf.json updater endpoint to the GitHub Releases repository to automate OTA updates. | AI Agent |
 | 2026-06-19 | **Tauri v2 Window Capabilities Fix.** Diagnosed and resolved native window control issues (drag, minimize, maximize, close) by explicitly defining v2 granular capabilities (core:window:allow-minimize, llow-maximize, llow-close, llow-start-dragging, llow-toggle-maximize, llow-is-maximized) in capabilities/default.json. | AI Agent |
 | 2026-06-19 | **OTA Updater, Deep Links, and NSIS.** Implemented `mediahive://` deep linking via `tauri-plugin-deep-link` and `tauri-plugin-single-instance`, intercepting URLs in Next.js `ShellWrapper`. Added OTA auto-update capabilities via `tauri-plugin-updater` checking a static GitHub Releases JSON manifest, surfaced via a custom React `UpdatePrompt` component. Configured `perMachine` NSIS installer and generated a `license.txt` EULA for the Windows desktop rollout. | AI Agent |

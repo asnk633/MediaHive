@@ -42,13 +42,12 @@ if not SUPABASE_SERVICE_KEY:
     print("[WARNING] SUPABASE_SERVICE_ROLE_KEY not found in ../.env.local. Supabase sync will be skipped.")
 
 RELEASE_NOTES = (
-    "🚀 MediaHive v1.2.2-beta — Notification Fix + Quick Checkout\n\n"
-    "• Fixed Push Notifications: All field work and geofence notifications now fire correctly (resolved DB schema mismatch).\n"
-    "• Shift Reminders on Boot: Check-in/out reminders now schedule immediately on app launch, not just on state changes.\n"
-    "• Geofence Exit Alerts: Immediate local notification when you leave the office area — works even when app is killed.\n"
-    "• Quick Check Out: New frictionless checkout button — check out instantly without NFC/GPS/WiFi verification.\n"
-    "• Timezone Robustness: Fixed scheduled notification timing on Android devices where timezone detection fails.\n"
-    "• Audit Trail: Quick checkouts log location (if available) and source for manager visibility.\n"
+    "🚀 MediaHive v1.2.5-beta — Attendance Reminder Fixes\n\n"
+    "• Boot Receiver Fixed: Reminders now survive device reboots (CRITICAL fix).\n"
+    "• Graceful Past-Time Fallback: Reschedules for next working day instead of silently dropping reminders if opened late.\n"
+    "• Eager Policy Load: Real policy times used immediately on app launch.\n"
+    "• Notification Channel Reset: Fixes silent suppression of notifications.\n"
+    "• Bonus: Fixed DeadLetterQueue implementation for offline scan retries.\n"
 )
 
 # ─── 1. PARSE VERSION ─────────────────────────────────────────────────────────

@@ -99,6 +99,11 @@ class NotificationService {
       );
       _initialized = true;
       _logger.info('NotificationService initialized successfully with flutter_local_notifications');
+
+      // Reset the shift reminders channel to ensure max importance on every install/update.
+      // Android caches channel settings; if a previous build created it with lower importance,
+      // notifications would be silently suppressed. Deleting and recreating forces the upgrade.
+      await _resetShiftReminderChannel();
     } catch (e, stack) {
       _logger.error('Failed to initialize NotificationService', e, stack);
     }
@@ -335,6 +340,34 @@ class NotificationService {
       await openAppSettings();
     } catch (e) {
       _logger.error('Error opening system settings: $e');
+    }
+  }
+
+  // Deletes and recreates the shift reminders channel so it always has Importance.max.
+  // Android will silently downgrade importance if the channel existed at a lower level.
+  Future<void> _resetShiftReminderChannel() async {
+    try {
+      final androidImpl = _localNotifications
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      if (androidImpl == null) return;
+
+      // Delete the old channel (no-op if it doesn't exist yet)
+      await androidImpl.deleteNotificationChannel('mediahive_shift_reminders_v2');
+
+      // Recreate with guaranteed max importance
+      await androidImpl.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'mediahive_shift_reminders_v2',
+          'Shift Reminders',
+          description: 'Notifications to remind check-in, check-out, and breaks',
+          importance: Importance.max,
+          sound: RawResourceAndroidNotificationSound('event_alert'),
+          playSound: true,
+        ),
+      );
+      _logger.info('Shift reminder notification channel recreated at max importance');
+    } catch (e) {
+      _logger.error('Failed to reset shift reminder notification channel: $e');
     }
   }
 

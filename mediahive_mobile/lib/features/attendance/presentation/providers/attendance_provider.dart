@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -1321,3 +1322,82 @@ final resolveRequestNotifierProvider = StateNotifierProvider<ResolveRequestNotif
 });
 
 final nfcRegistryActiveProvider = StateProvider<bool>((ref) => false);
+
+// ---------------------------------------------------------------------------
+// Dead-Letter Queue Provider
+// Surfaces attendance offline scans that were archived after 5 failed sync
+// attempts. The sheet can retry (move back to active queue) or discard them.
+// ---------------------------------------------------------------------------
+
+class DeadLetterQueueNotifier
+    extends StateNotifier<AsyncValue<List<Map<String, dynamic>>>> {
+  DeadLetterQueueNotifier() : super(const AsyncValue.loading()) {
+    _init();
+  }
+
+  Box<String>? _box;
+
+  Future<void> _init() async {
+    try {
+      _box = Hive.isBoxOpen('dead_letter_queue')
+          ? Hive.box<String>('dead_letter_queue')
+          : await Hive.openBox<String>('dead_letter_queue');
+      _reload();
+      _box!.listenable().addListener(_reload);
+    } catch (e, s) {
+      state = AsyncValue.error(e, s);
+    }
+  }
+
+  void _reload() {
+    if (_box == null) return;
+    final items = <Map<String, dynamic>>[];
+    for (final entry in _box!.toMap().entries) {
+      try {
+        final data = Map<String, dynamic>.from(
+          jsonDecode(entry.value) as Map,
+        );
+        // Inject the Hive key so the UI can call clearItem/retryItem
+        data['_dlqKey'] = entry.key.toString();
+        items.add(data);
+      } catch (_) {}
+    }
+    // Newest first
+    items.sort((a, b) {
+      final ta = DateTime.tryParse(a['timestamp'] as String? ?? '') ?? DateTime(0);
+      final tb = DateTime.tryParse(b['timestamp'] as String? ?? '') ?? DateTime(0);
+      return tb.compareTo(ta);
+    });
+    state = AsyncValue.data(items);
+  }
+
+  /// Permanently remove a failed scan from the dead-letter archive.
+  Future<void> clearItem(String key) async {
+    await _box?.delete(key);
+  }
+
+  /// Move a failed scan back to the active offline queue for a fresh retry.
+  Future<void> retryItem(String key) async {
+    final box = _box;
+    if (box == null) return;
+    final raw = box.get(key);
+    if (raw == null) return;
+    try {
+      final data = Map<String, dynamic>.from(jsonDecode(raw) as Map);
+      data.remove('_dlqKey');
+      data['retries'] = 0; // Reset retry counter for a clean attempt
+
+      final queueBox = Hive.isBoxOpen('offline_attendance_queue')
+          ? Hive.box('offline_attendance_queue')
+          : await Hive.openBox('offline_attendance_queue');
+      await queueBox.put(key, data);
+      await box.delete(key); // Remove from dead-letter
+    } catch (_) {}
+  }
+}
+
+final deadLetterQueueProvider = StateNotifierProvider<
+    DeadLetterQueueNotifier,
+    AsyncValue<List<Map<String, dynamic>>>>(
+  (ref) => DeadLetterQueueNotifier(),
+);

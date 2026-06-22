@@ -49,6 +49,15 @@ final attendanceReminderServiceProvider = Provider<AttendanceReminderService>((r
     service.updateReminders(session);
   });
 
+  // Fix #3: Also eagerly read the policy initial value so that if the policy has already
+  // resolved by the time this provider is first watched (common after a hot restart or
+  // when Supabase responds quickly), we schedule with the real policy rather than defaults.
+  final initialPolicyState = ref.read(attendancePolicyProvider);
+  initialPolicyState.whenData((policy) {
+    final session = ref.read(activeAttendanceSessionProvider).value;
+    service.updateReminders(session, policyOverride: policy);
+  });
+
   return service;
 });
 
@@ -165,11 +174,28 @@ class AttendanceReminderService {
 
   Future<void> _scheduleCheckInReminders(AttendancePolicy policy, DateTime date) async {
     final notificationService = _ref.read(notificationServiceProvider);
+    final now = DateTime.now();
     
     final startTime = policy.parseTime(policy.startTimeStr, date);
     if (startTime != null) {
       // 5 minutes before check-in start
       final preTime = startTime.subtract(const Duration(minutes: 5));
+      // 10 minutes after check-in start
+      final postTime = startTime.add(const Duration(minutes: 10));
+
+      // Fix #2: If BOTH reminders are already in the past (e.g. user opens app mid-afternoon
+      // on a day they never checked in), reschedule for the next working day instead of
+      // silently dropping everything. This prevents a 24-hour gap with no reminders.
+      if (preTime.isBefore(now) && postTime.isBefore(now)) {
+        _logger.debug(
+          'All check-in reminder times for $date are in the past '
+          '(pre=$preTime, post=$postTime). Rescheduling for next working day.',
+        );
+        final nextWorkDay = await _nextWorkingDay(date);
+        await _scheduleCheckInReminders(policy, nextWorkDay);
+        return;
+      }
+
       await notificationService.scheduleShiftReminder(
         id: _getNotificationId(ReminderType.preCheckin),
         title: 'Get Ready to Check In',
@@ -178,8 +204,7 @@ class AttendanceReminderService {
         payload: '/attendance',
       );
 
-      // 10 minutes after check-in start
-      final postTime = startTime.add(const Duration(minutes: 10));
+      // postTime is still individually guarded inside scheduleNotification (skips if past).
       await notificationService.scheduleShiftReminder(
         id: _getNotificationId(ReminderType.postCheckin),
         title: 'Check-In Reminder',

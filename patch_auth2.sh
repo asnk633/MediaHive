@@ -1,0 +1,1 @@
+sed -i 's/await page.evaluate(() => {/await page.evaluate(() => {\n    localStorage.setItem('"'"'playwright_test_auth'"'"', '"'"'true'"'"');\n    localStorage.setItem('"'"'playwright_test_role'"'"', '"'"'${role}'"'"');/g' e2e/playwright/helpers/auth.ts

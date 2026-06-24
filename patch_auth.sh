@@ -1,0 +1,2 @@
+sed -i 's/await page.fill('"'"'input\[type="email"\]'"'"', email);/await page.fill('"'"'input[placeholder="media@thaibagarden.com"], input[type="email"]'"'"', email);/g' e2e/playwright/helpers/auth.ts
+sed -i 's/await page.fill('"'"'input\[type="password"\]'"'"', password);/await page.fill('"'"'input[placeholder="••••••••••••"], input[type="password"]'"'"', password);/g' e2e/playwright/helpers/auth.ts

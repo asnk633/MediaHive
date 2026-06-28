@@ -7,7 +7,7 @@ import 'package:mediahive_mobile/features/inventory/domain/models/inventory_item
 import 'package:mediahive_mobile/features/inventory/domain/models/equipment_booking.dart';
 import 'package:mediahive_mobile/features/inventory/domain/models/inventory_request.dart';
 import 'package:mediahive_mobile/features/inventory/domain/repositories/inventory_repository.dart';
-import '../datasources/inventory_local_datasource.dart';
+import 'package:mediahive_mobile/features/inventory/data/datasources/inventory_local_datasource.dart';
 
 class SupabaseInventoryRepository implements InventoryRepository {
   final SupabaseClient _supabaseClient;

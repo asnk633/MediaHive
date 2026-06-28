@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/theme_provider.dart';
-import '../../../../core/providers/user_provider.dart';
-import '../../../calendar/presentation/providers/events_provider.dart';
-import '../providers/files_provider.dart';
-import '../../../../core/services/media_service.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/providers/user_provider.dart';
+import 'package:mediahive_mobile/features/calendar/presentation/providers/events_provider.dart';
+import 'package:mediahive_mobile/features/files/presentation/providers/files_provider.dart';
+import 'package:mediahive_mobile/core/services/media_service.dart';
 
 class UploadFileModal extends ConsumerStatefulWidget {
   const UploadFileModal({super.key});

@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/services/logger_service.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 
 /// Service for sending push notifications related to field work and presence verification.
 ///

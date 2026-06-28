@@ -7,9 +7,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme_provider.dart';
+import 'package:mediahive_mobile/core/theme/app_colors.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
 
 /// Provider for fetching presence logs for a specific attendance session.
 final presenceLogsProvider = FutureProvider.family<List<Map<String, dynamic>>, String>(

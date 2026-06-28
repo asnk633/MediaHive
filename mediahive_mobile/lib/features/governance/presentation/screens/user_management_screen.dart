@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../../../../core/theme_provider.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../../../shared/widgets/mh_loading.dart';
-import '../../../../shared/widgets/mh_button.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_loading.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_button.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final userSearchQueryProvider = StateProvider<String>((ref) => '');

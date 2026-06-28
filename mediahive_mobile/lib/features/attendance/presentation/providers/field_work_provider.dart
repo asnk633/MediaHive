@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../data/services/field_work_service.dart';
-import '../../data/services/presence_verification_service.dart';
-import '../../data/services/mock_location_detector.dart';
-import '../../../../core/providers/user_provider.dart';
+import 'package:mediahive_mobile/features/attendance/data/services/field_work_service.dart';
+import 'package:mediahive_mobile/features/attendance/data/services/presence_verification_service.dart';
+import 'package:mediahive_mobile/features/attendance/data/services/mock_location_detector.dart';
+import 'package:mediahive_mobile/core/providers/user_provider.dart';
 
 // ─── Field Work Service Provider ─────────────────────────────
 

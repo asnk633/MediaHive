@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'snackbar_service.dart';
-import '../router/router.dart';
+import 'package:mediahive_mobile/core/router/router.dart';
 
 class SessionRecoveryService {
   static Future<void> handleExpiredSession() async {

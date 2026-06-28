@@ -81,8 +81,12 @@ class DesignTokens {
   static const double spacingS       = 8.0;
   static const double spacingM       = 12.0;
   static const double spacingL       = 17.0; // Apple 17pt
+  static const double spacingL20     = 20.0;
   static const double spacingXl      = 24.0;
   static const double spacingXxl     = 32.0;
+  static const double spacingXxxl    = 40.0;
+  static const double spacingHuge    = 48.0;
+  static const double spacingGiant   = 64.0;
   static const double spacingSection = 80.0;
 
   // ─── Border Radii ──────────────────────────────────────────────────────────

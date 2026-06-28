@@ -5,13 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/theme_provider.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../../../core/providers/user_provider.dart';
-import '../../../../core/providers/ui_providers.dart';
-import '../providers/tasks_provider.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
+import 'package:mediahive_mobile/core/providers/user_provider.dart';
+import 'package:mediahive_mobile/core/providers/ui_providers.dart';
+import 'package:mediahive_mobile/features/tasks/presentation/providers/tasks_provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../../domain/models/task.dart';
+import 'package:mediahive_mobile/features/tasks/domain/models/task.dart';
 
 class TaskDetailsScreen extends ConsumerStatefulWidget {
   final Task task;

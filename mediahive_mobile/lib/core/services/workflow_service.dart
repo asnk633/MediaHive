@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../features/tasks/domain/models/task.dart';
-import '../../features/tasks/presentation/providers/tasks_provider.dart';
+import 'package:mediahive_mobile/features/tasks/domain/models/task.dart';
+import 'package:mediahive_mobile/features/tasks/presentation/providers/tasks_provider.dart';
 
 class WorkflowService {
   final Ref _ref;

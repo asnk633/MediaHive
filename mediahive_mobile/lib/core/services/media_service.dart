@@ -10,7 +10,7 @@ import 'logger_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
+import 'package:mediahive_mobile/core/theme/app_colors.dart';
 
 class MediaService {
   final ImagePicker _picker = ImagePicker();

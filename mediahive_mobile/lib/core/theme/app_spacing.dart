@@ -5,12 +5,12 @@ class AppSpacing {
   static const double xs = DesignTokens.spacingS;
   static const double s = DesignTokens.spacingM;
   static const double m = DesignTokens.spacingL;
-  static const double l = 20.0;
+  static const double l = DesignTokens.spacingL20;
   static const double xl = DesignTokens.spacingXl;
   static const double xxl = DesignTokens.spacingXxl;
-  static const double xxxl = 40.0;
-  static const double huge = 48.0;
-  static const double giant = 64.0;
+  static const double xxxl = DesignTokens.spacingXxxl;
+  static const double huge = DesignTokens.spacingHuge;
+  static const double giant = DesignTokens.spacingGiant;
 }
 
 class AppRadius {

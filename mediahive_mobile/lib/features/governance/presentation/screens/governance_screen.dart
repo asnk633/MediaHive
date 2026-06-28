@@ -5,10 +5,10 @@ import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../core/services/analytics_service.dart';
-import '../providers/governance_provider.dart';
+import 'package:mediahive_mobile/features/governance/presentation/providers/governance_provider.dart';
 import '../../../../../shared/widgets/mh_skeleton.dart';
-import '../../../../core/theme_provider.dart';
-import '../../domain/models/governance_models.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/features/governance/domain/models/governance_models.dart';
 import 'package:go_router/go_router.dart';
 
 class GovernanceScreen extends ConsumerWidget {

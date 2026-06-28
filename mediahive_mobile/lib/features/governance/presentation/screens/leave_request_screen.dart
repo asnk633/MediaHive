@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
-import '../providers/leave_provider.dart';
-import '../../../../core/theme_provider.dart';
-import '../../../../core/theme/elastic_scroll_physics.dart';
-import '../../../../core/theme/app_typography.dart';
+import 'package:mediahive_mobile/features/governance/presentation/providers/leave_provider.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/theme/elastic_scroll_physics.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
 
 class LeaveRequestScreen extends ConsumerStatefulWidget {
   const LeaveRequestScreen({super.key});

@@ -4,8 +4,8 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/theme_provider.dart';
-import '../../../../core/utils/file_download_helper.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/utils/file_download_helper.dart';
 
 class PdfViewerScreen extends ConsumerWidget {
   final String pdfUrl;

@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failure.dart';
-import '../models/inventory_item.dart';
-import '../models/equipment_booking.dart';
-import '../models/inventory_request.dart';
+import 'package:mediahive_mobile/core/error/failure.dart';
+import 'package:mediahive_mobile/features/inventory/domain/models/inventory_item.dart';
+import 'package:mediahive_mobile/features/inventory/domain/models/equipment_booking.dart';
+import 'package:mediahive_mobile/features/inventory/domain/models/inventory_request.dart';
 
 abstract class InventoryRepository {
   Future<Either<Failure, List<InventoryItem>>> getInventory();

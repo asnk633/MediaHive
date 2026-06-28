@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/services/logger_service.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 
 /// Background presence verification service — STUB implementation.
 ///

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:geolocator/geolocator.dart';
-import '../../../../core/services/logger_service.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 
 class MockLocationDetector {
   final _logger = LoggerService();

@@ -1,5 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import '../../domain/models/task.dart';
+import 'package:mediahive_mobile/features/tasks/domain/models/task.dart';
 
 abstract class TaskLocalDataSource {
   Future<List<Task>> getTasks();

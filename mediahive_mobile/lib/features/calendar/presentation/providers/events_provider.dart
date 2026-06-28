@@ -1,10 +1,10 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/services/sync_service.dart';
-import '../../../../core/services/realtime_service.dart';
-import '../../data/datasources/event_local_datasource.dart';
-import '../../data/repositories/supabase_event_repository.dart';
-import '../../domain/models/event.dart';
-import '../../domain/repositories/event_repository.dart';
+import 'package:mediahive_mobile/core/services/sync_service.dart';
+import 'package:mediahive_mobile/core/services/realtime_service.dart';
+import 'package:mediahive_mobile/features/calendar/data/datasources/event_local_datasource.dart';
+import 'package:mediahive_mobile/features/calendar/data/repositories/supabase_event_repository.dart';
+import 'package:mediahive_mobile/features/calendar/domain/models/event.dart';
+import 'package:mediahive_mobile/features/calendar/domain/repositories/event_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

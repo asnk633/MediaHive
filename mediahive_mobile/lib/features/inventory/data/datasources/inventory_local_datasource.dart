@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../../domain/models/inventory_item.dart';
+import 'package:mediahive_mobile/features/inventory/domain/models/inventory_item.dart';
 
 abstract class InventoryLocalDataSource {
   Future<List<InventoryItem>> getInventory();

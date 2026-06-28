@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../../models/institutional_data.dart';
+import 'package:mediahive_mobile/models/institutional_data.dart';
 
 /// Provider to manage the local profile image path globally with Hive persistence.
 final authStateProvider = StreamProvider<AuthState>((ref) {

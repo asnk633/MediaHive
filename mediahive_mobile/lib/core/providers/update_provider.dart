@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../services/logger_service.dart';
-import '../services/update_service.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
+import 'package:mediahive_mobile/core/services/update_service.dart';
 
 enum UpdateDownloadState {
   idle,

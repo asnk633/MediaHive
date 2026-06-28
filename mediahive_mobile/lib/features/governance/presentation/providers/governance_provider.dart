@@ -2,8 +2,8 @@ import 'package:dartz/dartz.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/error/failure.dart';
-import '../../domain/models/governance_models.dart';
-import '../../domain/repositories/governance_repository.dart';
+import 'package:mediahive_mobile/features/governance/domain/models/governance_models.dart';
+import 'package:mediahive_mobile/features/governance/domain/repositories/governance_repository.dart';
 
 class SupabaseGovernanceRepository implements GovernanceRepository {
   final SupabaseClient _client;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../providers/field_work_provider.dart';
+import 'package:mediahive_mobile/features/attendance/presentation/providers/field_work_provider.dart';
 
 /// Manager-facing screen to review and approve/reject field work requests.
 ///

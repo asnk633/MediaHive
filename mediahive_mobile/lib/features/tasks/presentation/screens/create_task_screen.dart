@@ -8,21 +8,21 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:uuid/uuid.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/theme_provider.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../../../core/providers/user_provider.dart' hide institutionsProvider, departmentsProvider;
-import '../../../../core/services/media_service.dart';
-import '../../../../core/services/upload_service.dart';
-import '../../../../core/models/upload_mutation.dart';
-import '../providers/tasks_provider.dart';
-import '../../../../core/providers/ui_providers.dart';
-import '../../../../models/institutional_data.dart';
-import '../../../../providers/institutional_provider.dart';
-import '../../domain/models/task.dart';
-import '../../../calendar/presentation/providers/events_provider.dart';
-import '../../../calendar/domain/models/event.dart';
-import '../../../../core/providers/labs_provider.dart';
-import '../../../../core/services/sound_service.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
+import 'package:mediahive_mobile/core/providers/user_provider.dart' hide institutionsProvider, departmentsProvider;
+import 'package:mediahive_mobile/core/services/media_service.dart';
+import 'package:mediahive_mobile/core/services/upload_service.dart';
+import 'package:mediahive_mobile/core/models/upload_mutation.dart';
+import 'package:mediahive_mobile/features/tasks/presentation/providers/tasks_provider.dart';
+import 'package:mediahive_mobile/core/providers/ui_providers.dart';
+import 'package:mediahive_mobile/models/institutional_data.dart';
+import 'package:mediahive_mobile/providers/institutional_provider.dart';
+import 'package:mediahive_mobile/features/tasks/domain/models/task.dart';
+import 'package:mediahive_mobile/features/calendar/presentation/providers/events_provider.dart';
+import 'package:mediahive_mobile/features/calendar/domain/models/event.dart';
+import 'package:mediahive_mobile/core/providers/labs_provider.dart';
+import 'package:mediahive_mobile/core/services/sound_service.dart';
 
 
 class CreateTaskScreen extends ConsumerStatefulWidget {

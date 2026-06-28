@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
-import '../services/logger_service.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 
 class PermissionService {
   static final LoggerService _logger = LoggerService();

@@ -5,13 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/elastic_scroll_physics.dart';
-import '../../../../core/theme_provider.dart';
-import '../../../../shared/widgets/mh_loading.dart';
-import '../../domain/models/attendance_policy.dart';
-import '../providers/attendance_provider.dart';
+import 'package:mediahive_mobile/core/theme/app_colors.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
+import 'package:mediahive_mobile/core/theme/elastic_scroll_physics.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_loading.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_policy.dart';
+import 'package:mediahive_mobile/features/attendance/presentation/providers/attendance_provider.dart';
 
 class AttendancePolicyScreen extends ConsumerStatefulWidget {
   const AttendancePolicyScreen({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/supabase_service.dart';
-import '../models/institutional_data.dart';
+import 'package:mediahive_mobile/services/supabase_service.dart';
+import 'package:mediahive_mobile/models/institutional_data.dart';
 
 final supabaseServiceProvider = Provider((ref) => SupabaseService());
 

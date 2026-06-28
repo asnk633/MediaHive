@@ -11,22 +11,22 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 
-import '../../domain/models/attendance_record.dart';
-import '../../domain/models/attendance_event.dart';
-import '../../domain/models/attendance_policy.dart';
-import '../../domain/models/nfc_tag.dart' as domain;
-import '../../domain/models/attendance_request.dart';
-import '../../data/repositories/attendance_repository.dart';
-import '../../data/services/offline_attendance_queue.dart';
-import '../../data/services/server_time_service.dart';
-import '../../data/services/scan_cooldown_service.dart';
-import '../../data/services/mock_location_detector.dart';
-import '../../data/services/leave_conflict_service.dart';
-import '../../../../core/providers/user_provider.dart';
-import '../../../../core/services/logger_service.dart';
-import '../../../../core/services/notification_service.dart';
-import '../../data/services/qr_signature_service.dart';
-import '../../data/services/background_presence_service.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_record.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_event.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_policy.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/nfc_tag.dart' as domain;
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_request.dart';
+import 'package:mediahive_mobile/features/attendance/data/repositories/attendance_repository.dart';
+import 'package:mediahive_mobile/features/attendance/data/services/offline_attendance_queue.dart';
+import 'package:mediahive_mobile/features/attendance/data/services/server_time_service.dart';
+import 'package:mediahive_mobile/features/attendance/data/services/scan_cooldown_service.dart';
+import 'package:mediahive_mobile/features/attendance/data/services/mock_location_detector.dart';
+import 'package:mediahive_mobile/features/attendance/data/services/leave_conflict_service.dart';
+import 'package:mediahive_mobile/core/providers/user_provider.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
+import 'package:mediahive_mobile/core/services/notification_service.dart';
+import 'package:mediahive_mobile/features/attendance/data/services/qr_signature_service.dart';
+import 'package:mediahive_mobile/features/attendance/data/services/background_presence_service.dart';
 
 enum NfcScanStatus { idle, scanning, success, error, nfcNotAvailable, nfcDisabled, leaveConflict, fieldWork }
 

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../data/repositories/campaign_repository.dart';
-import '../../../../core/services/logger_service.dart';
+import 'package:mediahive_mobile/features/campaigns/data/repositories/campaign_repository.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 
 final campaignRepositoryProvider = Provider<CampaignRepository>((ref) {
   final logger = ref.watch(loggerProvider.notifier);

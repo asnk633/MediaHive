@@ -4,13 +4,13 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/services/auth_helper.dart';
+import 'package:mediahive_mobile/core/services/auth_helper.dart';
 import 'package:uuid/uuid.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:mediahive_mobile/core/providers/user_provider.dart';
 import 'package:mediahive_mobile/core/utils/url_helpers.dart';
 import 'package:mediahive_mobile/core/config/env_config.dart';
-import '../../domain/models/chat_room.dart';
+import 'package:mediahive_mobile/features/chat/domain/models/chat_room.dart';
 import 'package:mediahive_mobile/core/services/audio_service.dart';
 import 'package:http_parser/http_parser.dart';
 

@@ -5,12 +5,12 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:ui';
-import '../providers/notifications_provider.dart';
-import '../../../../core/theme_provider.dart';
-import '../../../../core/providers/user_provider.dart';
-import '../../../../core/services/upload_service.dart';
-import '../../../../core/services/media_service.dart';
-import '../../../../core/theme/app_typography.dart';
+import 'package:mediahive_mobile/features/system/presentation/providers/notifications_provider.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/providers/user_provider.dart';
+import 'package:mediahive_mobile/core/services/upload_service.dart';
+import 'package:mediahive_mobile/core/services/media_service.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
 
 class CreateNotificationScreen extends ConsumerStatefulWidget {
   const CreateNotificationScreen({super.key});

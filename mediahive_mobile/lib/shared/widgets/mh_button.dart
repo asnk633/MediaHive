@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_typography.dart';
-import '../../core/design_tokens.dart';
-import '../../core/theme_provider.dart';
+import 'package:mediahive_mobile/core/theme/app_colors.dart';
+import 'package:mediahive_mobile/core/theme/app_spacing.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
+import 'package:mediahive_mobile/core/design_tokens.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
 
 enum MhButtonType { primary, secondary, outline, ghost }
 

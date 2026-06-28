@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../models/sync_queue_item.dart';
+import 'package:mediahive_mobile/core/models/sync_queue_item.dart';
 import 'dart:convert';
 
 class SyncErrorsState {

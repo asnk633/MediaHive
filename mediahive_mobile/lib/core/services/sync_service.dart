@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
-import '../utils/semaphore.dart';
+import 'package:mediahive_mobile/core/utils/semaphore.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../config/env_config.dart';
-import '../models/sync_queue_item.dart';
-import '../services/network_service.dart';
-import '../services/logger_service.dart';
+import 'package:mediahive_mobile/core/config/env_config.dart';
+import 'package:mediahive_mobile/core/models/sync_queue_item.dart';
+import 'package:mediahive_mobile/core/services/network_service.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 import 'notification_service.dart';
 import 'auth_helper.dart';
 

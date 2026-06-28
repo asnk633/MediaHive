@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../data/models/system_activity_log.dart';
-import '../../../system/data/repositories/system_repository.dart';
-import '../../../../core/services/logger_service.dart';
+import 'package:mediahive_mobile/features/governance/data/models/system_activity_log.dart';
+import 'package:mediahive_mobile/features/system/data/repositories/system_repository.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 
 final systemRepositoryProvider = Provider<SystemRepository>((ref) {
   return SystemRepository(Supabase.instance.client);

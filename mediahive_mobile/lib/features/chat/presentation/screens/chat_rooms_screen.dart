@@ -8,8 +8,8 @@ import 'package:mediahive_mobile/core/theme/app_colors.dart';
 import 'package:mediahive_mobile/core/design_tokens.dart';
 import 'package:mediahive_mobile/core/theme_provider.dart';
 import 'package:mediahive_mobile/core/providers/user_provider.dart';
-import '../providers/chat_providers.dart';
-import '../../domain/models/chat_room.dart';
+import 'package:mediahive_mobile/features/chat/presentation/providers/chat_providers.dart';
+import 'package:mediahive_mobile/features/chat/domain/models/chat_room.dart';
 
 class ChatRoomsScreen extends ConsumerStatefulWidget {
   const ChatRoomsScreen({super.key});

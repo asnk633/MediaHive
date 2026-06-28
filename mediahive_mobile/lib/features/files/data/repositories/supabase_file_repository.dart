@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:dartz/dartz.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/error/failure.dart';
-import '../../domain/models/file_asset.dart';
-import '../../domain/repositories/file_repository.dart';
+import 'package:mediahive_mobile/core/error/failure.dart';
+import 'package:mediahive_mobile/features/files/domain/models/file_asset.dart';
+import 'package:mediahive_mobile/features/files/domain/repositories/file_repository.dart';
 
 class SupabaseFileRepository implements FileRepository {
   final SupabaseClient _supabaseClient;

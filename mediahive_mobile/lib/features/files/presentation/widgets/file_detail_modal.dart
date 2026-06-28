@@ -17,10 +17,10 @@ import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:audioplayers/audioplayers.dart';
 
-import '../../../../core/theme_provider.dart';
-import '../../../../core/providers/user_provider.dart';
-import '../../domain/models/file_asset.dart';
-import '../providers/files_provider.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/providers/user_provider.dart';
+import 'package:mediahive_mobile/features/files/domain/models/file_asset.dart';
+import 'package:mediahive_mobile/features/files/presentation/providers/files_provider.dart';
 
 class FileDetailModal extends ConsumerStatefulWidget {
   final FileAsset asset;

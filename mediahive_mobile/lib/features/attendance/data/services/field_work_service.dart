@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/services/logger_service.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 import 'background_presence_service.dart';
 import 'field_work_notification_service.dart';
 

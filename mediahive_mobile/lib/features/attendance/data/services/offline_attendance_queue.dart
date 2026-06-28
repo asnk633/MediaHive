@@ -1,11 +1,11 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
 import 'dart:convert';
-import '../../../../core/utils/semaphore.dart';
+import 'package:mediahive_mobile/core/utils/semaphore.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
-import '../repositories/attendance_repository.dart';
-import '../../../../core/services/logger_service.dart';
+import 'package:mediahive_mobile/features/attendance/data/repositories/attendance_repository.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 
 class OfflineAttendanceQueue {
   final AttendanceRepository _repository;

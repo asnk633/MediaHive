@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mediahive_mobile/core/design_tokens.dart';
 import 'package:mediahive_mobile/core/theme_provider.dart';
 import 'package:mediahive_mobile/core/theme/elastic_scroll_physics.dart';
 import 'package:mediahive_mobile/core/providers/user_provider.dart';
@@ -19,6 +17,10 @@ import 'package:mediahive_mobile/features/attendance/presentation/screens/qr_sca
 import 'package:mediahive_mobile/features/tasks/domain/models/task.dart';
 import 'package:mediahive_mobile/features/calendar/presentation/providers/events_provider.dart';
 import 'package:mediahive_mobile/shared/widgets/mh_refresh_indicator.dart';
+import 'package:mediahive_mobile/features/dashboard/presentation/widgets/greeting_section.dart';
+import 'package:mediahive_mobile/features/dashboard/presentation/widgets/kpi_grid.dart';
+import 'package:mediahive_mobile/features/dashboard/presentation/widgets/today_attendance_panel.dart';
+import 'package:mediahive_mobile/features/dashboard/presentation/widgets/requests_panel.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -27,7 +29,32 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = ref.watch(themeColorsProvider);
     final metrics = ref.watch(dashboardMetricsProvider);
-    final isAdmin = metrics['isAdmin'] as bool? ?? false;
+    final profileAsync = ref.watch(currentUserProfileProvider);
+    final activeSessionAsync = ref.watch(activeAttendanceSessionProvider);
+
+    final roleRaw = profileAsync.maybeWhen(
+      data: (p) => (p?['role']?.toString() ?? 'member').toLowerCase().trim(),
+      orElse: () => 'member',
+    );
+
+    final isAdminOrManager = profileAsync.maybeWhen(
+      data: (p) {
+        final r = (p?['role']?.toString() ?? 'member').toLowerCase().trim();
+        return r.contains('admin') || r.contains('manager');
+      },
+      orElse: () => false,
+    );
+
+    final activeSession = activeSessionAsync.maybeWhen(
+      data: (s) => s,
+      orElse: () => null,
+    );
+    final isCheckedIn = activeSession != null;
+    final checkInTime = isCheckedIn
+        ? DateFormat('hh:mm a').format(DateTime.parse(activeSession.checkInTime).toLocal())
+        : null;
+
+    final requests = metrics['myRequests'] as Map<String, dynamic>? ?? {};
 
     return Scaffold(
       backgroundColor: colors.backgroundPrimary,
@@ -63,11 +90,84 @@ class DashboardScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildGreeting(colors, ref),
+                        _buildGreetingSection(colors, ref),
                         const SizedBox(height: 32),
-                        _buildAttendanceWidget(context, colors, ref),
+                        TodayAttendancePanel(
+                          role: roleRaw,
+                          isCheckedIn: isCheckedIn,
+                          checkInTime: checkInTime,
+                          workMode: activeSession?.workMode,
+                          lastKnownWorkLocation: activeSession?.lastKnownWorkLocation,
+                          onTapAttendance: () => context.push('/attendance'),
+                          onTapNfc: () {
+                            ref.read(globalNfcScanningProvider.notifier).startScan(
+                              workMode: isCheckedIn ? activeSession.workMode : 'office',
+                              source: 'nfc',
+                            );
+                          },
+                          onTapQr: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (ctx) => QrScannerOverlay(
+                                onScan: (payload) {
+                                  Navigator.pop(ctx);
+                                  ref.read(globalNfcScanningProvider.notifier).startScan(
+                                    workMode: isCheckedIn ? activeSession.workMode : 'office',
+                                    source: 'qr',
+                                    qrPayload: payload,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
                         const SizedBox(height: 32),
-                        _buildQuickActions(context, ref, colors),
+                        RequestsPanel(
+                          isAdminOrManager: isAdminOrManager,
+                          onTapNewTask: () => context.push('/create-task'),
+                          onTapNewEvent: () => context.push('/create-event'),
+                          onTapNewCampaign: () => context.push('/campaigns/create'),
+                          onTapNotifyTeam: () {
+                            if (isAdminOrManager) {
+                              context.push('/notifications/create');
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: colors.surface,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  content: Row(
+                                    children: [
+                                      const Icon(LucideIcons.shieldAlert, color: Colors.orangeAccent, size: 20),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          'ACCESS RESTRICTED: ADMINS & MANAGERS ONLY',
+                                          style: TextStyle(
+                                            color: colors.textPrimary,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  duration: const Duration(seconds: 3),
+                                ),
+                              );
+                            }
+                          },
+                          totalRequests: requests['total'] as int? ?? 0,
+                          pendingRequests: requests['pending'] as int? ?? 0,
+                          inProgressRequests: requests['inProgress'] as int? ?? 0,
+                          inReviewRequests: requests['inReview'] as int? ?? 0,
+                          completedRequests: requests['completed'] as int? ?? 0,
+                          requestProgressPercent: (requests['progress'] as num?)?.toInt() ?? 0,
+                          fulfilledRequests: requests['fulfilled'] as int? ?? 0,
+                        ),
                         const SizedBox(height: 32),
 
                         _buildPulseSection(colors),
@@ -89,12 +189,6 @@ class DashboardScreen extends ConsumerWidget {
                         _buildEventsList(colors, ref),
                         const SizedBox(height: 40),
 
-                        _buildRequestsSection(colors, ref),
-                        const SizedBox(height: 32),
-
-                        _buildRequestProgress(colors, ref),
-                        const SizedBox(height: 40),
-                        
                         _buildSystemFooter(colors),
                       ],
                     ),
@@ -108,213 +202,47 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAdminDashboard(BuildContext context, ThemeColors colors, WidgetRef ref, Map<String, dynamic> metrics) {
-    final admin = metrics['admin'] as Map<String, dynamic>?;
-    if (admin == null) return const SizedBox.shrink();
+  Widget _buildGreetingSection(ThemeColors colors, WidgetRef ref) {
+    final profileAsync = ref.watch(currentUserProfileProvider);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader(colors, 'INSTITUTIONAL OVERVIEW'),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(child: _buildMetricCard(colors, '${admin['institutionalHealth']}%', 'HEALTH', LucideIcons.activity, AppColors.success)),
-            const SizedBox(width: 12),
-            Expanded(child: _buildMetricCard(colors, '${admin['overdueCount']}', 'OVERDUE', LucideIcons.alertCircle, AppColors.error)),
-            const SizedBox(width: 12),
-            Expanded(child: _buildMetricCard(colors, '${admin['pressurePoints']}', 'PRESSURE', LucideIcons.zap, AppColors.honey)),
-          ],
-        ),
-        const SizedBox(height: 32),
-        
-        if (admin['alerts'].isNotEmpty) ...[
-          _buildAlertsSection(colors, admin['alerts'] as List<dynamic>),
-          const SizedBox(height: 32),
-        ],
-
-        _buildSystemStatus(context, colors, ref),
-        const SizedBox(height: 32),
-
-        _buildCompletionProgress(colors, ref),
-        const SizedBox(height: 32),
-
-        _buildWorkloadSection(colors, admin['workload'] as Map<String, int>, admin['bottlenecks'] as List<dynamic>),
-        const SizedBox(height: 32),
-
-        _buildEventsSectionHeader(colors, ref),
-        const SizedBox(height: 16),
-        _buildEventsList(colors, ref),
-      ],
-    ).animate().fadeIn(duration: 600.ms);
-  }
-
-  Widget _buildTeamDashboard(BuildContext context, ThemeColors colors, WidgetRef ref, Map<String, dynamic> metrics) {
-    final team = metrics['team'] as Map<String, dynamic>?;
-    if (team == null) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader(colors, 'MY OPERATIONS'),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(child: _buildMetricCard(colors, '${team['myPendingCount']}', 'PENDING', LucideIcons.checkSquare, AppColors.info)),
-            const SizedBox(width: 12),
-            Expanded(child: _buildMetricCard(colors, '${team['myPrioritiesCount']}', 'PRIORITY', LucideIcons.alertCircle, AppColors.error)),
-            const SizedBox(width: 12),
-            Expanded(child: _buildMetricCard(colors, '${team['productivity']}%', 'PRODUCTIVITY', LucideIcons.trendingUp, AppColors.success)),
-          ],
-        ),
-        const SizedBox(height: 32),
-
-        _buildTasksSectionHeader(context, colors, ref),
-        const SizedBox(height: 16),
-        _buildTasksList(context, colors, ref),
-        const SizedBox(height: 32),
-
-        _buildEventsSectionHeader(colors, ref),
-        const SizedBox(height: 16),
-        _buildEventsList(colors, ref),
-      ],
-    ).animate().fadeIn(duration: 600.ms);
-  }
-
-  Widget _buildMetricCard(ThemeColors colors, String value, String label, IconData icon, Color accentColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.border.withValues(alpha: 0.5)),
-        boxShadow: [
-          BoxShadow(
-            color: colors.isDark ? Colors.black.withValues(alpha: 0.2) : colors.border.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return profileAsync.when(
+      loading: () => const GreetingSection(
+        fullName: '', role: '', greeting: '', motivation: '', isLoading: true,
       ),
-      child: Column(
-        children: [
-          Icon(icon, size: 20, color: accentColor.withValues(alpha: 0.8)),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: AppTypography.h2.copyWith(
-              fontSize: 24,
-              color: colors.isDark ? Colors.white : colors.textPrimary,
-              letterSpacing: -1,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: AppTypography.caption.copyWith(
-              fontSize: 8,
-              fontWeight: FontWeight.w900,
-              color: colors.textSecondary.withValues(alpha: 0.4),
-              letterSpacing: 1.0,
-            ),
-          ),
-        ],
+      error: (_, __) => const GreetingSection(
+        fullName: 'Unknown User', role: 'member',
+        greeting: 'Welcome back!', motivation: 'Let\'s keep things moving.',
+        isLoading: false,
       ),
-    );
-  }
+      data: (profile) {
+        final auth = ref.read(authServiceProvider);
+        final user = auth.currentUser;
+        final metadata = user?.userMetadata ?? {};
+        final fullName = profile?['full_name'] as String? ?? metadata['full_name'] as String? ?? 'Unknown';
+        final role = (profile?['role']?.toString() ?? 'member').toLowerCase();
+        final hour = DateTime.now().hour;
 
-  Widget _buildAlertsSection(ThemeColors colors, List<dynamic> alerts) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.error.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.error.withValues(alpha: 0.1)),
-      ),
-      child: Column(
-        children: alerts.map((alert) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Row(
-            children: [
-              const Icon(LucideIcons.alertCircle, size: 14, color: AppColors.error),
-              const SizedBox(width: 12),
-              Text(
-                alert.toString(),
-                style: AppTypography.caption.copyWith(color: AppColors.error.withValues(alpha: 0.8), fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        )).toList(),
-      ),
-    );
-  }
+        String greeting;
+        String motivation;
+        if (hour < 12) {
+          greeting = 'Good Morning';
+          motivation = 'Start your day with purpose.';
+        } else if (hour < 17) {
+          greeting = 'Good Afternoon';
+          motivation = 'Your oversight ensures the team stays on track.';
+        } else {
+          greeting = 'Good Evening';
+          motivation = 'Reviewing today\'s wins.';
+        }
 
-  Widget _buildWorkloadSection(ThemeColors colors, Map<String, int> workload, List<dynamic> bottlenecks) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader(colors, 'TEAM WORKLOAD'),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.border),
-          ),
-          child: Column(
-            children: workload.entries.map((e) {
-              final isBottleneck = bottlenecks.contains(e.key);
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: Text(
-                        e.key, 
-                        style: AppTypography.bodyS.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isBottleneck ? AppColors.error : colors.textPrimary,
-                        )
-                      ),
-                    ),
-                    Expanded(
-                      flex: 7,
-                      child: Stack(
-                        children: [
-                          Container(
-                            height: 8,
-                            decoration: BoxDecoration(color: colors.backgroundPrimary, borderRadius: BorderRadius.circular(4)),
-                          ),
-                          FractionallySizedBox(
-                            widthFactor: (e.value / 10).clamp(0, 1).toDouble(),
-                            child: Container(
-                              height: 8,
-                              decoration: BoxDecoration(
-                                gradient: isBottleneck ? AppColors.errorGradient : AppColors.primaryGradient,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      '${e.value}', 
-                      style: AppTypography.caption.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isBottleneck ? AppColors.error : colors.textSecondary,
-                      )
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
+        return GreetingSection(
+          fullName: fullName,
+          role: role,
+          greeting: greeting,
+          motivation: motivation,
+          isLoading: false,
+        );
+      },
     );
   }
 
@@ -455,603 +383,9 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAttendanceWidget(BuildContext context, ThemeColors colors, WidgetRef ref) {
-    final profileAsync = ref.watch(currentUserProfileProvider);
-    final isLight = !colors.isDark;
-    
-    return profileAsync.maybeWhen(
-      data: (profile) {
-        final role = (profile?['role']?.toString() ?? 'member').toLowerCase().trim();
-        
-        // Check role permissions: if role == 'member', show "Guest Account - Attendance Disabled"
-        if (role == 'member') {
-          return Container(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-            decoration: BoxDecoration(
-              color: colors.surface.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: colors.border.withValues(alpha: 0.5)),
-            ),
-            child: Row(
-              children: [
-                Icon(LucideIcons.shieldAlert, color: colors.textSecondary.withValues(alpha: 0.5), size: 20),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    'GUEST ACCOUNT • ATTENDANCE DISABLED',
-                    style: TextStyle(
-                      color: colors.textSecondary.withValues(alpha: 0.6),
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-        
-        // Show interactive Attendance status & action card
-        final activeSessionAsync = ref.watch(activeAttendanceSessionProvider);
-        
-        return activeSessionAsync.maybeWhen(
-          data: (activeSession) {
-            final isCheckedIn = activeSession != null;
-            final statusColor = isCheckedIn ? Colors.green : Colors.red;
-            final statusText = isCheckedIn ? '🟢 Checked In' : '🔴 Checked Out';
-            final workModeText = isCheckedIn ? ' (${activeSession.workMode.toUpperCase()})' : '';
-            
-            return GestureDetector(
-              onTap: () => context.push('/attendance'),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isCheckedIn ? Colors.green.withValues(alpha: 0.3) : colors.border.withValues(alpha: 0.5),
-                  ),
-                  boxShadow: isLight ? DesignTokens.spatialCardShadow : [
-                    BoxShadow(
-                      color: (isCheckedIn ? Colors.green : colors.honey).withValues(alpha: 0.05),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                statusText,
-                                style: TextStyle(
-                                  color: isCheckedIn ? Colors.green : colors.textPrimary,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                workModeText,
-                                style: TextStyle(
-                                  color: colors.textSecondary.withValues(alpha: 0.8),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          if (isCheckedIn) ...[
-                            Text(
-                              'Since ${DateFormat('hh:mm a').format(DateTime.parse(activeSession.checkInTime).toLocal())}',
-                              style: TextStyle(
-                                color: colors.textSecondary.withValues(alpha: 0.6),
-                                fontSize: 11,
-                              ),
-                            ),
-                            if (activeSession.lastKnownWorkLocation != null) ...[
-                              const SizedBox(height: 2),
-                              Text(
-                                'Location: ${activeSession.lastKnownWorkLocation}',
-                                style: TextStyle(
-                                  color: colors.honey.withValues(alpha: 0.8),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ] else ...[
-                            Text(
-                              'Ready to log check-in',
-                              style: TextStyle(
-                                color: colors.textSecondary.withValues(alpha: 0.5),
-                                fontSize: 11,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            ref.read(globalNfcScanningProvider.notifier).startScan(
-                              workMode: isCheckedIn ? activeSession.workMode : 'office',
-                              source: 'nfc',
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                            decoration: BoxDecoration(
-                              gradient: isCheckedIn
-                                  ? const LinearGradient(colors: [Colors.green, Color(0xFF059669)])
-                                  : AppColors.primaryGradient,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: isCheckedIn
-                                  ? [BoxShadow(color: Colors.green.withValues(alpha: 0.2), blurRadius: 6)]
-                                  : DesignTokens.fintechGlowGold,
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  LucideIcons.nfc,
-                                  color: isCheckedIn ? Colors.white : colors.backgroundPrimary,
-                                  size: 14,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  isCheckedIn ? 'CHECK OUT' : 'TAP NFC',
-                                  style: TextStyle(
-                                    color: isCheckedIn ? Colors.white : colors.backgroundPrimary,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        GestureDetector(
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (context) => QrScannerOverlay(
-                                onScan: (payload) {
-                                  Navigator.pop(context);
-                                  ref.read(globalNfcScanningProvider.notifier).startScan(
-                                    workMode: isCheckedIn ? activeSession.workMode : 'office',
-                                    source: 'qr',
-                                    qrPayload: payload,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                            decoration: BoxDecoration(
-                              gradient: isCheckedIn
-                                  ? const LinearGradient(colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)])
-                                  : const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]),
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: (isCheckedIn ? Colors.blue : Colors.purple).withValues(alpha: 0.2),
-                                  blurRadius: 6,
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  LucideIcons.qrCode,
-                                  color: Colors.white,
-                                  size: 14,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  isCheckedIn ? 'QR OUT' : 'SCAN QR',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-          orElse: () => const SizedBox.shrink(),
-        );
-      },
-      orElse: () => const SizedBox.shrink(),
-    );
-  }
 
-  Widget _buildGreeting(ThemeColors colors, WidgetRef ref) {
-    final profileAsync = ref.watch(currentUserProfileProvider);
-    
-    return profileAsync.when(
-      loading: () => _buildGreetingPlaceholder(colors),
-      error: (_, __) => _buildGreetingContent(colors, 'Unknown User', 'Member', 'Welcome back!'),
-      data: (profile) {
-        final auth = ref.read(authServiceProvider);
-        final user = auth.currentUser;
-        final metadata = user?.userMetadata ?? {};
 
-        final fullName = profile?['full_name'] as String? ?? metadata['full_name'] as String? ?? 'Unknown';
-        final roleRaw = (profile?['role']?.toString() ?? 'member').toLowerCase();
-        // Robust check: handles 'manager', 'UserRole.manager', 'global_manager' etc.
-        final isAdminOrManager = roleRaw.contains('admin') || roleRaw.contains('manager');
-        
-        // Dynamic Greeting & Motivation
-        final hour = DateTime.now().hour;
-        String greeting;
-        String motivation;
 
-        if (hour < 12) {
-          greeting = 'Good Morning';
-          motivation = 'Start your day with purpose.';
-        } else if (hour < 17) {
-          greeting = 'Good Afternoon';
-          motivation = 'Your oversight ensures the team stays on track.';
-        } else {
-          greeting = 'Good Evening';
-          motivation = 'Reviewing today\'s wins.';
-        }
-
-        return _buildGreetingContent(colors, fullName, roleRaw, motivation, greeting: greeting);
-      },
-    );
-  }
-
-  Widget _buildGreetingContent(
-    ThemeColors colors, 
-    String name, 
-    String role, 
-    String motivation, {
-    String greeting = 'Hello', 
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildRoleBadge(colors, role),
-        const SizedBox(height: 12),
-        Text(
-          greeting.toUpperCase(),
-          style: AppTypography.caption.copyWith(
-            color: AppColors.info,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.5,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          name,
-          style: AppTypography.h1.copyWith(
-            fontSize: 32,
-            fontWeight: FontWeight.w900,
-            color: colors.isDark ? Colors.white : colors.textPrimary,
-            height: 1.1,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          motivation,
-          style: TextStyle(
-            fontSize: 14,
-            color: colors.textSecondary.withValues(alpha: 0.5),
-            fontWeight: FontWeight.w500,
-            fontStyle: FontStyle.italic,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRoleBadge(ThemeColors colors, String role) {
-    final cleanRole = role.replaceAll('userrole.', '').trim().toUpperCase();
-    final isDark = colors.isDark;
-    
-    Gradient badgeGradient;
-    Color borderColor;
-    Color textColor;
-    
-    if (cleanRole.contains('ADMIN')) {
-      badgeGradient = const LinearGradient(
-        colors: [Color(0xFFFFD700), Color(0xFFC9A84C)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
-      borderColor = isDark ? const Color(0x26FFD700) : const Color(0xFFC9A84C).withValues(alpha: 0.4);
-      textColor = isDark ? const Color(0xFF000000) : Colors.white;
-    } else if (cleanRole.contains('MANAGER')) {
-      badgeGradient = const LinearGradient(
-        colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
-      borderColor = isDark ? const Color(0x333B82F6) : const Color(0xFF1D4ED8).withValues(alpha: 0.4);
-      textColor = Colors.white;
-    } else {
-      // MEMBER / USER
-      badgeGradient = isDark
-          ? const LinearGradient(
-              colors: [Color(0xFF333333), Color(0xFF1A1A1A)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            )
-          : const LinearGradient(
-              colors: [Color(0xFFE5E7EB), Color(0xFFD1D5DB)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            );
-      borderColor = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08);
-      textColor = isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1F2937);
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        gradient: badgeGradient,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: borderColor, width: 0.75),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Text(
-        cleanRole,
-        style: TextStyle(
-          fontSize: 8,
-          fontWeight: FontWeight.w900,
-          color: textColor,
-          letterSpacing: 0.8,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGreetingPlaceholder(ThemeColors colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(width: 60, height: 20, decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(8))),
-        const SizedBox(height: 12),
-        Container(width: 100, height: 16, decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(4))),
-        const SizedBox(height: 8),
-        Container(width: 200, height: 32, decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(8))),
-      ],
-    ).animate(onPlay: (controller) => controller.repeat()).shimmer(duration: 1.5.seconds);
-  }
-
-  Widget _buildSectionHeader(ThemeColors colors, String title) {
-    return Row(
-      children: [
-        Container(
-          width: 4,
-          height: 14,
-          decoration: BoxDecoration(
-            color: DesignTokens.honey,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w900,
-            color: colors.textSecondary,
-            letterSpacing: 1.5,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildQuickActions(BuildContext context, WidgetRef ref, ThemeColors colors) {
-    final profileAsync = ref.watch(currentUserProfileProvider);
-    
-    // Only show administrative actions if we are certain of the role.
-    // Defaulting to false while loading is safer and prevents unauthorized UI flickers.
-    final isAdminOrManager = profileAsync.maybeWhen(
-      data: (profile) {
-        final roleRaw = (profile?['role']?.toString() ?? 'member').toLowerCase().trim();
-        return roleRaw.contains('admin') || roleRaw.contains('manager');
-      },
-      orElse: () => false,
-    );
-
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildActionCard(
-                colors,
-                'New Task',
-                LucideIcons.clipboardCheck,
-                onTap: () => context.push('/create-task'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActionCard(
-                colors,
-                'New Event',
-                LucideIcons.calendar,
-                onTap: () => context.push('/create-event'),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildActionCard(
-                colors,
-                'New Campaign',
-                LucideIcons.layers,
-                onTap: () => context.push('/campaigns/create'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActionCard(
-                colors,
-                'Notify Team',
-                LucideIcons.bell,
-                onTap: () {
-                  if (isAdminOrManager) {
-                    context.push('/notifications/create');
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: colors.surface,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        content: Row(
-                          children: [
-                            const Icon(LucideIcons.shieldAlert, color: Colors.orangeAccent, size: 20),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'ACCESS RESTRICTED: ADMINS & MANAGERS ONLY',
-                                style: TextStyle(
-                                  color: colors.textPrimary,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        duration: const Duration(seconds: 3),
-                      ),
-                    );
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-      ],
-    ).animate().fadeIn(delay: 200.ms, duration: 600.ms);
-  }
-
-  Widget _buildActionCard(
-    ThemeColors colors,
-    String label,
-    IconData icon, {
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          gradient: colors.isDark
-              ? const LinearGradient(
-                  colors: [
-                    Color(0xFF1E293B),
-                    Color(0xFF0F172A),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : const LinearGradient(
-                  colors: [
-                    Colors.white,
-                    Color(0xFFFBFBEE),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: colors.isDark 
-                ? Colors.white.withValues(alpha: 0.08) 
-                : colors.border.withValues(alpha: 0.12),
-          ),
-          boxShadow: colors.isDark
-              ? [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : [
-                  BoxShadow(
-                    color: colors.border.withValues(alpha: 0.08),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: colors.honey.withValues(alpha: colors.isDark ? 0.1 : 0.15),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: colors.honey, size: 16),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              label.toUpperCase(),
-              style: AppTypography.caption.copyWith(
-                color: colors.isDark ? Colors.white : colors.textPrimary,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 0.8,
-                fontSize: 10,
-              ),
-            ),
-          ],
-        ),
-      ),
-    ).animate().scale(
-        begin: const Offset(0.98, 0.98),
-        end: const Offset(1, 1),
-        duration: 400.ms,
-        curve: Curves.easeOutBack,
-      );
-  }
 
   Widget _buildPulseSection(ThemeColors colors) {
     return Column(
@@ -1107,91 +441,20 @@ class DashboardScreen extends ConsumerWidget {
     final metrics = ref.watch(dashboardMetricsProvider);
     final status = metrics['systemStatus'] as Map<String, dynamic>;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('System Status', style: AppTypography.h3),
-            Text('TEAM TODAY', style: AppTypography.caption.copyWith(fontWeight: FontWeight.bold, color: colors.textSecondary)),
-          ],
+    return StatusCardGrid(
+      title: 'System Status',
+      subtitle: '${status['totalTodayCount']} Total Tasks Today',
+      trailingLabel: 'TEAM TODAY',
+      items: [
+        StatusCardData(
+          value: status['dueToday'], label: 'DUE TODAY',
+          icon: LucideIcons.clock, color: Colors.orange,
+          onTap: () => context.go('/tasks'),
         ),
-        const SizedBox(height: 4),
-        Text('${status['totalTodayCount']} Total Tasks Today', style: TextStyle(color: colors.textSecondary, fontSize: 12)),
-        const SizedBox(height: 20),
-        Row(
-          children: [
-            Expanded(child: _buildStatusCard(colors, status['dueToday'], 'DUE TODAY', LucideIcons.clock, Colors.orange, onTap: () => context.go('/tasks'))),
-            const SizedBox(width: 8),
-            Expanded(child: _buildStatusCard(colors, status['inProgress'], 'IN PROGRESS', LucideIcons.activity, Colors.blue)),
-            const SizedBox(width: 8),
-            Expanded(child: _buildStatusCard(colors, status['onHold'], 'ON HOLD', LucideIcons.pauseCircle, Colors.red)),
-            const SizedBox(width: 8),
-            Expanded(child: _buildStatusCard(colors, status['completed'], 'COMPLETED', LucideIcons.checkCircle, Colors.green)),
-          ],
-        ),
+        StatusCardData(value: status['inProgress'], label: 'IN PROGRESS', icon: LucideIcons.activity, color: Colors.blue),
+        StatusCardData(value: status['onHold'], label: 'ON HOLD', icon: LucideIcons.pauseCircle, color: Colors.red),
+        StatusCardData(value: status['completed'], label: 'COMPLETED', icon: LucideIcons.checkCircle, color: Colors.green),
       ],
-    );
-  }
-
-  Widget _buildStatusCard(ThemeColors colors, String value, String label, IconData icon, Color color, {VoidCallback? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: colors.isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: colors.isDark 
-                ? colors.border.withValues(alpha: 0.5) 
-                : colors.border.withValues(alpha: 0.12),
-          ),
-          boxShadow: colors.isDark
-              ? []
-              : [
-                  BoxShadow(
-                    color: colors.border.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: colors.isDark ? 0.1 : 0.15),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: 18, color: color),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-                color: colors.isDark ? Colors.white : colors.textPrimary,
-                letterSpacing: -0.5,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 8,
-                fontWeight: FontWeight.w800,
-                color: colors.textSecondary.withValues(alpha: 0.5),
-                letterSpacing: 1.0,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -1246,95 +509,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRequestsSection(ThemeColors colors, WidgetRef ref) {
-    final metrics = ref.watch(dashboardMetricsProvider);
-    final requests = metrics['myRequests'] as Map<String, dynamic>;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('My Requests', style: AppTypography.h3),
-            Text('PERSONAL SUMMARY', style: AppTypography.caption.copyWith(fontWeight: FontWeight.bold, color: colors.textSecondary)),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            const Icon(LucideIcons.fileText, size: 14, color: Colors.blueAccent),
-            const SizedBox(width: 8),
-            Text('${requests['total']} Total Requests', style: TextStyle(color: colors.textSecondary, fontSize: 12)),
-          ],
-        ),
-        const SizedBox(height: 20),
-        Row(
-          children: [
-            Expanded(child: _buildStatusCard(colors, requests['pending'].toString(), 'PENDING', LucideIcons.clock, Colors.orange)),
-            const SizedBox(width: 8),
-            Expanded(child: _buildStatusCard(colors, requests['inProgress'].toString(), 'IN PROGRESS', LucideIcons.activity, Colors.blue)),
-            const SizedBox(width: 8),
-            Expanded(child: _buildStatusCard(colors, requests['inReview'].toString(), 'IN REVIEW', LucideIcons.search, Colors.purple)),
-            const SizedBox(width: 8),
-            Expanded(child: _buildStatusCard(colors, requests['completed'].toString(), 'COMPLETED', LucideIcons.checkCircle, Colors.green)),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRequestProgress(ThemeColors colors, WidgetRef ref) {
-    final metrics = ref.watch(dashboardMetricsProvider);
-    final requests = metrics['myRequests'] as Map<String, dynamic>;
-    final int progress = (requests['progress'] as num?)?.toInt() ?? 0;
-    final double percentage = progress.toDouble() / 100.0;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Request Progress', style: AppTypography.h3),
-            Text('$progress%', style: const TextStyle(color: Color(0xFF6366F1), fontSize: 24, fontWeight: FontWeight.bold)),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Text('${requests['fulfilled']} of ${requests['total']} requests fulfilled', style: TextStyle(color: colors.textSecondary, fontSize: 12)),
-        const SizedBox(height: 20),
-        Stack(
-          children: [
-            Container(
-              height: 12,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: colors.surface,
-                borderRadius: BorderRadius.circular(6),
-              ),
-            ),
-            FractionallySizedBox(
-              widthFactor: percentage > 0 ? percentage : 0.01,
-              child: Container(
-                height: 12,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF818CF8)]),
-                  borderRadius: BorderRadius.circular(6),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF6366F1).withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
 
   bool _isRelevantEvent(dynamic e, String roleRaw, String? currentUserId, String? currentDepartment, String today) {
     if (roleRaw.contains('admin')) {

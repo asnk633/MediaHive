@@ -5,9 +5,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import '../../../../../core/error/failure.dart';
 import '../../../../../core/services/sync_service.dart';
-import '../../domain/models/task.dart';
-import '../../domain/repositories/task_repository.dart';
-import '../datasources/task_local_datasource.dart';
+import 'package:mediahive_mobile/features/tasks/domain/models/task.dart';
+import 'package:mediahive_mobile/features/tasks/domain/repositories/task_repository.dart';
+import 'package:mediahive_mobile/features/tasks/data/datasources/task_local_datasource.dart';
 
 class SupabaseTaskRepository implements TaskRepository {
   final SupabaseClient _supabaseClient;

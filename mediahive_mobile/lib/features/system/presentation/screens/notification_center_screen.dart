@@ -4,14 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
-import '../providers/notifications_provider.dart';
-import '../../../../core/theme_provider.dart';
-import '../../../../core/theme/elastic_scroll_physics.dart';
-import '../../../../core/services/sound_service.dart';
-import '../../../../core/providers/update_provider.dart';
-import '../../../../core/services/update_service.dart';
-import '../../../files/domain/models/file_asset.dart';
-import '../../../files/presentation/widgets/file_detail_modal.dart';
+import 'package:mediahive_mobile/features/system/presentation/providers/notifications_provider.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/theme/elastic_scroll_physics.dart';
+import 'package:mediahive_mobile/core/services/sound_service.dart';
+import 'package:mediahive_mobile/core/providers/update_provider.dart';
+import 'package:mediahive_mobile/core/services/update_service.dart';
+import 'package:mediahive_mobile/features/files/domain/models/file_asset.dart';
+import 'package:mediahive_mobile/features/files/presentation/widgets/file_detail_modal.dart';
 
 class NotificationCenterScreen extends ConsumerWidget {
   const NotificationCenterScreen({super.key});

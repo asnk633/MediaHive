@@ -6,10 +6,10 @@ import 'package:network_info_plus/network_info_plus.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:battery_plus/battery_plus.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../../domain/models/attendance_record.dart';
-import '../../domain/models/nfc_tag.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_record.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/nfc_tag.dart';
 import 'mock_location_detector.dart';
-import '../../../../core/services/logger_service.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 
 /// Continuous background presence verification service.
 ///

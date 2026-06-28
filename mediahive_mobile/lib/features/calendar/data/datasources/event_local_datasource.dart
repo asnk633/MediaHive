@@ -1,5 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import '../../domain/models/event.dart';
+import 'package:mediahive_mobile/features/calendar/domain/models/event.dart';
 
 abstract class EventLocalDataSource {
   Future<List<Event>> getEvents();

@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/services/logger_service.dart';
-import '../../../../core/services/notification_service.dart';
-import '../../presentation/providers/attendance_provider.dart';
-import '../../domain/models/attendance_policy.dart';
-import '../../domain/models/attendance_record.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
+import 'package:mediahive_mobile/core/services/notification_service.dart';
+import 'package:mediahive_mobile/features/attendance/presentation/providers/attendance_provider.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_policy.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_record.dart';
 
 enum ReminderType {
   preCheckin,

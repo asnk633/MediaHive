@@ -23,17 +23,17 @@ import 'package:open_filex/open_filex.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/elastic_scroll_physics.dart';
-import '../../../../core/theme_provider.dart';
-import '../../../../shared/widgets/mh_loading.dart';
-import '../../../../shared/widgets/mh_refresh_indicator.dart';
-import '../../domain/models/nfc_tag.dart' as domain;
-import '../providers/attendance_provider.dart';
+import 'package:mediahive_mobile/core/theme/app_colors.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
+import 'package:mediahive_mobile/core/theme/elastic_scroll_physics.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_loading.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_refresh_indicator.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/nfc_tag.dart' as domain;
+import 'package:mediahive_mobile/features/attendance/presentation/providers/attendance_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import '../../data/services/qr_signature_service.dart';
-import '../../../../core/providers/user_provider.dart';
+import 'package:mediahive_mobile/features/attendance/data/services/qr_signature_service.dart';
+import 'package:mediahive_mobile/core/providers/user_provider.dart';
 
 
 class NfcManagementScreen extends ConsumerStatefulWidget {

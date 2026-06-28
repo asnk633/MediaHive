@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../../../../core/theme_provider.dart';
-import '../../../../core/providers/sync_errors_provider.dart';
-import '../../../../core/utils/time_ago_helper.dart';
-import '../../../../core/services/sync_service.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/providers/sync_errors_provider.dart';
+import 'package:mediahive_mobile/core/utils/time_ago_helper.dart';
+import 'package:mediahive_mobile/core/services/sync_service.dart';
 import 'dart:convert';
 
 class SyncErrorsScreen extends ConsumerWidget {

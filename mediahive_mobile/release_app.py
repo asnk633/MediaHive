@@ -42,12 +42,12 @@ if not SUPABASE_SERVICE_KEY:
     print("[WARNING] SUPABASE_SERVICE_ROLE_KEY not found in ../.env.local. Supabase sync will be skipped.")
 
 RELEASE_NOTES = (
-    "🚀 MediaHive v1.2.5-beta — Attendance Reminder Fixes\n\n"
-    "• Boot Receiver Fixed: Reminders now survive device reboots (CRITICAL fix).\n"
-    "• Graceful Past-Time Fallback: Reschedules for next working day instead of silently dropping reminders if opened late.\n"
-    "• Eager Policy Load: Real policy times used immediately on app launch.\n"
-    "• Notification Channel Reset: Fixes silent suppression of notifications.\n"
-    "• Bonus: Fixed DeadLetterQueue implementation for offline scan retries.\n"
+    "🚀 MediaHive v1.2.5-beta+62001 — Auth, NFC & Reminder Fixes\n\n"
+    "• Google Sign-In Hang Fix: Mapped signature/keystore errors and added defensive 15s timeouts with widget mount checks.\n"
+    "• NFC Double-Scan Lock: Implemented scanning lock and GoRouter interception to prevent accidental confirm checkout pages.\n"
+    "• Manual Sign-Out: Centralized sign-out to suppress false session-expiration warnings.\n"
+    "• Attendance Reminders: Revamped scheduling clock & daily record counts to alert only if attendance was forgotten.\n"
+    "• WebView & Layout Fixes: Resolved UI resize loops and layout thrashing in web clients.\n"
 )
 
 # ─── 1. PARSE VERSION ─────────────────────────────────────────────────────────

@@ -1,10 +1,10 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../domain/models/attendance_record.dart';
-import '../../domain/models/attendance_event.dart';
-import '../../domain/models/attendance_policy.dart';
-import '../../domain/models/nfc_tag.dart';
-import '../../domain/models/attendance_request.dart';
-import '../../../../core/services/logger_service.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_record.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_event.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_policy.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/nfc_tag.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_request.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 
 class AttendanceRepository {
   final SupabaseClient _client;

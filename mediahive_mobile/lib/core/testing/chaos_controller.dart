@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/network_service.dart';
+import 'package:mediahive_mobile/core/services/network_service.dart';
 
 class ChaosController extends StateNotifier<ChaosState> {
   final NetworkService _networkService;

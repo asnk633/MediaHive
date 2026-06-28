@@ -5,13 +5,13 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'workspace_management_screen.dart';
 import 'leave_management_screen.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../../../shared/widgets/mh_refresh_indicator.dart';
-import '../../../../core/theme_provider.dart';
-import '../../../../core/theme/elastic_scroll_physics.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../../dashboard/presentation/providers/dashboard_providers.dart';
-import '../providers/command_metrics_provider.dart';
-import '../../../../shared/widgets/mh_loading.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_refresh_indicator.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/theme/elastic_scroll_physics.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
+import 'package:mediahive_mobile/features/dashboard/presentation/providers/dashboard_providers.dart';
+import 'package:mediahive_mobile/features/governance/presentation/providers/command_metrics_provider.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_loading.dart';
 
 class CommandCenterScreen extends ConsumerWidget {
   const CommandCenterScreen({super.key});

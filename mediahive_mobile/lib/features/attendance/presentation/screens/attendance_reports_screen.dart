@@ -11,15 +11,15 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/elastic_scroll_physics.dart';
-import '../../../../core/theme_provider.dart';
-import '../../../../shared/widgets/mh_loading.dart';
-import '../../../../shared/widgets/mh_refresh_indicator.dart';
-import '../../domain/models/attendance_record.dart';
-import '../../domain/models/attendance_policy.dart';
-import '../providers/attendance_provider.dart';
+import 'package:mediahive_mobile/core/theme/app_colors.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
+import 'package:mediahive_mobile/core/theme/elastic_scroll_physics.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_loading.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_refresh_indicator.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_record.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_policy.dart';
+import 'package:mediahive_mobile/features/attendance/presentation/providers/attendance_provider.dart';
 
 class AttendanceReportsScreen extends ConsumerStatefulWidget {
   const AttendanceReportsScreen({super.key});

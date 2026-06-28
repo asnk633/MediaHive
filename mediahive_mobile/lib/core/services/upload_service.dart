@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/upload_mutation.dart';
+import 'package:mediahive_mobile/core/models/upload_mutation.dart';
 import 'network_service.dart';
 import 'logger_service.dart';
 

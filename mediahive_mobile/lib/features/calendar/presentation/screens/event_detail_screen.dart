@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../../../../core/theme_provider.dart';
-import '../providers/events_provider.dart';
-import '../../domain/models/event.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/features/calendar/presentation/providers/events_provider.dart';
+import 'package:mediahive_mobile/features/calendar/domain/models/event.dart';
 import 'package:flutter/services.dart';
 import 'create_event_screen.dart';
 

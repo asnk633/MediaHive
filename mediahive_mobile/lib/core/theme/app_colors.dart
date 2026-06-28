@@ -6,8 +6,8 @@ class AppColors {
   static const Color backgroundPrimary    = DesignTokens.backgroundPrimary;
   static const Color backgroundSecondary  = DesignTokens.backgroundSecondary;
   static const Color surface              = DesignTokens.surface;
-  static const Color surfaceElevated      = Color(0xFF252525);   // Elevated surface
-  static const Color charcoal             = Color(0xFF333333);   // Charcoal
+  static const Color surfaceElevated      = DesignTokens.surfaceElevated;
+  static const Color charcoal             = DesignTokens.charcoal;
   static const Color border               = DesignTokens.border;
   static const Color borderStrong         = DesignTokens.borderStrong;
 
@@ -28,8 +28,8 @@ class AppColors {
   static const Color lightHoney           = DesignTokens.lightHoney; // vivid VisionOS blue
 
   // ─── Text ──────────────────────────────────────────────────────────────────
-  static const Color textPrimary          = Colors.white;
-  static const Color textSecondary        = Color(0xFFCCCCCC);
+  static const Color textPrimary          = DesignTokens.textPrimary;
+  static const Color textSecondary        = DesignTokens.textSecondary;
   static const Color textMuted            = Color(0xFF7A7A7A);
 
   // ─── Status ────────────────────────────────────────────────────────────────
@@ -41,18 +41,10 @@ class AppColors {
   // ─── Gradients ─────────────────────────────────────────────────────────────
 
   // FinTech dark — gold primary gradient
-  static const Gradient primaryGradient = LinearGradient(
-    colors: [Color(0xFFFFD700), Color(0xFFC9A84C)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  static const Gradient primaryGradient = DesignTokens.primaryGradient;
 
   // FinTech dark — deep background gradient
-  static const Gradient darkGradient = LinearGradient(
-    colors: [Color(0xFF000000), Color(0xFF1A1A1A)],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-  );
+  static const Gradient darkGradient = DesignTokens.darkBackgroundGradient;
 
   static const Gradient errorGradient = LinearGradient(
     colors: [error, error],
@@ -61,18 +53,10 @@ class AppColors {
   );
 
   // Spatial UI — light primary button gradient
-  static const Gradient lightPrimaryGradient = LinearGradient(
-    colors: [Color(0xFF006EE6), Color(0xFF40A0FF)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  static const Gradient lightPrimaryGradient = DesignTokens.lightPrimaryGradient;
 
   // Spatial UI — sky canvas gradient (light background)
-  static const Gradient lightBackgroundGradient = LinearGradient(
-    colors: [Color(0xFFEFF3FC), Color(0xFFF7F9FF)],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-  );
+  static const Gradient lightBackgroundGradient = DesignTokens.lightBackgroundGradient;
 
   // ─── Glass helpers ─────────────────────────────────────────────────────────
   static Color glassBackground(double opacity)  => Colors.white.withValues(alpha: opacity);

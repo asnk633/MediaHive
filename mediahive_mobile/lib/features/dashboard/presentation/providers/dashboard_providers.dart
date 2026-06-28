@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../../../tasks/presentation/providers/tasks_provider.dart';
-import '../../../inventory/presentation/providers/inventory_provider.dart';
-import '../../../calendar/presentation/providers/events_provider.dart';
-import '../../../../core/providers/user_provider.dart';
+import 'package:mediahive_mobile/features/tasks/presentation/providers/tasks_provider.dart';
+import 'package:mediahive_mobile/features/inventory/presentation/providers/inventory_provider.dart';
+import 'package:mediahive_mobile/features/calendar/presentation/providers/events_provider.dart';
+import 'package:mediahive_mobile/core/providers/user_provider.dart';
 
 final dashboardMetricsProvider = Provider((ref) {
   final tasksAsync = ref.watch(tasksListProvider);

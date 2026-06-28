@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../testing/chaos_controller.dart';
+import 'package:mediahive_mobile/core/testing/chaos_controller.dart';
 
 enum NetworkStatus { online, offline }
 

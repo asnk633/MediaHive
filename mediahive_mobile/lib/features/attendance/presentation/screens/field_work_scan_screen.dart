@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/attendance_provider.dart';
-import '../providers/field_work_provider.dart';
+import 'package:mediahive_mobile/features/attendance/presentation/providers/attendance_provider.dart';
+import 'package:mediahive_mobile/features/attendance/presentation/providers/field_work_provider.dart';
 
 /// Screen shown when a "field_work" type NFC tag is scanned.
 ///

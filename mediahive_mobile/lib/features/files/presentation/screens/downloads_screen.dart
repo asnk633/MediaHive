@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../../../shared/widgets/mh_button.dart';
-import '../../../../shared/widgets/mh_refresh_indicator.dart';
-import '../../../../core/theme_provider.dart';
-import '../providers/files_provider.dart';
-import '../widgets/file_detail_modal.dart';
-import '../widgets/upload_file_modal.dart';
-import '../../domain/models/file_asset.dart';
-import '../../../../core/utils/url_helpers.dart';
-import '../../../../presentation/providers/navigation_provider.dart';
+import 'package:mediahive_mobile/core/theme/app_spacing.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_button.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_refresh_indicator.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/features/files/presentation/providers/files_provider.dart';
+import 'package:mediahive_mobile/features/files/presentation/widgets/file_detail_modal.dart';
+import 'package:mediahive_mobile/features/files/presentation/widgets/upload_file_modal.dart';
+import 'package:mediahive_mobile/features/files/domain/models/file_asset.dart';
+import 'package:mediahive_mobile/core/utils/url_helpers.dart';
+import 'package:mediahive_mobile/presentation/providers/navigation_provider.dart';
 
 class DownloadsScreen extends ConsumerStatefulWidget {
   const DownloadsScreen({super.key});

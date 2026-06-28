@@ -1,5 +1,5 @@
 import 'dart:io';
-import '../config/env_config.dart';
+import 'package:mediahive_mobile/core/config/env_config.dart';
 
 class UrlHelpers {
   /// Converts a Google Drive sharing link to a direct thumbnail link.

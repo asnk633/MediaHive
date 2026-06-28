@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../data/repositories/leave_repository.dart';
-import '../../../../core/services/logger_service.dart';
+import 'package:mediahive_mobile/features/governance/data/repositories/leave_repository.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 
 final leaveRepositoryProvider = Provider<LeaveRepository>((ref) {
   final logger = ref.watch(loggerProvider.notifier);

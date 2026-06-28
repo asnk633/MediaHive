@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models/institutional_data.dart';
+import 'package:mediahive_mobile/models/institutional_data.dart';
 
 class SupabaseService {
   final _client = Supabase.instance.client;

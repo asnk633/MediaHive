@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'logger_service.dart';
 import 'fcm_service.dart';
-import '../errors/auth_error.dart';
+import 'package:mediahive_mobile/core/errors/auth_error.dart';
 import 'session_recovery_service.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';

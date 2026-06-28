@@ -4,9 +4,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import '../../../../../core/error/failure.dart';
 import '../../../../../core/services/sync_service.dart';
-import '../../domain/models/event.dart';
-import '../../domain/repositories/event_repository.dart';
-import '../datasources/event_local_datasource.dart';
+import 'package:mediahive_mobile/features/calendar/domain/models/event.dart';
+import 'package:mediahive_mobile/features/calendar/domain/repositories/event_repository.dart';
+import 'package:mediahive_mobile/features/calendar/data/datasources/event_local_datasource.dart';
 
 class SupabaseEventRepository implements EventRepository {
   final SupabaseClient _supabaseClient;

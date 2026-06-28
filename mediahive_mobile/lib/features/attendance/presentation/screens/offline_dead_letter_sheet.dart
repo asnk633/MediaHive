@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme_provider.dart';
-import '../providers/attendance_provider.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
+import 'package:mediahive_mobile/core/theme/app_colors.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/features/attendance/presentation/providers/attendance_provider.dart';
 
 class OfflineDeadLetterSheet extends ConsumerWidget {
   const OfflineDeadLetterSheet({super.key});

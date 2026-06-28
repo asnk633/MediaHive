@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../router/router.dart';
+import 'package:mediahive_mobile/core/router/router.dart';
 import 'logger_service.dart';
 
 class NotificationRouter {

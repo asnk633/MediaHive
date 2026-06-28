@@ -1,6 +1,6 @@
 // src/db/seed.ts
 import bcrypt from "bcryptjs";
-import { db, getDb } from "./index.js";
+import { getDb } from "./index.js";
 import { eq } from "drizzle-orm";
 import {
   institutions,
@@ -23,7 +23,7 @@ const maybe = <T>(v: T | null) => v as T | null;
 
 async function main() {
   try {
-    await getDb();
+    const db = await getDb();
     console.log("📦 Running DB seed...");
 
     // 1) Check if tenant already exists, if not insert it

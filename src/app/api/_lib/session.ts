@@ -4,7 +4,7 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify, SignJWT } from 'jose';
-import { AuthUser } from './types';
+import { AuthUser, UserRole } from './types';
 
 // Environment variables
 // NOTE: The fallback secret is only for development and must NEVER be used in production

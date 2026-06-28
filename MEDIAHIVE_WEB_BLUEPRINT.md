@@ -35,3 +35,5 @@ This document is the platform blueprint and system memory for the **MediaHive We
 | 2026-06-28 | Tasks / Permissions | Allowed 'manager' role to view TaskConfidenceView and AdminConfidencePanel. | AI Agent |
 | 2026-06-28 | SSE / Notifications | Rewrote `notificationRealtime.ts` to implement connection sharing Pub/Sub. | AI Agent |
 | 2026-06-28 | Chat API / Performance | Parallelized room details queries in `/api/chat/rooms` GET using `Promise.all`. | AI Agent |
+| 2026-06-28 | API Typecheck | Resolved TypeScript errors across API endpoints and db seed script, enabling clean Next.js production builds. | AI Agent |
+

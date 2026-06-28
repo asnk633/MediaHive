@@ -132,6 +132,7 @@ graph TD
  
 | Date | Platform / Component | Description | Author |
 | :--- | :--- | :--- | :--- |
+| 2026-06-28 | Web / API Typecheck | **Resolved remaining API TypeScript compilation errors:** Added db initialization using getDb() across attendance, replication/status, tenants, upload/attachment endpoints, and db/seed script. Fixed Drizzle query types (parsing integers for users.id comparison in token refresh and using finalLimit in attendance GET). Type-casted version property check in bulk-update. Verified 100% clean next build compilation. | AI Agent |
 | 2026-06-28 | Web / DB Schema Check | **Database schema check env loading fix:** Fixed `.env` / `.env.local` loading order and fallback key mapping in `checkSchema.ts`, successfully verifying 100% database schema alignment against Supabase. | AI Agent |
 | 2026-06-28 | Web / Build Config | **Sentry configuration cleanup:** Resolved deprecation warnings regarding `disableLogger` and `automaticVercelMonitors` in `next.config.mjs` by migrating to the newer nested `webpack` configurations. | AI Agent |
 | 2026-06-28 | Web / Health Checks | **Architecture & Route Health Checks Fixes:** Integrated Zod validation schema in AdminServiceServer.ts to satisfy DTO Mapping rules; deleted deprecated empty login API directory, and updated dead links /auth/login and /unauthorized to /login and /home in manager-analytics/page.tsx, achieving 100% clean check status. | AI Agent |

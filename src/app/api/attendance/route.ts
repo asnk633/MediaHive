@@ -26,6 +26,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
+    const db = await getDb();
+
     // Single record fetch
     if (id) {
       const parsedId = parseInt(id); if (isNaN(parsedId)) {
@@ -35,7 +37,6 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      const db = await getDb();
       const record = await db
         .select()
         .from(attendance)
@@ -93,7 +94,7 @@ const finalLimit = Math.min(parsedLimit, 100);
       .select()
       .from(attendance)
       .where(and(...filters))
-      .limit(limit)
+      .limit(finalLimit)
       .offset(offset)
       .orderBy(desc(attendance.created_at)); // Order by newest first
 
@@ -115,6 +116,7 @@ export async function POST(request: NextRequest) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
     }
 
+    const db = await getDb();
     const payload = await request.json();
     const { checkIn, checkOut } = payload;
 
@@ -187,6 +189,8 @@ export async function PUT(request: NextRequest) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
     }
 
+    const db = await getDb();
+
     // Check if record exists and belongs to the user
     const existing = await db
       .select()
@@ -255,6 +259,8 @@ export async function DELETE(request: NextRequest) {
     if (!user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
     }
+
+    const db = await getDb();
 
     // Check if record exists and belongs to the user
     const existing = await db

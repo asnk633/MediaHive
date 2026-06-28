@@ -57,9 +57,9 @@ export function hasRole(user: AuthUser | null, roles: UserRole[]): boolean {
 /**
  * Check if user can modify a resource (admin or creator)
  */
-export function canModify(user: AuthUser | null, creatorId: number): boolean {
+export function canModify(user: AuthUser | null, creatorId: string | number): boolean {
   if (!user) return false;
-  return isAdmin(user) || user.id === creatorId;
+  return isAdmin(user) || String(user.id) === String(creatorId);
 }
 
 /**

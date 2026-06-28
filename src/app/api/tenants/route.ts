@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
     // Fetch only the user's own tenant (unless they are a super-admin)
     const userTenantId = typeof user.tenant_id === 'string' ? parseInt(user.tenant_id, 10) : user.tenant_id;
     
+    const db = await getDb();
     const allTenants = await db
       .select()
       .from(tenants)

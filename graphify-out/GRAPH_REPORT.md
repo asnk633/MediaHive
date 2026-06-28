@@ -1,16 +1,16 @@
 # Graph Report - MediaHive App  (2026-06-28)
 
 ## Corpus Check
-- 10252 files · ~7,836,827 words
+- 10252 files · ~7,837,268 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 170635 nodes · 217358 edges · 10647 communities (9858 shown, 789 thin omitted)
+- 170626 nodes · 217368 edges · 10636 communities (9851 shown, 785 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 2230 edges (avg confidence: 0.69)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2b72951d`
+- Built from commit: `84879e29`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -4176,6 +4176,7 @@
 - [[_COMMUNITY_Community 4160|Community 4160]]
 - [[_COMMUNITY_Community 4161|Community 4161]]
 - [[_COMMUNITY_Community 4162|Community 4162]]
+- [[_COMMUNITY_Community 4163|Community 4163]]
 - [[_COMMUNITY_Community 4164|Community 4164]]
 - [[_COMMUNITY_Community 4165|Community 4165]]
 - [[_COMMUNITY_Community 4166|Community 4166]]
@@ -4723,7 +4724,6 @@
 - [[_COMMUNITY_Community 4708|Community 4708]]
 - [[_COMMUNITY_Community 4709|Community 4709]]
 - [[_COMMUNITY_Community 4710|Community 4710]]
-- [[_COMMUNITY_Community 4711|Community 4711]]
 - [[_COMMUNITY_Community 4712|Community 4712]]
 - [[_COMMUNITY_Community 4713|Community 4713]]
 - [[_COMMUNITY_Community 4714|Community 4714]]
@@ -7724,16 +7724,9 @@
 - [[_COMMUNITY_Community 7749|Community 7749]]
 - [[_COMMUNITY_Community 7750|Community 7750]]
 - [[_COMMUNITY_Community 7751|Community 7751]]
-- [[_COMMUNITY_Community 7752|Community 7752]]
-- [[_COMMUNITY_Community 7753|Community 7753]]
 - [[_COMMUNITY_Community 7754|Community 7754]]
 - [[_COMMUNITY_Community 7755|Community 7755]]
-- [[_COMMUNITY_Community 7756|Community 7756]]
-- [[_COMMUNITY_Community 7757|Community 7757]]
 - [[_COMMUNITY_Community 7758|Community 7758]]
-- [[_COMMUNITY_Community 7759|Community 7759]]
-- [[_COMMUNITY_Community 7760|Community 7760]]
-- [[_COMMUNITY_Community 7761|Community 7761]]
 - [[_COMMUNITY_Community 7762|Community 7762]]
 - [[_COMMUNITY_Community 7763|Community 7763]]
 - [[_COMMUNITY_Community 7764|Community 7764]]
@@ -8047,7 +8040,6 @@
 - [[_COMMUNITY_Community 8354|Community 8354]]
 - [[_COMMUNITY_Community 8360|Community 8360]]
 - [[_COMMUNITY_Community 8365|Community 8365]]
-- [[_COMMUNITY_Community 8366|Community 8366]]
 - [[_COMMUNITY_Community 8369|Community 8369]]
 - [[_COMMUNITY_Community 8370|Community 8370]]
 - [[_COMMUNITY_Community 8371|Community 8371]]
@@ -8364,7 +8356,6 @@
 - [[_COMMUNITY_Community 8970|Community 8970]]
 - [[_COMMUNITY_Community 8971|Community 8971]]
 - [[_COMMUNITY_Community 8974|Community 8974]]
-- [[_COMMUNITY_Community 8977|Community 8977]]
 - [[_COMMUNITY_Community 8978|Community 8978]]
 - [[_COMMUNITY_Community 8984|Community 8984]]
 - [[_COMMUNITY_Community 8986|Community 8986]]
@@ -9943,7 +9934,6 @@
 - [[_COMMUNITY_Community 12694|Community 12694]]
 - [[_COMMUNITY_Community 12704|Community 12704]]
 - [[_COMMUNITY_Community 12705|Community 12705]]
-- [[_COMMUNITY_Community 12707|Community 12707]]
 - [[_COMMUNITY_Community 12708|Community 12708]]
 - [[_COMMUNITY_Community 12711|Community 12711]]
 - [[_COMMUNITY_Community 12712|Community 12712]]
@@ -10098,7 +10088,6 @@
 - [[_COMMUNITY_Community 13086|Community 13086]]
 - [[_COMMUNITY_Community 13087|Community 13087]]
 - [[_COMMUNITY_Community 13088|Community 13088]]
-- [[_COMMUNITY_Community 13089|Community 13089]]
 - [[_COMMUNITY_Community 13090|Community 13090]]
 - [[_COMMUNITY_Community 13091|Community 13091]]
 - [[_COMMUNITY_Community 13095|Community 13095]]
@@ -10390,14 +10379,14 @@
 ## Surprising Connections (you probably didn't know these)
 - `test()` --calls--> `fn`  [INFERRED]
   .agent/skills/ecc/tests/ci/no-personal-paths.test.js → mediahive_mobile/apk_temp/assets/flutter_assets/packages/model_viewer_plus/assets/model-viewer.min.js
+- `withFixture()` --calls--> `fn`  [INFERRED]
+  .agent/skills/ecc/tests/ci/scan-supply-chain-iocs.test.js → mediahive_mobile/apk_temp/assets/flutter_assets/packages/model_viewer_plus/assets/model-viewer.min.js
 - `test()` --calls--> `fn`  [INFERRED]
   .agent/skills/ecc/tests/codex-config.test.js → mediahive_mobile/apk_temp/assets/flutter_assets/packages/model_viewer_plus/assets/model-viewer.min.js
 - `test()` --calls--> `fn`  [INFERRED]
   .agent/skills/ecc/tests/commands/command-frontmatter.test.js → mediahive_mobile/apk_temp/assets/flutter_assets/packages/model_viewer_plus/assets/model-viewer.min.js
 - `test()` --calls--> `fn`  [INFERRED]
   .agent/skills/ecc/tests/docs/copilot-support.test.js → mediahive_mobile/apk_temp/assets/flutter_assets/packages/model_viewer_plus/assets/model-viewer.min.js
-- `test()` --calls--> `fn`  [INFERRED]
-  .agent/skills/ecc/tests/docs/ecc2-release-surface.test.js → mediahive_mobile/apk_temp/assets/flutter_assets/packages/model_viewer_plus/assets/model-viewer.min.js
 
 ## Import Cycles
 - 1-file cycle: `.agent/skills/ecc/ecc2/src/comms/mod.rs -> .agent/skills/ecc/ecc2/src/comms/mod.rs`
@@ -10421,7 +10410,7 @@
 - 1-file cycle: `.agent/skills/monte-carlo-push-ingestion/scripts/templates/bigquery-iceberg/collect_query_logs.py -> .agent/skills/monte-carlo-push-ingestion/scripts/templates/bigquery-iceberg/collect_query_logs.py`
 - 1-file cycle: `.agent/skills/monte-carlo-push-ingestion/scripts/templates/bigquery/collect_query_logs.py -> .agent/skills/monte-carlo-push-ingestion/scripts/templates/bigquery/collect_query_logs.py`
 
-## Communities (10647 total, 789 thin omitted)
+## Communities (10636 total, 785 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.01
@@ -10429,7 +10418,7 @@ Nodes (315): 2009.06.11, Version 0.0.3, 2009.06.13, Version 0.0.4, 2009.06.18, V
 
 ### Community 1 - "Community 1"
 Cohesion: 0.03
-Nodes (76): Center, Container, GestureDetector, Icon, InkWell, Padding, Row, Scaffold (+68 more)
+Nodes (78): Center, Container, GestureDetector, Icon, InkWell, Padding, Row, Scaffold (+70 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.07
@@ -10437,11 +10426,11 @@ Nodes (17): Connection, ContextGraphCompactionStats, ContextGraphEntityDetail, H
 
 ### Community 3 - "Community 3"
 Cohesion: 0.05
-Nodes (70): GET(), POST(), GET(), POST(), POST(), tenantQuery(), DELETE(), GET() (+62 more)
+Nodes (68): GET(), POST(), POST(), DELETE(), GET(), POST(), GET(), POST() (+60 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.03
-Nodes (146): ContextGraphCompactionStats, ContextGraphEntityDetail, ContextGraphObservation, ContextGraphRecallEntry, ContextGraphSyncStats, CoordinateBacklogOutcome, DecisionLogEntry, CoordinationStatus (+138 more)
+Nodes (147): ContextGraphCompactionStats, ContextGraphEntityDetail, ContextGraphObservation, ContextGraphSyncStats, CoordinateBacklogOutcome, DecisionLogEntry, CoordinationStatus, MergeQueueReport (+139 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.02
@@ -10449,31 +10438,31 @@ Nodes (149): dependencies, better-sqlite3, cors, express, express-rate-limit, ip
 
 ### Community 6 - "Community 6"
 Cohesion: 0.01
-Nodes (280): AndroidFlutterLocalNotificationsPlugin, AudioPlayer?, auth_helper.dart, AuthService, Duration, AuthDomainException, NetworkConnectionException, openAppSettings (+272 more)
+Nodes (282): AndroidFlutterLocalNotificationsPlugin, auth_helper.dart, AuthService, background_presence_service.dart, AuthDomainException, NetworkConnectionException, openAppSettings, action (+274 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.03
-Nodes (71): Container, DateFormat, Divider, GestureDetector, Icon, Row, Scaffold, SizedBox (+63 more)
+Cohesion: 0.04
+Nodes (50): Container, DateFormat, Divider, GestureDetector, Icon, Row, Scaffold, SizedBox (+42 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.03
-Nodes (51): Base validator with common validation logic for document files., DOCXSchemaValidator, Validator for Word document XML files against XSD schemas., Validate that w:t elements are not within w:del elements.         For some reas, Validator for Word document XML files against XSD schemas., Count the number of paragraphs in the unpacked document., Count the number of paragraphs in the original docx file., Validate that w:delText elements are not within w:ins elements.         w:delTe (+43 more)
+Cohesion: 0.02
+Nodes (75): Base validator with common validation logic for document files., DOCXSchemaValidator, Validator for Word document XML files against XSD schemas., Validate that w:t elements are not within w:del elements.         For some reas, Validator for Word document XML files against XSD schemas., Count the number of paragraphs in the unpacked document., Count the number of paragraphs in the original docx file., Validate that w:delText elements are not within w:ins elements.         w:delTe (+67 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.03
-Nodes (88): Center, Column, Container, DateTime, GestureDetector, MhEmptyState, MhLoading, MhRefreshIndicator (+80 more)
+Nodes (74): Center, Column, Container, DateTime, GestureDetector, MhEmptyState, MhLoading, MhRefreshIndicator (+66 more)
 
 ### Community 10 - "Community 10"
 Cohesion: 0.01
-Nodes (204): _, @riverpod, AutoDisposeProviderRef, ../../../../../core/services/realtime_service.dart, ../../../../../core/services/sync_service.dart, ../../../../../core/theme/app_spacing.dart, ../../../../../core/theme/elastic_scroll_physics.dart, SupabaseEventRepository (+196 more)
+Nodes (262): _, @riverpod, AutoDisposeProviderRef, ../../../../../core/services/realtime_service.dart, ../../../../../core/services/sync_service.dart, Left, Right, SupabaseEventRepository (+254 more)
 
 ### Community 11 - "Community 11"
 Cohesion: 0.12
 Nodes (24): SessionEntry, SessionSummary, PendingTask, Uma entrada individual do log JSONL do Claude Code., Resumo estruturado de uma sessão do Claude Code., SessionEntry, SessionSummary, _extract_completed_tasks() (+16 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.03
-Nodes (56): gate(), metadata, unique(), extractColdStarts(), gate(), metadata, extractCallCounts(), extractExternalApis() (+48 more)
+Cohesion: 0.04
+Nodes (49): gate(), metadata, unique(), extractColdStarts(), gate(), metadata, extractCallCounts(), extractExternalApis() (+41 more)
 
 ### Community 13 - "Community 13"
 Cohesion: 0.03
@@ -10489,15 +10478,15 @@ Nodes (68): Command, DaemonActivity, Drop, FileActivityEntry, Path, PathBuf, Ses
 
 ### Community 16 - "Community 16"
 Cohesion: 0.02
-Nodes (97): ChatMessage, Exception, _subscribeToMessages, Center, Container, Divider, ListTile, Padding (+89 more)
+Nodes (105): AsyncValue, ThemeModeNotifier, ChatMessage, Exception, _subscribeToMessages, Center, Container, Divider (+97 more)
 
 ### Community 17 - "Community 17"
 Cohesion: 0.02
-Nodes (251): ConsumerState, ConsumerStatefulWidget, ConsumerWidget, themeColorsProvider, departmentsProvider, FormState, institutionsProvider, MaterialPageRoute (+243 more)
+Nodes (274): ConsumerState, ConsumerStatefulWidget, ConsumerWidget, themeColorsProvider, departmentsProvider, FormState, institutionsProvider, MaterialPageRoute (+266 more)
 
 ### Community 18 - "Community 18"
-Cohesion: 0.01
-Nodes (205): @pragma, background_presence_service.dart, core/services/logger_service.dart, AttendancePolicy, Exception, CampaignRepository, SystemRepository, NotificationRepository (+197 more)
+Cohesion: 0.03
+Nodes (70): ../../../core/services/auth_service.dart, Divider, Exception, Scaffold, SizedBox, List, ../../../../core/providers/user_provider.dart, ../../../../core/services/auth_service.dart (+62 more)
 
 ### Community 19 - "Community 19"
 Cohesion: 0.33
@@ -10508,8 +10497,8 @@ Cohesion: 0.04
 Nodes (6): bind(), cb, co, constructor(), ff, getValue()
 
 ### Community 21 - "Community 21"
-Cohesion: 0.11
-Nodes (14): Any, Connection, Path, Database, dict, Cria tabelas e índices se não existirem., Insere ou atualiza conta. Retorna o id da conta., Retorna a conta ativa (primeira ativa encontrada). (+6 more)
+Cohesion: 0.09
+Nodes (15): Any, Connection, Path, Database, dict, NumberedCanvas, Cria tabelas e índices se não existirem., Insere ou atualiza conta. Retorna o id da conta. (+7 more)
 
 ### Community 22 - "Community 22"
 Cohesion: 0.07
@@ -10517,19 +10506,19 @@ Nodes (71): Path, append_log(), _backup_ignore(), bold(), _C, cleanup_old_backup
 
 ### Community 23 - "Community 23"
 Cohesion: 0.01
-Nodes (221): ../../../../../core/models/upload_mutation.dart, ../../../../../core/providers/labs_provider.dart, ../../../../../core/services/media_service.dart, ../../../../../core/services/upload_service.dart, Column, Container, Icon, Padding (+213 more)
+Nodes (154): ../../../../../core/models/upload_mutation.dart, ../../../../../core/services/media_service.dart, ../../../../../core/services/upload_service.dart, AnimatedContainer, _buildAppBar, Column, Container, Expanded (+146 more)
 
 ### Community 24 - "Community 24"
 Cohesion: 0.03
-Nodes (90): ACTIONS, addManualContextText(), annotLastPinClick, annotState, apply(), bufferToBase64(), buildCollapsible(), buildColorModels() (+82 more)
+Nodes (85): ACTIONS, annotLastPinClick, annotState, apply(), applyPlaceholderSizingStyles(), averageRgb01(), beginEditPin(), bufferToBase64() (+77 more)
 
 ### Community 25 - "Community 25"
-Cohesion: 0.05
-Nodes (44): Center, Color, Column, Container, InkWell, Row, Scaffold, SizedBox (+36 more)
+Cohesion: 0.03
+Nodes (95): RoleEditorProps, MODULES, WorkspacesClient(), NotificationFormProps, ConflictResolutionCenter(), ConflictResolutionCenterProps, ConflictResolutionPage(), EventDetailsModalProps (+87 more)
 
 ### Community 26 - "Community 26"
 Cohesion: 0.05
-Nodes (40): metadata, NotFoundPage(), AuthGuard(), PUBLIC_ROUTES, DesktopShell(), DesktopShellProps, useClock(), NO_SHELL_ROUTES (+32 more)
+Nodes (42): metadata, NotFoundPage(), AuthGuard(), PUBLIC_ROUTES, DesktopShell(), DesktopShellProps, useClock(), NO_SHELL_ROUTES (+34 more)
 
 ### Community 27 - "Community 27"
 Cohesion: 0.09
@@ -10548,12 +10537,12 @@ Cohesion: 0.03
 Nodes (105): 007 Security Skill - Central Configuration Hub ================================, Path, Path, Path, get_all_api_keys(), get_api_key(), AI Studio Image — Configuracao Central (v2 — Enhanced with Official Docs)  Tod, safety_check_daily_limit() (+97 more)
 
 ### Community 31 - "Community 31"
-Cohesion: 0.02
-Nodes (175): Highlight(), addBrowserFindings(), addVisualContrastFindings(), addVisualContrastResult(), allFindings, allText, analyzeVisualContrast(), analyzeVisualContrastCandidate() (+167 more)
+Cohesion: 0.03
+Nodes (63): allFindings, allText, ANTIPATTERNS, banner, bodyResizeObserver, BORDER_SAFE_TAGS, BRAND_FONT_DOMAINS, buildSelectorSegment() (+55 more)
 
 ### Community 32 - "Community 32"
-Cohesion: 0.02
-Nodes (130): core/providers/update_provider.dart, Center, ClipRRect, Column, Container, Padding, Scaffold, SizedBox (+122 more)
+Cohesion: 0.01
+Nodes (189): core/providers/update_provider.dart, create_event_screen.dart, UpdateService, Container, Padding, Row, Scaffold, SizedBox (+181 more)
 
 ### Community 33 - "Community 33"
 Cohesion: 0.03
@@ -10565,7 +10554,7 @@ Nodes (77): acknowledgePendingEvent(), addOpToManualApplyChunk(), agentPollingCo
 
 ### Community 35 - "Community 35"
 Cohesion: 0.01
-Nodes (308): _, ab, ac(), addInitializer(), ag, ai, _$AK(), al (+300 more)
+Nodes (314): _, ab, ac(), addInitializer(), ag, ai, _$AK(), al (+306 more)
 
 ### Community 36 - "Community 36"
 Cohesion: 0.02
@@ -10580,33 +10569,34 @@ Cohesion: 0.05
 Nodes (85): addBrowserFindings(), addVisualContrastFindings(), addVisualContrastResult(), allFindings, allText, analyzeVisualContrast(), analyzeVisualContrastCandidate(), banner (+77 more)
 
 ### Community 39 - "Community 39"
-Cohesion: 0.03
-Nodes (78): ActivityLog, ActivityPage(), Dashboard(), FilmFrameCorners(), TimelineDivider(), BORDER_COLORS, buildCalendarDays(), CalendarEvent (+70 more)
+Cohesion: 0.02
+Nodes (115): ../../../../../core/providers/labs_provider.dart, Column, Container, Icon, Padding, Row, Scaffold, showModalBottomSheet (+107 more)
 
 ### Community 40 - "Community 40"
 Cohesion: 0.06
-Nodes (57): { createInstallTargetAdapter }, buildValidationIssue(), createFlatFileOperations(), createFlatRuleOperations(), createInstallTargetAdapter(), createManagedOperation(), createNamespacedFlatRuleOperations(), createRemappedOperation() (+49 more)
+Nodes (59): { createInstallTargetAdapter }, { createInstallTargetAdapter }, buildValidationIssue(), createFlatFileOperations(), createFlatRuleOperations(), createInstallTargetAdapter(), createManagedOperation(), createNamespacedFlatRuleOperations() (+51 more)
 
 ### Community 41 - "Community 41"
-Cohesion: 0.02
-Nodes (123): Center, Scaffold, Scaffold, Center, Chewie, Column, Container, ElevatedButton (+115 more)
+Cohesion: 0.01
+Nodes (139): AudioPlayer?, Duration, Center, Scaffold, Scaffold, Center, Chewie, Column (+131 more)
 
 ### Community 42 - "Community 42"
-Cohesion: 0.04
+Cohesion: 0.05
 Nodes (67): {
   createInstallTargetAdapter,
   createRemappedOperation,
   isForeignPlatformPath,
   normalizeRelativePath,
 }, getClaudeManagedDestinationPath(), path, planOperations(), {
-  createFlatRuleOperations,
   createInstallTargetAdapter,
+  createRemappedOperation,
   isForeignPlatformPath,
-}, path, { createInstallTargetAdapter }, ADAPTERS (+59 more)
+  normalizeRelativePath,
+}, getClaudeManagedDestinationPath(), path, planOperations() (+59 more)
 
 ### Community 43 - "Community 43"
-Cohesion: 0.06
-Nodes (54): kebab(), listSnapshotsForSlug(), main(), nowFilenameStamp(), parseFrontmatter(), readLatestSnapshot(), readTrend(), serializeFrontmatter() (+46 more)
+Cohesion: 0.08
+Nodes (43): firstExisting(), getDesignSidecarCandidates(), getDesignSidecarPath(), getImpeccableDir(), getLegacyLiveConfigPath(), getLegacyLiveServerPath(), getLegacyLiveSessionsDir(), getLiveAnnotationsDir() (+35 more)
 
 ### Community 44 - "Community 44"
 Cohesion: 0.03
@@ -10641,28 +10631,28 @@ Cohesion: 0.22
 Nodes (11): 1. Red Phase - Write Failing Tests, 2. Green Phase - Make Tests Pass, 3. Refactor Phase - Improve Code Quality, code:typescript (// Step 1: Write test that defines desired behavior), code:typescript (// Step 2: Implement minimum code to pass tests), code:typescript (// Step 3: Refactor while keeping tests green), TDD Refinement Process, 1. Red Phase - Write Failing Tests (+3 more)
 
 ### Community 52 - "Community 52"
-Cohesion: 0.07
-Nodes (39): Database Patterns, N+1 Query Prevention, Query Optimization, Transaction Pattern, Database Patterns, N+1 Query Prevention, Query Optimization, Transaction Pattern (+31 more)
+Cohesion: 0.06
+Nodes (45): Database Patterns, N+1 Query Prevention, Query Optimization, Transaction Pattern, Database Patterns, N+1 Query Prevention, Query Optimization, Transaction Pattern (+37 more)
 
 ### Community 53 - "Community 53"
 Cohesion: 0.02
-Nodes (19): _$AE(), ar, ba, createThumbnail(), dispose(), dv, firstUpdated(), gf (+11 more)
+Nodes (16): ar, ba, createThumbnail(), dv, iu(), jg, kh, lv (+8 more)
 
 ### Community 54 - "Community 54"
 Cohesion: 0.02
-Nodes (24): ad(), clone(), cs, en, fr, iu(), ja, jr (+16 more)
+Nodes (25): ad(), clone(), cs, ds, en, fr, hr, ja (+17 more)
 
 ### Community 55 - "Community 55"
 Cohesion: 0.06
 Nodes (83): findRecContradictions(), asArray(), buildScriptHasMigrationSideEffect(), cacheInvalidationFileCache, cacheLifeNeedsContentFreshnessProof(), cleanHeaderValue(), compilePattern(), configContainsTag() (+75 more)
 
 ### Community 56 - "Community 56"
-Cohesion: 0.04
-Nodes (150): AssignmentAction, Error, FileActivityAction, Path, Result, Regex, Span, active_session_count_only_counts_live_queue_states() (+142 more)
+Cohesion: 0.03
+Nodes (156): AssignmentAction, BTreeMap, Error, FileActivityAction, Path, Result, SessionBoardMeta, Regex (+148 more)
 
 ### Community 57 - "Community 57"
 Cohesion: 0.04
-Nodes (54): AgentShield — Security-Auditor, Beitragen, code:bash (/skill-create                    # Aktuelles Repo analysiere), code:bash (# Kommentiere auf einem beliebigen Issue:), code:bash (# Schneller Scan (keine Installation nötig)), code:bash (/instinct-status        # Gelernte Instincts mit Konfidenz a), code:bash (# Alle Tests ausführen), code:bash (# Codex CLI im Repo ausführen — AGENTS.md und .codex/ werden) (+46 more)
+Nodes (55): AgentShield — Security-Auditor, Beitragen, code:bash (/skill-create                    # Aktuelles Repo analysiere), code:bash (# Kommentiere auf einem beliebigen Issue:), code:bash (# Schneller Scan (keine Installation nötig)), code:bash (/instinct-status        # Gelernte Instincts mit Konfidenz a), code:block38 (tdd-workflow skill                            → tdd-guide: s), code:bash (# Alle Tests ausführen) (+47 more)
 
 ### Community 58 - "Community 58"
 Cohesion: 0.13
@@ -10674,7 +10664,7 @@ Nodes (44): Arguments, AssertEqual, AsyncFunction, AtLeast, Brand, DeepMutable, 
 
 ### Community 60 - "Community 60"
 Cohesion: 0.04
-Nodes (72): Any, InventoryData, Path, Any, InventoryData, BaseShape, InventoryDict, ParagraphDict (+64 more)
+Nodes (65): Any, InventoryData, Path, BaseShape, InventoryDict, ParagraphDict, calculate_overlap(), collect_shapes_with_absolute_positions() (+57 more)
 
 ### Community 61 - "Community 61"
 Cohesion: 0.16
@@ -10689,28 +10679,28 @@ Cohesion: 0.12
 Nodes (55): Config, DaemonActivity, F, Option, PathBuf, R, Result, Session (+47 more)
 
 ### Community 64 - "Community 64"
-Cohesion: 0.04
-Nodes (14): addController(), bc(), dc(), eb(), ep, gp, Gv, mv (+6 more)
+Cohesion: 0.05
+Nodes (17): addController(), bu, cd(), createNodeMesh(), dd(), du, eo, extendMaterialParams() (+9 more)
 
 ### Community 65 - "Community 65"
 Cohesion: 0.04
-Nodes (52): Container, GestureDetector, Padding, Scaffold, SizedBox, SliverToBoxAdapter, SnackBar, Spacer (+44 more)
+Nodes (51): Container, GestureDetector, Padding, Scaffold, SizedBox, SliverToBoxAdapter, SnackBar, Spacer (+43 more)
 
 ### Community 66 - "Community 66"
-Cohesion: 0.11
-Nodes (29): detectUrl(), runVisualContrastFallback(), finding(), getAP(), Profile(), extractFindingIds(), profileFindings(), profileFindingsAsync() (+21 more)
+Cohesion: 0.09
+Nodes (38): detectUrl(), runVisualContrastFallback(), finding(), getAP(), Profile(), createDetectorProfile(), extractFindingIds(), profileFindings() (+30 more)
 
 ### Community 67 - "Community 67"
 Cohesion: 0.02
 Nodes (103): LeaveRepository, Center, Column, Container, InkWell, Row, Scaffold, SizedBox (+95 more)
 
 ### Community 68 - "Community 68"
-Cohesion: 0.07
-Nodes (60): checkBorders(), checkColors(), checkCreamPalette(), checkElementAIPaletteDOM(), checkElementBorders(), checkElementBordersDOM(), checkElementColors(), checkElementColorsDOM() (+52 more)
+Cohesion: 0.06
+Nodes (55): borderWidthsFromStyle(), checkBorders(), checkClippedOverflow(), checkElementBorders(), checkElementBordersDOM(), checkElementClippedOverflow(), checkElementClippedOverflowDOM(), checkElementGptBorderShadow() (+47 more)
 
 ### Community 69 - "Community 69"
-Cohesion: 0.04
-Nodes (12): _a, ga, gi(), go(), ii(), ka, la(), ni() (+4 more)
+Cohesion: 0.03
+Nodes (15): dg, Do(), fo, ka, _m, nl(), nu(), Ot (+7 more)
 
 ### Community 70 - "Community 70"
 Cohesion: 0.03
@@ -10721,8 +10711,8 @@ Cohesion: 0.14
 Nodes (29): BTreeMap, ContextObservationPriority, DateTime, FileActivityAction, Option, PathBuf, RemoteDispatchKind, SessionMetrics (+21 more)
 
 ### Community 72 - "Community 72"
-Cohesion: 0.06
-Nodes (42): app, DashboardWidget, WidgetSection, Database, initializeDatabase(), config, handleIncomingMessage(), { messages, statuses } (+34 more)
+Cohesion: 0.05
+Nodes (52): app, app, DashboardWidget, WidgetSection, closeDatabase(), dbPath, getDatabase(), Database (+44 more)
 
 ### Community 73 - "Community 73"
 Cohesion: 0.07
@@ -10745,44 +10735,44 @@ Cohesion: 0.05
 Nodes (54): AGENTS_PATH, buildCatalog(), createDocumentSpecs(), createDocumentSpecsForRoot(), DOCS_ZH_CN_AGENTS_PATH, DOCS_ZH_CN_README_PATH, DOCUMENT_SPECS, evaluateExpectations() (+46 more)
 
 ### Community 78 - "Community 78"
-Cohesion: 0.04
-Nodes (49): checkDate, date, day, diffDays, diffTime, gradientPresets, now, today (+41 more)
+Cohesion: 0.12
+Nodes (13): logEvent(), logger, LogLevel, SENSITIVE_FIELDS, SystemEvent, SystemLogger, SupportPage(), logEvent() (+5 more)
 
 ### Community 79 - "Community 79"
-Cohesion: 0.03
-Nodes (77): AnimatedContainer, Column, Padding, Scaffold, SizedBox, SnackBar, Theme, GoTrueClient (+69 more)
+Cohesion: 0.01
+Nodes (140): ../../../core/providers/user_provider.dart, isPast, isToday, AnimatedContainer, Column, Padding, Scaffold, SizedBox (+132 more)
 
 ### Community 80 - "Community 80"
-Cohesion: 0.04
-Nodes (43): Scene, App, dmSans, inter, NetworkGraphExplainer, Diagnostics(), WebViewDetector(), ThemeProvider() (+35 more)
+Cohesion: 0.03
+Nodes (56): Scene, App, dmSans, inter, MetricsSnapshot, SyncDevPanel(), SyncIndicator(), circuitBreakerAtom (+48 more)
 
 ### Community 81 - "Community 81"
 Cohesion: 0.02
-Nodes (116): Center, Column, Container, Expanded, GestureDetector, Icon, IntrinsicHeight, Row (+108 more)
+Nodes (100): AttendancePolicy, Exception, Center, Column, Container, Expanded, GestureDetector, Icon (+92 more)
 
 ### Community 82 - "Community 82"
 Cohesion: 0.06
-Nodes (51): byRoute(), gate(), metadata, round2(), sumRows(), extractErrors(), extractFromStatusRows(), gate() (+43 more)
+Nodes (52): byRoute(), gate(), metadata, round2(), sumRows(), extractErrors(), extractFromStatusRows(), gate() (+44 more)
 
 ### Community 83 - "Community 83"
 Cohesion: 0.04
-Nodes (72): AppChrome(), NotificationPanel(), NotificationPreviewModalProps, NotificationRule, notificationRules, fromTable(), EventBus, EventCallback (+64 more)
+Nodes (64): NotificationPreviewModalProps, fromTable(), tenantQuery(), EventBus, EventCallback, MediaHiveEvent, useBulkSelection(), UseBulkSelectionOptions (+56 more)
 
 ### Community 84 - "Community 84"
-Cohesion: 0.03
-Nodes (59): core/config/env_config.dart, core/router/router.dart, core/services/fcm_service.dart, core/services/snackbar_service.dart, themeModeProvider, jsonEncode, MhLoadingOverlay, MhOfflineBanner (+51 more)
+Cohesion: 0.02
+Nodes (84): core/config/env_config.dart, core/router/router.dart, core/services/fcm_service.dart, core/services/snackbar_service.dart, themeModeProvider, jsonEncode, ClipRRect, Color (+76 more)
 
 ### Community 85 - "Community 85"
-Cohesion: 0.11
-Nodes (50): buildInsertPlaceholderSnapshotFromDom(), cancelEditing(), cancelEditingToPicking(), cancelInsertConfigure(), captureAndEmit(), checkpointPayload(), cleanup(), clearAnnotations() (+42 more)
+Cohesion: 0.08
+Nodes (60): buildInsertPlaceholderSnapshotFromDom(), cancelEditing(), cancelEditingToPicking(), cancelInsertConfigure(), checkpointPayload(), cleanup(), clearAnnotations(), clearInsertPicking() (+52 more)
 
 ### Community 86 - "Community 86"
 Cohesion: 0.12
 Nodes (18): Config, SessionHarnessInfo, SessionOutputStore, StateStore, BudgetEnforcementOutcome, ConflictEnforcementOutcome, HeartbeatEnforcementOutcome, budget_auto_pause_note() (+10 more)
 
 ### Community 87 - "Community 87"
-Cohesion: 0.02
-Nodes (161): offlineDB, POST(), CacheEntry, generateCacheKey(), getQueryCache(), invalidateQueryCache(), setQueryCache(), ActivityFeedProps (+153 more)
+Cohesion: 0.01
+Nodes (186): UserManagementPanel(), UserManagementPanelProps, offlineDB, tenantContext(), POST(), CacheEntry, generateCacheKey(), getQueryCache() (+178 more)
 
 ### Community 88 - "Community 88"
 Cohesion: 0.07
@@ -10802,19 +10792,19 @@ Nodes (27): ECCDashboard, get_project_path(), load_agents(), load_commands(), lo
 
 ### Community 92 - "Community 92"
 Cohesion: 0.07
-Nodes (38): loggingMiddleware(), POST(), GET(), auth, signInWithEmailAndPassword(), signOut(), canChangeTaskStatus(), canModify() (+30 more)
+Nodes (38): loggingMiddleware(), GET(), POST(), auth, signInWithEmailAndPassword(), signOut(), canChangeTaskStatus(), canModify() (+30 more)
 
 ### Community 93 - "Community 93"
 Cohesion: 0.06
 Nodes (32): 10. Full Migration Setup, 11. Complete Deliverables, 1. Global Knowledge Graph Layer, 2. Automation Builder, 3. Multi-Campus / Multi-Tenant Mode, 4. Smart Push Notification System, 5. AI-Powered Assistance, 6. Unified Reporting Dashboard (+24 more)
 
 ### Community 94 - "Community 94"
-Cohesion: 0.04
-Nodes (53): UserManagementPanelProps, DEFAULT_FLAGS, ENV_OVERRIDES, FeatureFlag, getAllFeatureFlags(), isFeatureEnabled(), GET(), tenantContext() (+45 more)
+Cohesion: 0.10
+Nodes (30): Page(), DriveQueueView(), metadata, DriveQueuePage(), LeaveApprovalCard(), LeaveApprovalCardProps, LeaveBalanceDisplay(), LeaveBalanceDisplayProps (+22 more)
 
 ### Community 95 - "Community 95"
-Cohesion: 0.05
-Nodes (38): code:python (import os), Authentication, Azure AI Transcription SDK for Python, Best Practices, code:bash (pip install azure-ai-transcription), code:bash (TRANSCRIPTION_ENDPOINT=https://<resource>.cognitiveservices.), code:python (stream = client.begin_stream_transcription(locale="en-US")), Environment Variables (+30 more)
+Cohesion: 0.02
+Nodes (122): File, openAppSettings, Exception, SnackBar, dart:convert, dart:io, Dio, ../../core/theme/app_colors.dart (+114 more)
 
 ### Community 96 - "Community 96"
 Cohesion: 0.04
@@ -10826,7 +10816,7 @@ Nodes (48): { execFileSync, spawnSync }, { findProjectRoot, detectFormatter, res
 
 ### Community 98 - "Community 98"
 Cohesion: 0.02
-Nodes (118): ActivityFeedWidget(), ActivityItem, OfflineBanner(), ConflictQueryOptions, ConflictResolution, ConflictStatus, PersistentConflict, canPerformAction() (+110 more)
+Nodes (106): ActivityFeedWidget(), ActivityItem, OfflineBanner(), ConflictQueryOptions, ConflictResolution, ConflictStatus, PersistentConflict, InventoryStatsWidget() (+98 more)
 
 ### Community 99 - "Community 99"
 Cohesion: 0.06
@@ -10845,17 +10835,17 @@ Nodes (49): adapter, adapters, assert, changed, claudeSnapshot, completed, {
 
 ### Community 102 - "Community 102"
 Cohesion: 0.05
-Nodes (72): fs, {
+Nodes (73): fs, {
   getLearnedSkillsDir,
   ensureDir,
   readFile,
   countInFile,
   log
-}, main(), path, appendFile(), countInFile(), crypto, ensureDir() (+64 more)
+}, main(), path, appendFile(), commandExists(), countInFile(), crypto (+65 more)
 
 ### Community 103 - "Community 103"
 Cohesion: 0.04
-Nodes (69): Any, check_account(), main(), Configuração e verificação de conta Instagram.  Uso:     python scripts/accou, Verifica se todos os pré-requisitos estão OK., Detecta tipo de conta e status., Mostra guia de setup/migração., show_guide() (+61 more)
+Nodes (58): Any, InstagramAPI, Faz request à Graph API com retry, rate limiting e logging., Busca informações do perfil da conta Instagram., Lista mídia do usuário com paginação., Busca detalhes de uma mídia específica., Cria container de mídia (step 1 do publish)., Verifica status de um container (usado para vídeos que precisam processar). (+50 more)
 
 ### Community 104 - "Community 104"
 Cohesion: 0.05
@@ -10875,15 +10865,15 @@ Nodes (28): Any, analyze_reviews(), Review analysis module for App Store Optimiz
 
 ### Community 108 - "Community 108"
 Cohesion: 0.04
-Nodes (69): Configurações e thresholds para o Claude Monitor., Configuração centralizada do Context Agent. Todos os paths, constantes e limite, Configuração central da skill Instagram.  Todos os paths, constantes da API e, Configuracao central da skill Sentinel.  Paths, thresholds de analise, pesos d, Path, get_all_api_keys(), get_api_key(), Configuracao central da skill Stability AI.  Gerencia: API keys, modelos, form (+61 more)
+Nodes (67): Configurações e thresholds para o Claude Monitor., Configuração centralizada do Context Agent. Todos os paths, constantes e limite, Path, get_all_api_keys(), get_api_key(), Configuracao central da skill Stability AI.  Gerencia: API keys, modelos, form, safety_check_daily_limit(), Path (+59 more)
 
 ### Community 109 - "Community 109"
 Cohesion: 0.04
 Nodes (48): code:block1 (SUBJECT: [CRITICAL] Security Incident - Data Breach Detected), code:block2 (SUBJECT: [{SEVERITY}] Security Incident - {Brief Description), Communication Template, General Communication Template, Incident Response Playbooks, Phase 1: Contain, Phase 1: Contain, Phase 1: Contain (+40 more)
 
 ### Community 110 - "Community 110"
-Cohesion: 0.11
-Nodes (27): Path, main(), AI Studio Image — Gerador de Imagens (v2 — Enhanced)  Script principal que con, _check_dependencies(), generate(), generate_with_gemini(), generate_with_imagen(), _get_client() (+19 more)
+Cohesion: 0.07
+Nodes (46): Path, main(), AI Studio Image — Gerador de Imagens (v2 — Enhanced)  Script principal que con, list_templates(), main(), AI Studio Image — Templates Pre-configurados  Biblioteca de templates prontos, list_templates(), main() (+38 more)
 
 ### Community 111 - "Community 111"
 Cohesion: 0.08
@@ -10898,8 +10888,8 @@ Cohesion: 0.18
 Nodes (23): Example Usage, code:block3 (修正: パラメータ化クエリを使用), code:block5 (修正: デフォルトにNoneを使用), code:block7 (修正: 型ヒントを追加), code:block9 (修正: コンテキストマネージャーを使用), code:`text (User: /python-review), code:`, code:block4 (+15 more)
 
 ### Community 114 - "Community 114"
-Cohesion: 0.03
-Nodes (82): Center, Container, GestureDetector, InkWell, Padding, Scaffold, SizedBox, Spacer (+74 more)
+Cohesion: 0.02
+Nodes (93): Center, Container, GestureDetector, InkWell, Padding, Scaffold, SizedBox, Spacer (+85 more)
 
 ### Community 115 - "Community 115"
 Cohesion: 0.13
@@ -10907,39 +10897,39 @@ Nodes (13): code:json ({), code:block17 (Resuming track: {title}), Context Loadi
 
 ### Community 116 - "Community 116"
 Cohesion: 0.03
-Nodes (71): code:bash (# すべてのテストを実行), code:bash (# テストを実行), code:python (# Equality), Assertions, Basic Test Structure, Best Practices, code:python (def test_user_creation():), code:python (from unittest.mock import Mock, patch, MagicMock) (+63 more)
+Nodes (74): code:python (# Equality), Assertions, Basic Test Structure, Best Practices, code:python (def test_user_creation():), code:python (from unittest.mock import Mock, patch, MagicMock), code:python (def test_with_mocker(mocker):), code:python (import pytest) (+66 more)
 
 ### Community 117 - "Community 117"
-Cohesion: 0.06
-Nodes (31): code:perl (use v5.36;), code:perl (use v5.36;), code:ini (# .perlcriticrc — セキュリティ重視の設定), code:bash (# ファイルをチェック), code:perl (# 1. ユーザーデータを使った2引数open（コマンドインジェクション）), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;) (+23 more)
+Cohesion: 0.08
+Nodes (25): code:ini (# .perlcriticrc — セキュリティ重視の設定), code:bash (# ファイルをチェック), code:perl (# 1. ユーザーデータを使った2引数open（コマンドインジェクション）), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), 三参数 open (+17 more)
 
 ### Community 118 - "Community 118"
-Cohesion: 0.06
-Nodes (29): code:sql (-- 느린 쿼리 확인), code:sql (-- 테이블 크기 확인), code:sql (-- 일간 활성 사용자), code:sql (-- 전환 퍼널), code:sql (-- 가입 월별 사용자 코호트), code:typescript (// 추출, 변환, 적재(ETL)), code:typescript (// PostgreSQL 변경을 수신하고 ClickHouse와 동기화), code:sql (-- 시간별 통계를 위한 materialized view 생성) (+21 more)
+Cohesion: 0.07
+Nodes (28): code:sql (-- 느린 쿼리 확인), code:sql (-- 테이블 크기 확인), code:typescript (// 추출, 변환, 적재(ETL)), code:typescript (// PostgreSQL 변경을 수신하고 ClickHouse와 동기화), code:sql (-- 중복이 있을 수 있는 데이터용 (예: 여러 소스에서 수집된 경우)), code:sql (-- 집계 메트릭을 유지하기 위한 용도), code:sql (-- 시간별 통계를 위한 materialized view 생성), 1. 파티셔닝 전략 (+20 more)
 
 ### Community 119 - "Community 119"
 Cohesion: 0.02
-Nodes (126): RulesData, POLICY_CONFIG, RolePolicyEditor(), RolePolicyEditorProps, StructurePolicyEditorProps, User, AIAssistantPage(), AssistantPanel() (+118 more)
+Nodes (126): RulesData, InviteUserPanelProps, POLICY_CONFIG, RolePolicyEditor(), RolePolicyEditorProps, StructurePolicyEditorProps, User, AIAssistantPage() (+118 more)
 
 ### Community 120 - "Community 120"
-Cohesion: 0.18
-Nodes (9): 4. 避免, ClickHouse 分析模式, 概述, 1. 分区策略, 2. 排序键, 3. 数据类型, 5. 监控, 何时激活 (+1 more)
+Cohesion: 0.11
+Nodes (16): 4. 避免, ClickHouse 分析模式, 概述, code:sql (-- Create materialized view for hourly stats), Materialized Views, Real-time Aggregations, 1. 分区策略, 2. 排序键 (+8 more)
 
 ### Community 122 - "Community 122"
-Cohesion: 0.08
-Nodes (23): code:perl (#!/usr/bin/perl -T), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), CPAN 模块安全, Enabling Taint Mode, Perl 安全模式, Taint Mode (+15 more)
+Cohesion: 0.06
+Nodes (33): code:perl (#!/usr/bin/perl -T), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), Coverage with Devel::Cover, Integration Testing (+25 more)
 
 ### Community 123 - "Community 123"
 Cohesion: 0.17
 Nodes (13): Option, String, Value, discord_webhook_payload_disables_mentions(), linux_notifications_use_notify_send(), macos_notifications_use_osascript(), notification_command(), sanitize_osascript() (+5 more)
 
 ### Community 124 - "Community 124"
-Cohesion: 0.11
-Nodes (16): code:sql (-- Create materialized view for hourly stats), Materialized Views, Real-time Aggregations, 1. Partitioning Strategy, 2. Ordering Key, 3. Data Types, 4. Avoid, 5. Monitoring (+8 more)
+Cohesion: 0.18
+Nodes (9): 1. Partitioning Strategy, 2. Ordering Key, 3. Data Types, 4. Avoid, 5. Monitoring, Best Practices, ClickHouse Analytics Patterns, Overview (+1 more)
 
 ### Community 125 - "Community 125"
-Cohesion: 0.04
-Nodes (66): InviteUserPanel(), SystemHealthPanel(), SystemHealthPanelProps, UserManagementPanel(), NotificationForm(), closeDatabase(), dbPath, getDatabase() (+58 more)
+Cohesion: 0.02
+Nodes (127): AnimationController, @pragma, app_colors.dart, CustomPainter, Color, Scaffold, SizedBox, Stack (+119 more)
 
 ### Community 126 - "Community 126"
 Cohesion: 0.03
@@ -10951,7 +10941,7 @@ Nodes (13): 1. Continuous Improvement (Kaizen), code:typescript (// Iteration 1:
 
 ### Community 128 - "Community 128"
 Cohesion: 0.02
-Nodes (23): b(), ds, gc(), hr, Kc, lc, oa, onBeforeRender() (+15 more)
+Nodes (16): dispose(), gc(), jr, Kc, lc, onBeforeRender(), QE, rc (+8 more)
 
 ### Community 129 - "Community 129"
 Cohesion: 0.04
@@ -11002,8 +10992,8 @@ Cohesion: 0.07
 Nodes (33): Article Extraction Template, code:markdown (## Extraction Results), code:csv (# Source: https://example.com/products), code:csv (# Sources: store-a.com, store-b.com), code:markdown (### Summary Statistics), code:markdown (| Name           | Title              | Email               ), code:markdown (## Article: [Title]), code:markdown (### FAQ: [Page Title]) (+25 more)
 
 ### Community 141 - "Community 141"
-Cohesion: 0.10
-Nodes (37): absoluteBriefPath(), briefRoots(), buildBrief(), cachePolicyGuidance(), capBriefFiles(), citationSubset(), closestAncestorLayoutFiles(), inferFrameworkPlaybook() (+29 more)
+Cohesion: 0.11
+Nodes (36): absoluteBriefPath(), briefRoots(), buildBrief(), cachePolicyGuidance(), capBriefFiles(), citationSubset(), closestAncestorLayoutFiles(), inferFrameworkPlaybook() (+28 more)
 
 ### Community 142 - "Community 142"
 Cohesion: 0.02
@@ -11011,7 +11001,7 @@ Nodes (4): ci, qt(), $t, vi
 
 ### Community 143 - "Community 143"
 Cohesion: 0.06
-Nodes (68): GET(), POST(), GET(), DEPARTMENTS, INSTITUTIONS, GET(), getDateRange(), getDb() (+60 more)
+Nodes (67): POST(), GET(), POST(), GET(), POST(), GET(), GET(), getDateRange() (+59 more)
 
 ### Community 144 - "Community 144"
 Cohesion: 0.04
@@ -11035,7 +11025,7 @@ Nodes (43): Anonymous Access (Public Registry), Async Client, Authentication, Az
 
 ### Community 149 - "Community 149"
 Cohesion: 0.04
-Nodes (45): 1. Configurar Variaveis De Ambiente, 2. Enviar Mensagem De Texto Simples, 3. Enviar Template Message (Fora Da Janela De 24H), 4. Verificar Entrega, Best Practices, Boilerplate, Checklist Essencial, Click-To-Whatsapp Ads (+37 more)
+Nodes (52): code:block1 (O usuario precisa criar um bot?), code:bash (python scripts/test_bot.py --token "SEU_TOKEN"), code:bash (python scripts/send_message.py --token "SEU_TOKEN" --chat-id), Decision Tree, 1. Configurar Variaveis De Ambiente, 2. Enviar Mensagem De Texto Simples, 3. Enviar Template Message (Fora Da Janela De 24H), 4. Verificar Entrega (+44 more)
 
 ### Community 150 - "Community 150"
 Cohesion: 0.04
@@ -11058,44 +11048,44 @@ Cohesion: 0.07
 Nodes (28): code:sql (-- 低速クエリをチェック), code:sql (-- テーブルサイズをチェック), code:typescript (// 抽出、変換、ロード), code:typescript (// PostgreSQLの変更をリッスンしてClickHouseに同期), code:sql (-- PASS: 良い: インデックス列を最初に使用), code:sql (-- PASS: 良い: ClickHouse固有の集計関数を使用), code:sql (-- 累計計算), code:sql (-- 時間別統計のマテリアライズドビューを作成) (+20 more)
 
 ### Community 155 - "Community 155"
-Cohesion: 0.06
-Nodes (10): dr, ef, f, gu(), nf(), Rr(), tf(), xg (+2 more)
+Cohesion: 0.05
+Nodes (7): b(), gf, oa, or, Qa, vc(), xa
 
 ### Community 156 - "Community 156"
 Cohesion: 0.04
 Nodes (15): _$AU(), br, fp, g(), gr, gs, jo(), Ko() (+7 more)
 
 ### Community 157 - "Community 157"
-Cohesion: 0.03
-Nodes (38): MetricsSnapshot, SyncDevPanel(), SyncIndicator(), circuitBreakerAtom, ConflictError, isSyncingAtom, syncConflictsAtom, SyncEngine (+30 more)
+Cohesion: 0.02
+Nodes (55): PresencePile(), HealthIndicator(), STATUS_CONFIG, ClientOnly(), CreateTaskModalMember(), FABProps, MagneticFABButton(), Props (+47 more)
 
 ### Community 158 - "Community 158"
 Cohesion: 0.13
 Nodes (18): code:block20 (create_capture_session()), Capture Reference, code:python (ws_wrapper = conn.connect_websocket()), RTStreams and AI Pipelines, Session Lifecycle, WebSocket Connection, Capture Reference, RTStreams and AI Pipelines (+10 more)
 
 ### Community 159 - "Community 159"
-Cohesion: 0.03
-Nodes (15): Bd, cf, copy(), df, eo, hd, ku, mu (+7 more)
+Cohesion: 0.04
+Nodes (10): cf, copy(), df, mu, n, ta, uf, W_ (+2 more)
 
 ### Community 160 - "Community 160"
 Cohesion: 0.07
-Nodes (27): 4. 避免, ClickHouse 分析模式, code:sql (-- 檢查慢查詢), code:sql (-- 檢查表格大小), code:typescript (// 提取、轉換、載入), code:typescript (// 監聽 PostgreSQL 變更並同步到 ClickHouse), code:sql (-- 用於可能有重複的資料（例如來自多個來源）), code:sql (-- 用於維護聚合指標) (+19 more)
+Nodes (28): 4. 避免, ClickHouse 分析模式, code:sql (-- 檢查慢查詢), code:sql (-- 檢查表格大小), code:sql (-- 每日活躍使用者), code:sql (-- 轉換漏斗), code:sql (-- 按註冊月份的使用者世代), code:typescript (// 提取、轉換、載入) (+20 more)
 
 ### Community 161 - "Community 161"
 Cohesion: 0.11
 Nodes (29): Button loading state, Code Examples, code:tsx ("use client"), code:tsx (import { useRef } from "react"), Cursor follower, Drag-to-dismiss sheet, Draggable card, Infinite animation with visibility pause (+21 more)
 
 ### Community 162 - "Community 162"
-Cohesion: 0.05
-Nodes (43): code:block20 (ECC/), code:block38 (tdd-workflow skill                            → tdd-guide: s), code:bash (./install.sh --profile minimal --target zed), code:powershell (.\install.ps1 --profile minimal --target zed), Häufige Workflows, Was ist enthalten, Welchen Agent sollte ich verwenden?, Zed-Unterstützung (+35 more)
+Cohesion: 0.04
+Nodes (52): code:block20 (ECC/), code:bash (./install.sh --profile minimal --target zed), code:powershell (.\install.ps1 --profile minimal --target zed), Was ist enthalten, Zed-Unterstützung, AgentShield — Security Auditor, Background, code:bash (# Comment on any issue:) (+44 more)
 
 ### Community 163 - "Community 163"
 Cohesion: 0.12
 Nodes (17): code:python (channels = await client.list_channels()), Channel Groups, Channel Properties, ChannelGroup Methods & Properties, Channels, Channel Groups, Channel Properties, ChannelGroup Methods & Properties (+9 more)
 
 ### Community 164 - "Community 164"
-Cohesion: 0.03
-Nodes (75): Divider, Exception, Scaffold, SizedBox, ../../../../core/services/logger_service.dart, dart:io, package:geolocator/geolocator.dart, _NfcTag (+67 more)
+Cohesion: 0.04
+Nodes (37): Continuous Mode, Integration with Hooks, Output Format, Verification Loop Skill, When to Use, Continuous Mode, Integration with Hooks, Output Format (+29 more)
 
 ### Community 165 - "Community 165"
 Cohesion: 0.04
@@ -11110,16 +11100,16 @@ Cohesion: 0.09
 Nodes (20): Authentication Methods, Best Practices, Checkpoint Saving, code:python (from transformers import AutoModelForObjectDetection, AutoIm), code:python (from transformers import AutoImageProcessor, AutoModelForObj), code:python (# After training completes), code:python (# At the end of training script), code:python (# Define your label mappings) (+12 more)
 
 ### Community 168 - "Community 168"
-Cohesion: 0.07
-Nodes (26): Best Practices, code:typescript (// jest.config.ts), code:typescript (// tests/integration/user.repository.test.ts), code:typescript (// components/UserForm.tsx), code:typescript (// hooks/useCounter.ts), code:typescript (// tests/fixtures/user.fixture.ts), code:typescript (// components/UserCard.test.tsx), code:typescript (// package.json) (+18 more)
+Cohesion: 0.04
+Nodes (46): Best Practices, code:typescript (// jest.config.ts), code:typescript (// tests/integration/user.repository.test.ts), code:typescript (// components/UserForm.tsx), code:typescript (// hooks/useCounter.ts), code:typescript (// tests/fixtures/user.fixture.ts), code:typescript (// components/UserCard.test.tsx), code:typescript (// package.json) (+38 more)
 
 ### Community 169 - "Community 169"
 Cohesion: 0.05
 Nodes (38): 1.1 Document Ingestion, 1.2 Embedding & Storage, 1.3 Retrieval Strategies, 1.4 Generation with Context, 1. RAG Pipeline Architecture, 2.1 ReAct Pattern (Reasoning + Acting), 2.2 Function Calling Pattern, 2.3 Plan-and-Execute Pattern (+30 more)
 
 ### Community 170 - "Community 170"
-Cohesion: 0.06
-Nodes (30): Best Practices, Caching Strategies, code:typescript (import express, { Request, Response, NextFunction } from 'ex), code:typescript (// utils/errors.ts), code:typescript (// middleware/error-handler.ts), code:typescript (// config/database.ts), code:typescript (// config/mongoose.ts), code:typescript (// services/order.service.ts) (+22 more)
+Cohesion: 0.05
+Nodes (39): Best Practices, Caching Strategies, code:typescript (import express, { Request, Response, NextFunction } from 'ex), code:typescript (// middleware/rate-limit.middleware.ts), code:typescript (// middleware/logger.middleware.ts), code:typescript (// utils/errors.ts), code:typescript (// middleware/error-handler.ts), code:typescript (// config/database.ts) (+31 more)
 
 ### Community 171 - "Community 171"
 Cohesion: 0.08
@@ -11155,15 +11145,15 @@ Nodes (39): All Settings, Async Client, Authentication, Azure App Configuration 
 
 ### Community 179 - "Community 179"
 Cohesion: 0.04
-Nodes (57): ActivityFilter, SmartActivityFeed(), AdminDashboardClient(), AdminDashboardPage(), getMetricsOnServer(), campaignsLayout(), AppLink(), Icon() (+49 more)
+Nodes (45): ActivityRootLayout(), ActivityFilter, SmartActivityFeed(), AdminDashboardClient(), AdminDashboardPage(), getMetricsOnServer(), CalendarRootLayout(), campaignsLayout() (+37 more)
 
 ### Community 180 - "Community 180"
-Cohesion: 0.08
-Nodes (22): Best Practices, Integration Tests with Real Database, Key Testing Patterns, Quarkus TDD Workflow, Resource Layer Tests (REST Assured), Testing Camel Routes, Testing CompletableFuture, Testing Event Services (+14 more)
+Cohesion: 0.17
+Nodes (12): Best Practices, Camel ルートテスト, Quarkus固有, アサーション, イベント駆動テスト, テストカバレッジ, テスト構造, テスト組織 (+4 more)
 
 ### Community 181 - "Community 181"
-Cohesion: 0.06
-Nodes (7): da, ma, Mh, pa, tv, Wu, zu
+Cohesion: 0.07
+Nodes (6): da, ma, pa, tv, Wu, zu
 
 ### Community 182 - "Community 182"
 Cohesion: 0.13
@@ -11174,40 +11164,40 @@ Cohesion: 0.07
 Nodes (41): 1. Code-Based Grader, 2. Model-Based Grader, 3. Human Grader, Grader Types, 1. Code-Based Grader, 2. Model-Based Grader, 3. Human Grader, code:bash (# Check if file contains expected pattern) (+33 more)
 
 ### Community 184 - "Community 184"
-Cohesion: 0.03
-Nodes (57): CreateTaskModalMember(), FABProps, MagneticFABButton(), Props, ConflictResolutionCenter(), ConflictResolutionCenterProps, ConflictResolutionPage(), canAccessFeature() (+49 more)
+Cohesion: 0.04
+Nodes (42): code:python (from decimal import Decimal), code:python (class SlippageError(Exception):), code:python (import os), code:python (class TradingCircuitBreaker:), code:python (import os), Authentication, Azure AI Transcription SDK for Python, Best Practices (+34 more)
 
 ### Community 185 - "Community 185"
 Cohesion: 0.01
-Nodes (484): BouncingScrollPhysics, core/design_tokens.dart, ../../../../../core/providers/ui_providers.dart, ../../../../../core/theme/app_colors.dart, ../../../../../core/theme/app_typography.dart, ../../../core/theme_provider.dart, Center, Container (+476 more)
+Nodes (439): BouncingScrollPhysics, core/design_tokens.dart, ../../../../../core/theme/app_colors.dart, ../../../../../core/theme/app_spacing.dart, ../../../../../core/theme/app_typography.dart, ../../../../../core/theme/elastic_scroll_physics.dart, ../../../core/theme_provider.dart, Card (+431 more)
 
 ### Community 186 - "Community 186"
 Cohesion: 0.07
 Nodes (28): code:kotlin (// let: Nullable'ı veya scope edilmiş sonucu dönüştür), code:kotlin (// İyi: Domain'e özgü extension'lar), code:kotlin (// İyi: coroutineScope ile yapılandırılmış eşzamanlılık), code:kotlin (// İyi: Uygun hata işleme ile cold flow), code:kotlin (// İyi: @DslMarker ile DSL), code:kotlin (// En son versiyonları kontrol et: https://kotlinlang.org/do), code:kotlin (// İyi: Kotlin'in Result'ını veya özel sealed class kullan), code:kotlin (// İyi: Net mesajlarla ön koşullar) (+20 more)
 
 ### Community 187 - "Community 187"
-Cohesion: 0.05
-Nodes (33): Authentication, Azure.ResourceManager.ApiCenter (.NET), Best Practices, code:bash (dotnet add package Azure.ResourceManager.ApiCenter), code:block4 (Subscription), Environment Variables, Error Handling, Installation (+25 more)
+Cohesion: 0.03
+Nodes (57): Authentication, Azure.ResourceManager.ApiCenter (.NET), Best Practices, code:bash (dotnet add package Azure.ResourceManager.ApiCenter), code:block4 (Subscription), Environment Variables, Error Handling, Installation (+49 more)
 
 ### Community 188 - "Community 188"
 Cohesion: 0.02
-Nodes (114): RoleEditorProps, AssignmentPayloadSchema, MutationSchemaRegistry, UnassignmentPayloadSchema, validateMutationPayload(), CalendarClient(), CalendarItem, CalendarView (+106 more)
+Nodes (114): AssignmentPayloadSchema, MutationSchemaRegistry, UnassignmentPayloadSchema, validateMutationPayload(), CalendarClient(), CalendarItem, CalendarView, EventPreviewCard() (+106 more)
 
 ### Community 189 - "Community 189"
 Cohesion: 0.03
-Nodes (90): code:block1 (As a [role], I want to [action], so that [benefit]), Step 1: Write User Journeys, Step 2: Generate Test Cases, Step 3: Run Tests (They Should Fail), Step 4: Implement Code, Step 5: Run Tests Again, Step 6: Refactor, Step 7: Verify Coverage (+82 more)
+Nodes (101): code:block1 (As a [role], I want to [action], so that [benefit]), Step 1: Write User Journeys, Step 2: Generate Test Cases, Step 3: Run Tests (They Should Fail), Step 4: Implement Code, Step 5: Run Tests Again, Step 6: Refactor, Step 7: Verify Coverage (+93 more)
 
 ### Community 190 - "Community 190"
-Cohesion: 0.03
-Nodes (71): ../../../core/providers/user_provider.dart, isPast, isToday, DateFormat, Padding, Scaffold, SizedBox, ../../features/calendar/presentation/providers/events_provider.dart (+63 more)
+Cohesion: 0.02
+Nodes (89): ../../../../../core/providers/ui_providers.dart, ../../../core/services/network_service.dart, ../../../../../core/services/sound_service.dart, ../../../../../core/testing/chaos_controller.dart, Column, Container, ListTile, Padding (+81 more)
 
 ### Community 191 - "Community 191"
 Cohesion: 0.10
 Nodes (19): code:bash (# 連接到資料庫), code:block2 (a) 索引使用), code:block3 (a) 資料類型), code:block4 (a) 列層級安全性), 1. 查詢效能審查（關鍵）, 2. 結構描述設計審查（高）, 3. 安全性審查（關鍵）, FAIL: 安全性反模式 (+11 more)
 
 ### Community 192 - "Community 192"
-Cohesion: 0.04
-Nodes (69): gates, MAX_CODE_CANDIDATES, escapeRegex(), extractRoute(), lineOf(), apply(), COUNT_CLAIM_TYPES, metadata (+61 more)
+Cohesion: 0.06
+Nodes (47): escapeRegex(), extractRoute(), lineOf(), apply(), COUNT_CLAIM_TYPES, metadata, rewriteCount(), apply() (+39 more)
 
 ### Community 193 - "Community 193"
 Cohesion: 0.09
@@ -11219,23 +11209,23 @@ Nodes (10): code:block17 (Phase 1: EXPAND), Anti-Patterns, code:block18 (Day 1: 
 
 ### Community 195 - "Community 195"
 Cohesion: 0.01
-Nodes (160): fn, assert, fs, path, repoRoot, requiredHeadings, requiredPatterns, reviewerPath (+152 more)
+Nodes (151): fn, assert, fs, path, repoRoot, requiredHeadings, requiredPatterns, reviewerPath (+143 more)
 
 ### Community 196 - "Community 196"
 Cohesion: 0.12
 Nodes (30): Any, api_request(), find_columns(), format_value_preview(), generate_mapping_code(), get_rows(), get_splits(), main() (+22 more)
 
 ### Community 197 - "Community 197"
-Cohesion: 0.10
-Nodes (19): Anti-Patterns, Beat Scheduling (Periodic Tasks), Calling Tasks, Canvas: Chaining and Grouping Tasks, Code-Defined Schedule, code:python (from datetime import timedelta), code:python (# Manage periodic tasks from Django admin or code), code:python (from celery import chain, group, chord) (+11 more)
+Cohesion: 0.07
+Nodes (25): Anti-Patterns, Beat Scheduling (Periodic Tasks), Calling Tasks, Canvas: Chaining and Grouping Tasks, Code-Defined Schedule, code:python (from datetime import timedelta), code:python (# Manage periodic tasks from Django admin or code), code:python (from celery import chain, group, chord) (+17 more)
 
 ### Community 198 - "Community 198"
-Cohesion: 0.02
-Nodes (95): create_event_screen.dart, Container, Padding, Row, Scaffold, SizedBox, Spacer, Container (+87 more)
+Cohesion: 0.05
+Nodes (66): InviteUserPanel(), SystemHealthPanel(), SystemHealthPanelProps, DEFAULT_FLAGS, ENV_OVERRIDES, FeatureFlag, getAllFeatureFlags(), isFeatureEnabled() (+58 more)
 
 ### Community 199 - "Community 199"
-Cohesion: 0.13
-Nodes (13): Config, Default, Display, Formatter, Path, Self, Vec, ContextObservationPriority (+5 more)
+Cohesion: 0.04
+Nodes (45): 1. Verificar Tipo De Conta Instagram, 2. Configurar Oauth (Abre Browser Para Autorização), "Abre O Dashboard", Agendar Publicação Futura, Audit Log, Best Practices, code:block1 (C:\Users\renat\skills\instagram\), code:bash (python C:\Users\renat\skills\instagram\scripts\run_all.py --) (+37 more)
 
 ### Community 200 - "Community 200"
 Cohesion: 0.11
@@ -11243,11 +11233,11 @@ Nodes (18): Anti-Patterns, Breaking schema changes require multi-step migration,
 
 ### Community 201 - "Community 201"
 Cohesion: 0.03
-Nodes (83): Database, Any, Database, RateLimitExceeded, Governança: rate limiting, audit log e confirmações para ações do Instagram., check_rate(), check_warning_threshold(), get_recent_actions() (+75 more)
+Nodes (86): Database, Any, Database, RateLimitExceeded, Governança: rate limiting, audit log e confirmações para ações do Instagram., check_rate(), check_warning_threshold(), get_recent_actions() (+78 more)
 
 ### Community 202 - "Community 202"
-Cohesion: 0.05
-Nodes (36): Caddy, CLI Quick Reference, code:bash (uc machine init user@host --name machine-1), code:caddyfile (https://device.example.com {), code:bash (uc service run \), code:bash (uc caddy config   # device.example.com block should appear), code:bash (uc scale web 5    # 5 replicas (spread across machines)), code:yaml (image: myapp:{{gitdate "20060102"}}.{{gitsha 7}}) (+28 more)
+Cohesion: 0.07
+Nodes (25): code:bash (uc machine init user@host --name machine-1), code:caddyfile (https://device.example.com {), code:bash (uc service run \), code:bash (uc caddy config   # device.example.com block should appear), code:bash (uc scale web 5    # 5 replicas (spread across machines)), code:yaml (image: myapp:{{gitdate "20060102"}}.{{gitsha 7}}), code:bash (uc deploy                          # Build + push + deploy), code:bash (uc inspect web) (+17 more)
 
 ### Community 203 - "Community 203"
 Cohesion: 0.05
@@ -11255,19 +11245,19 @@ Nodes (69): classifyService(), computeCostCoverage(), escapeCell(), renderCostCo
 
 ### Community 204 - "Community 204"
 Cohesion: 0.04
-Nodes (43): Building the Dependency Container, code:typescript (// src/context.ts), code:typescript (// src/errors.ts), code:typescript (// src/lib/recovery.ts), code:typescript (// src/services/__tests__/user.service.test.ts), code:typescript (// src/__tests__/integration/user.integration.test.ts), code:typescript (// src/__tests__/property/user.property.test.ts), code:typescript (// Template for a new service) (+35 more)
+Nodes (45): Building the Dependency Container, code:typescript (// src/context.ts), code:typescript (// src/errors.ts), code:typescript (// src/lib/recovery.ts), code:typescript (// src/services/__tests__/user.service.test.ts), code:typescript (// src/__tests__/integration/user.integration.test.ts), code:typescript (// src/__tests__/property/user.property.test.ts), code:typescript (// Template for a new service) (+37 more)
 
 ### Community 205 - "Community 205"
-Cohesion: 0.04
-Nodes (45): ../../../core/services/network_service.dart, ../../../../../core/services/sound_service.dart, ../../../../../core/testing/chaos_controller.dart, Column, Container, ListTile, Padding, Scaffold (+37 more)
+Cohesion: 0.07
+Nodes (30): Configuração central da skill Instagram.  Todos os paths, constantes da API e, Configuracao central da skill Sentinel.  Paths, thresholds de analise, pesos d, Database, Any, Any, Database, get_score_label(), Retorna label textual para um score numerico. (+22 more)
 
 ### Community 206 - "Community 206"
 Cohesion: 0.05
 Nodes (41): Basic Usage, code:typescript (// ❌ NEVER DO THIS - Early return with loading spinner), code:typescript (import { useMuiSnackbar } from '@/hooks/useMuiSnackbar';), code:typescript (import { ErrorBoundary } from 'react-error-boundary';), code:typescript (import React from 'react';), code:typescript (// ❌ NEVER - Early return), code:typescript (// ✅ BEST - useSuspenseQuery + SuspenseLoader), code:typescript (import { Skeleton, Box } from '@mui/material';) (+33 more)
 
 ### Community 207 - "Community 207"
-Cohesion: 0.05
-Nodes (44): code:typescript (// PASS: GOOD: Explain WHY, not WHAT), Comments & Documentation, JSDoc for Public APIs, When to Comment, Comments & Documentation, JSDoc for Public APIs, When to Comment, 2. KISS (Keep It Simple, Stupid) (+36 more)
+Cohesion: 0.06
+Nodes (40): code:typescript (// PASS: GOOD: Explain WHY, not WHAT), Comments & Documentation, JSDoc for Public APIs, When to Comment, Comments & Documentation, JSDoc for Public APIs, When to Comment, code:`typescript (/**) (+32 more)
 
 ### Community 208 - "Community 208"
 Cohesion: 0.04
@@ -11310,16 +11300,16 @@ Cohesion: 0.22
 Nodes (9): code:`markdown (启动 {name} ({port}) 并打开日志。), code:`markdown (停止 {name} ({port})。), code:`markdown (停止所有服务。), pm2-all-stop.md, pm2-{port}-stop.md, pm2-{port}.md (启动单个 + 日志), PowerShell 脚本 (pm2-logs-{port}.ps1), PowerShell 脚本 (pm2-monit.ps1) (+1 more)
 
 ### Community 218 - "Community 218"
-Cohesion: 0.07
-Nodes (38): Authentication & Authorization, JWT Token Validation, Role-Based Access Control, Authentication & Authorization, JWT Token Validation, Role-Based Access Control, Authentication & Authorization, JWT Token Validation (+30 more)
+Cohesion: 0.04
+Nodes (12): Bd, eb(), ep, gp, hd, mv, ou, qd() (+4 more)
 
 ### Community 219 - "Community 219"
-Cohesion: 0.05
-Nodes (43): code:json ({), code:bash (# Dieses Repo als Marketplace hinzufügen), Installation, Option 1: Als Plugin installieren (empfohlen), TODOコメントについて警告する, よくあるフックのレシピ, 新しいソースファイルと一緒にテストファイルを要求する, code:markdown (# TDD 워크플로우) (+35 more)
+Cohesion: 0.10
+Nodes (19): Agents (12), code:bash (npx ecc-install typescript), code:bash (git clone https://github.com/affaan-m/ECC), code:bash (node scripts/build-opencode.js   # or: npm run build:opencod), code:bash (export ECC_HOOK_PROFILE=standard), Commands (31), Configuration, Custom Tools (+11 more)
 
 ### Community 220 - "Community 220"
-Cohesion: 0.02
-Nodes (117): ../../../core/services/auth_service.dart, ClipRRect, Color, Column, initState, Scaffold, SizedBox, SnackBar (+109 more)
+Cohesion: 0.06
+Nodes (32): ClipRRect, Color, Column, initState, Scaffold, SizedBox, SnackBar, ../../../../../core/services/auth_service.dart (+24 more)
 
 ### Community 221 - "Community 221"
 Cohesion: 0.05
@@ -11347,7 +11337,7 @@ Nodes (34): Azure CLI Credential, Azure Identity (Java), Best Practices, Chained
 
 ### Community 227 - "Community 227"
 Cohesion: 0.05
-Nodes (45): code:typescript (try {), Error Handling, Error Handling Style: Try-Catch Blocks, Error Handling, Error Handling Style: Try-Catch Blocks, Error Handling, Error Handling Style: Try-Catch Blocks, Azure Key Vault Keys SDK for TypeScript (+37 more)
+Nodes (48): Azure Key Vault Keys SDK for TypeScript, Backup and Restore, Best Practices, code:bash (# Keys SDK), code:typescript (import { CryptographyClient } from "@azure/keyvault-keys";), code:typescript (// Encrypt), code:typescript (import { createHash } from "node:crypto";), code:typescript (// Wrap a key (encrypt it for storage)) (+40 more)
 
 ### Community 228 - "Community 228"
 Cohesion: 0.23
@@ -11371,7 +11361,7 @@ Nodes (9): Build Fails, Handling Failures, Integration Test Fails, Lint Fails, N
 
 ### Community 233 - "Community 233"
 Cohesion: 0.03
-Nodes (63): { execFileSync }, getPluginRoot(), path, runExistingHook(), claudeStr, { hookEnabled, readStdin, runExistingHook, transformToClaude }, input, { readStdin } (+55 more)
+Nodes (64): { execFileSync }, getPluginRoot(), path, runExistingHook(), claudeStr, { hookEnabled, readStdin, runExistingHook, transformToClaude }, input, { readStdin } (+56 more)
 
 ### Community 234 - "Community 234"
 Cohesion: 0.10
@@ -11411,7 +11401,7 @@ Nodes (18): code:block14 (## 实现完成), code:bash (# 运行类型检查（�
 
 ### Community 243 - "Community 243"
 Cohesion: 0.05
-Nodes (41): 10. IP Geolocation, 11. Current Weather, 1. Geocoding (Address to Coordinates), 2. Batch Geocoding, 3. Reverse Geocoding (Coordinates to Address), 4. Get Boundary Polygon, 5. Route Directions, 6. Route Directions with Options (+33 more)
+Nodes (39): 10. IP Geolocation, 11. Current Weather, 1. Geocoding (Address to Coordinates), 2. Batch Geocoding, 3. Reverse Geocoding (Coordinates to Address), 4. Get Boundary Polygon, 5. Route Directions, 6. Route Directions with Options (+31 more)
 
 ### Community 244 - "Community 244"
 Cohesion: 0.25
@@ -11431,15 +11421,15 @@ Nodes (29): code:block5 (everything-claude-code/), 含まれるもの, code:bash
 
 ### Community 248 - "Community 248"
 Cohesion: 0.03
-Nodes (82): ElevenLabs (via API, no MCP), Authentication, code:python (import os), Error Handling, Integration with Content Engine, OAuth 1.0a (User Context), OAuth 2.0 Bearer Token (App-Only), Rate Limits (+74 more)
+Nodes (75): ElevenLabs (via API, no MCP), Authentication, code:python (import os), Error Handling, Integration with Content Engine, OAuth 1.0a (User Context), OAuth 2.0 Bearer Token (App-Only), Rate Limits (+67 more)
 
 ### Community 249 - "Community 249"
 Cohesion: 0.11
 Nodes (18): 1. Agents as Specialists, 2. Skills as Reusable Workflows, 3. Steering Files as Persistent Context, 4. Hooks as Automation, Agentic Workflows: A Deep Dive, Common Pitfalls, Conclusion, Core Principles (+10 more)
 
 ### Community 250 - "Community 250"
-Cohesion: 0.05
-Nodes (35): code:python (class AsyncDatabase:), code:python (from typing import TypeVar, Generic, Callable, ParamSpec, Co), code:python (def process(value: str | int | None) -> str:), code:python (class UserService:), code:block14 (project/), code:python (# __init__.py), code:python (class User:), code:python (from functools import reduce) (+27 more)
+Cohesion: 0.06
+Nodes (29): code:python (class AsyncDatabase:), code:python (from typing import TypeVar, Generic, Callable, ParamSpec, Co), code:python (def process(value: str | int | None) -> str:), code:python (class UserService:), code:block14 (project/), code:python (# __init__.py), code:python (class User:), code:python (from functools import reduce) (+21 more)
 
 ### Community 251 - "Community 251"
 Cohesion: 0.06
@@ -11458,8 +11448,8 @@ Cohesion: 0.04
 Nodes (45): 10. Performance Defaults, 11. TypeScript Standards, 12. Canonical File Structure, 13. Canonical Component Template, 14. Anti-Patterns (Immediate Rejection), 15. Integration With Other Skills, 16. Operator Validation Checklist, 17. Skill Status (+37 more)
 
 ### Community 256 - "Community 256"
-Cohesion: 0.05
-Nodes (42): code:bash (python << 'EOF'), Additional docs, code:python (from dotenv import load_dotenv), code:python (from videodb.exceptions import AuthenticationError, InvalidR), Common pitfalls, Error handling, Running Python code, VideoDB Skill (+34 more)
+Cohesion: 0.12
+Nodes (15): VideoDB 技能, 何时使用什么, 使用场景, 屏幕录制（桌面捕获）, 快速开始, 时间线编辑 + 生成, 来源, 查询事件 (+7 more)
 
 ### Community 257 - "Community 257"
 Cohesion: 0.22
@@ -11470,8 +11460,8 @@ Cohesion: 0.07
 Nodes (28): code:block21 (Page Context to Gather:), code:block22 (Create exactly {testCaseCount} comprehensive test cases for ), code:json ({), code:block24 (━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━), code:markdown (# OpenTestAI Test Case Report), code:html (<!-- Test case card structure -->), Gathering Page Context, How It Works (+20 more)
 
 ### Community 259 - "Community 259"
-Cohesion: 0.05
-Nodes (42): 6. Análise Do Perfil De Comprador Final, Análise De Financiamento Pós-Arrematação, Análise Por Banco, Benchmark: Quanto O Leilão Precisa Render Para Superar O Cdi?, Best Practices, code:block1 (1º Leilão (mínimo = avaliação):), code:block10 (1. ALERTAS ATIVOS:), code:block11 (SELIC Meta (fev/2025):           13,25% a.a.) (+34 more)
+Cohesion: 0.04
+Nodes (43): 6. Análise Do Perfil De Comprador Final, Análise De Financiamento Pós-Arrematação, Análise Por Banco, Benchmark: Quanto O Leilão Precisa Render Para Superar O Cdi?, Best Practices, code:block1 (1º Leilão (mínimo = avaliação):), code:block10 (1. ALERTAS ATIVOS:), code:block11 (SELIC Meta (fev/2025):           13,25% a.a.) (+35 more)
 
 ### Community 260 - "Community 260"
 Cohesion: 0.04
@@ -11550,12 +11540,12 @@ Cohesion: 0.04
 Nodes (44): Actions, Actions, Actions, Actions, Actions, Actions, Actions, Agent Architecture (+36 more)
 
 ### Community 279 - "Community 279"
-Cohesion: 0.05
-Nodes (37): Async Client, Async Publishing, Azure Event Grid SDK for Java, Best Practices, Client Creation, code:java (public class OrderData {), code:java (import com.azure.messaging.eventgrid.EventGridEvent;), code:java (import com.azure.core.models.CloudEvent;) (+29 more)
+Cohesion: 0.06
+Nodes (31): Async Publishing, Azure Event Grid SDK for Java, Best Practices, code:java (public class OrderData {), code:java (import com.azure.messaging.eventgrid.EventGridEvent;), code:java (import com.azure.core.models.CloudEvent;), code:java (import com.azure.messaging.eventgrid.systemevents.*;), code:java (import com.azure.messaging.eventgrid.namespaces.EventGridRec) (+23 more)
 
 ### Community 280 - "Community 280"
 Cohesion: 0.09
-Nodes (47): DELETE(), GET(), POST(), PUT(), GET(), PATCH(), POST(), adminInterventionNotes (+39 more)
+Nodes (46): DELETE(), GET(), POST(), PUT(), GET(), PATCH(), POST(), adminInterventionNotes (+38 more)
 
 ### Community 281 - "Community 281"
 Cohesion: 0.07
@@ -11566,12 +11556,12 @@ Cohesion: 0.02
 Nodes (86): Get Messages, code:java (BatchPoolEnableAutoScaleParameters autoScaleParams = new Bat), code:java (SyncPoller<BatchPool, Void> deletePoller = batchClient.begin), code:java (import com.azure.compute.batch.models.*;), code:java (BatchPool pool = batchClient.getPool("myPoolId");), code:java (import com.azure.core.http.rest.PagedIterable;), Create Pool, Delete Pool (+78 more)
 
 ### Community 283 - "Community 283"
-Cohesion: 0.05
-Nodes (54): code:block12 ('''), code:python (class DesignPatternExplainer:), code:block14, code:block15, code:block16 ('''), code:python (def analyze_common_pitfalls(self, code):), code:block18 ('''), code:block19 (''') (+46 more)
+Cohesion: 0.04
+Nodes (63): code:block5, code:python (class AlgorithmVisualizer:), code:block10, code:yaml (openapi: 3.0.0), code:markdown (## User Service), code:block6, code:block8, code:block9 (+55 more)
 
 ### Community 284 - "Community 284"
-Cohesion: 0.07
-Nodes (40): Page(), DriveQueueView(), metadata, ConflictWarningBannerProps, DriveQueuePage(), LeaveApprovalCard(), LeaveApprovalCardProps, LeaveBalanceDisplay() (+32 more)
+Cohesion: 0.04
+Nodes (69): description, devDependencies, ts-node, @types/better-sqlite3, @types/cors, @types/express, @types/node, typescript (+61 more)
 
 ### Community 285 - "Community 285"
 Cohesion: 0.04
@@ -11594,16 +11584,16 @@ Cohesion: 0.24
 Nodes (16): code:text ([CRITICAL] SQLインジェクション脆弱性), code:bash (# 型チェック), code:python (# Bad), Pythonicコード（高）, Pythonバージョンの考慮事項, Python固有のアンチパターン, エラー処理（クリティカル）, コード品質（高） (+8 more)
 
 ### Community 290 - "Community 290"
-Cohesion: 0.02
-Nodes (114): code:python (# ステップ1: RED - 失敗するテストを書く), code:python (# tests/test_api.py), code:python (# tests/test_integration.py), code:bash (# カバレッジでテストを実行), Factory Boy, code:python (# tests/test_email.py), code:python (# tests/factories.py), code:python (# tests/test_models.py) (+106 more)
+Cohesion: 0.03
+Nodes (85): code:python (# tests/test_integration.py), Factory Boy, code:python (# tests/test_email.py), code:python (# tests/factories.py), code:python (# tests/test_models.py), Factory Boy, Coverage, Coverage Configuration (+77 more)
 
 ### Community 291 - "Community 291"
 Cohesion: 0.10
 Nodes (26): exec(), { findProjectRoot, detectFormatter, resolveFormatterBin }, fs, log(), maybeRunQualityGate(), path, result, run() (+18 more)
 
 ### Community 292 - "Community 292"
-Cohesion: 0.08
-Nodes (5): HealthManager, performRollback(), safeTransaction(), TransactionResult, TransactionStep
+Cohesion: 0.07
+Nodes (12): handleQueryError(), timeSync, TimeSyncManager, queryClient, queryStartTimes, db, DevMonitor, PerfMetric (+4 more)
 
 ### Community 293 - "Community 293"
 Cohesion: 0.03
@@ -11618,8 +11608,8 @@ Cohesion: 0.08
 Nodes (24): AI Media Quality Analyzer, API Endpoints, Backend Changes, Branch, CI/CD Integration, Configuration Changes, Database Migrations, Database Schema (+16 more)
 
 ### Community 296 - "Community 296"
-Cohesion: 0.07
-Nodes (37): code:python (def process_data(data: list[int]) -> int:), code:python (import concurrent.futures), Async/Await for Concurrent I/O, Concurrency Patterns, Multiprocessing for CPU-Bound Tasks, Threading for I/O-Bound Tasks, Async Client, Quick Start (+29 more)
+Cohesion: 0.05
+Nodes (52): 2. Input Validation, Always Validate User Input, File Upload Validation, Verification Steps, 2. Input Validation, Always Validate User Input, File Upload Validation, Verification Steps (+44 more)
 
 ### Community 297 - "Community 297"
 Cohesion: 0.18
@@ -11634,8 +11624,8 @@ Cohesion: 0.11
 Nodes (16): Alerts in Dashboards, API Monitoring Dashboard, Best Practices, code:yaml (apiVersion: 1), code:json ({), code:json ({), Dashboard Provisioning, Dashboard Structure (+8 more)
 
 ### Community 300 - "Community 300"
-Cohesion: 0.11
-Nodes (27): buildUpdateDirective(), cli(), compareSemver(), computeUpdateDirective(), DESIGN_NAMES, extractRegister(), FALLBACK_DIRS, fetchLatestSkillVersion() (+19 more)
+Cohesion: 0.08
+Nodes (38): buildUpdateDirective(), cli(), compareSemver(), computeUpdateDirective(), DESIGN_NAMES, extractRegister(), FALLBACK_DIRS, fetchLatestSkillVersion() (+30 more)
 
 ### Community 301 - "Community 301"
 Cohesion: 0.05
@@ -11650,8 +11640,8 @@ Cohesion: 0.04
 Nodes (44): 1. Testing Tool Selection, 2. Testing Pyramid for Mobile, 3. What to Test at Each Level, 4. Platform-Specific Testing, 5. Offline & Network Testing, 6. Performance Testing, 7. Accessibility Testing, 8. CI/CD Integration (+36 more)
 
 ### Community 304 - "Community 304"
-Cohesion: 0.04
-Nodes (41): 7. Comandos Rapidos, A Regra De Ouro, Automacao De Revenue Com Stripe, Benchmarks Saas B2C Brasil, Best Practices, Calculos Essenciais, Checkout Session (Recomendado Para Conversao), code:bash (pip install stripe) (+33 more)
+Cohesion: 0.05
+Nodes (39): 7. Comandos Rapidos, A Regra De Ouro, Automacao De Revenue Com Stripe, Benchmarks Saas B2C Brasil, Best Practices, Calculos Essenciais, Checkout Session (Recomendado Para Conversao), code:block10 (R$ 29/mes (nao R$ 30 - efeito do digito esquerdo)) (+31 more)
 
 ### Community 305 - "Community 305"
 Cohesion: 0.04
@@ -11671,7 +11661,7 @@ Nodes (37): ComplianceSpec, ObservationEvent, ComplianceSpec, ObservationEvent, 
 
 ### Community 309 - "Community 309"
 Cohesion: 0.05
-Nodes (83): extractSummary(), findPowerShell(), findTerminalTTY(), fs, { isMacOS, log }, isUnderMultiplexer(), notifyMacOS(), notifyWindows() (+75 more)
+Nodes (82): extractSummary(), findPowerShell(), findTerminalTTY(), fs, { isMacOS, log }, isUnderMultiplexer(), notifyMacOS(), notifyWindows() (+74 more)
 
 ### Community 310 - "Community 310"
 Cohesion: 0.09
@@ -11679,7 +11669,7 @@ Nodes (21): code:tsx (// Server Component - default, async, never ships JS for i
 
 ### Community 311 - "Community 311"
 Cohesion: 0.01
-Nodes (189): AsyncValue, apiBaseUrl, AppFlavor, enableAnalytics, enableDetailedLogging, EnvConfig, flavor, _getSupabaseAnonKey (+181 more)
+Nodes (298): apiBaseUrl, AppFlavor, enableAnalytics, enableDetailedLogging, EnvConfig, flavor, _getSupabaseAnonKey, isDevelopment (+290 more)
 
 ### Community 312 - "Community 312"
 Cohesion: 0.04
@@ -11698,12 +11688,12 @@ Cohesion: 0.08
 Nodes (24): 10. Security Documentation ✅, 1. Secure Server Sessions ✅, 2. Refresh-Token / Session Expiry Logic ✅, 3. Environment Variable Validation ✅, 4. Input Validation with Zod ✅, 5. Server-Side Sanitization ✅, 6. IP Rate-Limiting Middleware ✅, 7. RBAC Middleware Auditing ✅ (+16 more)
 
 ### Community 316 - "Community 316"
-Cohesion: 0.02
-Nodes (223): AdminActivityPage(), InventoryAddPage(), InviteUserPanelProps, SystemUpdate, MODULES, WorkspacesClient(), CampaignCreateModalProps, gradientPresets (+215 more)
+Cohesion: 0.01
+Nodes (248): AdminActivityPage(), InventoryAddPage(), SystemUpdate, AuthErrorBoundary, Props, State, CampaignCreateModalProps, gradientPresets (+240 more)
 
 ### Community 317 - "Community 317"
-Cohesion: 0.10
-Nodes (23): code:rust (<View> {), 1. Basic Layout Container, 2. Centering Content, 3. Horizontal Row Layout, 4. Fixed + Flexible Layout, Key Patterns, 1. Basic Custom Shader, 2. Rounded Rectangle with Border (+15 more)
+Cohesion: 0.14
+Nodes (12): Advanced Patterns, Built-in Functions (GLSL), Built-in Variables, Documentation, IMPORTANT: Documentation Completeness Check, Limitations, Makepad Shaders Skill, Sdf2d Quick Reference (+4 more)
 
 ### Community 318 - "Community 318"
 Cohesion: 0.06
@@ -11719,7 +11709,7 @@ Nodes (19): BaseSchemaValidator, Base validator with common validation logic for
 
 ### Community 321 - "Community 321"
 Cohesion: 0.02
-Nodes (85): Color get, backgroundPrimary, backgroundSecondary, border, borderStrong, _boxName, cardShadow, cardSurface (+77 more)
+Nodes (83): Color get, backgroundPrimary, backgroundSecondary, border, borderStrong, _boxName, cardShadow, cardSurface (+75 more)
 
 ### Community 322 - "Community 322"
 Cohesion: 0.06
@@ -11734,12 +11724,12 @@ Cohesion: 0.18
 Nodes (10): Best Practices, code:markdown (## When Stuck, Check:), Core Principles, Resources, 1. The Scientific Method, 2. Debugging Mindset, 3. Rubber Duck Debugging, Common Debugging Mistakes (+2 more)
 
 ### Community 325 - "Community 325"
-Cohesion: 0.08
-Nodes (28): 1. **API Documentation**, 2. **Architecture Documentation**, 3. **Code Documentation**, 4. **User Documentation**, 5. **Documentation Automation**, Automated Documentation Generation Implementation Playbook, Clone and setup, code:python (import inspect) (+20 more)
+Cohesion: 0.04
+Nodes (62): code:python (class VisualExplainer:), code:python (def generate_step_by_step_explanation(self, code, analysis):), Instructions, 1. **API Documentation**, 2. **Architecture Documentation**, 3. **Code Documentation**, 4. **User Documentation**, 5. **Documentation Automation** (+54 more)
 
 ### Community 326 - "Community 326"
 Cohesion: 0.06
-Nodes (40): 1. Secrets Management, FAIL: NEVER Do This, PASS: ALWAYS Do This, Verification Steps, 1. Secrets Management, FAIL: NEVER Do This, PASS: ALWAYS Do This, Verification Steps (+32 more)
+Nodes (38): 1. Secrets Management, FAIL: NEVER Do This, PASS: ALWAYS Do This, Verification Steps, 1. Secrets Management, FAIL: NEVER Do This, PASS: ALWAYS Do This, Verification Steps (+30 more)
 
 ### Community 327 - "Community 327"
 Cohesion: 0.13
@@ -11754,24 +11744,24 @@ Cohesion: 0.11
 Nodes (18): code:bash (# Şema değişikliklerinden migration oluştur), code:block16 (Faz 1: EXPAND), code:block17 (Gün 1: Migration new_status sütunu ekler (nullable)), code:bash (# Boş migration oluştur, sonra SQL'i manuel düzenle), Drizzle (TypeScript/Node.js), Prisma (TypeScript/Node.js), Anti-Kalıplar, İş Akışı (+10 more)
 
 ### Community 330 - "Community 330"
-Cohesion: 0.07
-Nodes (27): Blue-Green Deployment, Canary Deployment, CI/CD Pipeline, code:block1 (Instance 1: v1 → v2  (önce güncelle)), code:bash (# Tüm yapılandırma ortam değişkenleri ile — asla kodda değil), code:bash (# Docker/Kubernetes: önceki image'a işaret et), code:block2 (Blue  (v1) ← trafik), code:block3 (v1: %95 trafik) (+19 more)
+Cohesion: 0.08
+Nodes (23): Blue-Green Deployment, Canary Deployment, code:block1 (Instance 1: v1 → v2  (önce güncelle)), code:bash (# Tüm yapılandırma ortam değişkenleri ile — asla kodda değil), code:bash (# Docker/Kubernetes: önceki image'a işaret et), code:block2 (Blue  (v1) ← trafik), code:block3 (v1: %95 trafik), Altyapı (+15 more)
 
 ### Community 331 - "Community 331"
-Cohesion: 0.10
-Nodes (18): code:bash (# Capability eval'ları çalıştır), Eval Harness Skill, pass@k, pass^k, 1. Tanımla (Kodlamadan Önce), 2. Uygula, 3. Değerlendir, 4. Rapor (+10 more)
+Cohesion: 0.14
+Nodes (12): Eval Harness Skill, pass@k, pass^k, En İyi Uygulamalar, Eval Anti-Kalıpları, Felsefe, Grader Tipleri, Metrikler (+4 more)
 
 ### Community 332 - "Community 332"
 Cohesion: 0.12
 Nodes (16): code:bash (# スキル構造の例), code:bash (# サブエージェント構造の例), code:bash (# 有効なMCPを確認), code:bash (# マーケットプレイスを追加), code:bash (# 有効なプラグインの例), Everything Claude Code 簡潔ガイド, MCP（Model Context Protocol）, VSCode / Cursor (+8 more)
 
 ### Community 333 - "Community 333"
-Cohesion: 0.08
-Nodes (27): code:bash (# HAP パッケージをビルドする（グローバル hvigor 環境）), code:bash (# プロジェクト構造を確認する), DevEco Studio CLI, code:bash (# Build HAP package (global hvigor environment)), code:bash (# Check project structure), code:json ({), DevEco Studio CLI, After Editing .ets/.ts Files (+19 more)
+Cohesion: 0.05
+Nodes (44): code:bash (# HAP パッケージをビルドする（グローバル hvigor 環境）), code:bash (# プロジェクト構造を確認する), DevEco Studio CLI, code:bash (# Build HAP package (global hvigor environment)), code:bash (# Check project structure), code:json ({), DevEco Studio CLI, After Editing .ets/.ts Files (+36 more)
 
 ### Community 334 - "Community 334"
-Cohesion: 0.09
-Nodes (20): code:markdown ([能力评估：功能名称]), code:markdown (## EVAL：添加身份验证), code:markdown ([回归评估：功能名称]), Eval Harness 技能, pass@k, 理念, pass^k, pass@k 指南 (+12 more)
+Cohesion: 0.07
+Nodes (27): code:markdown ([能力评估：功能名称]), code:markdown (## EVAL：添加身份验证), code:markdown ([回归评估：功能名称]), code:markdown (## 评估定义：功能-xyz), code:markdown (评估报告：功能-xyz), Eval Harness 技能, pass@k, 理念 (+19 more)
 
 ### Community 335 - "Community 335"
 Cohesion: 0.06
@@ -11799,7 +11789,7 @@ Nodes (40): addFinding(), claudePermissionDenyRanges(), CRITICAL_TEXT_INDICATORS
 
 ### Community 341 - "Community 341"
 Cohesion: 0.04
-Nodes (46): code:yaml (name: CI/CD), code:bash (# Docker/Kubernetes: point to previous image), Application, Blue-Green Deployment, Canary Deployment, CI/CD Pipeline, code:block9 (PR opened:), Deployment Patterns (+38 more)
+Nodes (50): CI/CD Pipeline, code:yaml (name: CI/CD), code:block9 (PR açıldığında:), code:bash (# Docker/Kubernetes: point to previous image), Application, Blue-Green Deployment, Canary Deployment, CI/CD Pipeline (+42 more)
 
 ### Community 342 - "Community 342"
 Cohesion: 0.13
@@ -11818,8 +11808,8 @@ Cohesion: 0.05
 Nodes (42): 1. Interactive Rebase, 2. Cherry-Picking, 3. Git Bisect, 4. Worktrees, 5. Reflog, Advanced Techniques, Autosquash Workflow, Best Practices (+34 more)
 
 ### Community 346 - "Community 346"
-Cohesion: 0.05
-Nodes (39): 1. Installation, 1. Installation, 2. Create GitRepository, 2. Repository Structure, 3. Create Application, 3. Create Kustomization, 4. App of Apps Pattern, ArgoCD Setup (+31 more)
+Cohesion: 0.06
+Nodes (32): 1. Installation, 2. Repository Structure, 3. Create Application, 4. App of Apps Pattern, ArgoCD Setup, Best Practices, Blue-Green Deployment, Canary Deployment with ArgoCD Rollouts (+24 more)
 
 ### Community 347 - "Community 347"
 Cohesion: 0.05
@@ -11834,8 +11824,8 @@ Cohesion: 0.12
 Nodes (36): audit_log(), check_command_allowed(), check_completion_promise(), check_context_clear_signal(), check_max_iterations(), check_prerequisites(), check_skill_installed(), check_staged_autonomy() (+28 more)
 
 ### Community 350 - "Community 350"
-Cohesion: 0.07
-Nodes (25): Android, Android SDK Issues, code:bash (cargo makepad android run -p your-app --release), code:bash (# Install iOS toolchain), code:bash (cargo makepad apple ios \), code:bash (cd ./target/makepad-apple-app/aarch64-apple-ios/release), code:bash (# Install Wasm toolchain), code:bash (cd ./target/makepad-wasm-app/release/your-app) (+17 more)
+Cohesion: 0.12
+Nodes (15): Android SDK Issues, code:bash (# Install Wasm toolchain), code:bash (cd ./target/makepad-wasm-app/release/your-app), code:bash (# Reinstall toolchain with full NDK), External References, iOS Provisioning, Limitations, Makepad Packaging & Deployment (+7 more)
 
 ### Community 351 - "Community 351"
 Cohesion: 0.05
@@ -11882,16 +11872,16 @@ Cohesion: 0.05
 Nodes (43): 1. Explicit Negation in Rules, 2. Entry in Rationalization Table, 3. Red Flag Entry, 4. Update description, code:markdown (IMPORTANT: This is a real scenario. Choose and act.), code:yaml (description: Use when you wrote code before tests, when temp), code:markdown (your human partner: You read the skill and chose Option C an), code:markdown (Scenario: 200 lines done, forgot TDD, exhausted, dinner plan) (+35 more)
 
 ### Community 362 - "Community 362"
-Cohesion: 0.14
-Nodes (12): Best Practices, Eval Anti-Patterns, Eval Harness Skill, Grader Types, Metrics, Minimal Eval Artifact Layout, pass@k, pass^k (+4 more)
+Cohesion: 0.13
+Nodes (13): Best Practices, Eval Anti-Patterns, Eval Harness Skill, Example: Adding Authentication, Grader Types, Metrics, Minimal Eval Artifact Layout, pass@k (+5 more)
 
 ### Community 363 - "Community 363"
 Cohesion: 0.06
 Nodes (36): Admin Monitoring Flow, AI Assistant Endpoints, AI Assistant Flow, 🏗️ Architecture Diagrams, 🧩 Component Architecture, 🗃️ Database Schema Changes, Document Locking Endpoints, Document Locking Flow (+28 more)
 
 ### Community 364 - "Community 364"
-Cohesion: 0.04
-Nodes (7): ho, io, nm, om, po, wf, yf()
+Cohesion: 0.03
+Nodes (13): _$AE(), bc(), dc(), firstUpdated(), Gv, ho, io, nm (+5 more)
 
 ### Community 365 - "Community 365"
 Cohesion: 0.05
@@ -11915,11 +11905,11 @@ Nodes (50): API Integration Test Pattern, E2E Test Pattern (Playwright), Testing
 
 ### Community 370 - "Community 370"
 Cohesion: 0.04
-Nodes (50): code:python (def extract_with_cache(), code:python (# 悪い例: パスベースのキャッシュ（ファイルの移動/名前変更で壊れる）), code:python (# BAD: Path-based caching (breaks on file move/rename)), code:python (import json), Query Events, Quick Start, Screen Recording (Desktop Capture), Query Events (+42 more)
+Nodes (46): 3. Build a Reproducible Pipeline, code:python (import hashlib), code:python (def extract_with_cache(), code:python (# 悪い例: パスベースのキャッシュ（ファイルの移動/名前変更で壊れる）), code:python (# BAD: Path-based caching (breaks on file move/rename)), 3. Build a Reproducible Pipeline, code:python (import json), Upload from JSON File (+38 more)
 
 ### Community 371 - "Community 371"
 Cohesion: 0.06
-Nodes (34): Anti-Pattern 1: Business Logic in Routes (Bad ❌), Anti-Patterns, BaseController Pattern, BaseController Pattern (Template), Clean Route Pattern, code:typescript (// routes/userRoutes.ts), code:typescript (async createUser(req: Request, res: Response): Promise<void>), code:typescript (async getUser(req: Request, res: Response): Promise<void> {) (+26 more)
+Nodes (35): Anti-Pattern 1: Business Logic in Routes (Bad ❌), Anti-Patterns, BaseController Pattern, BaseController Pattern (Template), Clean Route Pattern, code:typescript (// routes/userRoutes.ts), code:typescript (// 200 - Success (default)), code:bash (# Find large route files) (+27 more)
 
 ### Community 372 - "Community 372"
 Cohesion: 0.05
@@ -11938,8 +11928,8 @@ Cohesion: 0.09
 Nodes (25): Path, check_drift(), Verifica se ACTIVE_CONTEXT.md e MEMORY.md estão sincronizados., generate_briefing(), get_quick_status(), _get_recent_session_files(), _get_session_snippet(), Carrega contexto no início de uma nova sessão. Gera briefings de diferentes nív (+17 more)
 
 ### Community 376 - "Community 376"
-Cohesion: 0.04
-Nodes (61): POST(), ApiAuthContext, ApiAuthHandler, ApiAuthOptions, DELETE(), GET(), POST(), POST() (+53 more)
+Cohesion: 0.05
+Nodes (40): POST(), ApiAuthContext, ApiAuthHandler, ApiAuthOptions, DELETE(), GET(), POST(), POST() (+32 more)
 
 ### Community 377 - "Community 377"
 Cohesion: 0.12
@@ -11947,7 +11937,7 @@ Nodes (18): code:bash (# TypeScriptプロジェクト構造を分析（ts-morph�
 
 ### Community 378 - "Community 378"
 Cohesion: 0.09
-Nodes (23): CandidateContractError, candidateLabel(), nonEmptyString(), VALID_SCOPES, validateCandidate(), validateCandidates(), applyHardGates(), flagsEndpointReason() (+15 more)
+Nodes (24): CandidateContractError, candidateLabel(), nonEmptyString(), VALID_SCOPES, validateCandidate(), validateCandidates(), applyHardGates(), flagsEndpointReason() (+16 more)
 
 ### Community 379 - "Community 379"
 Cohesion: 0.05
@@ -11974,48 +11964,48 @@ Cohesion: 0.04
 Nodes (52): code:bash (# Verify the server is reachable), code:bash (# Good: block with stderr message and exit 2), Community Workarounds For Open Claude Code Bugs, Earlier-than-expected compaction with `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, False "Hook Error" labels on otherwise successful hooks, Hook edits do not hot-reload, MCP connectors look connected but fail after compaction, Related ECC Docs (+44 more)
 
 ### Community 385 - "Community 385"
-Cohesion: 0.05
-Nodes (39): code:bash (node skills/vercel-optimize/scripts/build-docs.mjs), code:bash (node --test packages/vercel-optimize-tests/test/*.test.mjs), Common changes, Contributing to `vercel-optimize`, Output contracts, Rules, code:block10, code:block11 (+31 more)
+Cohesion: 0.04
+Nodes (52): Agents, code:bash (# 1. Fork and clone), Commands, Contributing Skills, Contributing to Everything Claude Code, Cross-Harness and Translations, Do, Don't (+44 more)
 
 ### Community 386 - "Community 386"
-Cohesion: 0.06
-Nodes (52): 1. Incident Severity Levels, 2. Runbook Structure, Best Practices, Check disk usage, Check error rates, Check recent deployments, Check service health, code:block1 (1. Overview & Impact) (+44 more)
+Cohesion: 0.07
+Nodes (43): 1. Incident Severity Levels, 2. Runbook Structure, Best Practices, Check disk usage, Check recent deployments, Check service health, code:block1 (1. Overview & Impact), code:markdown (# [Service Name] Outage Runbook) (+35 more)
 
 ### Community 387 - "Community 387"
 Cohesion: 0.20
 Nodes (8): code:dart (final dio = Dio(BaseOptions(), 8. HTTP with Dio, 8. HTTP with Dio, 8. 使用 Dio 的 HTTP 请求, Dart/Flutter 模式, 使用场景, 参考, 工作原理
 
 ### Community 388 - "Community 388"
-Cohesion: 0.08
-Nodes (32): AWS, Azure (Federated Identity), GCP (Workload Identity Federation), OIDC Authentication (Keyless Cloud Auth), code:yaml (strategy:), 1. Cache Swarm Dependencies, 1. Store Configurations Securely, 2. Use Appropriate Runner Sizes (+24 more)
+Cohesion: 0.10
+Nodes (26): 4.1 Sign Images with Cosign (Sigstore — Keyless), 4.2 SBOM Generation & Attestation, 4.3 Use Trusted Registries & Enable Registry Scanning, 4.4 Admission Control — Block Unsigned/Unscanned Images, code:bash (# Install cosign), code:bash (# Generate SBOM with Syft), code:bash (# Enable ECR enhanced scanning), code:yaml (# Kyverno policy — require signed images before admission) (+18 more)
 
 ### Community 389 - "Community 389"
 Cohesion: 0.12
 Nodes (16): code:typescript (// 不要測試內部狀態), code:typescript (// 測試使用者看到的), code:typescript (// 不要依賴前一個測試), code:typescript (// 在每個測試中設定資料), code:bash (# 執行帶覆蓋率的測試), code:bash (# 開發時的監看模式), FAIL: 測試實作細節, FAIL: 測試相互依賴 (+8 more)
 
 ### Community 390 - "Community 390"
-Cohesion: 0.05
-Nodes (33): Automated Security Tests, Pre-Deployment Security Checklist, Resources, Security Review Skill, Security Testing, When to Activate, Automated Security Tests, Security Testing (+25 more)
+Cohesion: 0.08
+Nodes (19): Automated Security Tests, Pre-Deployment Security Checklist, Resources, Security Review Skill, Security Testing, When to Activate, code:typescript (// Test authentication), Automated Security Tests (+11 more)
 
 ### Community 391 - "Community 391"
 Cohesion: 0.20
-Nodes (8): 6. State Management: Riverpod, code:dart (// Auto-dispose async provider), Dart/Flutter Patterns, How It Works, References, When to Use, 6. State Management: Riverpod, 6. 状态管理：Riverpod
+Nodes (8): code:dart (// Cubit — synchronous or simple async state), 5. State Management: BLoC/Cubit, Dart/Flutter Patterns, How It Works, References, When to Use, 5. State Management: BLoC/Cubit, 5. 状态管理：BLoC/Cubit
 
 ### Community 392 - "Community 392"
-Cohesion: 0.05
-Nodes (35): 1. Create API Management Service, 2. Create an API, 3. Create a Product, 4. Create a Subscription, 5. Set API Policy, 6. Backup and Restore, Authentication, Azure.ResourceManager.ApiManagement (.NET) (+27 more)
+Cohesion: 0.07
+Nodes (26): 1. Create API Management Service, 2. Create an API, 3. Create a Product, 4. Create a Subscription, 5. Set API Policy, 6. Backup and Restore, Authentication, Azure.ResourceManager.ApiManagement (.NET) (+18 more)
 
 ### Community 393 - "Community 393"
-Cohesion: 0.10
-Nodes (18): code:bash (# Migrates existing context), Community & Support, FAF Wizard - One-Click AI Intelligence, Format Support, Limitations, Migration Support, Performance Data (Real Numbers), Phase 1: Stack Detection (+10 more)
+Cohesion: 0.05
+Nodes (36): Before/After: Legacy E-commerce Platform, Before/After: Modern React App, code:block1 (Before: "This 50k-line PHP codebase from 2015..."), code:bash (# Set up team-wide MCP server), code:block2 (Before: Every AI session starts with context explanation), code:bash (faf auto), code:yaml (# Auto-generated project.faf), code:block5 (✅ Generated: project.faf) (+28 more)
 
 ### Community 394 - "Community 394"
 Cohesion: 0.07
 Nodes (37): code:python (import json), code:python (def generate_compatibility_matrix(dependencies):), code:python (def plan_batch_updates(dependencies):), code:python (framework_upgrades = {), code:javascript (// post-upgrade-monitoring.js), code:python (class BreakingChangeDetector:), code:python (def generate_migration_guide(package_name, current_version, ), code:python (class IncrementalUpgrader:) (+29 more)
 
 ### Community 395 - "Community 395"
-Cohesion: 0.13
-Nodes (15): 1. Training Configuration, 2. Job Configuration, Best Practices, Checkpoint Saving, code:python (from transformers import AutoModel, AutoTokenizer), code:python (# train.py), code:python (SFTConfig(), Complete Example (+7 more)
+Cohesion: 0.15
+Nodes (13): 1. Training Configuration, 2. Job Configuration, Best Practices, Checkpoint Saving, code:python (from transformers import AutoModel, AutoTokenizer), code:python (SFTConfig(), Key Takeaway, Manual Push After Training (+5 more)
 
 ### Community 396 - "Community 396"
 Cohesion: 0.05
@@ -12054,12 +12044,12 @@ Cohesion: 0.05
 Nodes (42): Actions, Actions, Actions, Actions, Actions, Actions, Actions, code:block1 (Use @terraform-skill to set up Terraform project) (+34 more)
 
 ### Community 405 - "Community 405"
-Cohesion: 0.07
-Nodes (25): Access Key Management, AWS IAM Best Practices, Best Practices, code:bash (# List policies with full admin access), code:bash (kiro-cli chat "Use aws-iam-best-practices to review my IAM s), code:bash (# Find old access keys (>90 days)), code:bash (# List unused roles (no activity in 90 days)), code:json ({) (+17 more)
+Cohesion: 0.04
+Nodes (55): package:mediahive_mobile/features/attendance/data/services/field_work_service.dart, package:mediahive_mobile/features/attendance/data/services/mock_location_detector.dart, package:mediahive_mobile/features/attendance/data/services/presence_verification_service.dart, package:mediahive_mobile/features/attendance/presentation/providers/attendance_provider.dart, package:mediahive_mobile/features/attendance/presentation/providers/field_work_provider.dart, activeFieldWorkSessionProvider, authState, fieldWorkHistoryProvider (+47 more)
 
 ### Community 406 - "Community 406"
 Cohesion: 0.20
-Nodes (8): code:dart (// Cubit — synchronous or simple async state), 5. State Management: BLoC/Cubit, 5. State Management: BLoC/Cubit, Dart/Flutter Patterns, How It Works, References, When to Use, 5. 状态管理：BLoC/Cubit
+Nodes (8): 7. Navigation with GoRouter, code:dart (final router = GoRouter(), 7. Navigation with GoRouter, Dart/Flutter Patterns, How It Works, References, When to Use, 7. 使用 GoRouter 的导航
 
 ### Community 407 - "Community 407"
 Cohesion: 0.13
@@ -12070,16 +12060,16 @@ Cohesion: 0.05
 Nodes (35): 2.1 Tool Schema, 2.2 Essential Agent Tools, 2.3 Edit Tool Design, 2. Tool Design Patterns, 3.1 Permission Levels, 3.2 Approval UI Pattern, 3.3 Sandboxing, 3. Permission & Safety Patterns (+27 more)
 
 ### Community 409 - "Community 409"
-Cohesion: 0.06
-Nodes (34): Analyze from URL, Analyze Receipt, Analyze with Custom Model, Azure Document Intelligence (Form Recognizer) SDK for Java, Build Classifier, Build Custom Model, Classify Document, Client Creation (+26 more)
+Cohesion: 0.05
+Nodes (41): Analyze from URL, Analyze Receipt, Analyze with Custom Model, Azure Document Intelligence (Form Recognizer) SDK for Java, Build Classifier, Build Custom Model, Classify Document, Client Creation (+33 more)
 
 ### Community 410 - "Community 410"
-Cohesion: 0.04
-Nodes (49): Container, Expanded, GestureDetector, Padding, SizedBox, Text, TextField, DateTimeRange (+41 more)
+Cohesion: 0.05
+Nodes (42): Custom Generators, Kotest Property Testing, Ktor testApplication Testing, Property-Based Testing, code:block1 (RED     -> Önce başarısız bir test yaz), code:kotlin (import io.kotest.core.spec.style.FunSpec), code:kotlin (// Adım 1: Interface/signature tanımla), Kotest Property Testing (+34 more)
 
 ### Community 411 - "Community 411"
-Cohesion: 0.08
-Nodes (25): Async Analysis, Azure AI Vision Image Analysis SDK for Java, code:java (ImageAnalysisResult result = client.analyzeFromUrl(), code:bash (VISION_ENDPOINT=https://<resource>.cognitiveservices.azure.c), code:java (import com.azure.ai.vision.imageanalysis.models.*;), Core Patterns, Dense Captions, Detect Objects (+17 more)
+Cohesion: 0.07
+Nodes (31): Async Analysis, Async Client, Azure AI Vision Image Analysis SDK for Java, Client Creation, code:java (ImageAnalysisResult result = client.analyzeFromUrl(), code:bash (VISION_ENDPOINT=https://<resource>.cognitiveservices.azure.c), code:java (import com.azure.ai.vision.imageanalysis.ImageAnalysisClient), code:java (import com.azure.ai.vision.imageanalysis.ImageAnalysisAsyncC) (+23 more)
 
 ### Community 412 - "Community 412"
 Cohesion: 0.13
@@ -12087,11 +12077,11 @@ Nodes (21): Path, SessionEntry, extract_assistant_messages(), extract_files_modi
 
 ### Community 413 - "Community 413"
 Cohesion: 0.06
-Nodes (28): Add Direct Line Channel, Add Teams Channel, Add Web Chat Channel, Azure Bot Service Management SDK for Python, Best Practices, Bot Connections (OAuth), Channel Types, Client Operations (+20 more)
+Nodes (29): Add Direct Line Channel, Add Teams Channel, Add Web Chat Channel, Azure Bot Service Management SDK for Python, Best Practices, Bot Connections (OAuth), Channel Types, Client Operations (+21 more)
 
 ### Community 414 - "Community 414"
 Cohesion: 0.05
-Nodes (12): dg, Do(), fo, _m, nl(), nu(), Ot, Ph (+4 more)
+Nodes (45): Cache-Aside Pattern, Caching Strategies, Redis Caching Layer, Cache-Aside Pattern, Caching Strategies, Redis Caching Layer, code:typescript (async function getMarketWithCache(id: string): Promise<Marke), Cache-Aside Pattern (+37 more)
 
 ### Community 415 - "Community 415"
 Cohesion: 0.11
@@ -12126,8 +12116,8 @@ Cohesion: 0.07
 Nodes (27): code:block1 (┌───────────────────────────────────────────────────────────), code:block13 (┌──────────────┐), code:block14 (┌───────────────────────────────────────────────────────────), code:block15 (Sự đóng góp của bạn), code:block16 (BẮT ĐẦU TẠI ĐÂY), code:block17 (┌───────────────────────────────────────────────────────────), code:block18 (Ngày 1: Cài đặt skills), code:block2 (antigravity-awesome-skills/) (+19 more)
 
 ### Community 423 - "Community 423"
-Cohesion: 0.08
-Nodes (26): code:python (from youtube_transcript_api import YouTubeTranscriptApi, Tra), code:bash (echo "[████████████░░░░░░░░] 60% - Step 3/5: Extracting Tran), code:python (from youtube_transcript_api import YouTubeTranscriptApi), code:bash (echo "[████████████████░░░░] 80% - Step 4/5: Generating Summ), code:bash (# Use the transcript file as input to the AI prompt), code:bash (echo "[████████████████████] 100% - Step 5/5: Formatting Out), code:markdown (# [Video Title]), code:block17 (claude> summarize this youtube video https://youtu.be/abc123) (+18 more)
+Cohesion: 0.05
+Nodes (35): code:bash (# Check if youtube-transcript-api is installed), code:python (from youtube_transcript_api import YouTubeTranscriptApi, Tra), code:bash (echo "[████████████░░░░░░░░] 60% - Step 3/5: Extracting Tran), code:python (from youtube_transcript_api import YouTubeTranscriptApi), code:bash (echo "[████████████████░░░░] 80% - Step 4/5: Generating Summ), code:bash (# Use the transcript file as input to the AI prompt), code:bash (echo "[████████████████████] 100% - Step 5/5: Formatting Out), code:markdown (# [Video Title]) (+27 more)
 
 ### Community 424 - "Community 424"
 Cohesion: 0.25
@@ -12174,12 +12164,12 @@ Cohesion: 0.05
 Nodes (37): 1. Identificar O Tipo De Solicitação, 2. Acionar Skills Modulares Conforme Necessidade, Adaptação Por Perfil De Usuário, Best Practices, code:block1 (VEREDICTO: [COMPRAR / NÃO COMPRAR / COMPRAR APENAS SE...]), code:block2 (Passo 1: EDITAL → Extrair dados do edital (leiloeiro-edital)), Common Pitfalls, Do Not Use This Skill When (+29 more)
 
 ### Community 435 - "Community 435"
-Cohesion: 0.09
-Nodes (23): Adicionando Novas Skills, code:block2 (セッションアクティビティ), 本能模型, The Instinct Model, CGD Output Format, Claim Completion Status (v2.1), Claim ID Format (v2.1), code:block5 (<!-- CLARITY_GATE_END -->) (+15 more)
+Cohesion: 0.05
+Nodes (46): Adicionando Novas Skills, 本能模型, The Instinct Model, CGD Output Format, Claim Completion Status (v2.1), Claim ID Format (v2.1), code:block5 (<!-- CLARITY_GATE_END -->), Source Field Semantics (v2.1) (+38 more)
 
 ### Community 436 - "Community 436"
-Cohesion: 0.06
-Nodes (31): Build and Maintain Secure Network, code:python (# NEVER STORE THESE), code:python (from cryptography.hazmat.primitives.ciphers.aead import AESG), code:python (# Always use TLS 1.2 or higher), code:python (PCI_COMPLIANCE_CHECKLIST = {), Common Violations, Compliance Checklist, Compliance Levels (+23 more)
+Cohesion: 0.05
+Nodes (35): code:python (from functools import wraps), code:python (def singleton(cls):), Decorators, Function Decorators, Access Control, Build and Maintain Secure Network, code:python (# NEVER STORE THESE), code:python (from cryptography.hazmat.primitives.ciphers.aead import AESG) (+27 more)
 
 ### Community 437 - "Community 437"
 Cohesion: 0.11
@@ -12194,8 +12184,8 @@ Cohesion: 0.05
 Nodes (41): code:block1 (START: Non-conformance identified and documented), code:block2 (START: What type of data are you charting?), code:block3 (ROI = (Failure Cost Reduction - Investment Cost) / Investmen), code:block4 (Rework if: C_rework + C_reinspect < C_replacement × (1 + pre), code:block5 (Sort if: (C_sort < C_return_freight + C_production_delay) AN), code:block6 (Use-as-is if: Risk_functional ≤ Acceptable_risk), 1.1 Universal Disposition Flow, 1.2 FDA-Regulated Environment (21 CFR 820 / ISO 13485) Specific Logic (+33 more)
 
 ### Community 440 - "Community 440"
-Cohesion: 0.08
-Nodes (24): Advanced Features, Bundled Resources, code:bash (git clone https://github.com/yourusername/cli-ai-skills.git), code:bash (scripts/update-skill-version.sh your-skill-name 1.1.0), code:block8 (You: "create a skill for database schema migrations"), code:block9 (.github/skills/your-skill-name/), Configuration, Contributing (+16 more)
+Cohesion: 0.06
+Nodes (35): Advanced Features, Advanced Usage, Basic Skill Creation, Bundled Resources, code:bash (git clone https://github.com/yourusername/cli-ai-skills.git), code:bash (scripts/update-skill-version.sh your-skill-name 1.1.0), code:bash (# GitHub Copilot CLI), code:block4 ([████████████░░░░░░] 60% - Step 3/5: File Generation) (+27 more)
 
 ### Community 441 - "Community 441"
 Cohesion: 0.05
@@ -12234,12 +12224,12 @@ Cohesion: 0.05
 Nodes (40): 1. Write Your Spec, 2. Decompose Into Tasks, 3. Start Workers, 4. Start the Orchestrator, 5. Monitor and Intervene, 6. Stop the Pipeline, 7-Stage Kanban Pipeline, Additional Resources (+32 more)
 
 ### Community 450 - "Community 450"
-Cohesion: 0.03
-Nodes (68): code:python (import os), config.py, 1. Imports, 2. Create Hosted Agent, 3. List Agent Versions, 4. Delete Agent Version, Async Pattern, Authentication (+60 more)
+Cohesion: 0.04
+Nodes (59): 2. Create Hosted Agent, 3. List Agent Versions, 4. Delete Agent Version, Async Pattern, Authentication, Azure AI Hosted Agents (Python), Best Practices, Code Interpreter (+51 more)
 
 ### Community 451 - "Community 451"
-Cohesion: 0.06
-Nodes (30): Angular State Management, Best Practices, Bridging Signals and RxJS, code:block1 (Small app, simple state → Signal Services), code:typescript (// stores/todo.store.ts), code:typescript (// services/api.service.ts), code:typescript (// Before: RxJS-based), code:typescript (import { toSignal, toObservable } from '@angular/core/rxjs-i) (+22 more)
+Cohesion: 0.08
+Nodes (23): Angular State Management, Best Practices, Bridging Signals and RxJS, code:block1 (Small app, simple state → Signal Services), code:typescript (// stores/todo.store.ts), code:typescript (// services/api.service.ts), code:typescript (// Before: RxJS-based), code:typescript (import { toSignal, toObservable } from '@angular/core/rxjs-i) (+15 more)
 
 ### Community 452 - "Community 452"
 Cohesion: 0.06
@@ -12319,19 +12309,19 @@ Nodes (36): format_context(), format_result(), main(), Format a single search re
 
 ### Community 469 - "Community 469"
 Cohesion: 0.08
-Nodes (24): LoginClient(), SignupClient(), ThemeToggle(), HaloLogo(), HaloLogoProps, Theme, ThemeContext, ThemeContextType (+16 more)
+Nodes (31): POST(), POST(), assertDriveEnv(), DRIVE_CONFIG, ensureFolderPath(), getDriveClient(), DriveFolderConfig, ensureCampaignFolder() (+23 more)
 
 ### Community 470 - "Community 470"
 Cohesion: 0.14
 Nodes (12): Rect, BudgetState, Constraint, Frame, AggregateUsage, centered_rect(), horizontal_detail_layout(), Pane (+4 more)
 
 ### Community 471 - "Community 471"
-Cohesion: 0.05
-Nodes (38): Animated Components (`src/tw/animated.tsx`), Apple System Colors with CSS Variables, code:tsx (import { View, Text, ScrollView, Image } from "@/tw";), code:css (@layer theme {), code:css (@media ios {), code:css (/* src/css/sf.css */), code:tsx (<Text className="text-sf-text">Primary text</Text>), code:tsx (import { useCSSVariable } from "@/tw";) (+30 more)
+Cohesion: 0.08
+Nodes (23): Apple System Colors with CSS Variables, code:tsx (import { View, Text, ScrollView, Image } from "@/tw";), code:css (@layer theme {), code:css (@media ios {), code:css (/* src/css/sf.css */), code:tsx (<Text className="text-sf-text">Primary text</Text>), code:tsx (import { useCSSVariable } from "@/tw";), code:tsx (type Props = React.ComponentProps<typeof RNView> & { classNa) (+15 more)
 
 ### Community 472 - "Community 472"
 Cohesion: 0.04
-Nodes (44): CreateEventModal(), Role, EditEventModalAdmin(), ModalBase(), DraftPayload, useFormState(), UseFormStateOptions, useFormSubmit() (+36 more)
+Nodes (67): CreateEventModal(), Role, EditEventModalAdmin(), ProductionPulseBar(), canAccessFeature(), results, ROLE_RANK, UserRole (+59 more)
 
 ### Community 473 - "Community 473"
 Cohesion: 0.14
@@ -12366,8 +12356,8 @@ Cohesion: 0.05
 Nodes (40): 10. Automated Recon Script, 1. Project Tracking and Acquisitions, 2. Subdomain Enumeration, 3. Live Host Discovery, 4. Technology Fingerprinting, 5. Content Discovery, 6. Application Analysis (Jason Haddix Method), 7. Automated XSS Hunting (+32 more)
 
 ### Community 481 - "Community 481"
-Cohesion: 0.04
-Nodes (44): code:python (from typing import Dict, List, Any, Optional), code:python (class StubbingEngine:), code:python (from faker import Faker), code:python (class ScenarioManager:), code:python (class ContractMockServer:), code:python (class PerformanceMockServer:), code:python (class MockDataStore:), code:python (class TestingFrameworkIntegration:) (+36 more)
+Cohesion: 0.05
+Nodes (34): code:python (from typing import Dict, List, Any, Optional), code:python (class StubbingEngine:), code:python (from faker import Faker), code:python (class ScenarioManager:), code:python (class ContractMockServer:), code:python (class PerformanceMockServer:), code:python (class MockDataStore:), code:python (class TestingFrameworkIntegration:) (+26 more)
 
 ### Community 482 - "Community 482"
 Cohesion: 0.13
@@ -12382,12 +12372,12 @@ Cohesion: 0.06
 Nodes (31): Automated Checks Run, code:bash (# Type checking), 运行的自动化检查, Approval Criteria, Automated Checks Run, CRITICAL (Must Fix), Django Projects, FastAPI Projects (+23 more)
 
 ### Community 485 - "Community 485"
-Cohesion: 0.13
-Nodes (32): main(), candidateTarget(), contradictsNoChangeReason(), evidenceText(), hasImplementationGradeObservationAction(), hasStaleNextCacheApiObservation(), hasUnsafeBotProtectionObservation(), hasUnsupportedCacheLifeCdnClaim() (+24 more)
+Cohesion: 0.07
+Nodes (57): main(), affectedFiles(), appliesAlsoEntry(), cacheLifeIntent(), dedupEditTarget(), dedupeRecommendations(), dedupIntent(), firstAffectedFile() (+49 more)
 
 ### Community 486 - "Community 486"
 Cohesion: 0.06
-Nodes (30): code:java (import com.azure.identity.DefaultAzureCredential;), code:java (DefaultAzureCredential credential = new DefaultAzureCredenti), Configure DefaultAzureCredential, DefaultAzureCredential (Recommended), Async Upload with Reactor, Asynchronous Client, Azure Monitor Ingestion SDK for Java, Best Practices (+22 more)
+Nodes (32): Async Operations, code:java (import reactor.core.publisher.Mono;), code:java (import com.azure.identity.DefaultAzureCredential;), code:java (DefaultAzureCredential credential = new DefaultAzureCredenti), Configure DefaultAzureCredential, DefaultAzureCredential (Recommended), Async Upload with Reactor, Asynchronous Client (+24 more)
 
 ### Community 487 - "Community 487"
 Cohesion: 0.05
@@ -12418,8 +12408,8 @@ Cohesion: 0.08
 Nodes (23): Any, MetadataOptimizer, optimize_app_metadata(), Metadata optimization module for App Store Optimization. Optimizes titles, desc, Optimizes app store metadata for maximum discoverability and conversion., Optimize app description with keyword integration and conversion focus., Optimize Apple's 100-character keyword field.          Rules:         - No sp, Validate all metadata fields against platform character limits.          Args: (+15 more)
 
 ### Community 494 - "Community 494"
-Cohesion: 0.07
-Nodes (27): Azure Developer CLI (azd) Container Apps Deployment, azure.yaml Configuration, code:bash (# Initialize and deploy), code:bicep (// Backend reference in frontend env vars), code:nginx (location /api {), code:bicep (resource containerApp 'Microsoft.App/containerApps@2024-03-0), code:yaml (hooks:), code:bash (# Environment management) (+19 more)
+Cohesion: 0.06
+Nodes (35): Azure Developer CLI (azd) Container Apps Deployment, azure.yaml Configuration, Bicep Output → Environment Variable, code:bash (# Initialize and deploy), code:bicep (// Backend reference in frontend env vars), code:nginx (location /api {), code:bicep (resource containerApp 'Microsoft.App/containerApps@2024-03-0), code:yaml (hooks:) (+27 more)
 
 ### Community 495 - "Community 495"
 Cohesion: 0.06
@@ -12434,8 +12424,8 @@ Cohesion: 0.10
 Nodes (18): Azure PostgreSQL for TypeScript (node-postgres), Azure-Specific Configuration, Best Practices, code:bash (npm install pg @azure/identity), code:typescript (import { Pool, PoolConfig } from "pg";), code:typescript (import { DatabaseError } from "pg";), code:typescript (// Alternative: Use connection string), code:typescript (const pool = new Pool({ /* config */ });) (+10 more)
 
 ### Community 498 - "Community 498"
-Cohesion: 0.06
-Nodes (32): 1. Create Durable Task Scheduler, 2. Create Scheduler with Consumption SKU, 3. Create Task Hub, 4. List Schedulers, 5. Get Scheduler by Name, 6. Update Scheduler, 7. Delete Resources, 8. Manage Retention Policies (+24 more)
+Cohesion: 0.12
+Nodes (17): 1. Create Durable Task Scheduler, 2. Create Scheduler with Consumption SKU, 3. Create Task Hub, 4. List Schedulers, 5. Get Scheduler by Name, 6. Update Scheduler, 7. Delete Resources, 8. Manage Retention Policies (+9 more)
 
 ### Community 499 - "Community 499"
 Cohesion: 0.05
@@ -12463,7 +12453,7 @@ Nodes (9): Additional Tools Reference, Advanced Cloud Pentesting Scripts, Azure 
 
 ### Community 505 - "Community 505"
 Cohesion: 0.06
-Nodes (44): 10. Migration Guide, 11. Performance Optimizations, 12. Code Quality Checklist, 1. Code Analysis, 2. Refactoring Strategy, 3. SOLID Principles in Action, 4. Complete Refactoring Scenarios, 5. Decision Frameworks (+36 more)
+Nodes (48): 10. Migration Guide, 12. Code Quality Checklist, 1. Code Analysis, 2. Refactoring Strategy, 3. SOLID Principles in Action, 4. Complete Refactoring Scenarios, 5. Decision Frameworks, 6. Modern Code Quality Practices (2024-2025) (+40 more)
 
 ### Community 506 - "Community 506"
 Cohesion: 0.05
@@ -12494,16 +12484,16 @@ Cohesion: 0.05
 Nodes (42): Async Clients, Async Receiving, Azure Event Hubs SDK for Java, Batch Processing, Best Practices, Client Creation, code:java (EventData event = new EventData("Order created");), code:java (import com.azure.messaging.eventhubs.models.EventPosition;) (+34 more)
 
 ### Community 513 - "Community 513"
-Cohesion: 0.09
-Nodes (30): ContextGraphEntity, Into, Line, Style, Vec, Text, build_unified_diff_hunk_offsets(), build_unified_diff_text() (+22 more)
+Cohesion: 0.13
+Nodes (29): HashMap, Into, Line, Style, Text, approval_queue_line(), build_unified_diff_hunk_offsets(), build_unified_diff_text() (+21 more)
 
 ### Community 514 - "Community 514"
 Cohesion: 0.06
-Nodes (40): Test Naming, Test Structure (AAA Pattern), Testing Standards, Test Naming, Test Structure (AAA Pattern), Testing Standards, code:typescript (test('calculates similarity correctly', () => {), Test Naming (+32 more)
+Nodes (40): Test Naming, Test Structure (AAA Pattern), Testing Standards, 1. Readability First, 2. KISS (Keep It Simple, Stupid), 3. DRY (Don't Repeat Yourself), 4. YAGNI (You Aren't Gonna Need It), Code Quality Principles (+32 more)
 
 ### Community 515 - "Community 515"
 Cohesion: 0.25
-Nodes (6): code:python (# Bad: Forgetting model.eval() during validation), Anti-Patterns to Avoid, PyTorch Development Patterns, Quick Reference: PyTorch Idioms, When to Activate, 应避免的反模式
+Nodes (6): code:python (# Good: Complete checkpoint with all training state), Checkpointing Patterns, PyTorch Development Patterns, Quick Reference: PyTorch Idioms, Save and Load Checkpoints, When to Activate
 
 ### Community 516 - "Community 516"
 Cohesion: 0.29
@@ -12514,8 +12504,8 @@ Cohesion: 0.10
 Nodes (21): code:javascript (// FAIL: 關鍵：沒有授權檢查), code:javascript (// FAIL: 關鍵：餘額檢查中的競態條件), code:javascript (// FAIL: 高：沒有速率限制), code:javascript (// FAIL: 中：記錄敏感資料), code:javascript (// FAIL: 關鍵：寫死的密鑰), code:javascript (// FAIL: 關鍵：SQL 注入弱點), code:javascript (// FAIL: 關鍵：命令注入), code:javascript (// FAIL: 高：XSS 弱點) (+13 more)
 
 ### Community 518 - "Community 518"
-Cohesion: 0.04
-Nodes (45): AuthState, Exception, ../../models/institutional_data.dart, package:flutter/foundation.dart, package:flutter_riverpod/flutter_riverpod.dart, package:hive_flutter/hive_flutter.dart, package:supabase_flutter/supabase_flutter.dart, ../models/institutional_data.dart (+37 more)
+Cohesion: 0.03
+Nodes (61): AuthState, Exception, GoTrueClient, ../../models/institutional_data.dart, package:flutter/foundation.dart, package:flutter_riverpod/flutter_riverpod.dart, package:hive_flutter/hive_flutter.dart, package:supabase_flutter/supabase_flutter.dart (+53 more)
 
 ### Community 519 - "Community 519"
 Cohesion: 0.07
@@ -12583,15 +12573,15 @@ Nodes (30): Browser Caching, Browser Storage Limits, Cache Configuration, Cache 
 
 ### Community 535 - "Community 535"
 Cohesion: 0.20
-Nodes (9): 10. Anti-Patterns, 11. Reporting Principles, Finding Structure, Limitations, 📋 Reference Files, 🔧 Runtime Scripts, Severity Classification, Vulnerability Scanner (+1 more)
+Nodes (9): 10. Anti-Patterns, 7. Scanning Methodology, code:block4 (1. RECONNAISSANCE), Limitations, Phase-Based Approach, 📋 Reference Files, 🔧 Runtime Scripts, Vulnerability Scanner (+1 more)
 
 ### Community 536 - "Community 536"
 Cohesion: 0.04
-Nodes (52): A Trindade Turing: Hinton, Lecun, Bengio, Afirmacoes Mainstream Que Rejeito (Com Argumentos), Analogias Historicas Para Open Source, Argumentos Em Multiplos Niveis, Backpropagation: A Equacao Central, Bell Labs Como Formacao Intelectual, Best Practices, Checklist Pre-Resposta V2 (+44 more)
+Nodes (50): A Trindade Turing: Hinton, Lecun, Bengio, Afirmacoes Mainstream Que Rejeito (Com Argumentos), Analogias Historicas Para Open Source, Argumentos Em Multiplos Niveis, Backpropagation: A Equacao Central, Bell Labs Como Formacao Intelectual, Best Practices, Checklist Pre-Resposta V2 (+42 more)
 
 ### Community 537 - "Community 537"
-Cohesion: 0.07
-Nodes (30): Finding #108: [LOW] Unnecessary re-renders (Qwen 3.6), Finding #109: [LOW] Unnecessary re-renders (Qwen 3.6), Finding #37: [MEDIUM] Unnecessary re-renders (Qwen 3.6), Finding #98: [MEDIUM] error handling (Qwen 3.6), Problem, Problem, Problem, Problem (+22 more)
+Cohesion: 0.06
+Nodes (35): Finding #108: [LOW] Unnecessary re-renders (Qwen 3.6), Finding #109: [LOW] Unnecessary re-renders (Qwen 3.6), Finding #30: [MEDIUM] Rate Limiting (Qwen 3.6), Finding #37: [MEDIUM] Unnecessary re-renders (Qwen 3.6), Finding #98: [MEDIUM] error handling (Qwen 3.6), Problem, Problem, Problem (+27 more)
 
 ### Community 538 - "Community 538"
 Cohesion: 0.16
@@ -12622,8 +12612,8 @@ Cohesion: 0.11
 Nodes (32): Path, aggregate_by_pattern(), aggregate_by_severity(), analyze_docker_compose(), analyze_dockerfile(), analyze_package_json(), analyze_pipfile(), analyze_pyproject_toml() (+24 more)
 
 ### Community 545 - "Community 545"
-Cohesion: 0.04
-Nodes (55): Additional Resources, Decision Frameworks, Forecast Method Selection by Demand Pattern, Markdown Timing Decision, Promotional Lift Decision Framework, Safety Stock Service Level Selection, Slow-Mover Kill Decision, Additional Resources (+47 more)
+Cohesion: 0.06
+Nodes (34): Automatic Escalation Triggers, Escalation Chain, Escalation Protocols, Additional Resources, Automatic Escalation Triggers, Escalation Chain, Escalation Protocols, Key Edge Cases (+26 more)
 
 ### Community 546 - "Community 546"
 Cohesion: 0.06
@@ -12662,12 +12652,12 @@ Cohesion: 0.06
 Nodes (36): 1. View All Skills with Their Dates, 2. Add Missing Dates, 3. Add/Update All Skills, 4. Update a Single Skill, 5. Generate a Report, Automated Addition, Best Practices, code:bash (python tools/scripts/generate_skills_report.py --sort name -) (+28 more)
 
 ### Community 555 - "Community 555"
-Cohesion: 0.12
-Nodes (14): code:markdown (## EVAL: add-authentication), Example: Adding Authentication, Best Practices, Eval Harness Skill, Example: Adding Authentication, Metrics, pass@k, pass^k (+6 more)
+Cohesion: 0.20
+Nodes (8): Best Practices, Eval Harness Skill, Example: Adding Authentication, Metrics, pass@k, pass^k, Philosophy, When to Activate
 
 ### Community 556 - "Community 556"
 Cohesion: 0.08
-Nodes (26): Naming Rules, Resource Design, URL Structure, Naming Rules, Resource Design, URL Structure, API Design Checklist, API Design Patterns (+18 more)
+Nodes (26): Naming Rules, Resource Design, URL Structure, Naming Rules, Resource Design, URL Structure, code:block1 (# Resources are nouns, plural, lowercase, kebab-case), Naming Rules (+18 more)
 
 ### Community 557 - "Community 557"
 Cohesion: 0.07
@@ -12679,23 +12669,23 @@ Nodes (10): code:kotlin (// ドメインモジュール), Android クリーン�
 
 ### Community 559 - "Community 559"
 Cohesion: 0.06
-Nodes (30): code:block1 (用户请求 → Claude 选择工具 → PreToolUse 钩子运行 → 工具执行 → PostToolUse 钩子), code:json ({), code:json ({), PostToolUse 钩子, PreToolUse 钩子, 使用 ruff 自动格式化 Python 文件, 大きなファイルの作成をブロックする, 常用钩子配方 (+22 more)
+Nodes (34): code:block1 (用户请求 → Claude 选择工具 → PreToolUse 钩子运行 → 工具执行 → PostToolUse 钩子), code:json ({), code:json ({), PostToolUse 钩子, PreToolUse 钩子, 使用 ruff 自动格式化 Python 文件, 大きなファイルの作成をブロックする, 常用钩子配方 (+26 more)
 
 ### Community 560 - "Community 560"
 Cohesion: 0.05
-Nodes (43): Core Knowledge, Documentation Requirements, HS Tariff Classification, Incoterms 2020, Penalties and Compliance, Restricted Party Screening, ABC/XYZ Classification, Core Knowledge (+35 more)
+Nodes (43): Core Knowledge, Documentation Requirements, HS Tariff Classification, Penalties and Compliance, Regional Specialties, Restricted Party Screening, ABC/XYZ Classification, Core Knowledge (+35 more)
 
 ### Community 561 - "Community 561"
 Cohesion: 0.07
 Nodes (27): Async Client, Client Creation, code:java (import com.azure.compute.batch.BatchClient;), code:java (import com.azure.compute.batch.BatchAsyncClient;), With Microsoft Entra ID (Recommended), With Shared Key Credentials, Azure Tables SDK for Java, Best Practices (+19 more)
 
 ### Community 562 - "Community 562"
-Cohesion: 0.18
-Nodes (9): code:kotlin (sealed interface Try<out T> {), Error Handling, Result/Try Pattern, Android 整洁架构, Result/Try 模式, 何时启用, 参考, 应避免的反模式 (+1 more)
+Cohesion: 0.25
+Nodes (6): Android 整洁架构, Result/Try 模式, 何时启用, 参考, 应避免的反模式, 错误处理
 
 ### Community 563 - "Community 563"
-Cohesion: 0.15
-Nodes (11): code:block12 (问题："您想要优化项目中的已安装文件吗？"), "Claude Code 未获取技能", 何时激活, 先决条件, 如果优化技能：, 如果优化规则：, 故障排除, 步骤 5：优化已安装文件（可选） (+3 more)
+Cohesion: 0.13
+Nodes (13): code:block12 (问题："您想要优化项目中的已安装文件吗？"), code:block2 (问题："ECC组件应安装在哪里？"), "Claude Code 未获取技能", 何时激活, 先决条件, 如果优化技能：, 如果优化规则：, 故障排除 (+5 more)
 
 ### Community 564 - "Community 564"
 Cohesion: 0.20
@@ -12703,7 +12693,7 @@ Nodes (15): getCredentials(), loginAsAdmin(), loginAsGuest(), loginAsMember(), l
 
 ### Community 565 - "Community 565"
 Cohesion: 0.07
-Nodes (26): Output Format, Refactor and Clean Code Implementation Playbook, Severity Levels, Best Practices, code:python (# Good error handling example), Common Pitfalls, Core Concepts, Resources (+18 more)
+Nodes (28): Best Practices, code:block1 (Manual (C) → Smart Pointers (C++) → Ownership (Rust) → GC (G), code:bash (# AddressSanitizer (Clang/GCC)), code:cpp (// RAII: Resource Acquisition Is Initialization), code:cpp (#include <memory>), code:rust (// Move semantics (default)), code:c (// C doesn't have RAII, but we can use patterns), code:cpp (// C++: Use containers instead of raw arrays) (+20 more)
 
 ### Community 566 - "Community 566"
 Cohesion: 0.12
@@ -12719,11 +12709,11 @@ Nodes (27): A Trindade Turing: Hinton, Lecun, Bengio, Argumentos Em Múltiplos N
 
 ### Community 569 - "Community 569"
 Cohesion: 0.05
-Nodes (35): @freezed, AttendanceEvent, InventoryRequest, fromJson, UploadMutation, package:freezed_annotation/freezed_annotation.dart, _UploadMutation, AttendanceEvent (+27 more)
+Nodes (37): @freezed, EquipmentBooking, fromJson, UploadMutation, package:freezed_annotation/freezed_annotation.dart, _UploadMutation, _, AttendanceRequest (+29 more)
 
 ### Community 570 - "Community 570"
-Cohesion: 0.03
-Nodes (75): description, devDependencies, ts-node, @types/better-sqlite3, @types/cors, @types/express, @types/node, typescript (+67 more)
+Cohesion: 0.20
+Nodes (10): devDependencies, postcss, tailwindcss, @tailwindcss/postcss, @tauri-apps/api, @tauri-apps/cli, @types/node, @types/react (+2 more)
 
 ### Community 571 - "Community 571"
 Cohesion: 0.06
@@ -12734,16 +12724,16 @@ Cohesion: 0.10
 Nodes (36): addFileCopyOperation(), addJsonMergeOperation(), addMatchingRuleOperations(), addRecursiveCopyOperations(), applyInstallPlan(), buildCopyFileOperation(), createLegacyCompatInstallPlan(), createLegacyInstallPlan() (+28 more)
 
 ### Community 573 - "Community 573"
-Cohesion: 0.05
-Nodes (40): openAppSettings, Dio, dart:io, package:permission_handler/permission_handler.dart, ../services/logger_service.dart, dart:io, package:dio/dio.dart, package:open_filex/open_filex.dart (+32 more)
+Cohesion: 0.08
+Nodes (9): ButtonGroup(), buttonGroupVariants, Field(), fieldVariants, Item(), ItemMedia(), itemMediaVariants, itemVariants (+1 more)
 
 ### Community 574 - "Community 574"
-Cohesion: 0.22
-Nodes (7): Configure Everything Claude Code (ECC), "Path reference errors after project-level install", Prerequisites, "Rules not working", "Skills not being picked up by Claude Code", Troubleshooting, When to Activate
+Cohesion: 0.14
+Nodes (13): code:block2 (Question: "ECC コンポーネントをどこにインストールしますか？"), code:bash (mkdir -p $TARGET/skills $TARGET/rules), code:block2 (Question: "Where should ECC components be installed?"), Configure Everything Claude Code (ECC), "Path reference errors after project-level install", Prerequisites, "Rules not working", "Skills not being picked up by Claude Code" (+5 more)
 
 ### Community 575 - "Community 575"
-Cohesion: 0.10
-Nodes (23): dependencies, dotenv, express, description, devDependencies, ts-node-dev, @types/express, @types/node (+15 more)
+Cohesion: 0.05
+Nodes (39): Best Practices, Code Quality, code:bash (# ネイティブ実行ファイルビルド), code:java (@RegisterForReflection(targets = {MyDynamicClass.class})), code:bash (# コンテナイメージビルド), code:bash (# 全設定プロパティをチェック), code:bash (# 全テスト実行), Container Security Scan (+31 more)
 
 ### Community 576 - "Community 576"
 Cohesion: 0.05
@@ -12759,15 +12749,15 @@ Nodes (14): code:swift (let glassEffect = UIGlassEffect()), code:swift (let cont
 
 ### Community 579 - "Community 579"
 Cohesion: 0.10
-Nodes (18): Activation, Anti-Patterns, code:sql (SELECT VERSION();), code:sql (START TRANSACTION;), code:python (from sqlalchemy import create_engine), code:javascript (import mysql from 'mysql2/promise';), code:sql (-- MySQL legacy terminology, still common in existing fleets), code:sql (CREATE USER 'app'@'%' IDENTIFIED BY 'use-a-secret-manager';) (+10 more)
+Nodes (18): Activation, Anti-Patterns, code:sql (SELECT VERSION();), code:sql (START TRANSACTION;), code:sql (SHOW FULL PROCESSLIST;), code:sql (SET GLOBAL slow_query_log = 'ON';), code:sql (-- MySQL legacy terminology, still common in existing fleets), code:sql (CREATE USER 'app'@'%' IDENTIFIED BY 'use-a-secret-manager';) (+10 more)
 
 ### Community 580 - "Community 580"
-Cohesion: 0.07
-Nodes (28): Finding #102: [LOW] Missing Ownership Checks (Qwen 3.6), Finding #43: [MEDIUM] Broken Authorization (Qwen 3.6), Finding #81: [MEDIUM] N+1 queries (Qwen 3.6), Problem, Problem, Problem, Proof / Evidence, Proof / Evidence (+20 more)
+Cohesion: 0.08
+Nodes (26): Finding #105: [LOW] N+1 queries (Qwen 3.6), Finding #40: [MEDIUM] insecure_direct_object_references (Qwen 3.6), Finding #68: [MEDIUM] error_handling (Qwen 3.6), Finding #85: [MEDIUM] broken_authorization (Qwen 3.6), Problem, Problem, Problem, Proof / Evidence (+18 more)
 
 ### Community 581 - "Community 581"
-Cohesion: 0.12
-Nodes (25): code:python (import videodb), Add Generated Music to Video, Complete Workflow Examples, Generate Narration for a Video, Generate Thumbnail from Prompt, Prerequisites, Structured JSON Output, Add Generated Music to Video (+17 more)
+Cohesion: 0.13
+Nodes (24): code:python (import videodb), Add Generated Music to Video, Complete Workflow Examples, Generate Narration for a Video, Generate Thumbnail from Prompt, Prerequisites, Structured JSON Output, Add Generated Music to Video (+16 more)
 
 ### Community 582 - "Community 582"
 Cohesion: 0.05
@@ -12791,7 +12781,7 @@ Nodes (38): 1. Assess Severity & Impact, 2. Establish Incident Command, 3. Immed
 
 ### Community 587 - "Community 587"
 Cohesion: 0.05
-Nodes (36): 1. Agents, 1. Caching, 2. Batch Processing, 2. Chains, 3. Memory, 3. Streaming Responses, 4. Document Processing, 5. Callbacks (+28 more)
+Nodes (37): 1. Agents, 1. Caching, 2. Batch Processing, 2. Chains, 3. Memory, 3. Streaming Responses, 4. Document Processing, 5. Callbacks (+29 more)
 
 ### Community 588 - "Community 588"
 Cohesion: 0.06
@@ -12814,8 +12804,8 @@ Cohesion: 0.06
 Nodes (37): 1. Handoff Components, 2. Handoff Timing, After Your Shift, Agenda (15 minutes), Before Your Shift, Best Practices, Check service health, Clear cache (emergency only) (+29 more)
 
 ### Community 593 - "Community 593"
-Cohesion: 0.04
-Nodes (49): AI-Powered Code Review Specialist, Architectural Coherence, Architecture Analysis, CI/CD Integration, code:go (type MicroserviceReviewChecklist struct {), code:python (security_analysis_prompt = """), code:javascript (class PerformanceReviewAgent {), Context (+41 more)
+Cohesion: 0.03
+Nodes (63): AI-Assisted Review, AI-Powered Code Review Specialist, Architectural Coherence, Architecture Analysis, Automated Code Review Workflow, CI/CD Integration, code:python (# Context-aware review prompt for Claude 4.5 Sonnet), code:go (type MicroserviceReviewChecklist struct {) (+55 more)
 
 ### Community 594 - "Community 594"
 Cohesion: 0.05
@@ -12850,16 +12840,16 @@ Cohesion: 0.05
 Nodes (38): Agents Are Smart at Finding Loopholes, Anti-Rationalization (Discipline Skills Only), Build Rationalization Table, code:yaml (# ❌ BAD: Mixed list and map), code:markdown (# ❌ BAD: Burns context immediately), code:bash (# ❌ BAD: Old singular path), code:markdown (# ❌ BAD: File path (fragile)), code:markdown (# ❌ BAD: Starting with Tier 3 "just in case") (+30 more)
 
 ### Community 602 - "Community 602"
-Cohesion: 0.18
-Nodes (12): code:xml (<!-- In document.xml -->), code:xml (<!-- Link to bookmark -->), code:xml (<w:style w:type="character" w:styleId="Hyperlink">), code:xml (<Default Extension="png" ContentType="image/png"/>), code:xml (<!-- Minimal required structure -->), File Updates, Images, Links (Hyperlinks) (+4 more)
+Cohesion: 0.08
+Nodes (25): code:xml (<!-- In document.xml -->), code:xml (<!-- Link to bookmark -->), code:xml (<w:style w:type="character" w:styleId="Hyperlink">), code:xml (<Default Extension="png" ContentType="image/png"/>), code:xml (<!-- Minimal required structure -->), File Updates, Images, Links (Hyperlinks) (+17 more)
 
 ### Community 603 - "Community 603"
 Cohesion: 0.06
 Nodes (34): code:typescript (// Basit sağlık kontrolü), code:block1 (实例 1: v1 → v2  (首次更新)), code:yaml (livenessProbe:), code:block2 (Blue  (v1) ← 流量), code:block3 (v1：95% 的流量), code:block9 (PR 已开启：), Health Check Endpoint, Health Checks (+26 more)
 
 ### Community 604 - "Community 604"
-Cohesion: 0.08
-Nodes (23): 3. SQL Injection Prevention, 6. CSRF Protection, 8. Sensitive Data Exposure, ✅ ALWAYS Use Parameterized Queries, Automated Security Tests, code:typescript (// ❌ WRONG: Logging sensitive data), code:typescript (// ❌ WRONG: Exposing internal details), CSRF Tokens (+15 more)
+Cohesion: 0.12
+Nodes (15): 8. Sensitive Data Exposure, Automated Security Tests, code:typescript (// ❌ WRONG: Logging sensitive data), code:typescript (// ❌ WRONG: Exposing internal details), Error Messages, Limitations, Logging, Pre-Deployment Security Checklist (+7 more)
 
 ### Community 605 - "Community 605"
 Cohesion: 0.13
@@ -12870,8 +12860,8 @@ Cohesion: 0.06
 Nodes (34): abstract class, bool get, _, fromJson, PresenceVerificationSettings, _, fromJson, _PresenceVerificationSettings (+26 more)
 
 ### Community 607 - "Community 607"
-Cohesion: 0.12
-Nodes (14): code:block12 (Question: "Would you like to optimize the installed files fo), If optimizing rules:, If optimizing skills:, Step 5: Optimize Installed Files (Optional), Configure Everything Claude Code (ECC), If optimizing rules:, If optimizing skills:, "Path reference errors after project-level install" (+6 more)
+Cohesion: 0.22
+Nodes (7): Configure Everything Claude Code (ECC), "Path reference errors after project-level install", Prerequisites, "Rules not working", "Skills not being picked up by Claude Code", Troubleshooting, When to Activate
 
 ### Community 608 - "Community 608"
 Cohesion: 0.05
@@ -12930,8 +12920,8 @@ Cohesion: 0.05
 Nodes (37): 10. Custom Type Handlers, 11. Use CommandDefinition for Cancellation, 12. Buffered vs Unbuffered Queries, 13. Connection Pooling Settings, 1. Proper Connection Handling, 2. Connection Lifecycle, 3. Basic CRUD Operations, 4. Dynamic Query Building (+29 more)
 
 ### Community 622 - "Community 622"
-Cohesion: 0.11
-Nodes (16): code:markdown (## 評価定義: feature-xyz), code:bash (# 能力評価を実行), code:markdown (評価レポート: feature-xyz), pass@k, pass^k, 1. 定義（コーディング前）, 2. 実装, 3. 評価 (+8 more)
+Cohesion: 0.09
+Nodes (21): code:markdown (## EVAL: add-authentication), Example: Adding Authentication, code:markdown (## 評価定義: feature-xyz), code:bash (# 能力評価を実行), code:markdown (評価レポート: feature-xyz), pass@k, pass^k, Example: Adding Authentication (+13 more)
 
 ### Community 623 - "Community 623"
 Cohesion: 0.09
@@ -12950,12 +12940,12 @@ Cohesion: 0.03
 Nodes (90): code:php (use Illuminate\Http\Request;), code:php (use Illuminate\Support\Facades\Log;), code:php (protected $casts = [), code:php (DB::select('select * from users where email = ?', [$email]);), Rate Limiting, code:php (// config/cors.php), code:php (// config/sanctum.php), code:php (final class UploadInvoiceRequest extends FormRequest) (+82 more)
 
 ### Community 627 - "Community 627"
-Cohesion: 0.09
-Nodes (26): Basic Remotion composition, Layer 4: Programmable Composition (Remotion), Render output, When to use Remotion, Basic Remotion composition, code:bash (npx remotion render src/index.ts VlogComposition output.mp4), Layer 4: Programmable Composition (Remotion), Render output (+18 more)
+Cohesion: 0.06
+Nodes (38): Basic Remotion composition, Layer 4: Programmable Composition (Remotion), Render output, When to use Remotion, Basic Remotion composition, code:bash (npx remotion render src/index.ts VlogComposition output.mp4), Layer 4: Programmable Composition (Remotion), Render output (+30 more)
 
 ### Community 628 - "Community 628"
-Cohesion: 0.20
-Nodes (8): 参考, Dispatchers, code:kotlin (// CPU-intensive work), Dispatchers, Kotlin 协程与 Flow, 何时启用, 应避免的反模式, 调度器
+Cohesion: 0.33
+Nodes (4): 参考, Kotlin 协程与 Flow, 何时启用, 应避免的反模式
 
 ### Community 629 - "Community 629"
 Cohesion: 0.17
@@ -12982,20 +12972,20 @@ Nodes (73): actionForFileKey(), {
 }, buildActivityRow(), buildCreationPreview(), buildDiffPreviewFromPatchPreview(), buildPatchPreviewFromContent(), buildPatchPreviewFromReplacement(), buildReplacementPreview() (+65 more)
 
 ### Community 634 - "Community 634"
-Cohesion: 0.04
-Nodes (16): bu, cd(), createNodeMesh(), dd(), du, extendMaterialParams(), extendParams(), ip (+8 more)
+Cohesion: 0.08
+Nodes (3): Kt(), sr, Yt()
 
 ### Community 635 - "Community 635"
-Cohesion: 0.07
-Nodes (30): 1. Define the Prediction Contract, 2. Lock the Data Contract, 3. Build a Reproducible Pipeline, 4. Evaluate Before Promotion, 5. Package for Serving, 6. Operate the Model, code:python (import hashlib), Core Workflow (+22 more)
+Cohesion: 0.10
+Nodes (19): 1. Define the Prediction Contract, 2. Lock the Data Contract, 3. Build a Reproducible Pipeline, 5. Package for Serving, 6. Operate the Model, Anti-Patterns, Core Workflow, Data and Feature Hypotheses (+11 more)
 
 ### Community 636 - "Community 636"
 Cohesion: 0.08
 Nodes (24): Ativacao Automatica (O Claude Deve Iniciar Sozinho), Ativacao Manual (Usuario Solicita), Best Practices, code:block1 (C:\Users\renat\skills\context-guardian\), code:block2 (context-guardian (PRE-compactacao)    context-agent (POS-ses), code:block3 (□ Cada arquivo modificado tem: caminho, natureza da mudanca,), code:bash (python C:\Users\renat\skills\context-guardian\scripts\contex), Common Pitfalls (+16 more)
 
 ### Community 637 - "Community 637"
-Cohesion: 0.04
-Nodes (61): Caching Strategies, Caller (`.github/workflows/deploy.yml`), code:bash (# Discover existing workflows in the repo), code:yaml (- uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6de), code:yaml (# Access repo/org/environment secrets), code:yaml (- name: Generate and mask dynamic token), code:yaml (# Secrets cannot be passed as inputs to composite actions), code:yaml (name: Workflow Name) (+53 more)
+Cohesion: 0.05
+Nodes (41): Caching Strategies, Caller (`.github/workflows/deploy.yml`), code:bash (# Discover existing workflows in the repo), code:yaml (- uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6de), code:yaml (# Access repo/org/environment secrets), code:yaml (- name: Generate and mask dynamic token), code:yaml (# Secrets cannot be passed as inputs to composite actions), code:yaml (name: Workflow Name) (+33 more)
 
 ### Community 638 - "Community 638"
 Cohesion: 0.18
@@ -13082,7 +13072,7 @@ Nodes (29): useSimulationPreview(), UseSimulationPreviewProps, SimulationDemoPag
 
 ### Community 658 - "Community 658"
 Cohesion: 0.09
-Nodes (20): code:block2 (# 短期：現在のセッションコンテキスト), code:block3 (# MCPツール経由), 1. 永続的なメモリ, 2. スケジュール済み操作（Crons）, アクティベーション時期, アーキテクチャ, コアコンポーネント, 同意とセーフティバウンダリ (+12 more)
+Nodes (24): LoginClient(), SignupClient(), ThemeToggle(), HaloLogo(), HaloLogoProps, Theme, ThemeContext, ThemeContextType (+16 more)
 
 ### Community 659 - "Community 659"
 Cohesion: 0.05
@@ -13122,7 +13112,7 @@ Nodes (33): Azure Monitor OpenTelemetry SDK for TypeScript, Best Practices, code
 
 ### Community 668 - "Community 668"
 Cohesion: 0.01
-Nodes (132): AcceptInvitePage(), ActivityRootLayout(), CalendarMasterList(), AdminLayout(), AdminPage(), StructurePolicyEditor(), HomePage(), EmailVerificationGate() (+124 more)
+Nodes (127): AcceptInvitePage(), adminNavItems, CalendarMasterList(), AdminLayout(), AdminPage(), StructurePolicyEditor(), HomePage(), EmailVerificationGate() (+119 more)
 
 ### Community 669 - "Community 669"
 Cohesion: 0.04
@@ -13133,8 +13123,8 @@ Cohesion: 0.06
 Nodes (35): Architecture Overview - Backend Services, code:block1 (┌─────────────────────────────────────┐), code:typescript (async create(data: CreateUserDTO): Promise<User> {), code:typescript (1. HTTP POST /api/users), code:typescript (app.use(Sentry.Handlers.requestHandler());  // 1. Sentry tra), code:block4 (email/src/), code:block5 (form/src/), code:block6 (src/workflow/) (+27 more)
 
 ### Community 671 - "Community 671"
-Cohesion: 0.09
-Nodes (26): Advanced X Search with Filters, Available Models, Basic Chat, BlockRun, Budget Control (Optional), code:python (from blockrun_llm import setup_agent_wallet), code:python (response = client.chat("xai/grok-3", "What's trending?", sea), code:bash (pip install --upgrade blockrun-llm) (+18 more)
+Cohesion: 0.10
+Nodes (23): Advanced X Search with Filters, Available Models, Basic Chat, BlockRun, Budget Control (Optional), code:python (from blockrun_llm import setup_agent_wallet), code:python (response = client.chat("xai/grok-3", "What's trending?", sea), code:bash (pip install --upgrade blockrun-llm) (+15 more)
 
 ### Community 672 - "Community 672"
 Cohesion: 0.11
@@ -13157,8 +13147,8 @@ Cohesion: 0.06
 Nodes (33): Adding Columns with Defaults, Best Practices, Blue-Green Deployment Strategy, Changing Column Types, Checkpoint-Based Rollback, code:javascript (// migrations/20231201-create-users.js), code:javascript (// Phase 1: Make changes backward compatible), code:javascript (// Handle differences) (+25 more)
 
 ### Community 677 - "Community 677"
-Cohesion: 0.12
-Nodes (23): code:python (def repeat(times: int):), Class-Based Decorators, Decorators, Function Decorators, Parameterized Decorators, Class-Based Decorators, code:python (import functools), code:python (class CountCalls:) (+15 more)
+Cohesion: 0.03
+Nodes (65): code:toml (# Cargo.toml), code:rust (// benches/benchmark.rs), code:bash (cargo test                        # Run all tests), code:rust (use mockall::{automock, predicate::eq};), code:`rust (/// Adds two numbers together.), Async Tests, Benchmarking with Criterion, Best Practices (+57 more)
 
 ### Community 678 - "Community 678"
 Cohesion: 0.07
@@ -13173,16 +13163,16 @@ Cohesion: 0.12
 Nodes (14): code:block11 (Question: "インストールされたファイルをプロジェクト用に最適化しますか？"), code:block7 (Question: "どのルールセットをインストールしますか？"), code:bash (# 共通ルール), Configure Everything Claude Code (ECC), "スキルが Claude Code に認識されません", スキルを最適化する場合：, ステップ 3: ルールの選択とインストール, ステップ 5: インストールされたファイルの最適化（オプション） (+6 more)
 
 ### Community 681 - "Community 681"
-Cohesion: 0.18
-Nodes (9): code:kotlin (// commonMain), expect/actual for Platform Composables, KMP Platform-Specific UI, Compose 多平台模式, KMP 平台特定 UI, 何时启用, 参考资料, 平台可组合项的 expect/actual (+1 more)
+Cohesion: 0.20
+Nodes (8): Compose 多平台模式, KMP 平台特定 UI, Material 3 动态主题, 主题, 何时启用, 参考资料, 平台可组合项的 expect/actual, 应避免的反模式
 
 ### Community 682 - "Community 682"
 Cohesion: 0.12
 Nodes (15): code:bash (# 全域安裝 agent-browser), code:bash (# 開啟頁面並取得具有互動元素的快照), code:block3 (a) 識別關鍵使用者旅程), code:block4 (對每個使用者旅程：), 成功指標, 1. 測試規劃階段, 2. 測試建立階段, Agent Browser CLI 使用（主要） (+7 more)
 
 ### Community 683 - "Community 683"
-Cohesion: 0.25
-Nodes (6): Anti-Patterns to Avoid, Compose Multiplatform Patterns, Material 3 Dynamic Theming, References, Theming, When to Activate
+Cohesion: 0.22
+Nodes (7): Anti-Patterns to Avoid, code:kotlin (// commonMain), Compose Multiplatform Patterns, expect/actual for Platform Composables, KMP Platform-Specific UI, References, When to Activate
 
 ### Community 684 - "Community 684"
 Cohesion: 0.12
@@ -13230,11 +13220,11 @@ Nodes (14): Agent Types, Best Practices and Considerations, Context and Purpose,
 
 ### Community 695 - "Community 695"
 Cohesion: 0.07
-Nodes (28): Adding a New Slide, Basic Slide Structure, Before Packing, Always:, code:xml (<!-- ppt/slides/slide1.xml -->), code:xml (<!-- Original order -->), code:xml (<p:sp>), code:xml (<!-- Bullet list -->), code:xml (<!-- Rectangle -->) (+20 more)
+Nodes (28): Basic Structure, code:xml (<w:p>), code:xml (<!-- Bold -->), code:xml (<!-- Numbered list -->), code:xml (<w:tbl>), code:xml (<!-- Page break before new section (common pattern) -->), Document Content Patterns, Headings and Styles (+20 more)
 
 ### Community 696 - "Community 696"
-Cohesion: 0.07
-Nodes (27): Alert Rules, Best Practices, code:block1 (┌──────────────┐), code:yaml (# /etc/prometheus/rules/alert_rules.yml), code:bash (# Validate configuration), code:bash (curl http://localhost:9090/api/v1/targets), code:bash (curl http://localhost:9090/api/v1/status/config), code:bash (curl 'http://localhost:9090/api/v1/query?query=up') (+19 more)
+Cohesion: 0.08
+Nodes (23): Alert Rules, Best Practices, code:block1 (┌──────────────┐), code:yaml (# /etc/prometheus/rules/alert_rules.yml), code:bash (# Validate configuration), code:bash (curl http://localhost:9090/api/v1/targets), code:bash (curl http://localhost:9090/api/v1/status/config), code:bash (curl 'http://localhost:9090/api/v1/query?query=up') (+15 more)
 
 ### Community 697 - "Community 697"
 Cohesion: 0.05
@@ -13306,7 +13296,7 @@ Nodes (28): Azure Communication Chat (Java), Best Practices, Client Creation, co
 
 ### Community 714 - "Community 714"
 Cohesion: 0.06
-Nodes (26): Azure Fabric Management SDK for Python, Best Practices, Capacity States, Check Name Availability, Client Operations, code:bash (pip install azure-mgmt-fabric), code:python (from azure.mgmt.fabric.models import CheckNameAvailabilityRe), code:python (# Synchronous wait) (+18 more)
+Nodes (27): Azure Fabric Management SDK for Python, Best Practices, Capacity States, Check Name Availability, Client Operations, code:bash (pip install azure-mgmt-fabric), code:python (from azure.mgmt.fabric.models import CheckNameAvailabilityRe), code:python (# Synchronous wait) (+19 more)
 
 ### Community 715 - "Community 715"
 Cohesion: 0.07
@@ -13314,7 +13304,7 @@ Nodes (29): 1. Create SQL Server, 2. Create SQL Database, 3. Create Elastic Pool
 
 ### Community 716 - "Community 716"
 Cohesion: 0.09
-Nodes (39): 1. getByRole - matches accessibility, 1. Run with headed mode locally, 2. getByText - matches visible content, 2. Slow down to watch, 3. getByLabel - matches form labels, 3. Use trace viewer for CI failures, 4. For stubborn issues, screenshot at failure point:, 4. getByTestId - explicit test contract (+31 more)
+Nodes (41): 1. getByRole - matches accessibility, 1. Run with headed mode locally, 2. getByText - matches visible content, 2. Slow down to watch, 3. getByLabel - matches form labels, 3. Use trace viewer for CI failures, 4. getByTestId - explicit test contract, 5. CSS/XPath - last resort only (+33 more)
 
 ### Community 717 - "Community 717"
 Cohesion: 0.10
@@ -13333,16 +13323,16 @@ Cohesion: 0.06
 Nodes (32): code:block7 (everything-claude-code/), O Que Está Incluído, Adım 1: Plugin'i Kurun, Adım 2: Rule'ları Kurun (Gerekli), Adım 3: Kullanmaya Başlayın, code:bash (# Marketplace ekle), code:block10 (/security-scan                                → security-rev), code:bash (# Tüm testleri çalıştır) (+24 more)
 
 ### Community 721 - "Community 721"
-Cohesion: 0.17
-Nodes (12): Assertions, Best Practices, Camel Route Testing, Event-Driven Testing, Performance, Quarkus-Specific, Test Coverage, Test Organization (+4 more)
+Cohesion: 0.07
+Nodes (27): Test Dependencies, code:xml (<dependencies>), Test Dependencies, Assertions, Best Practices, Camel Route Testing, Event-Driven Testing, Integration Tests with Real Database (+19 more)
 
 ### Community 722 - "Community 722"
 Cohesion: 0.07
 Nodes (43): ADAPTER_RECORDS, COMPLIANCE_STATES, escapeMarkdownCell(), extractMatrixBlock(), fs, path, renderMarkdownTable(), renderStateTable() (+35 more)
 
 ### Community 723 - "Community 723"
-Cohesion: 0.06
-Nodes (32): Finding #33: [MEDIUM] duplicate_submissions (Qwen 3.6), Finding #47: [MEDIUM] duplicate_submissions (Qwen 3.6), Finding #62: [MEDIUM] N+1 Queries (Qwen 3.6), Finding #73: [MEDIUM] Missing Ownership Checks (Qwen 3.6), Problem, Problem, Problem, Problem (+24 more)
+Cohesion: 0.08
+Nodes (24): Finding #47: [MEDIUM] duplicate_submissions (Qwen 3.6), Finding #62: [MEDIUM] N+1 Queries (Qwen 3.6), Finding #73: [MEDIUM] Missing Ownership Checks (Qwen 3.6), Problem, Problem, Problem, Proof / Evidence, Proof / Evidence (+16 more)
 
 ### Community 724 - "Community 724"
 Cohesion: 0.12
@@ -13389,8 +13379,8 @@ Cohesion: 0.06
 Nodes (35): Acceptance Criteria, Architecture, Before/After Comparison Script, code:block1 (score = 0.45*relevance + 0.25*recency + 0.30*engagement - pe), code:block2 (┌───────────────────────────────────────────────────────────), code:python (# scripts/lib/websearch.py (NEW)), code:python (# scripts/lib/schema.py - ADD WebSearchItem), code:python (# scripts/lib/score.py - ADD websearch scoring) (+27 more)
 
 ### Community 735 - "Community 735"
-Cohesion: 0.05
-Nodes (41): code:json ({), code:bash (# Add this repo as a marketplace), code:bash (# Clone the repo), Install hooks, Installation, Option 1: Install as Plugin (Recommended), Option 2: Manual Installation, 禁用钩子 (+33 more)
+Cohesion: 0.07
+Nodes (27): code:block10 (Hard-hitting rap with electronic glitchy production, confide), code:block11 ([Intro: glitchy electronic build]), code:bash (claude mcp add codex-cli -- npx -y codex-mcp-server), code:block13 (Phase 1 - Claude Implements), code:block14 (Complete this task, then run a review loop:), code:block2 (/last30days [topic]), code:block3 (Role: You are a legal research assistant helping a property ), code:bash (# Clone and setup) (+19 more)
 
 ### Community 736 - "Community 736"
 Cohesion: 0.10
@@ -13426,15 +13416,15 @@ Nodes (35): 1. Setup and Installation, 2. Building Quantum Circuits, 3. Primitiv
 
 ### Community 744 - "Community 744"
 Cohesion: 0.07
-Nodes (27): Additional Resources, Automatic Rotation Setup, AWS Secrets Rotation, CloudWatch Alarms, code:bash (# Create RDS secret), code:bash (# Immediate rotation (compromise detected)), code:bash (kiro-cli chat "Use aws-secrets-rotation to set up RDS creden), code:bash (# Get secret value) (+19 more)
+Nodes (27): Additional Resources, Application Integration, Automatic Rotation Setup, AWS Secrets Rotation, code:bash (# Create RDS secret), code:bash (# Immediate rotation (compromise detected)), code:bash (kiro-cli chat "Use aws-secrets-rotation to set up RDS creden), code:bash (# Get secret value) (+19 more)
 
 ### Community 745 - "Community 745"
-Cohesion: 0.07
-Nodes (27): 1. Architecture Diagram Generator, 2. Project Architect, 3. Dependency Analyzer, Architecture Patterns, Best Practices Summary, Code Quality, code:bash (# Script 1: Architecture Diagram Generator), code:bash (python scripts/architecture_diagram_generator.py <project-pa) (+19 more)
+Cohesion: 0.09
+Nodes (20): Architecture Patterns, Best Practices Summary, Code Quality, code:bash (# Script 1: Architecture Diagram Generator), Common Issues, Getting Help, Limitations, Main Capabilities (+12 more)
 
 ### Community 746 - "Community 746"
-Cohesion: 0.07
-Nodes (27): 1. Fullstack Scaffolder, 2. Project Scaffolder, 3. Code Quality Analyzer, Architecture Patterns, Best Practices Summary, Code Quality, code:bash (# Script 1: Fullstack Scaffolder), code:bash (python scripts/fullstack_scaffolder.py <project-path> [optio) (+19 more)
+Cohesion: 0.09
+Nodes (20): Architecture Patterns, Best Practices Summary, Code Quality, code:bash (# Script 1: Fullstack Scaffolder), Common Issues, Development Workflows, Getting Help, Limitations (+12 more)
 
 ### Community 747 - "Community 747"
 Cohesion: 0.17
@@ -13465,8 +13455,8 @@ Cohesion: 0.09
 Nodes (22): Add Watermark, code:bash (# Extract text), code:bash (# Merge PDFs), code:bash (# Merge), code:python (# Requires: pip install pytesseract pdf2image), code:python (from pypdf import PdfReader, PdfWriter), code:bash (# Using pdfimages (poppler-utils)), Command-Line Tools (+14 more)
 
 ### Community 754 - "Community 754"
-Cohesion: 0.08
-Nodes (36): attachSteerFocusDebug(), buildSteerProcessingDots(), clearSteerAwaitTimer(), collapsePageChat(), configureVoiceContext(), expandPageChat(), finishVoiceSession(), focusConfigureInput() (+28 more)
+Cohesion: 0.16
+Nodes (21): attachSteerFocusDebug(), clearSteerAwaitTimer(), collapsePageChat(), expandPageChat(), focusConfigureInput(), focusSteerChat(), id8(), lockSteerChat() (+13 more)
 
 ### Community 755 - "Community 755"
 Cohesion: 0.06
@@ -13485,8 +13475,8 @@ Cohesion: 0.06
 Nodes (32): Authentication, Authentication, Azure Translation SDKs for TypeScript, Batch Document Translation, Best Practices, code:bash (# Text translation), code:typescript (import { ContainerSASPermissions, BlobServiceClient } from "), code:typescript (import { isUnexpected, paginate } from "@azure-rest/ai-trans) (+24 more)
 
 ### Community 759 - "Community 759"
-Cohesion: 0.06
-Nodes (29): 1. Start Session, 2. Configure Session Options, 3. Send Audio Input, 4. Handle Events, Audio Requirements, Azure AI VoiceLive SDK for Java, Azure Voices, Best Practices (+21 more)
+Cohesion: 0.07
+Nodes (27): 1. Start Session, 2. Configure Session Options, 3. Send Audio Input, 4. Handle Events, Audio Requirements, Azure AI VoiceLive SDK for Java, Azure Voices, Best Practices (+19 more)
 
 ### Community 760 - "Community 760"
 Cohesion: 0.05
@@ -13501,16 +13491,16 @@ Cohesion: 0.06
 Nodes (30): code:python (import anthropic), code:python (files = client.beta.files.list()), code:python (file_info = client.beta.files.retrieve_metadata("file_011CNh), Delete a File, Download a File, Key Facts, List Files, Manage Files (+22 more)
 
 ### Community 763 - "Community 763"
-Cohesion: 0.07
-Nodes (31): Always Include (Sentry Projects), Baseline Commands (Always Include), Build Tools, Claude Settings Audit, code:bash (ls -la), code:bash (cat .claude/settings.json 2>/dev/null || echo "No existing s), code:markdown (## Detected Tech Stack), Framework-Specific (+23 more)
+Cohesion: 0.09
+Nodes (26): Always Include (Sentry Projects), Baseline Commands (Always Include), Build Tools, Framework-Specific, Node.js (if package.json detected), Other Languages, Phase 4: Generate Recommendations, Python (if any Python files or config detected) (+18 more)
 
 ### Community 764 - "Community 764"
 Cohesion: 0.06
 Nodes (34): 1. Branches, 2. Patterns, 3. Pattern Types, 4. Records, 5. Migration Workflow, code:dart (// Standard if), code:dart ((String name, int age) userInfo(Map<String, dynamic> json) {), code:dart (// Before (pre-Dart 3)) (+26 more)
 
 ### Community 765 - "Community 765"
-Cohesion: 0.06
-Nodes (36): 3. SQL Injection Prevention, FAIL: NEVER Concatenate SQL, PASS: ALWAYS Use Parameterized Queries, Verification Steps, 3. SQL Injection Prevention, FAIL: NEVER Concatenate SQL, PASS: ALWAYS Use Parameterized Queries, Pre-Deployment Security Checklist (+28 more)
+Cohesion: 0.07
+Nodes (34): 3. SQL Injection Prevention, FAIL: NEVER Concatenate SQL, PASS: ALWAYS Use Parameterized Queries, Verification Steps, 3. SQL Injection Prevention, FAIL: NEVER Concatenate SQL, PASS: ALWAYS Use Parameterized Queries, Verification Steps (+26 more)
 
 ### Community 766 - "Community 766"
 Cohesion: 0.12
@@ -13521,12 +13511,12 @@ Cohesion: 0.13
 Nodes (13): code:block1 (AI が修正を書く → AI が修正をレビューする → AI が「正しく見える」と言う → バグはまだ存在する), code:block15 (/api/user/profile でバグ発見     → プロファイル API のテストを書く), code:block2 (修正 1: API レスポンスに notification_settings を追加), code:block9 (ユーザー: "バグチェックして" (or "/bug-check")), DO / DON'T, AI リグレッションテスト, カスタムコマンド定義, クイックリファレンス (+5 more)
 
 ### Community 768 - "Community 768"
-Cohesion: 0.07
-Nodes (35): Common Image Parameters, Image Editing, Image Generation, Nano Banana 2 (Fast), Nano Banana Pro (High Fidelity), code:block2 (generate(), Common Image Parameters, Image Editing (+27 more)
+Cohesion: 0.06
+Nodes (37): code:python (# Yavaş testleri işaretle), code:bash (# Sadece hızlı testleri çalıştır), code:python (# Eşitlik), code:python (def test_divide_by_zero():), Testing Exception Attributes, Testing Exceptions, Testing Expected Exceptions, code:python (def test_exception_with_details():) (+29 more)
 
 ### Community 769 - "Community 769"
-Cohesion: 0.11
-Nodes (16): code:cpp (#include <cstddef>), Optional Appendix: Fuzzing / Property Testing, C++ Testing（エージェントスキル）, GoogleTest の代替, すべきこと, すべきでないこと, よくある落とし穴, オプションの付録: ファジングとプロパティテスト (+8 more)
+Cohesion: 0.15
+Nodes (11): C++ Testing（エージェントスキル）, GoogleTest の代替, すべきこと, すべきでないこと, よくある落とし穴, コア概念, フレーキーテストのガードレール, ベストプラクティス (+3 more)
 
 ### Community 770 - "Community 770"
 Cohesion: 0.14
@@ -13534,11 +13524,11 @@ Nodes (12): code:json ({), 前提条件, Jira インテグレーションスキ�
 
 ### Community 771 - "Community 771"
 Cohesion: 0.14
-Nodes (16): code:php (use App\Models\User;), Inertia Feature Tests, Inertia Feature Tests, HTTP と外部サービス, Inertia Feature Testleri, Inertia フィーチャーテスト, Pest 例, Pest 示例 (+8 more)
+Nodes (16): code:php (use App\Models\Project;), Feature Test Example (HTTP Layer), Feature Test Example (HTTP Layer), Persistence Test Example, HTTP と外部サービス, Inertia フィーチャーテスト, Persistence Test Örneği, カバレッジターゲット (+8 more)
 
 ### Community 772 - "Community 772"
-Cohesion: 0.04
-Nodes (57): Any, Database, Any, Any, Database, Any, Path, analyze() (+49 more)
+Cohesion: 0.09
+Nodes (29): Any, Any, Path, analyze(), _check_except_patterns(), _cyclomatic_complexity(), Analyzer de qualidade de codigo.  Usa AST (stdlib) para medir complexidade cic, Calcula complexidade ciclomatica de uma funcao/metodo. (+21 more)
 
 ### Community 773 - "Community 773"
 Cohesion: 0.20
@@ -13549,8 +13539,8 @@ Cohesion: 0.18
 Nodes (9): code:block1 (AI 编写修复 → AI 审查修复 → AI 表示“看起来正确” → 漏洞依然存在), code:block15 (在 /api/user/profile 发现 bug → 为 profile API 编写测试), code:block2 (修复 1：向 API 响应添加了 notification_settings), AI 回归测试, 何时激活, 快速参考, 核心问题, 策略：在发现 Bug 的地方进行测试 (+1 more)
 
 ### Community 775 - "Community 775"
-Cohesion: 0.11
-Nodes (16): code:cmake (option(ENABLE_ASAN "Enable AddressSanitizer" OFF)), Sanitizers, C++ 测试（代理技能）, GoogleTest 的替代方案, サニタイザー, 不应该做, 不适用时机, 使用时机 (+8 more)
+Cohesion: 0.15
+Nodes (11): C++ 测试（代理技能）, GoogleTest 的替代方案, 不应该做, 不适用时机, 使用时机, 偶发性测试防护, 常见陷阱, 应该做 (+3 more)
 
 ### Community 776 - "Community 776"
 Cohesion: 0.14
@@ -13589,7 +13579,7 @@ Nodes (20): ✅ Code, ✅ Documentation, Implementation Constraints Verification
 
 ### Community 783 - "Community 783"
 Cohesion: 0.11
-Nodes (16): code:cpp (// tests/add_test.cpp), Alternatives to GoogleTest, Best Practices, C++ Testing (Agent Skill), Common Pitfalls, Core Concepts, Debugging Failures, DO (+8 more)
+Nodes (16): Alternatives to GoogleTest, Best Practices, C++ Testing (Agent Skill), code:cpp (#include <cstddef>), Common Pitfalls, Core Concepts, Debugging Failures, DO (+8 more)
 
 ### Community 784 - "Community 784"
 Cohesion: 0.14
@@ -13620,8 +13610,8 @@ Cohesion: 0.11
 Nodes (34): 1. Define State, 2. Define Tools, 3. Create LLM with tools, 4. Define Nodes, 5. Define Routing, 6. Build Graph, Add edges, Add nodes (+26 more)
 
 ### Community 791 - "Community 791"
-Cohesion: 0.03
-Nodes (58): Detection evasion, Acesse: Http://Localhost:8000/Dashboard, Scripts/Scraper/Meu_Estado.Py, 5.1 Responsabilidade Por Débitos — O Que Diz O Edital?, 5.2 Ônus Reais Registrados Na Matrícula, Bloco 1 — Identificação E Enquadramento, Bloco 2 — Descrição E Localização Do Imóvel, Bloco 3 — Valor De Avaliação E Lance Mínimo (+50 more)
+Cohesion: 0.06
+Nodes (33): 5.1 Responsabilidade Por Débitos — O Que Diz O Edital?, 5.2 Ônus Reais Registrados Na Matrícula, Bloco 1 — Identificação E Enquadramento, Bloco 2 — Descrição E Localização Do Imóvel, Bloco 3 — Valor De Avaliação E Lance Mínimo, Bloco 4 — Situação Do Imóvel (Posse E Ocupação), Bloco 6 — Condições De Pagamento, Bloco 7 — Regularidade Documental E Jurídica (+25 more)
 
 ### Community 792 - "Community 792"
 Cohesion: 0.06
@@ -13640,8 +13630,8 @@ Cohesion: 0.06
 Nodes (33): 10. Release Readiness Checklist, 11. Related Skills, 1. Mobile Feasibility & Risk Index (MFRI), 2. Mandatory Thinking Before Any Work, 3. Mandatory Reference Reading (Enforced), 4. AI Mobile Anti-Patterns (Hard Bans), 5. Platform Unification vs Divergence Matrix, 6. Mobile UX Psychology (Non-Optional) (+25 more)
 
 ### Community 796 - "Community 796"
-Cohesion: 0.06
-Nodes (32): Best Practices, code:python (from typing import TypedDict), code:python (# agents/supervisor_agent.py), code:python (async def reflection_node(state: AgentState) -> AgentState:), code:python (OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")   # ✅ correct), code:python (from langgraph.graph import StateGraph, END), code:python (from langchain_community.chat_message_histories import Redis), code:python (async def run(user_goal: str, session_id: str):) (+24 more)
+Cohesion: 0.09
+Nodes (20): Best Practices, code:python (# agents/supervisor_agent.py), code:python (async def reflection_node(state: AgentState) -> AgentState:), code:python (OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")   # ✅ correct), code:block7 (## Existing Issue), code:block8 (multi_agent_system/), code:python (# agents/research_agent.py), Common Pitfalls (+12 more)
 
 ### Community 797 - "Community 797"
 Cohesion: 0.10
@@ -13676,8 +13666,8 @@ Cohesion: 0.06
 Nodes (34): 1. Identify Performance Issues, 2. Algorithmic Analysis, 3. React Performance Optimization, 4. Bundle Size Optimization, 5. Database & Query Optimization, 6. Network & API Optimization, 7. Memory Leak Detection, Analysis Commands (+26 more)
 
 ### Community 805 - "Community 805"
-Cohesion: 0.21
-Nodes (20): crypto, fs, getBridgePath(), os, path, readBridge(), renameWithRetry(), resolveSessionId() (+12 more)
+Cohesion: 0.14
+Nodes (26): crypto, fs, getBridgePath(), os, path, readBridge(), renameWithRetry(), resolveSessionId() (+18 more)
 
 ### Community 806 - "Community 806"
 Cohesion: 0.09
@@ -13700,12 +13690,12 @@ Cohesion: 0.06
 Nodes (33): identical, _then, _, fromJson, assignmentId, attendanceState, campusId, campusName (+25 more)
 
 ### Community 811 - "Community 811"
-Cohesion: 0.10
-Nodes (16): startKnowledgeGraphBackgroundJob(), updateKnowledgeGraph(), KnowledgeGraph, populateKnowledgeGraph(), EnvValidationError, EnvVarConfig, EnvVarType, getEnvVar() (+8 more)
+Cohesion: 0.05
+Nodes (34): POST(), GET(), startKnowledgeGraphBackgroundJob(), updateKnowledgeGraph(), KnowledgeGraph, populateKnowledgeGraph(), EnvValidationError, EnvVarConfig (+26 more)
 
 ### Community 812 - "Community 812"
-Cohesion: 0.09
-Nodes (24): Validation modules for Word document processing., Prompt module for prompt building and normalization., Provider adapters for multiple LLM backends., ensure_venv_and_run(), Ensure virtual environment exists and run the requested script.     This is cal, clear_templates(), deregister_template(), get_template() (+16 more)
+Cohesion: 0.12
+Nodes (14): code:rust (/// İki sayıyı toplar.), code:bash (# Kurulum: cargo install cargo-llvm-cov (veya CI'da taiki-e/), code:bash (cargo test                        # Tüm testleri çalıştır), CI Entegrasyonu, Doc Testleri, En İyi Uygulamalar, Kapsam Hedefleri, Kapsamı Çalıştırma (+6 more)
 
 ### Community 813 - "Community 813"
 Cohesion: 0.06
@@ -13744,8 +13734,8 @@ Cohesion: 0.06
 Nodes (31): code:block10 (Task Call:), code:block11 (Task Call:), code:markdown (# Daily News Report (YYYY-MM-DD)), code:yaml (Steps:), code:yaml (Wave 1 (Parallel):), code:yaml (task: fetch_and_extract), code:yaml (Monitoring:), code:yaml (Deduplication:) (+23 more)
 
 ### Community 822 - "Community 822"
-Cohesion: 0.10
-Nodes (19): Architecture, Best Practices, Commit Conventions, Commit Style: Conventional Commits, Configuration Files, Coverage, Do, Don't (+11 more)
+Cohesion: 0.06
+Nodes (30): code:typescript (try {), Error Handling, Error Handling Style: Try-Catch Blocks, Architecture, Best Practices, Commit Conventions, Commit Style: Conventional Commits, Configuration Files (+22 more)
 
 ### Community 823 - "Community 823"
 Cohesion: 0.09
@@ -13757,11 +13747,11 @@ Nodes (26): Avoid when, Examples, How It Works, Step 1：选方向（引导模�
 
 ### Community 825 - "Community 825"
 Cohesion: 0.02
-Nodes (125): Backend Development Patterns, Background Jobs & Queues, Cache-Aside Pattern, Caching Strategies, Logging & Monitoring, Rate Limiting, Redis Caching Layer, Simple In-Memory Rate Limiter (+117 more)
+Nodes (141): Authentication & Authorization, Backend Development Patterns, Background Jobs & Queues, JWT Token Validation, Logging & Monitoring, Rate Limiting, Role-Based Access Control, Simple In-Memory Rate Limiter (+133 more)
 
 ### Community 826 - "Community 826"
-Cohesion: 0.06
-Nodes (30): code:bash (# ネイティブ実行ファイルビルド), code:java (@RegisterForReflection(targets = {MyDynamicClass.class})), Native Image Troubleshooting, Phase 5: Native Compilation, code:bash (# Native executable oluştur), code:bash (# Tüm yapılandırma özelliklerini kontrol et), code:bash (# Tüm testleri çalıştır), Deployment (+22 more)
+Cohesion: 0.12
+Nodes (16): code:json ({), Phase 7: Health Checks, code:json ({), Phase 7: Health Checks, code:json ({), code:json ({), code:json ({), Collection Response (with Pagination) (+8 more)
 
 ### Community 827 - "Community 827"
 Cohesion: 0.17
@@ -13769,7 +13759,7 @@ Nodes (10): code:block1 (1. 识别处理函数（onClick、onSubmit、onChange �
 
 ### Community 828 - "Community 828"
 Cohesion: 0.17
-Nodes (10): code:block13 (DJANGO 验证报告), code:bash (# Test logging output), Phase 10: Logging Configuration, Phase 10: Logging Configuration, Django 验证循环, 何时激活, 快速参考, 输出模板 (+2 more)
+Nodes (10): code:block13 (DJANGO 验证报告), Phase 1: Environment Check, code:bash (# Verify Python version), Phase 1: Environment Check, Django 验证循环, 何时激活, 快速参考, 输出模板 (+2 more)
 
 ### Community 829 - "Community 829"
 Cohesion: 0.11
@@ -13808,12 +13798,12 @@ Cohesion: 0.17
 Nodes (10): code:block1 (1. IDENTIFY the handler (onClick, onSubmit, onChange, etc.)), code:block12 (Agent 1: Map ALL state stores (Step 1) — this is shared cont), /click-path-audit — Behavioural Flow Audit, How It Works, Integration with Other Skills, Recommended agent split for full app:, Scope Control, The Problem This Solves (+2 more)
 
 ### Community 838 - "Community 838"
-Cohesion: 0.20
-Nodes (8): code:bash (# Generate schema), Django Verification Loop, Phase 11: API Documentation (if DRF), Pre-Deployment Checklist, Quick Reference, When to Activate, Phase 11: API Documentation (if DRF), 阶段 11: API 文档（如果使用 DRF）
+Cohesion: 0.15
+Nodes (11): Django Verification Loop, Output Template, Phase 3: Migrations, Pre-Deployment Checklist, Quick Reference, When to Activate, code:block13 (DJANGO VERIFICATION REPORT), code:bash (# Check for unapplied migrations) (+3 more)
 
 ### Community 839 - "Community 839"
-Cohesion: 0.12
-Nodes (16): Best Practices Summary, Common Patterns, Purpose, Related Skills, Templates, Troubleshooting, When to Use This Skill, GDPR Data Handling Implementation Playbook (+8 more)
+Cohesion: 0.06
+Nodes (32): Output Format, Best Practices, code:block1 (Article 6 - Lawful Bases:), code:block2 (Right to Access (Art. 15)      ─┐), code:markdown (## GDPR Implementation Checklist), Core Concepts, Do's, Don'ts (+24 more)
 
 ### Community 840 - "Community 840"
 Cohesion: 0.09
@@ -13841,7 +13831,7 @@ Nodes (12): 10. Sending a Test Message, 11. Server-Side Credentials & Security, 
 
 ### Community 846 - "Community 846"
 Cohesion: 0.09
-Nodes (21): Create Item, AppState Structure, Best Practices, code:rust (use serde::{Serialize, Deserialize};), code:rust (use std::{cell::RefCell, rc::Rc, collections::HashMap};), code:rust (/// A snapshot of UI layout state for restoration), code:rust (use std::path::{Path, PathBuf};), code:rust (use std::io::Write;) (+13 more)
+Nodes (20): Startup Sequence, Centralized Action Handling in App, code:rust (impl MatchEvent for App {), Using MatchEvent Trait, Best Practices, code:rust (use std::{cell::RefCell, rc::Rc, collections::HashMap};), code:rust (use std::path::{Path, PathBuf};), code:rust (use std::io::Write;) (+12 more)
 
 ### Community 847 - "Community 847"
 Cohesion: 0.14
@@ -13900,8 +13890,8 @@ Cohesion: 0.06
 Nodes (33): Additional Resources, Audit Report Template, Autonomous Scanning Instructions, Best Practices, code:markdown (User: @production-code-audit make this production-ready), code:markdown (User: @production-code-audit secure this codebase), code:markdown (User: @production-code-audit optimize performance), code:markdown (# Production Audit Report) (+25 more)
 
 ### Community 861 - "Community 861"
-Cohesion: 0.08
-Nodes (24): Best Practices, code:bash (pip install pydantic-ai), code:python (from pydantic_ai import Agent, ModelRetry), code:python (from pydantic_ai import Agent), code:python (from pydantic_ai import Agent, RunContext), code:python (from pydantic_ai.models.test import TestModel), code:python (from pydantic_ai.models.function import FunctionModel, Model), Common Pitfalls (+16 more)
+Cohesion: 0.05
+Nodes (40): Best Practices, code:python (from pydantic import BaseModel, Field), code:python (import anthropic), code:typescript (import OpenAI from "openai";), Core Workflow, Edge Cases, Example 1: OpenAI Structured Outputs with Pydantic (Python), Example 2: Anthropic tool_use for Structured Extraction (Python) (+32 more)
 
 ### Community 862 - "Community 862"
 Cohesion: 0.04
@@ -13912,12 +13902,12 @@ Cohesion: 0.08
 Nodes (28): Accordion, Base vs Radix, Button / trigger as non-button element (base only), code:tsx (<DialogTrigger>), code:tsx (<Select items={items} multiple defaultValue={[]}>), code:tsx (<Select defaultValue={plans[0]} itemToStringValue={(plan) =>), code:tsx (<ToggleGroup type="single" defaultValue="daily">), code:tsx (// Single (no prop needed), defaultValue is always an array.) (+20 more)
 
 ### Community 864 - "Community 864"
-Cohesion: 0.06
-Nodes (31): Access Scopes, API Usage, Best Practices, code:bash (npm install -g @shopify/cli@latest), code:liquid ({% comment %} Product Card Snippet {% endcomment %}), code:toml ([webhooks]), code:bash (shopify app init          # Create new app), code:bash (shopify app generate extension --type checkout_ui_extension) (+23 more)
+Cohesion: 0.08
+Nodes (23): Access Scopes, API Usage, Best Practices, code:bash (npm install -g @shopify/cli@latest), code:liquid ({% comment %} Product Card Snippet {% endcomment %}), code:toml ([webhooks]), code:bash (shopify app init          # Create new app), code:bash (shopify app generate extension --type checkout_ui_extension) (+15 more)
 
 ### Community 865 - "Community 865"
 Cohesion: 0.06
-Nodes (32): 1. Qualidade De Codigo (Peso: 20%), 2. Seguranca (Peso: 20%), 3. Performance (Peso: 15%), 4. Governanca (Peso: 15%), 5. Documentacao (Peso: 15%), 6. Dependencias (Peso: 15%), 7. Cross-Skill (Analise Global), Best Practices (+24 more)
+Nodes (31): 1. Qualidade De Codigo (Peso: 20%), 2. Seguranca (Peso: 20%), 3. Performance (Peso: 15%), 4. Governanca (Peso: 15%), 5. Documentacao (Peso: 15%), 6. Dependencias (Peso: 15%), 7. Cross-Skill (Analise Global), Best Practices (+23 more)
 
 ### Community 866 - "Community 866"
 Cohesion: 0.07
@@ -13948,12 +13938,12 @@ Cohesion: 0.14
 Nodes (13): 1. Initial Scan, 2. OWASP Top 10 Check, 3. Code Pattern Review, Common False Positives, Core Responsibilities, Emergency Response, Key Principles, Reference (+5 more)
 
 ### Community 873 - "Community 873"
-Cohesion: 0.10
-Nodes (31): collapseWhitespace(), collectLearnedSkillFiles(), dedupeRecentSessions(), { detectProjectType }, extractFirstParagraph(), extractInstinctAction(), extractMarkdownHeading(), extractSection() (+23 more)
+Cohesion: 0.13
+Nodes (13): Config, Default, Display, Formatter, Path, Self, Vec, ContextObservationPriority (+5 more)
 
 ### Community 874 - "Community 874"
-Cohesion: 0.22
-Nodes (7): Output Template, code:block13 (DJANGO VERIFICATION REPORT), Django Verification Loop, Output Template, Pre-Deployment Checklist, Quick Reference, When to Activate
+Cohesion: 0.20
+Nodes (8): code:bash (# Dependency vulnerabilities), Phase 5: Security Scan, Django Verification Loop, Phase 5: Security Scan, Pre-Deployment Checklist, Quick Reference, When to Activate, 阶段 5: 安全扫描
 
 ### Community 875 - "Community 875"
 Cohesion: 0.07
@@ -13980,8 +13970,8 @@ Cohesion: 0.11
 Nodes (31): Path, assess_status(), build_skill_entry(), detect_language(), extract_capabilities(), extract_triggers(), find_skill_files(), is_registered() (+23 more)
 
 ### Community 881 - "Community 881"
-Cohesion: 0.08
-Nodes (25): Access Document Content Details, Analyze Audio, Analyze Image, Analyze Video, Analyzer Management, Authentication, Azure AI Content Understanding SDK for Python, Best Practices (+17 more)
+Cohesion: 0.06
+Nodes (32): Voiceover with ElevenLabs, Access Document Content Details, Analyze Audio, Analyze Document, Analyze Image, Analyze Video, Analyzer Management, Authentication (+24 more)
 
 ### Community 882 - "Community 882"
 Cohesion: 0.06
@@ -14004,16 +13994,16 @@ Cohesion: 0.06
 Nodes (30): Add API Definition, Azure API Center Management SDK for Python, Best Practices, Client Types, code:bash (pip install azure-mgmt-apicenter), code:python (from azure.mgmt.apicenter.models import Environment, Environ), code:python (from azure.mgmt.apicenter.models import Deployment, Deployme), code:python (from azure.mgmt.apicenter.models import MetadataSchema) (+22 more)
 
 ### Community 887 - "Community 887"
-Cohesion: 0.05
-Nodes (37): code:java (import com.azure.core.exception.HttpResponseException;), Error Handling, Error Handling, Error Handling, Error Handling, Async Operations, Azure Web PubSub SDK for Java, Best Practices (+29 more)
+Cohesion: 0.06
+Nodes (30): Async Operations, Azure Web PubSub SDK for Java, Best Practices, Client Roles, code:java (// Send to all connections for a specific user), code:java (// Add connection to group), code:java (// Check if connection exists), code:java (import com.azure.messaging.webpubsub.models.GetClientAccessT) (+22 more)
 
 ### Community 888 - "Community 888"
 Cohesion: 0.06
 Nodes (34): Installation, Installation, Installation, Adding Span Attributes, Azure Monitor OpenTelemetry Exporter for Java, Basic Setup with Autoconfigure (Recommended), Best Practices, code:java (Span span = tracer.spanBuilder("riskyOperation").startSpan()) (+26 more)
 
 ### Community 889 - "Community 889"
-Cohesion: 0.06
-Nodes (31): Agent Workflow, API path, Auto-provisioning, Check status, Claimable Postgres, Claiming, CLI, CLI path (+23 more)
+Cohesion: 0.05
+Nodes (38): code:json ({), Agent Workflow, API path, Auto-provisioning, Check status, Claimable Postgres, Claiming, CLI (+30 more)
 
 ### Community 890 - "Community 890"
 Cohesion: 0.06
@@ -14032,12 +14022,12 @@ Cohesion: 0.06
 Nodes (29): code:bash (# Pythonバージョンを確認), code:bash (# ログ出力をテスト), code:bash (# スキーマを生成), code:bash (# 差分統計を表示), code:block13 (DJANGO 検証レポート), code:bash (# 型チェック), code:bash (# 未適用のマイグレーションをチェック), code:bash (# pytestですべてのテストを実行) (+21 more)
 
 ### Community 894 - "Community 894"
-Cohesion: 0.20
-Nodes (10): code:block1 (SOURCE_PATH="<解決された絶対パス>"), /opensource fork PROJECT, code:block4 (Agent(), code:block6 (Open-Source Fork Ready: {PROJECT_NAME}), Step 4: Run Sanitizer Agent, Step 6: Final Review, ステップ1: パラメータを収集する, ステップ4: サニタイザーエージェントを実行する (+2 more)
+Cohesion: 0.14
+Nodes (14): code:block1 (SOURCE_PATH="<解決された絶対パス>"), /opensource fork PROJECT, code:block3 (Agent(), code:block4 (Agent(), code:block6 (Open-Source Fork Ready: {PROJECT_NAME}), Step 3: Run Forker Agent, Step 4: Run Sanitizer Agent, Step 6: Final Review (+6 more)
 
 ### Community 895 - "Community 895"
-Cohesion: 0.13
-Nodes (20): code:python (from pydantic import BaseModel), code:typescript (interface ApiResponse<T> {), code:typescript (import { useState, useCallback } from 'react'), API Response Format (FastAPI), Claude AI Integration (Structured Output), Code Patterns, code:python (from anthropic import Anthropic), Custom Hooks (React) (+12 more)
+Cohesion: 0.03
+Nodes (77): code:bash (# フロントエンドのビルドとデプロイ), code:bash (# フロントエンド (.env.local)), code:python (from pydantic import BaseModel), code:bash (# 執行所有測試), code:bash (# 建置和部署前端), code:bash (# 前端（.env.local）), code:typescript (interface ApiResponse<T> {), code:typescript (import { useState, useCallback } from 'react') (+69 more)
 
 ### Community 896 - "Community 896"
 Cohesion: 0.10
@@ -14056,8 +14046,8 @@ Cohesion: 0.11
 Nodes (34): agentShieldEnterpriseEvidence(), agentShieldEnterpriseGap(), buildGrowthSummary(), buildReport(), { buildReport: buildPlatformReport }, buildRequirement(), buildRequirements(), DEFAULT_THRESHOLDS (+26 more)
 
 ### Community 900 - "Community 900"
-Cohesion: 0.07
-Nodes (25): code:markdown (# 好：并行执行), 代理编排, 可用代理, 多视角分析, 并行任务执行, 立即使用代理, code:block1 (1. 运行 git diff 了解更改), 与其他规则的集成 (+17 more)
+Cohesion: 0.06
+Nodes (27): Code Review, code:block1 (**[SEVERITY]** file.ts:123), Best Practices (MEDIUM), Check Categories, Code Quality (HIGH), Code Review Command, Decision, Report Format (+19 more)
 
 ### Community 901 - "Community 901"
 Cohesion: 0.14
@@ -14112,20 +14102,20 @@ Cohesion: 0.06
 Nodes (32): AI Workflow Integration, Async Operations, Basic Syntax, Built-in Objects, code:rust (// Embed Splash code in Rust), code:splash (// Async function), code:splash (// Dynamic UI generation), code:rust (// Evaluate Splash code at runtime) (+24 more)
 
 ### Community 914 - "Community 914"
-Cohesion: 0.06
-Nodes (34): Anti-Patterns to Avoid, Apply Strategy, Code Review Checklist, code:bash (# Check Prisma version), code:typescript (// For serverless (Vercel, AWS Lambda)), code:env (# Connection URL with pool settings), code:typescript (// Check for transaction issues), code:typescript (// Sequential operations (auto-transaction)) (+26 more)
+Cohesion: 0.10
+Nodes (20): code:typescript (// For serverless (Vercel, AWS Lambda)), code:env (# Connection URL with pool settings), code:typescript (// Check for transaction issues), code:typescript (// Sequential operations (auto-transaction)), code:bash (# Validate schema), code:prisma (// Good: Explicit relations with clear naming), code:bash (# Check migration status), code:bash (# Enable query logging) (+12 more)
 
 ### Community 915 - "Community 915"
-Cohesion: 0.17
-Nodes (11): Demo Script Templates, Executive Overview Script, How to Handle "Can You Show Me X?", Interaction Point Guidance, Questions NOT to Ask During Demos, Scene 1: Opening (2 min), Scene 2: The Problem & Cost (5 min), Scene 3: The Solution & Differentiation (5 min) (+3 more)
+Cohesion: 0.33
+Nodes (6): Executive Overview Script, Scene 1: Opening (2 min), Scene 2: The Problem & Cost (5 min), Scene 3: The Solution & Differentiation (5 min), Scene 4: ROI & Business Case (5 min), Scene 5: Q&A and Decision (5-10 min)
 
 ### Community 916 - "Community 916"
 Cohesion: 0.22
 Nodes (7): Common Mistakes, Error Handling, Hreflang Generation, Hreflang & International SEO, Limitations, Process, When to Use
 
 ### Community 917 - "Community 917"
-Cohesion: 0.09
-Nodes (23): Finding #30: [MEDIUM] Rate Limiting (Qwen 3.6), Finding #31: [MEDIUM] race_condition (Qwen 3.6), Problem, Problem, Proof / Evidence, Proof / Evidence, Suggested Fix, Suggested Fix (+15 more)
+Cohesion: 0.06
+Nodes (34): Finding #21: [HIGH] XSS (Qwen 3.6), Finding #31: [MEDIUM] race_condition (Qwen 3.6), Finding #5: [CRITICAL] unhandled edge cases (Qwen 3.6), Problem, Problem, Problem, Proof / Evidence, Proof / Evidence (+26 more)
 
 ### Community 918 - "Community 918"
 Cohesion: 0.06
@@ -14141,7 +14131,7 @@ Nodes (32): Behavioral Traits, Capabilities, Competitive Analysis, Competitive S
 
 ### Community 921 - "Community 921"
 Cohesion: 0.06
-Nodes (33): Complete Example Cargo.toml, 5. Generate Python Library Structure, code:toml ([build-system]), 1. Analyze Project Type, 2. Initialize Project with Cargo, 3. Generate Binary Project Structure, 4. Generate Library Project Structure, 5. Generate Workspace Structure (+25 more)
+Nodes (34): 2. Cargo.toml Setup, Complete Example Cargo.toml, 5. Generate Python Library Structure, code:toml ([build-system]), 1. Analyze Project Type, 2. Initialize Project with Cargo, 3. Generate Binary Project Structure, 4. Generate Library Project Structure (+26 more)
 
 ### Community 922 - "Community 922"
 Cohesion: 0.06
@@ -14172,8 +14162,8 @@ Cohesion: 0.06
 Nodes (31): 1. Identificar O Tipo De Solicitacao, Acusado/Reu, ADVOGADO CRIMINALISTA SENIOR — ESPECIALISTA EM DIREITO PENAL E MARIA DA PENHA, Advogado Profissional, Best Practices, code:block5 (CASO: _______________), Common Pitfalls, Do Not Use This Skill When (+23 more)
 
 ### Community 929 - "Community 929"
-Cohesion: 0.09
-Nodes (24): Generated visuals with fal.ai, Layer 5: Generated Assets (ElevenLabs / fal.ai), Music and SFX with fal.ai, VideoDB generative audio, Voiceover with ElevenLabs, Generated visuals with fal.ai, Layer 5: Generated Assets (ElevenLabs / fal.ai), Music and SFX with fal.ai (+16 more)
+Cohesion: 0.07
+Nodes (38): Accessibility Patterns, Focus Management, Keyboard Navigation, Accessibility Patterns, Focus Management, Keyboard Navigation, Accessibility Patterns, Focus Management (+30 more)
 
 ### Community 930 - "Community 930"
 Cohesion: 0.05
@@ -14196,8 +14186,8 @@ Cohesion: 0.07
 Nodes (27): Agent with Tools, Agents, Authentication, Azure AI Projects SDK for TypeScript, Best Practices, code:bash (npm install @azure/ai-projects @azure/identity), code:typescript (// List all deployments), code:typescript (// Upload single file) (+19 more)
 
 ### Community 935 - "Community 935"
-Cohesion: 0.06
-Nodes (29): API Key, Async Client, Authentication, Available Operations, Azure AI Text Analytics SDK for Python, Best Practices, Client Types, code:bash (pip install azure-ai-textanalytics) (+21 more)
+Cohesion: 0.07
+Nodes (25): Async Client, Available Operations, Azure AI Text Analytics SDK for Python, Best Practices, Client Types, code:bash (pip install azure-ai-textanalytics), code:python (documents = ["Patient has diabetes and was prescribed metfor), code:python (from azure.ai.textanalytics.aio import TextAnalyticsClient) (+17 more)
 
 ### Community 936 - "Community 936"
 Cohesion: 0.06
@@ -14225,7 +14215,7 @@ Nodes (31): 1) Em dashes, 2) "It's not X, it's Y" constructions, 3) Filler trans
 
 ### Community 942 - "Community 942"
 Cohesion: 0.10
-Nodes (19): 1. Layer Structure, 2. Component Responsibilities, 3. Dependency Injection, 4. Use Cases (Domain Layer), 5. Workflow: Scaffold a New Feature, 6. Data Storage, 7. Coding Conventions, code:dart (class BookingViewModel extends ChangeNotifier {) (+11 more)
+Nodes (18): 2. Component Responsibilities, 3. Dependency Injection, 4. Use Cases (Domain Layer), 5. Workflow: Scaffold a New Feature, 6. Data Storage, 7. Coding Conventions, code:dart (class BookingViewModel extends ChangeNotifier {), code:dart (class BookingRepository {) (+10 more)
 
 ### Community 943 - "Community 943"
 Cohesion: 0.07
@@ -14311,8 +14301,8 @@ Cohesion: 0.10
 Nodes (20): code:json ("laraplugins": {), MCP Requirement, Best Practices, Checking Compatibility, Common Use Cases, Evaluating Packages, Finding Packages, GetPluginDetailsTool (+12 more)
 
 ### Community 963 - "Community 963"
-Cohesion: 0.16
-Nodes (14): code:text (t/), code:text (-l), Directory Structure, prove Commands, .proverc Configuration, Test Organization and prove, Directory Structure, prove Commands (+6 more)
+Cohesion: 0.08
+Nodes (28): Running Tests, code:bash (# Run all tests), code:text (t/), code:text (-l), Directory Structure, prove Commands, .proverc Configuration, Test Organization and prove (+20 more)
 
 ### Community 964 - "Community 964"
 Cohesion: 0.06
@@ -14360,7 +14350,7 @@ Nodes (31): Announcement Tactics, Borrowed Channels, Case Studies, Cons, Core Ph
 
 ### Community 975 - "Community 975"
 Cohesion: 0.02
-Nodes (126): [1.0.0] - 2025-12-27, [1.0.1] - 2025-12-27, [1.1.0] - 2025-12-27, [2.0.0] - 2025-12-27, [2.0.1] - 2025-12-27, [2.0.2] - 2025-12-27, [2.0.3] - 2025-12-27, [2.10.1] - 2026-01-01 (+118 more)
+Nodes (118): [1.0.0] - 2025-12-27, [1.0.1] - 2025-12-27, [1.1.0] - 2025-12-27, [2.0.0] - 2025-12-27, [2.0.1] - 2025-12-27, [2.0.2] - 2025-12-27, [2.0.3] - 2025-12-27, [2.10.1] - 2026-01-01 (+110 more)
 
 ### Community 976 - "Community 976"
 Cohesion: 0.06
@@ -14379,8 +14369,8 @@ Cohesion: 0.06
 Nodes (31): 🚫 AI MOBILE DEFAULTS (FORBIDDEN LIST), Analysis for Every Gesture, 🧪 ANTI-MEMORIZATION TEST, Ask Yourself Before Every Solution, code:block1 (┌───────────────────────────────────────────────────────────), code:block2 (┌───────────────────────────────────────────────────────────), code:block3 (SCREEN: [Screen Name]), code:block4 (┌───────────────────────────────────────────────────────────) (+23 more)
 
 ### Community 980 - "Community 980"
-Cohesion: 0.07
-Nodes (29): code:block1 (1. search(query="<table_name>") → get the full MCON/table id), code:block2 (- New column with a row-level condition (null check, range, ), Bugfixes and reverts require impact assessment too, code:block10 (validation/<table_name>_<YYYYMMDD_HHMM>.sql), code:sql (/*), code:block3 (1. Read the SQL file being edited to extract the specific tr), code:yaml (# monitors/<table_name>.yml  ← monitor definitions only, NOT), code:yaml (# montecarlo.yml  ← project config only, NOT monitor definit) (+21 more)
+Cohesion: 0.06
+Nodes (10): dr, ef, f, gu(), nf(), Rr(), tf(), xg (+2 more)
 
 ### Community 981 - "Community 981"
 Cohesion: 0.06
@@ -14399,8 +14389,8 @@ Cohesion: 0.06
 Nodes (31): Acknowledging Correct Feedback, Code Review Reception, code:block1 (WHEN receiving code review feedback:), code:block10 (Reviewer: "Remove legacy code"), code:block11 (Reviewer: "Implement proper metrics tracking with database, ), code:block12 (your human partner: "Fix items 1-6"), code:block2 (IF any item is unclear:), code:block3 (your human partner: "Fix 1-6") (+23 more)
 
 ### Community 985 - "Community 985"
-Cohesion: 0.08
-Nodes (23): Best Practices, code:block1 (Future (lazy) → poll() → Ready(value) | Pending), code:rust (// Enable tokio-console for runtime debugging), code:toml (# Cargo.toml), code:rust (use tokio::time::{sleep, Duration};), Core Concepts, Debugging Tips, Do's (+15 more)
+Cohesion: 0.04
+Nodes (44): Best Practices, code:block1 (Future (lazy) → poll() → Ready(value) | Pending), code:rust (use std::sync::Arc;), code:rust (// Enable tokio-console for runtime debugging), code:toml (# Cargo.toml), code:rust (use tokio::time::{sleep, Duration};), code:rust (use tokio::task::JoinSet;), code:rust (use tokio::sync::{mpsc, broadcast, oneshot, watch};) (+36 more)
 
 ### Community 986 - "Community 986"
 Cohesion: 0.09
@@ -14419,8 +14409,8 @@ Cohesion: 0.08
 Nodes (22): Anti-Patterns to Avoid, Coverage Targets, React TDD Command, Related, Related Commands, Runner Detection, Test Commands, What This Command Does (+14 more)
 
 ### Community 990 - "Community 990"
-Cohesion: 0.14
-Nodes (32): confirm(), clearStoredManualApplyState(), copyToClipboard(), fetchPendingCount(), handleManualEditActivity(), hidePendingApplyDock(), manualApplyLoadingText(), manualApplyStateKey() (+24 more)
+Cohesion: 0.15
+Nodes (29): clearStoredManualApplyState(), copyToClipboard(), fetchPendingCount(), handleManualEditActivity(), hidePendingApplyDock(), manualApplyLoadingText(), manualApplyStateKey(), manualEditEventForCurrentPage() (+21 more)
 
 ### Community 991 - "Community 991"
 Cohesion: 0.20
@@ -14438,8 +14428,8 @@ Nodes (47): path, run(), { spawnSync }, {
 }, { isHookEnabled }, main(), normalizeHookResult(), POST_BASH_HOOKS (+39 more)
 
 ### Community 994 - "Community 994"
-Cohesion: 0.16
-Nodes (31): collapseWhitespace(), collectLearnedSkillFiles(), dedupeRecentSessions(), { detectProjectType }, extractFirstParagraph(), extractInstinctAction(), extractMarkdownHeading(), extractSection() (+23 more)
+Cohesion: 0.08
+Nodes (62): collapseWhitespace(), collectLearnedSkillFiles(), dedupeRecentSessions(), { detectProjectType }, extractFirstParagraph(), extractInstinctAction(), extractMarkdownHeading(), extractSection() (+54 more)
 
 ### Community 995 - "Community 995"
 Cohesion: 0.06
@@ -14478,8 +14468,8 @@ Cohesion: 0.06
 Nodes (30): Best Practices, code:typescript (// JWT structure: header.payload.signature), code:typescript (interface StoredRefreshToken {), code:typescript (import session from 'express-session';), code:typescript (import passport from 'passport';), code:typescript (enum Role {), code:typescript (enum Permission {), code:typescript (// Check if user owns resource) (+22 more)
 
 ### Community 1004 - "Community 1004"
-Cohesion: 0.07
-Nodes (29): code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), 1. Use `v5.36` Pragma, code:perl (# Good: Modern preamble), 1. Use `v5.36` Pragma (+21 more)
+Cohesion: 0.13
+Nodes (15): code:perl (use v5.36;), code:perl (use v5.36;), 2. Subroutine Signatures, 3. Context Sensitivity, 4. Postfix Dereferencing, 5. The `isa` Operator (5.32+), code:perl (use v5.36;), code:perl (use v5.36;) (+7 more)
 
 ### Community 1005 - "Community 1005"
 Cohesion: 0.11
@@ -14554,32 +14544,32 @@ Cohesion: 0.08
 Nodes (23): 1. Planner Agent, 2. Generator Agent, 3. Evaluator Agent, Anti-Patterns, Configuration, Core Insight, Environment Variables, Evaluation Criteria (+15 more)
 
 ### Community 1023 - "Community 1023"
-Cohesion: 0.09
-Nodes (26): code:go (// Adım 1: Interface/signature'ı tanımla), code:block1 (RED     → Önce başarısız bir test yaz), code:rust (use proptest::prelude::*;), code:rust (// RED: Önce testi yaz, yer tutucu olarak todo!() kullan), code:rust (// GREEN: todo!()'yu minimal implementasyonla değiştir), Basic Property Tests, Custom Strategies, Property-Based Testing with `proptest` (+18 more)
+Cohesion: 0.17
+Nodes (16): code:rust (use proptest::prelude::*;), Basic Property Tests, Custom Strategies, Property-Based Testing with `proptest`, Basic Property Tests, Custom Strategies, Property-Based Testing with `proptest`, `proptest` ile Property-Based Testing (+8 more)
 
 ### Community 1024 - "Community 1024"
-Cohesion: 0.07
-Nodes (30): Additional Resources, Automatic Escalation Triggers, Carrier Relationship Management, Communication Patterns, Escalation Chain, Escalation Protocols, Key Edge Cases, Performance Indicators (+22 more)
+Cohesion: 0.06
+Nodes (32): Additional Resources, Carrier Relationship Management, Communication Patterns, Key Edge Cases, Performance Indicators, Performance Reviews, Rate Negotiation Tone, Role and Context (+24 more)
 
 ### Community 1025 - "Community 1025"
-Cohesion: 0.20
-Nodes (8): code:swift (#Preview("Empty state") {), Previews, SwiftUI パターン, プレビュー, 参照, 起動条件, 避けるべきアンチパターン, 预览
+Cohesion: 0.25
+Nodes (6): SwiftUI パターン, ナビゲーション, 参照, 型安全な NavigationStack, 起動条件, 避けるべきアンチパターン
 
 ### Community 1026 - "Community 1026"
 Cohesion: 0.08
-Nodes (26): 1. Create Weights & Biases Instance, 2. Get Existing Instance, 4. Configure Single Sign-On (SSO), 5. Update Instance, 6. Delete Instance, 7. Check Resource Name Availability, Authentication, Available Regions (+18 more)
+Nodes (25): 1. Create Weights & Biases Instance, 2. Get Existing Instance, 4. Configure Single Sign-On (SSO), 5. Update Instance, 6. Delete Instance, 7. Check Resource Name Availability, Authentication, Available Regions (+17 more)
 
 ### Community 1027 - "Community 1027"
-Cohesion: 0.06
-Nodes (36): Finding #25: [HIGH] Broken Authorization (Qwen 3.6), Finding #45: [MEDIUM] race_conditions (Qwen 3.6), Finding #84: [MEDIUM] Unnecessary re-renders (Qwen 3.6), Problem, Problem, Problem, Proof / Evidence, Proof / Evidence (+28 more)
+Cohesion: 0.05
+Nodes (39): Finding #102: [LOW] Missing Ownership Checks (Qwen 3.6), Finding #43: [MEDIUM] Broken Authorization (Qwen 3.6), Finding #81: [MEDIUM] N+1 queries (Qwen 3.6), Finding #84: [MEDIUM] Unnecessary re-renders (Qwen 3.6), Problem, Problem, Problem, Problem (+31 more)
 
 ### Community 1028 - "Community 1028"
 Cohesion: 0.06
 Nodes (35): code:javascript (const cubeLoader = new THREE.CubeTextureLoader();), Cube Texture Environment, Environment Lighting (IBL), ArrayBuffer, Blob URL, code:javascript (async function loadFromBlob(blob) {), code:javascript (// From fetch), code:javascript (// Set base path) (+27 more)
 
 ### Community 1029 - "Community 1029"
-Cohesion: 0.17
-Nodes (10): code:json ({), 代码导览, 何时不使用, 何时使用, 反模式, 叙事结构, 最佳实践, 相关技能 (+2 more)
+Cohesion: 0.11
+Nodes (17): code:json ({), code:json ({), code:json ({), 响应包装器变体, 响应格式, 成功响应, 错误响应, 集合响应（带分页） (+9 more)
 
 ### Community 1030 - "Community 1030"
 Cohesion: 0.09
@@ -14590,8 +14580,8 @@ Cohesion: 0.25
 Nodes (6): SwiftUI 模式, 何时激活, 参考, 导航, 应避免的反模式, 类型安全的 NavigationStack
 
 ### Community 1032 - "Community 1032"
-Cohesion: 0.08
-Nodes (24): code:python (import pandas as pd), code:python (from typing import Callable, Dict, List, Tuple, Any), Implementation Patterns, code:python (import numpy as np), Best Practices, code:block1 (Data Size           Recommended Index), code:block2 (Full Precision (FP32): 4 bytes × dimensions), Core Concepts (+16 more)
+Cohesion: 0.15
+Nodes (11): Best Practices, code:block1 (Data Size           Recommended Index), code:block2 (Full Precision (FP32): 4 bytes × dimensions), Core Concepts, Do's, Don'ts, Resources, 1. Index Type Selection (+3 more)
 
 ### Community 1033 - "Community 1033"
 Cohesion: 0.07
@@ -14610,8 +14600,14 @@ Cohesion: 0.07
 Nodes (29): DeepCollectionEquality, EqualUnmodifiableListView, EqualUnmodifiableMapView, identical, _then, _, _Event, fromJson (+21 more)
 
 ### Community 1037 - "Community 1037"
-Cohesion: 0.14
-Nodes (25): computeProjectId(), crypto, { ensureDir, sanitizeSessionId }, fs, getHomunculusDir(), getObserverPidFile(), getObserverSignalCounterFile(), getProjectRegistryPath() (+17 more)
+Cohesion: 0.10
+Nodes (31): log(), {
+  resolveProjectContext,
+  removeSessionLease,
+  listSessionLeases,
+  stopObserverForContext,
+  resolveSessionId
+}, run(), computeProjectId(), crypto, { ensureDir, sanitizeSessionId }, fs, getHomunculusDir() (+23 more)
 
 ### Community 1038 - "Community 1038"
 Cohesion: 0.13
@@ -14630,11 +14626,11 @@ Nodes (24): code:bash (mkdir -p conductor/tracks/_archive), code:bash (mv conduc
 
 ### Community 1041 - "Community 1041"
 Cohesion: 0.07
-Nodes (25): code:python (# settings/production.py), code:python (import os), code:python (# python-decoupleまたはdjango-environを使用), code:python (# GOOD: Django ORMは自動的にパラメータをエスケープ), code:python (# 生のSQLを使用する必要がある場合は、常にパラメータを使用), Content Security Policy, Core Security Settings, Django ORM保護 (+17 more)
+Nodes (36): code:python (def process_data(data: list[int]) -> int:), code:python (import concurrent.futures), Async/Await for Concurrent I/O, Concurrency Patterns, Multiprocessing for CPU-Bound Tasks, Threading for I/O-Bound Tasks, Async Client, Quick Start (+28 more)
 
 ### Community 1042 - "Community 1042"
-Cohesion: 0.06
-Nodes (31): code:block10 (Cron: 每天上午6点执行), code:block11 (触发条件：每个日历事件前30分钟), code:block2 (# 短期：当前会话上下文), code:bash (# Trigger from CI/CD), code:block5 (# 通过记忆实现任务持久化), code:block9 (Cron: 工作时间内每30分钟执行一次), code:block2 (# Short-term: current session context), code:block3 (# Via MCP tool) (+23 more)
+Cohesion: 0.04
+Nodes (54): code:block10 (Cron: 每天上午6点执行), code:block11 (触发条件：每个日历事件前30分钟), code:block2 (# 短期：当前会话上下文), code:bash (# Trigger from CI/CD), code:block5 (# 通过记忆实现任务持久化), code:bash (# Daily morning briefing), code:block9 (Cron: 工作时间内每30分钟执行一次), code:block10 (Cron: daily at 6 AM) (+46 more)
 
 ### Community 1043 - "Community 1043"
 Cohesion: 0.10
@@ -14649,16 +14645,16 @@ Cohesion: 0.10
 Nodes (22): _parse_stream_json(), Run scenarios via claude -p and parse tool calls from stream-json output., Parse claude -p stream-json output into ObservationEvents.      Stream-json fo, Execute a scenario and extract tool calls from stream-json output., Sanitize scenario ID and ensure path stays within sandbox base., Create sandbox directory and run setup commands., run_scenario(), _safe_sandbox_dir() (+14 more)
 
 ### Community 1046 - "Community 1046"
-Cohesion: 0.25
-Nodes (6): Anti-Patterns to Avoid, Navigation, References, SwiftUI Patterns, Type-Safe NavigationStack, When to Activate
+Cohesion: 0.20
+Nodes (8): code:swift (#Preview("Empty state") {), Anti-Patterns to Avoid, Previews, References, SwiftUI Patterns, When to Activate, プレビュー, 预览
 
 ### Community 1047 - "Community 1047"
 Cohesion: 0.18
 Nodes (13): code:python (audio = coll.get_audio(audio_id)), Audio Playback, Prerequisites, Streaming & Playback, Streaming Timeline Compositions, Tips, Audio Playback, Prerequisites (+5 more)
 
 ### Community 1048 - "Community 1048"
-Cohesion: 0.07
-Nodes (27): Approval Boundaries / Least Agency, Attack Chain and Nodes / Components Involved, Attack Vectors / Surfaces, Claude Code CVEs (February 2026), Close, code:bash (# zero-width and bidi control characters), code:bash (rg -n 'curl|wget|nc|scp|ssh|enableAllProjectMcpServers|ANTHR), code:markdown (## external reference) (+19 more)
+Cohesion: 0.11
+Nodes (18): Araç Manzarası, Bağlantılı içeriği de sanitize edin, Claude Code CVE'leri (Şubat 2026), code:markdown (## harici referans), code:javascript (// tüm süreç grubunu kill et), Ekleri model görmeden önce sanitize edin, Her Şey Agentic Güvenliğe Dair Kısa Kılavuz, Kapanış (+10 more)
 
 ### Community 1049 - "Community 1049"
 Cohesion: 0.15
@@ -14710,7 +14706,7 @@ Nodes (30): 1. Business Operations Automation (No Competitor Has This), 2. Full 
 
 ### Community 1061 - "Community 1061"
 Cohesion: 0.05
-Nodes (53): app, ConfirmDialog(), createTodo(), CreateTodoRequest, deleteTodo(), fetchTodos(), Todo, updateTodo() (+45 more)
+Nodes (49): ConfirmDialog(), createTodo(), CreateTodoRequest, deleteTodo(), fetchTodos(), Todo, updateTodo(), ConfirmDialogProps (+41 more)
 
 ### Community 1062 - "Community 1062"
 Cohesion: 0.07
@@ -14761,8 +14757,8 @@ Cohesion: 0.06
 Nodes (30): 10. Anti-Patterns, 1. MITRE ATT&CK Phases, 2. Reconnaissance Principles, 3. Initial Access Vectors, 4. Privilege Escalation Principles, 5. Defense Evasion Principles, 6. Lateral Movement Principles, 7. Active Directory Attacks (+22 more)
 
 ### Community 1074 - "Community 1074"
-Cohesion: 0.06
-Nodes (35): code:html (<div class="control-group">), REQUIRED FEATURES, code:html (<!DOCTYPE html>), code:json ({), code:js (/** @type {import('tailwindcss').Config} */), code:js (export default {), code:css (@tailwind base;), code:tsx (import React from 'react';) (+27 more)
+Cohesion: 0.08
+Nodes (26): code:html (<div class="control-group">), REQUIRED FEATURES, code:html (<!DOCTYPE html>), code:json ({), code:js (/** @type {import('tailwindcss').Config} */), code:js (export default {), code:css (@tailwind base;), code:tsx (import React from 'react';) (+18 more)
 
 ### Community 1075 - "Community 1075"
 Cohesion: 0.06
@@ -14773,20 +14769,20 @@ Cohesion: 0.06
 Nodes (35): apply_squash_stretch(), calculate_arc_motion(), ease_back_in(), ease_back_in_out(), ease_back_out(), ease_in_bounce(), ease_in_cubic(), ease_in_elastic() (+27 more)
 
 ### Community 1077 - "Community 1077"
-Cohesion: 0.07
-Nodes (26): Alerting Rules, Best Practices, code:yaml (# Install Prometheus), code:promql (# Request rate by service), code:yaml (# Jaeger installation for Istio), code:bash (# Install Linkerd viz extension), code:json ({), code:yaml (# Kiali installation) (+18 more)
+Cohesion: 0.13
+Nodes (15): code:yaml (# Install Prometheus), code:promql (# Request rate by service), code:yaml (# Jaeger installation for Istio), code:bash (# Install Linkerd viz extension), code:json ({), code:yaml (# Kiali installation), code:yaml (# OpenTelemetry Collector for mesh), Template 1: Istio with Prometheus & Grafana (+7 more)
 
 ### Community 1078 - "Community 1078"
-Cohesion: 0.14
-Nodes (13): Initialize Shopify projects., Prompt user for input.          Args:             message: Prompt message, Prompt user to select from options.          Args:             message: Promp, Check if Shopify CLI is installed.          Returns:             True if inst, Create shopify.app.toml configuration file.          Args:             projec, Create shopify.extension.toml configuration file.          Args:, Create README.md file.          Args:             project_dir: Project direct, Initialize Shopify app project. (+5 more)
+Cohesion: 0.11
+Nodes (15): Initialize Shopify projects., Initialize ShopifyInitializer.          Args:             config: Environment, Prompt user for input.          Args:             message: Prompt message, Prompt user to select from options.          Args:             message: Promp, Check if Shopify CLI is installed.          Returns:             True if inst, Create shopify.app.toml configuration file.          Args:             projec, Create shopify.extension.toml configuration file.          Args:, Create README.md file.          Args:             project_dir: Project direct (+7 more)
 
 ### Community 1079 - "Community 1079"
 Cohesion: 0.12
 Nodes (15): code:block3 (Homepage (/)), code:block5 (Homepage (/)), code:block6 (Homepage (/)), E-Commerce, Hybrid SaaS + Content, Navigation, Navigation, Navigation (+7 more)
 
 ### Community 1080 - "Community 1080"
-Cohesion: 0.17
-Nodes (15): code:python (class Product(models.Model):), code:python (# Bulk create), Bulk Operations, code:python (# Bad - N+1 queries), Database Indexing, N+1 Query Prevention, Performance Optimization, Bulk Operations (+7 more)
+Cohesion: 0.16
+Nodes (16): code:python (class Product(models.Model):), code:python (# Bulk create), Bulk Operations, code:python (# Bad - N+1 queries), Database Indexing, N+1 Query Prevention, Performance Optimization, Bulk Operations (+8 more)
 
 ### Community 1081 - "Community 1081"
 Cohesion: 0.06
@@ -14813,8 +14809,8 @@ Cohesion: 0.06
 Nodes (31): Anti-Rationalization Guide, Bad Example, Baseline Rationalizations Found, code:markdown (Write code before test? Delete it.), code:markdown (| Excuse               | Reality                            ), code:markdown (## Red Flags - STOP), code:markdown (Write code before test? Delete it. Start over.), code:markdown (**Violating the letter of the rules is violating the spirit ) (+23 more)
 
 ### Community 1087 - "Community 1087"
-Cohesion: 0.07
-Nodes (38): Accessibility Patterns, Focus Management, Keyboard Navigation, Accessibility Patterns, Focus Management, Keyboard Navigation, Accessibility Patterns, Focus Management (+30 more)
+Cohesion: 0.04
+Nodes (46): Finding #103: [LOW] Unnecessary Re-renders (Qwen 3.6), Finding #22: [HIGH] race_conditions (Qwen 3.6), Finding #24: [HIGH] concurrency_issues (Qwen 3.6), Finding #49: [MEDIUM] concurrency_issues (Qwen 3.6), Finding #74: [MEDIUM] SQL Injection (Qwen 3.6), Problem, Problem, Problem (+38 more)
 
 ### Community 1088 - "Community 1088"
 Cohesion: 0.07
@@ -14850,7 +14846,7 @@ Nodes (63): BTreeMap, Config, Option, RemoteDispatchAction, RemoteDispatchKind, 
 
 ### Community 1096 - "Community 1096"
 Cohesion: 0.10
-Nodes (19): 1. Analyze Project Type, 2. Initialize Project with uv, 3. Generate FastAPI Project Structure, 6. Generate CLI Tool Structure, 7. Configure Development Tools, code:bash (# Create new project with uv), code:python (import typer), code:env (# Application) (+11 more)
+Nodes (19): 1. Analyze Project Type, 2. Initialize Project with uv, 4. Generate Django Project Structure, 6. Generate CLI Tool Structure, 7. Configure Development Tools, code:bash (# Create new project with uv), code:python (import typer), code:env (# Application) (+11 more)
 
 ### Community 1097 - "Community 1097"
 Cohesion: 0.08
@@ -14866,15 +14862,15 @@ Nodes (30): code:bash (# Changes are already in the files), code:bash (npm run d
 
 ### Community 1100 - "Community 1100"
 Cohesion: 0.06
-Nodes (34): Check rate limit headers, code:typescript (// If customer is logged in, can access their data), code:typescript (// Remix/React Router - both work by default), code:typescript (// REST (legacy)), code:typescript (// Simple database update is OK if fast), code:html (<!-- Automatically stays up to date -->), code:typescript (// app/routes/app.tsx), code:typescript (// shopify.server.ts) (+26 more)
+Nodes (34): Check your data access level, code:typescript (// DON'T do this if using TOML), code:bash (# Webhooks registered on deploy), code:nginx (# Nginx - strip trailing slashes), code:bash (# Test without slash), code:typescript (// REST: GET /products/{id}.json), code:typescript (// Simple database update is OK if fast), code:html (<!-- Automatically stays up to date -->) (+26 more)
 
 ### Community 1101 - "Community 1101"
 Cohesion: 0.05
 Nodes (42): 1.1 Mapa Da Legislacao Atualizada (2006-2025), 1.2 Formas De Violencia (Art. 7 Da Lei 11.340/2006), 1.3 Medidas Protetivas De Urgencia, 1.4 Fluxo De Atendimento — Vitima De Violencia Domestica, 1.5 Descumprimento De Medida Protetiva (Art. 24-A), 1.6 Sumulas Do Stj Sobre Maria Da Penha, 2.1 Evolucao Legislativa, 2.2 Tipificacao Atual (+34 more)
 
 ### Community 1102 - "Community 1102"
-Cohesion: 0.08
-Nodes (27): code:python (def test_divide_by_zero():), Testing Exception Attributes, Testing Exceptions, Testing Expected Exceptions, code:python (def test_exception_with_details():), Testing Exception Attributes, Testing Exceptions, Testing Expected Exceptions (+19 more)
+Cohesion: 0.09
+Nodes (24): code:python (# Adım 1: Başarısız test yaz (RED)), Test-Driven Development (TDD), code:bash (pytest --cov=mypackage --cov-report=term-missing --cov-repor), Core Testing Philosophy, Coverage Requirements, Test-Driven Development (TDD), code:python (# Step 1: Write failing test (RED)), Core Testing Philosophy (+16 more)
 
 ### Community 1103 - "Community 1103"
 Cohesion: 0.06
@@ -14885,16 +14881,16 @@ Cohesion: 0.06
 Nodes (29): Additional Resources, Agent-Friendly CLI Spec v0.1, Best Practices, Certification Requirements, code:bash ($ mycli list              # default = JSON output (agent mod), code:block2 (agent/), code:bash ($ mycli list), code:json ({) (+21 more)
 
 ### Community 1105 - "Community 1105"
-Cohesion: 0.09
-Nodes (24): DeepCollectionEquality, EqualUnmodifiableMapView, identical, _then, _, fromJson, attendanceId, createdAt (+16 more)
+Cohesion: 0.07
+Nodes (29): AttendanceEvent, DeepCollectionEquality, EqualUnmodifiableMapView, identical, _then, AttendanceEvent, fromJson, package:freezed_annotation/freezed_annotation.dart (+21 more)
 
 ### Community 1106 - "Community 1106"
 Cohesion: 0.09
 Nodes (18): Any, analyze_keyword_set(), KeywordAnalyzer, Keyword analysis module for App Store Optimization. Analyzes keyword search vol, Analyzes keywords for ASO effectiveness., Generate long-tail keyword variations.          Args:             base_keywor, Extract potential keywords from text (descriptions, reviews).          Args:, Calculate keyword density in text.          Args:             text: Text to a (+10 more)
 
 ### Community 1107 - "Community 1107"
-Cohesion: 0.33
-Nodes (6): 1. Modularity & Separation of Concerns, 2. Scalability, 3. Maintainability, 4. Security, 5. Performance, Architectural Principles
+Cohesion: 0.09
+Nodes (28): 1. Current State Analysis, 1. Modularity & Separation of Concerns, 2. Requirements Gathering, 2. Scalability, 3. Design Proposal, 3. Maintainability, 4. Security, 4. Trade-Off Analysis (+20 more)
 
 ### Community 1108 - "Community 1108"
 Cohesion: 0.06
@@ -14917,8 +14913,8 @@ Cohesion: 0.05
 Nodes (45): 1. Technical Debt Inventory, 2. Impact Assessment, 3. Debt Metrics Dashboard, 4. Prioritized Remediation Plan, 5. Implementation Strategy, 6. Prevention Strategy, 7. Communication Plan, 8. Success Metrics (+37 more)
 
 ### Community 1113 - "Community 1113"
-Cohesion: 0.06
-Nodes (35): Anti-Patterns, Branch Cleanup, Branch Management, Code Review Checklist, code:markdown (## What), code:block31 (# BAD: Committing directly to main), Git Workflow Patterns, Naming Conventions (+27 more)
+Cohesion: 0.07
+Nodes (35): code:bash (# Actions Runner Controller (Kubernetes) — recommended for e), code:yaml (jobs:), Dynamic Matrix via Script, Environments & Deployment Protection, Matrix Builds, Runner Best Practices, Self-Hosted Runners, code:yaml (strategy:) (+27 more)
 
 ### Community 1114 - "Community 1114"
 Cohesion: 0.06
@@ -14933,8 +14929,8 @@ Cohesion: 0.06
 Nodes (29): 1️⃣ Page Purpose, 2️⃣ Audience, 3️⃣ Product / Offer, 4️⃣ Context, Above the Fold, Alternatives, Annotations, Assumptions (+21 more)
 
 ### Community 1117 - "Community 1117"
-Cohesion: 0.03
-Nodes (81): 1. Visao Geral Do Ecossistema, 2.1 Pre-Requisitos, AMAZON ALEXA — Voz Inteligente com Claude, code:block1 ([Alexa Device] → [Alexa Cloud] → [AWS Lambda] → [Claude API]), code:block21, Componentes Da Arquitetura Auri, Criar Skill Com Template, Deploy Completo (Skill + Lambda) (+73 more)
+Cohesion: 0.10
+Nodes (19): 1. Fundamentos Do Claude Code, 2. Claude.Md - O Cerebro Do Projeto, CLAUDE CODE EXPERT - Potencia Maxima, code:bash (npm install -g @anthropic-ai/claude-code), code:bash (claude -p "prompt"              # print mode, ideal para scr), code:block4 (~/.claude/projects/<hash-do-path>/memory/), Dicas De Claude.Md De Elite, Do Not Use This Skill When (+11 more)
 
 ### Community 1118 - "Community 1118"
 Cohesion: 0.06
@@ -14950,7 +14946,7 @@ Nodes (29): Doc Co-Authoring Workflow, Exit Condition (Both Approaches), Final R
 
 ### Community 1121 - "Community 1121"
 Cohesion: 0.07
-Nodes (34): 1. Current State Analysis, 1. Modularity & Separation of Concerns, 2. Requirements Gathering, 2. Scalability, 3. Design Proposal, 3. Maintainability, 4. Security, 4. Trade-Off Analysis (+26 more)
+Nodes (36): 1. Current State Analysis, 1. Modularity & Separation of Concerns, 2. Requirements Gathering, 2. Scalability, 3. Design Proposal, 3. Maintainability, 4. Security, 4. Trade-Off Analysis (+28 more)
 
 ### Community 1122 - "Community 1122"
 Cohesion: 0.09
@@ -14981,24 +14977,24 @@ Cohesion: 0.15
 Nodes (15): SafeResponsiveContainer(), StatusChart(), StatusChartProps, useClientReady(), TaskStats, ChartConfig, ChartContext, ChartContextProps (+7 more)
 
 ### Community 1129 - "Community 1129"
-Cohesion: 0.07
-Nodes (27): Best Practices, Code Quality, code:bash (# コンテナイメージビルド), code:bash (# 全設定プロパティをチェック), code:bash (# 全テスト実行), Container Security Scan, Coverage Report, Deployment (+19 more)
+Cohesion: 0.08
+Nodes (19): Node.js Keccak-256, code:javascript (import crypto from 'crypto';), Node.js Keccak-256, Node.js Keccak-256, How It Works, Rule, When to Use, ルール (+11 more)
 
 ### Community 1130 - "Community 1130"
-Cohesion: 0.04
-Nodes (47): code:python (# Adım 1: Başarısız test yaz (RED)), Test-Driven Development (TDD), Async Fixture, Async Tests with pytest-asyncio, code:bash (pytest --cov=mypackage --cov-report=term-missing --cov-repor), code:python (@pytest.mark.asyncio), Core Testing Philosophy, Coverage Requirements (+39 more)
+Cohesion: 0.12
+Nodes (33): analyzeVisualContrast(), analyzeVisualContrastCandidate(), checkColors(), checkElementAIPaletteDOM(), checkElementColors(), checkElementColorsDOM(), checkElementGlow(), checkElementGlowDOM() (+25 more)
 
 ### Community 1131 - "Community 1131"
 Cohesion: 0.06
 Nodes (33): code:block2 (Oturum Aktivitesi (bir git repo'sunda)), code:json ({), code:bash (# Global dizinler), code:bash (/instinct-status     # Öğrenilmiş instinct'leri göster (proj), code:json ({), code:bash (# Belirli bir instinct'i yükselt), code:json ({), code:json ({) (+25 more)
 
 ### Community 1132 - "Community 1132"
-Cohesion: 0.18
-Nodes (9): Phase 6: Build and Deployment Readiness, code:bash (php artisan optimize:clear), Phase 6: Build and Deployment Readiness, Faz 1.5: Composer ve Autoload, Faz 6: Build ve Deployment Hazırlığı, Laravel Doğrulama Döngüsü, Nasıl Çalışır, Ne Zaman Kullanılır (+1 more)
+Cohesion: 0.20
+Nodes (9): code:bash (composer validate), Phase 1.5: Composer and Autoload, Phase 1.5: Composer and Autoload, Faz 1.5: Composer ve Autoload, Laravel Doğrulama Döngüsü, Nasıl Çalışır, Ne Zaman Kullanılır, Örnekler (+1 more)
 
 ### Community 1133 - "Community 1133"
-Cohesion: 0.07
-Nodes (27): 2. Metasploit Commands, 3. Nikto Commands, 4. SQLMap Commands, 5. Hydra Commands, 6. John the Ripper Commands, 7. Aircrack-ng Commands, 8. Wireshark/Tshark Commands, code:bash (# Windows reverse shell) (+19 more)
+Cohesion: 0.12
+Nodes (17): 2. Metasploit Commands, 4. SQLMap Commands, 5. Hydra Commands, 6. John the Ripper Commands, 7. Aircrack-ng Commands, 8. Wireshark/Tshark Commands, code:bash (# Windows reverse shell), code:bash (# Basic injection test) (+9 more)
 
 ### Community 1134 - "Community 1134"
 Cohesion: 0.09
@@ -15017,8 +15013,8 @@ Cohesion: 0.18
 Nodes (9): 六边形架构, 多语言映射, 应避免的反模式, 最佳实践清单, 核心概念, 测试指南（相同的六边形边界）, 迁移手册, 适用场景 (+1 more)
 
 ### Community 1138 - "Community 1138"
-Cohesion: 0.20
-Nodes (9): code:bash (composer validate), Phase 1.5: Composer and Autoload, Phase 1.5: Composer and Autoload, Laravel 验证循环, Örnekler, 使用时机, 工作原理, 示例 (+1 more)
+Cohesion: 0.18
+Nodes (9): Phase 4: Security and Dependency Checks, code:bash (composer audit), Phase 4: Security and Dependency Checks, Faz 4: Güvenlik ve Bağımlılık Kontrolleri, Laravel 验证循环, 使用时机, 工作原理, 第一阶段补充：Composer 和自动加载 (+1 more)
 
 ### Community 1139 - "Community 1139"
 Cohesion: 0.06
@@ -15029,8 +15025,8 @@ Cohesion: 0.29
 Nodes (5): Error Handling, Influencer Discovery, Limitations, Prerequisites, When to Use
 
 ### Community 1141 - "Community 1141"
-Cohesion: 0.07
-Nodes (26): API Design Checklist, API Design Patterns, code:json ({), code:json ({), code:json ({), Collection Response (with Pagination), Error Response, Response Envelope Variants (+18 more)
+Cohesion: 0.05
+Nodes (37): code:json ({), code:json ({), code:json ({), Collection Response (with Pagination), Error Response, Response Envelope Variants, Response Format, Success Response (+29 more)
 
 ### Community 1142 - "Community 1142"
 Cohesion: 0.13
@@ -15061,11 +15057,11 @@ Nodes (35): dedupeStrings(), LEGACY_INSTALL_TARGETS, normalizeInstallRequest(), 
 
 ### Community 1148 - "Community 1148"
 Cohesion: 0.13
-Nodes (20): 1. Agent Selection and Routing Logic, 2. Context Management and State Passing, 3. Parallel vs Sequential Execution, 4. Result Aggregation and Synthesis, 5. Conflict Resolution Mechanism, 7. Quality Validation Framework, code:python (class ReviewContext:), code:python (def execute_review(review_context):) (+12 more)
+Nodes (20): 1. Agent Selection and Routing Logic, 2. Context Management and State Passing, 3. Parallel vs Sequential Execution, 4. Result Aggregation and Synthesis, 6. Performance Optimization, 7. Quality Validation Framework, code:python (class ReviewContext:), code:python (def execute_review(review_context):) (+12 more)
 
 ### Community 1149 - "Community 1149"
-Cohesion: 0.06
-Nodes (41): { buildSkillHealthReport }, createProposalId(), proposeSkillAmendment(), summarizePatchPreview(), buildSkillEvaluationScaffold(), roundRate(), summarize(), { buildSkillHealthReport } (+33 more)
+Cohesion: 0.09
+Nodes (24): { buildSkillHealthReport }, createProposalId(), proposeSkillAmendment(), summarizePatchPreview(), { buildSkillHealthReport }, createProposalId(), proposeSkillAmendment(), summarizePatchPreview() (+16 more)
 
 ### Community 1150 - "Community 1150"
 Cohesion: 0.10
@@ -15076,12 +15072,12 @@ Cohesion: 0.18
 Nodes (9): Anti-Patterns to Avoid, Best Practices Checklist, Core Concepts, Hexagonal Architecture, Migration Playbook, Multi-Language Mapping, Refactoring Existing Systems, Testing Guidance (Same Hexagonal Boundaries) (+1 more)
 
 ### Community 1152 - "Community 1152"
-Cohesion: 0.08
-Nodes (26): Finding #105: [LOW] N+1 queries (Qwen 3.6), Finding #40: [MEDIUM] insecure_direct_object_references (Qwen 3.6), Finding #68: [MEDIUM] error_handling (Qwen 3.6), Finding #85: [MEDIUM] broken_authorization (Qwen 3.6), Problem, Problem, Problem, Proof / Evidence (+18 more)
+Cohesion: 0.17
+Nodes (20): cleanupOldFiles(), ensureDirectories(), GET(), POST(), REPORTS_DIR, UPLOADS_DIR, { v4: uuidv4 }, analyzeAudioQuality() (+12 more)
 
 ### Community 1153 - "Community 1153"
-Cohesion: 0.04
-Nodes (51): Communication Patterns, Key Templates, Tone Calibration, Additional Resources, Carrier Relationship Management, Key Edge Cases, Performance Indicators, Role and Context (+43 more)
+Cohesion: 0.05
+Nodes (40): Additional Resources, Carrier Relationship Management, Key Edge Cases, Performance Indicators, Role and Context, When to Use, Additional Resources, Automatic Escalation Triggers (+32 more)
 
 ### Community 1154 - "Community 1154"
 Cohesion: 0.15
@@ -15097,7 +15093,7 @@ Nodes (22): 前提条件, 前提条件, code:python (coll = conn.get_collection(
 
 ### Community 1157 - "Community 1157"
 Cohesion: 0.10
-Nodes (18): Leiloeiro, Leiloeiro, Leiloeiro, Leiloeiro, AbstractJuntaScraper, JuceacScraper, Scraper JUCEAC — Junta Comercial do Estado do Acre URL: https://juceac.ac.gov.b, JucepeScraper (+10 more)
+Nodes (18): Leiloeiro, Leiloeiro, Leiloeiro, Leiloeiro, AbstractJuntaScraper, JuceacScraper, Scraper JUCEAC — Junta Comercial do Estado do Acre URL: https://juceac.ac.gov.b, JucecScraper (+10 more)
 
 ### Community 1158 - "Community 1158"
 Cohesion: 0.13
@@ -15108,8 +15104,8 @@ Cohesion: 0.10
 Nodes (20): code:bash (pip install transformers datasets evaluate accelerate pillow), code:py (>>> def transforms(examples):), code:py (>>> food = food.with_transform(transforms)), code:py (>>> from transformers import DefaultDataCollator), code:py (>>> import evaluate), code:py (>>> import numpy as np), code:py (>>> from transformers import AutoModelForImageClassification), code:py (>>> trainer.push_to_hub()) (+12 more)
 
 ### Community 1160 - "Community 1160"
-Cohesion: 0.13
-Nodes (30): applyMockWrites(), buildCopyEditBatchPrompt(), checkFrameworkSourceSyntax(), chooseCopyEditAgent(), COMMAND_AUTH_CACHE, commandAuthed(), commandExists(), compactBatchForPrompt() (+22 more)
+Cohesion: 0.14
+Nodes (29): applyMockWrites(), buildCopyEditBatchPrompt(), checkFrameworkSourceSyntax(), chooseCopyEditAgent(), COMMAND_AUTH_CACHE, commandAuthed(), commandExists(), compactBatchForPrompt() (+21 more)
 
 ### Community 1161 - "Community 1161"
 Cohesion: 0.07
@@ -15132,8 +15128,8 @@ Cohesion: 0.06
 Nodes (29): Audit Framework, Audit Report Structure, Authoritativeness, Blog / Legal Articles, Content Strategy for Legal Sites, Directory & Citation Audit (NAP Consistency), E-E-A-T Audit for Legal Sites, Experience (+21 more)
 
 ### Community 1166 - "Community 1166"
-Cohesion: 0.05
-Nodes (40): 2.1 Trivy (Recommended — Fast, Comprehensive), 2.2 Grype (Anchore Alternative), 2.3 Hadolint — Dockerfile Linting, 2.4 Secret Scanning in Images, 2.5 CI Integration (GitHub Actions — SHA-Pinned), code:block16 (# CVE-2023-1234 — only exploitable via X feature, not used i), code:bash (# Run directly), code:yaml (failure-threshold: warning) (+32 more)
+Cohesion: 0.07
+Nodes (27): Agent Flags, code:bash (mmx music generate --prompt <text> [--lyrics <text>] [flags]), code:bash (# Instrumental), code:bash (mmx search query --q "MiniMax AI" --output json --quiet), code:bash (mmx vision describe --image photo.jpg --prompt "What breed?"), code:bash (# Chain: generate image → describe it), code:bash (mmx text chat --message <text> [flags]), code:bash (# Single message (uses MiniMax-M3 by default)) (+19 more)
 
 ### Community 1167 - "Community 1167"
 Cohesion: 0.13
@@ -15153,7 +15149,7 @@ Nodes (29): API References, Best Practices, Code Examples, code:block1 (### [Fea
 
 ### Community 1171 - "Community 1171"
 Cohesion: 0.10
-Nodes (19): Startup Sequence, Action Chaining Pattern, Action Types, Best Practices, Centralized Action Handling in App, code:rust (// In child widget), code:rust (impl MatchEvent for App {), code:rust (// Emitting) (+11 more)
+Nodes (18): Action Chaining Pattern, Action Types, Best Practices, code:rust (// In child widget), code:rust (impl Widget for Message {), code:rust (// Emitting), code:rust (// In async task), code:rust (// Using cx.action() for global actions) (+10 more)
 
 ### Community 1172 - "Community 1172"
 Cohesion: 0.04
@@ -15196,12 +15192,12 @@ Cohesion: 0.33
 Nodes (4): Examples, How It Works, Laravel Verification Loop, When to Use
 
 ### Community 1182 - "Community 1182"
-Cohesion: 0.06
-Nodes (32): 1. Basic Hover Animation, 2. Multi-State Animation, 3. Focus State Animation, 4. Disabled State, code:rust (<TextInput> {), code:rust (<Button> {), Key Patterns, Text Style (+24 more)
+Cohesion: 0.12
+Nodes (14): All Built-in Widgets (84 files in widgets/src/), Button Variants, code:rust (pub trait WidgetNode: LiveApply {), Core Widgets Reference, Documentation, ImageFit Values, IMPORTANT: Documentation Completeness Check, Limitations (+6 more)
 
 ### Community 1183 - "Community 1183"
-Cohesion: 0.02
-Nodes (83): 1. Enable Startup CPU Boost, 2. Set Minimum Instances, 3. Optimize Container Image, 4. Lazy Initialize Heavy Dependencies, 5. Increase Memory (More CPU), Calculate concurrency, Cloud Run Functions Pattern, code:dockerfile (# Use distroless for minimal image) (+75 more)
+Cohesion: 0.04
+Nodes (59): 1. Enable Startup CPU Boost, 2. Set Minimum Instances, 3. Optimize Container Image, 4. Lazy Initialize Heavy Dependencies, Calculate concurrency, code:dockerfile (# Use distroless for minimal image), code:javascript (// Lazy load heavy libraries), code:bash (# Default concurrency is 80) (+51 more)
 
 ### Community 1184 - "Community 1184"
 Cohesion: 0.07
@@ -15216,8 +15212,8 @@ Cohesion: 0.07
 Nodes (28): Buttons, code:css (.button {), code:css (.view-enter {), code:css (.item {), code:tsx (const listVariants = {), code:tsx (<AnimatePresence mode="popLayout">), code:css (@media (hover: hover) and (pointer: fine) {), code:css (.box:hover .box-inner {) (+20 more)
 
 ### Community 1187 - "Community 1187"
-Cohesion: 0.11
-Nodes (32): attachSteerFocusGuard(), barPaletteForTheme(), brandMarkSvg(), buildDesignHeader(), buildParamsPanel(), connectSSE(), defangOutsideHandlers(), designPanelCss() (+24 more)
+Cohesion: 0.09
+Nodes (44): actionLabel(), attachSteerFocusGuard(), barPaletteForTheme(), brandMarkSvg(), buildConfigureRow(), buildConfirmedRow(), buildCyclingRow(), buildDots() (+36 more)
 
 ### Community 1188 - "Community 1188"
 Cohesion: 0.06
@@ -15232,12 +15228,12 @@ Cohesion: 0.07
 Nodes (27): Azure Event Hubs SDK for Rust, Best Practices, Checkpoint Store (Optional), code:sh (cargo add azure_messaging_eventhubs azure_identity), code:sh (cargo add azure_messaging_eventhubs_checkpointstore_blob), code:bash (EVENTHUBS_HOST=<namespace>.servicebus.windows.net), code:rust (producer.send_event(vec![1, 2, 3, 4], None).await?;), code:rust (let batch = producer.create_batch(None).await?;) (+19 more)
 
 ### Community 1191 - "Community 1191"
-Cohesion: 0.13
-Nodes (15): code:rust (use azure_security_keyvault_certificates::models::UpdateCert), code:rust (use azure_core::base64;), code:rust (use azure_security_keyvault_certificates::models::{), code:rust (use azure_security_keyvault_certificates::models::ImportCert), code:rust (client.delete_certificate("certificate-name", None).await?;), code:rust (use azure_security_keyvault_certificates::ResourceExt;), code:rust (let policy = client), Core Operations (+7 more)
+Cohesion: 0.08
+Nodes (24): Azure Key Vault Certificates SDK for Rust, Best Practices, Certificate Lifecycle, code:sh (cargo add azure_security_keyvault_certificates azure_identit), code:rust (use azure_security_keyvault_certificates::models::UpdateCert), code:rust (use azure_core::base64;), code:rust (use azure_security_keyvault_certificates::models::{), code:rust (use azure_security_keyvault_certificates::models::ImportCert) (+16 more)
 
 ### Community 1192 - "Community 1192"
 Cohesion: 0.04
-Nodes (48): Environment Variables, Azure AD Authentication, Azure Monitor OpenTelemetry Exporter for Python, Best Practices, code:bash (pip install azure-monitor-opentelemetry-exporter), code:python (from opentelemetry import metrics), code:python (from azure.monitor.opentelemetry.exporter import AzureMonito), code:python (from opentelemetry.sdk.trace import TracerProvider) (+40 more)
+Nodes (49): Environment Variables, Azure AD Authentication, Azure Monitor OpenTelemetry Exporter for Python, Best Practices, code:bash (pip install azure-monitor-opentelemetry-exporter), code:python (from opentelemetry import metrics), code:python (from azure.monitor.opentelemetry.exporter import AzureMonito), code:python (from opentelemetry.sdk.trace import TracerProvider) (+41 more)
 
 ### Community 1193 - "Community 1193"
 Cohesion: 0.10
@@ -15269,19 +15265,19 @@ Nodes (9): code:typescript (// PASS: Kaynak tabanlı URL'ler), code:typescript (
 
 ### Community 1200 - "Community 1200"
 Cohesion: 0.08
-Nodes (26): Finding #21: [HIGH] XSS (Qwen 3.6), Finding #5: [CRITICAL] unhandled edge cases (Qwen 3.6), Finding #76: [MEDIUM] incorrect_state_transitions (Qwen 3.6), Problem, Problem, Problem, Proof / Evidence, Proof / Evidence (+18 more)
+Nodes (31): code:powershell (.\install.ps1 --profile minimal --target claude), code:bash (./install.sh --profile core --without baseline:hooks --targe), code:bash (./install.sh --target claude --modules hooks-runtime), Low-Context-/No-Hooks-Pfad, Low-context / no-hooks path, Путь с малым контекстом / без хуков, code:bash (# เพิ่ม marketplace), code:bash (# ติดตั้งผ่าน plugin ใช้ namespace เต็ม) (+23 more)
 
 ### Community 1201 - "Community 1201"
 Cohesion: 0.15
 Nodes (11): Context Overview, Context Restoration: Advanced Semantic Memory Rehydration, Core Requirements and Arguments, Do not use this skill when, Future Roadmap, Input Parameters, Instructions, Integration Patterns (+3 more)
 
 ### Community 1202 - "Community 1202"
-Cohesion: 0.03
-Nodes (71): Acknowledge immediately, process later, Avoid Message Content Intent if possible, Bot Missing applications.commands Scope, Bot Token Exposed, code:javascript (const { EmbedBuilder, Colors } = require('discord.js');), code:javascript (// Discord.js - Defer for slow operations), code:python (# Pycord), code:javascript (// If you're updating the message) (+63 more)
+Cohesion: 0.04
+Nodes (43): Avoid Message Content Intent if possible, Bot Token Exposed, code:javascript (// If you're updating the message), code:block21 (1. Go to https://discord.com/developers/applications), code:javascript (// BAD - never do this), code:block27 (# .gitignore), code:block30 (https://discord.com/api/oauth2/authorize), code:javascript (// Generate invite URL in code) (+35 more)
 
 ### Community 1203 - "Community 1203"
-Cohesion: 0.15
-Nodes (16): code:block6 (weighted = (design * 0.3) + (originality * 0.2) + (craft * 0), Evaluation Workflow, Step 1: Read the Rubric, Step 2: Launch Browser Testing, Step 4: Score, Step 5: Write Feedback, 第二步：启动浏览器测试, 第四步：评分 (+8 more)
+Cohesion: 0.16
+Nodes (15): code:block6 (weighted = (design * 0.3) + (originality * 0.2) + (craft * 0), Evaluation Workflow, Step 1: Read the Rubric, Step 2: Launch Browser Testing, Step 4: Score, Step 5: Write Feedback, 第四步：评分, code:block1 (Read gan-harness/eval-rubric.md for project-specific criteri) (+7 more)
 
 ### Community 1204 - "Community 1204"
 Cohesion: 0.17
@@ -15296,8 +15292,8 @@ Cohesion: 0.10
 Nodes (18): Code Review, Edge Cases, Local Review Mode, Mode Selection, Phase 1 — GATHER, Phase 2 — REVIEW, Phase 3 — REPORT, Code Review (+10 more)
 
 ### Community 1207 - "Community 1207"
-Cohesion: 0.05
-Nodes (43): 1. PR Title Format, 2. PR Description, 3. Review Process, Pull Request Process, 1. PRタイトル形式, 2. PR説明, 3. レビュープロセス, code:block12 (feat(skills): add rust-patterns skill) (+35 more)
+Cohesion: 0.09
+Nodes (32): buildCollapsible(), buildColorModels(), buildDesignHeader(), buildRadiiModels(), buildTypographyModels(), cssSafe(), escapeHtml(), fetchDesignSystem() (+24 more)
 
 ### Community 1208 - "Community 1208"
 Cohesion: 0.25
@@ -15321,7 +15317,7 @@ Nodes (11): code:block1 (RED     -> 先に失敗するテストを書く), code:
 
 ### Community 1213 - "Community 1213"
 Cohesion: 0.14
-Nodes (13): code:bash (# 計画), code:bash (# すべてのテストを実行), code:block4 (config/), Django REST API — プロジェクト CLAUDE.md, ECCワークフロー, Estrutura de Arquivos, File Structure, Git ワークフロー (+5 more)
+Nodes (13): code:bash (# 計画), code:bash (# Django), code:bash (# すべてのテストを実行), Django REST API — プロジェクト CLAUDE.md, ECCワークフロー, Environment Variables, Git ワークフロー, Variáveis de Ambiente (+5 more)
 
 ### Community 1214 - "Community 1214"
 Cohesion: 0.12
@@ -15332,8 +15328,8 @@ Cohesion: 0.14
 Nodes (13): code:bash (npx knip                                    # Arquivos, expo), 1. Analisar, 2. Verificar, 3. Remover com Segurança, 4. Consolidar Duplicatas, Checklist de Segurança, Comandos de Detecção, Fluxo de Trabalho (+5 more)
 
 ### Community 1216 - "Community 1216"
-Cohesion: 0.05
-Nodes (51): code:django ({# Djangoはデフォルトで変数を自動エスケープ - 安全 #}), code:django ({# Django auto-escapes variables by default - SAFE #}), code:python (import os), code:python (from django.utils.safestring import mark_safe), code:python (import os), code:python (# settings.py), code:python (# Use python-decouple or django-environ), Content Security Policy (+43 more)
+Cohesion: 0.03
+Nodes (86): code:python (# settings/production.py), code:django ({# Djangoはデフォルトで変数を自動エスケープ - 安全 #}), code:python (# settings.py - CSRFはデフォルトで有効), code:python (from django.views.decorators.csrf import csrf_exempt), code:python (import os), code:python (# python-decoupleまたはdjango-environを使用), code:python (# GOOD: Django ORMは自動的にパラメータをエスケープ), code:python (# 生のSQLを使用する必要がある場合は、常にパラメータを使用) (+78 more)
 
 ### Community 1217 - "Community 1217"
 Cohesion: 0.10
@@ -15345,15 +15341,15 @@ Nodes (6): 1. 모듈성 및 관심사 분리, 2. 확장성, 3. 유지보수성, 
 
 ### Community 1219 - "Community 1219"
 Cohesion: 0.14
-Nodes (13): code:bash (# Django), code:bash (# 계획 수립), code:bash (# 전체 테스트 실행), Django REST API — 프로젝트 CLAUDE.md, ECC 워크플로우, Environment Variables, Git 워크플로우, Variáveis de Ambiente (+5 more)
+Nodes (13): code:bash (# 계획 수립), code:bash (# 전체 테스트 실행), code:block4 (config/), Django REST API — 프로젝트 CLAUDE.md, ECC 워크플로우, Estrutura de Arquivos, File Structure, Git 워크플로우 (+5 more)
 
 ### Community 1220 - "Community 1220"
 Cohesion: 0.18
 Nodes (10): code:bash (# 계획 수립), code:bash (# 서버), code:bash (# 전체 테스트 실행), ECC 워크플로우, Git 워크플로우, Rust API Service — 프로젝트 CLAUDE.md, 테스트 전략, 파일 구조 (+2 more)
 
 ### Community 1221 - "Community 1221"
-Cohesion: 0.04
-Nodes (67): code:dockerfile (# 1. Belirli tag'ler kullanın (:latest asla)), code:yaml (# İYİ: Ortam değişkenleri kullanın (runtime'da enjekte edili), code:bash (# Logları görüntüle), code:bash (# Konteyner içinde DNS çözümlemesini kontrol et), code:block16 (# KÖTÜ: Üretimde orkestrasyon olmadan docker compose kullanm), code:block5 (# "app" konteynerinden:), code:block16 (# 错误做法：在生产环境中使用 docker compose 而不进行编排), code:block5 (# 从 "app" 容器：) (+59 more)
+Cohesion: 0.07
+Nodes (39): code:block5 (# "app" konteynerinden:), code:block5 (# 从 "app" 容器：), code:dockerfile (# 1. Use specific tags (never :latest)), code:block5 (# From "app" container:), Compose Security, Container Security, Custom Networks, Dockerfile Hardening (+31 more)
 
 ### Community 1222 - "Community 1222"
 Cohesion: 0.05
@@ -15361,15 +15357,15 @@ Nodes (34): 1. Create Agent, 2. Create Thread and Message, 3. Run Agent (Polling
 
 ### Community 1223 - "Community 1223"
 Cohesion: 0.06
-Nodes (37): Architecture Decision Records (ADRs), 1. Mevcut Durum Analizi, 1. Modülerlik & Kaygıların Ayrılması, 2. Gereksinim Toplama, 2. Ölçeklenebilirlik, 3. Sürdürülebilirlik, 3. Tasarım Önerisi, 4. Güvenlik (+29 more)
+Nodes (37): Architecture Decision Records (ADRs), 1. Mevcut Durum Analizi, 1. Modülerlik & Kaygıların Ayrılması, 1. 현재 상태 분석, 2. Gereksinim Toplama, 2. Ölçeklenebilirlik, 2. 요구사항 수집, 3. Sürdürülebilirlik (+29 more)
 
 ### Community 1224 - "Community 1224"
-Cohesion: 0.17
-Nodes (25): affectedFiles(), appliesAlsoEntry(), cacheLifeIntent(), dedupEditTarget(), dedupeRecommendations(), dedupIntent(), firstAffectedFile(), fixShape() (+17 more)
+Cohesion: 0.09
+Nodes (29): code:block12 ('''), code:python (class DesignPatternExplainer:), code:block14, code:block15, code:block16 ('''), code:python (def analyze_common_pitfalls(self, code):), code:block18 ('''), code:block19 (''') (+21 more)
 
 ### Community 1225 - "Community 1225"
-Cohesion: 0.06
-Nodes (34): 4. 安全性, code:markdown (# ADR-001：使用 Redis 进行语义搜索向量存储), 前端模式, 您的角色, 2. 需求收集, 3. 設計提案, code:markdown (# ADR-001：使用 Redis 儲存語意搜尋向量), 前端模式 (+26 more)
+Cohesion: 0.07
+Nodes (28): 2. 需求收集, 您的角色, 4. 安全性, code:markdown (# ADR-001：使用 Redis 儲存語意搜尋向量), 前端模式, 您的角色, 1. 当前状态分析, 1. 模組化與關注點分離 (+20 more)
 
 ### Community 1226 - "Community 1226"
 Cohesion: 0.20
@@ -15421,7 +15417,7 @@ Nodes (16): code:block2 (会话活动（在 git 仓库中）), code:json ({), v2
 
 ### Community 1238 - "Community 1238"
 Cohesion: 0.07
-Nodes (34): Architecture Decision Records (ADRs), 1. Current State Analysis, 1. Modularity & Separation of Concerns, 2. Requirements Gathering, 2. Scalability, 3. Design Proposal, 3. Maintainability, 4. Security (+26 more)
+Nodes (28): code:markdown (# ADR-001：使用 Redis 进行语义搜索向量存储), 前端模式, 功能需求, 非功能需求, 1. Modularity & Separation of Concerns, 2. Scalability, 3. Maintainability, 4. Security (+20 more)
 
 ### Community 1239 - "Community 1239"
 Cohesion: 0.10
@@ -15484,7 +15480,7 @@ Cohesion: 0.24
 Nodes (8): Prompt Defense Baseline, Core Responsibilities, Key Principles, Prompt Defense Baseline, React Build Resolver, Related, Scope, Stop Conditions
 
 ### Community 1254 - "Community 1254"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (13): 1. MQL Alert and Assignment (Salesforce Flow), 1. New Lead → CRM + Slack + Task, 2. Meeting Booked → CRM + Prep Email, 2. SLA Escalation (Salesforce Flow), 3. Deal Closed → Onboarding Stack, 3. Pipeline Stage Automation (Salesforce Flow), 4. Lead Scoring → Cross-Tool Sync, 4. Stale Deal Detection (Salesforce Flow) (+5 more)
 
 ### Community 1255 - "Community 1255"
@@ -15532,8 +15528,8 @@ Cohesion: 0.07
 Nodes (29): Anti_patterns, Anti_patterns, Anti_patterns, Anti_patterns, Anti_patterns, Anti_patterns, Anti_patterns, API Route Protection (+21 more)
 
 ### Community 1266 - "Community 1266"
-Cohesion: 0.22
-Nodes (9): POST(), sendToConnection(), ExpoPushPayload, sendExpoPush(), sendPush(), payload, run(), supabase (+1 more)
+Cohesion: 0.07
+Nodes (26): code:python (import os), X API, Memory safety, code:text (concept_1 AND concept_2 AND filter), code:text (diabetes mellitus[mh] AND treatment[tiab] AND systematic rev), code:text (diabetes mellitus, type 2/drug therapy[mh]), code:text (2026[dp]), code:text (free full text[sb]) (+18 more)
 
 ### Community 1267 - "Community 1267"
 Cohesion: 0.22
@@ -15589,19 +15585,19 @@ Nodes (28): Accordion, Alert, ARIA Labels, Checkbox and Radio, Color Contrast, C
 
 ### Community 1280 - "Community 1280"
 Cohesion: 0.10
-Nodes (22): 1. Optimize Package Size, 3. Right-size Memory, 4. Provisioned Concurrency (when needed), Add idempotency checks, AWS Serverless, code:javascript (// Use modular AWS SDK v3 imports), code:yaml (# More memory = more CPU = faster init), code:javascript (// BAD - loads entire file into memory) (+14 more)
+Nodes (22): 1. Optimize Package Size, 3. Right-size Memory, 4. Provisioned Concurrency (when needed), AWS Serverless, code:javascript (// Use modular AWS SDK v3 imports), code:yaml (# More memory = more CPU = faster init), code:javascript (// BAD - loads entire file into memory), code:yaml (Resources:) (+14 more)
 
 ### Community 1281 - "Community 1281"
-Cohesion: 0.09
-Nodes (21): Azure Cosmos DB SDK for Rust, Best Practices, Client Hierarchy, code:sh (cargo add azure_data_cosmos azure_identity), code:sh (cargo add azure_data_cosmos --features key_auth), code:rust (let database = client.database_client("myDatabase");), code:rust (let response = container.read_item("partition1", "1", None).), code:rust (let mut item: Item = container.read_item("partition1", "1", ) (+13 more)
+Cohesion: 0.07
+Nodes (27): Azure Cosmos DB SDK for Rust, Best Practices, Client Hierarchy, code:sh (cargo add azure_data_cosmos azure_identity), code:sh (cargo add azure_data_cosmos --features key_auth), code:rust (let database = client.database_client("myDatabase");), code:rust (let response = container.read_item("partition1", "1", None).), code:rust (let mut item: Item = container.read_item("partition1", "1", ) (+19 more)
 
 ### Community 1282 - "Community 1282"
 Cohesion: 0.08
 Nodes (25): Async Client, Authentication, Azure Event Hubs SDK for Python, Best Practices, Client Types, code:bash (pip install azure-eventhub azure-identity), code:python (with producer:), code:bash (EVENT_HUB_FULLY_QUALIFIED_NAMESPACE=<namespace>.servicebus.w) (+17 more)
 
 ### Community 1283 - "Community 1283"
-Cohesion: 0.08
-Nodes (24): code:markdown (Filling a PDF form involves these steps:), code:markdown (1. Determine the modification type:), Conditional Workflows, Sequential Workflows, Workflow Patterns, Antigravity Workflows, How to Use Workflows, Machine-Readable Workflows (+16 more)
+Cohesion: 0.04
+Nodes (53): code:block1 (1. search(query="<table_name>") → get the full MCON/table id), code:block2 (- New column with a row-level condition (null check, range, ), code:markdown (Filling a PDF form involves these steps:), code:markdown (1. Determine the modification type:), Bugfixes and reverts require impact assessment too, code:block10 (validation/<table_name>_<YYYYMMDD_HHMM>.sql), code:sql (/*), code:block3 (1. Read the SQL file being edited to extract the specific tr) (+45 more)
 
 ### Community 1284 - "Community 1284"
 Cohesion: 0.08
@@ -15636,16 +15632,16 @@ Cohesion: 0.12
 Nodes (16): code:bash (# ポートが既に使用中), code:bash (# 全依存関係を強制再インストール), code:bash (# マイグレーション競合の修正), code:bash (# 設定モジュールが解決されるか確認), code:bash (# 循環インポートの診断), code:python (# Bad - トップレベルが循環インポートを引き起こす), code:bash (# データベース接続のテスト), code:bash (# 問題を見つけるためのドライラン) (+8 more)
 
 ### Community 1293 - "Community 1293"
-Cohesion: 0.05
-Nodes (47): code:python (# İyi: Açık ve okunabilir), code:python (# İyi: Açık yapılandırma), code:block26 (myproject/), code:python (# İyi: Import sırası - stdlib, third-party, local), code:python (# mypackage/__init__.py), code:python (# Kötü: Normal class __dict__ kullanır (daha fazla bellek)), code:python (# İyi: EAFP stili), code:python (# Kötü: Bellekte tam liste döndürür) (+39 more)
+Cohesion: 0.08
+Nodes (23): code:python (# İyi: Açık ve okunabilir), code:python (# İyi: Açık yapılandırma), code:python (# Kötü: Normal class __dict__ kullanır (daha fazla bellek)), code:python (# İyi: EAFP stili), code:python (# Kötü: Bellekte tam liste döndürür), code:python (# Kötü: String immutability nedeniyle O(n²)), code:bash (# Kod formatlama), code:python (# Kötü: Mutable default argümanlar) (+15 more)
 
 ### Community 1294 - "Community 1294"
 Cohesion: 0.20
 Nodes (8): Anti-Patterns to Avoid, Minimal API Patterns, .NET Development Patterns, When to Activate, code:csharp (// Organized with route groups), Minimal API Patterns, Minimal API Patterns, 最小 API 模式
 
 ### Community 1295 - "Community 1295"
-Cohesion: 0.09
-Nodes (21): code:json ({), Response Schema, code:block2 (세션 활동 (git 저장소 내)), code:bash (/instinct-status     # 학습된 본능 표시 (프로젝트 + 전역)), 1. 관찰 훅 활성화, 2. 디렉터리 구조 초기화, 3. 본능 명령어 사용, v2.1의 새로운 기능 (+13 more)
+Cohesion: 0.05
+Nodes (39): code:json ({), Response Schema, code:block2 (세션 활동 (git 저장소 내)), code:bash (/instinct-status     # 학습된 본능 표시 (프로젝트 + 전역)), code:json ({), code:json ({), code:bash (# Global directories), 1. Enable Observation Hooks (+31 more)
 
 ### Community 1296 - "Community 1296"
 Cohesion: 0.25
@@ -15712,16 +15708,16 @@ Cohesion: 0.20
 Nodes (8): Guard Clauses, code:csharp (// Good: Early returns with clear validation), Anti-Patterns to Avoid, Guard Clauses, .NET Development Patterns, When to Activate, Guard Clauses, 守卫子句
 
 ### Community 1312 - "Community 1312"
-Cohesion: 0.07
-Nodes (29): When to Use, Automatic Escalation Triggers, Additional Resources, Energy Procurement, Escalation Chain, Escalation Protocols, Examples, How It Works (+21 more)
+Cohesion: 0.05
+Nodes (42): When to Use, Carrier Exit Criteria, Carrier Selection for New Lanes, Decision Frameworks, Spot vs. Contract Decisions, When to Consolidate vs. Diversify, Additional Resources, Decision Frameworks (+34 more)
 
 ### Community 1313 - "Community 1313"
 Cohesion: 0.25
 Nodes (6): Anti-Patterns to Avoid, Best Practices, FoundationModels: On-Device LLM (iOS 26), Key Design Decisions, When to Activate, When to Use
 
 ### Community 1314 - "Community 1314"
-Cohesion: 0.05
-Nodes (48): Additional Resources, Escalation Chain, Escalation Protocols, Automatic Escalation Triggers, Escalation Chain, Escalation Protocols, Escalation Chain, Escalation Protocols (+40 more)
+Cohesion: 0.06
+Nodes (37): Automatic Escalation Triggers, Escalation Chain, Escalation Protocols, Additional Resources, Escalation Chain, Escalation Protocols, Automatic Escalation Triggers, Escalation Chain (+29 more)
 
 ### Community 1315 - "Community 1315"
 Cohesion: 0.06
@@ -15740,8 +15736,8 @@ Cohesion: 0.07
 Nodes (27): 1. Audio Category System, 2. Sound Design Decisions, 3. Music Integration, 4. Adaptive Audio Decisions, 5. 3D Audio Decisions, 6. Platform Considerations, 7. Mix Hierarchy, 8. Anti-Patterns (+19 more)
 
 ### Community 1319 - "Community 1319"
-Cohesion: 0.22
-Nodes (13): GET(), handleApiError(), withTenant(), POST(), calculateStatus(), GET(), PATCH(), POST() (+5 more)
+Cohesion: 0.20
+Nodes (15): GET(), handleApiError(), withTenant(), calculateStatus(), getSupabaseServerClient(), ManagerAnalyticsPage(), GET(), PATCH() (+7 more)
 
 ### Community 1320 - "Community 1320"
 Cohesion: 0.08
@@ -15752,8 +15748,8 @@ Cohesion: 0.07
 Nodes (27): 1. Write Your Ideas, 2. Initialize Your Island, 3. Start Evolving, 4. Keep Feeding the Island, 6-Dimensional Scoring, Additional Resources, Best Practices, code:block1 (seed → exploring → refining → crossing → validated → dormant) (+19 more)
 
 ### Community 1322 - "Community 1322"
-Cohesion: 0.10
-Nodes (29): checkElementHeroEyebrow(), checkElementQuality(), checkElementQualityDOM(), checkQuality(), resolveLengthPx(), resolveVarRefs(), applyStaticDeclaration(), buildBorderOverrideMap() (+21 more)
+Cohesion: 0.12
+Nodes (22): applyStaticDeclaration(), buildBorderOverrideMap(), compareStaticPriority(), cssPropToCamel(), expandStaticBoxValues(), expandStaticDeclaration(), extractStaticColor(), NAMED_COLORS (+14 more)
 
 ### Community 1323 - "Community 1323"
 Cohesion: 0.16
@@ -15784,8 +15780,8 @@ Cohesion: 0.09
 Nodes (17): Any, create_connection(), MCPConnection, MCPConnectionHTTP, MCPConnectionSSE, MCPConnectionStdio, Lightweight connection handling for MCP servers., MCP connection using Streamable HTTP. (+9 more)
 
 ### Community 1330 - "Community 1330"
-Cohesion: 0.04
-Nodes (41): Available slash commands, Canonical pycarlo API — authoritative reference, code:python (from pycarlo.core import Client, Session), code:python (# Metadata), code:python (import os), Custom lineage nodes and edges, Debugging checkpoints, Deleting push-ingested tables (+33 more)
+Cohesion: 0.07
+Nodes (24): Available slash commands, Canonical pycarlo API — authoritative reference, code:python (from pycarlo.core import Client, Session), code:python (# Metadata), Custom lineage nodes and edges, Debugging checkpoints, Deleting push-ingested tables, Environment variable conventions (+16 more)
 
 ### Community 1331 - "Community 1331"
 Cohesion: 0.07
@@ -15801,7 +15797,7 @@ Nodes (27): Auth Action Without Revalidation, Auth Call Without Error Handling, 
 
 ### Community 1334 - "Community 1334"
 Cohesion: 0.06
-Nodes (33): Finding #65: [MEDIUM] Unnecessary Re-renders (Qwen 3.6), Finding #88: [MEDIUM] broken_authorization (Qwen 3.6), Finding #95: [MEDIUM] null pointer crashes (Qwen 3.6), Problem, Problem, Problem, Proof / Evidence, Proof / Evidence (+25 more)
+Nodes (38): Comprehensive Bug Audit Report, Finding #41: [MEDIUM] broken_authorization (Qwen 3.6), Finding #88: [MEDIUM] broken_authorization (Qwen 3.6), Finding #95: [MEDIUM] null pointer crashes (Qwen 3.6), Problem, Problem, Problem, Proof / Evidence (+30 more)
 
 ### Community 1335 - "Community 1335"
 Cohesion: 0.15
@@ -15880,8 +15876,8 @@ Cohesion: 0.10
 Nodes (22): 3. Parallel vs Sequential Execution, code:typescript (// Operations depend on each other - must be sequential), code:typescript (import { sequenceT } from 'fp-ts/Apply'), code:typescript (// Fetch multiple users in parallel), code:typescript (const chunk = <T>(arr: T[], size: number): T[][] => {), code:typescript (// WRONG: This looks parallel but order might matter for DB ), Parallel Array Operations, Parallel Execution (+14 more)
 
 ### Community 1354 - "Community 1354"
-Cohesion: 0.03
-Nodes (83): code:bash (./install.sh --profile full), code:bash (# Skills sind die primäre Workflow-Oberfläche.), code:powershell (.\install.ps1 --profile minimal --target claude), code:bash (./install.sh --profile core --without baseline:hooks --targe), code:bash (./install.sh --target claude --modules hooks-runtime), code:bash (# Marketplace hinzufügen), code:bash (# Zuerst das Repo klonen), Dashboard-GUI (+75 more)
+Cohesion: 0.04
+Nodes (61): code:bash (./install.sh --profile full), code:bash (# Skills sind die primäre Workflow-Oberfläche.), code:bash (# Marketplace hinzufügen), code:bash (# Zuerst das Repo klonen), Dashboard-GUI, ECC zurücksetzen / deinstallieren, Finde zuerst die richtigen Komponenten, Hinweis zu Benennung + Migration (+53 more)
 
 ### Community 1355 - "Community 1355"
 Cohesion: 0.10
@@ -15896,8 +15892,8 @@ Cohesion: 0.07
 Nodes (32): 1. curl Examples, Cancel Job, Capabilities, code:bash (curl -s http://localhost:3000/health | jq .), code:bash (curl -X POST http://localhost:3000/jobs \), code:bash (curl -s http://localhost:3000/jobs/a1b2c3d4-e5f6-7890-abcd-e), code:bash (# All jobs), code:bash (curl -X POST http://localhost:3000/jobs/a1b2c3d4-e5f6-7890-a) (+24 more)
 
 ### Community 1358 - "Community 1358"
-Cohesion: 0.08
-Nodes (22): code:typescript (// PASS: リソースベースのURL), code:typescript (// データアクセスロジックの抽象化), code:typescript (// ビジネスロジックをデータアクセスから分離), code:typescript (// リクエスト/レスポンス処理パイプライン), code:typescript (// PASS: 良い: 必要な列のみを選択), code:typescript (// FAIL: 悪い: N+1クエリ問題), API設計パターン, N+1クエリ防止 (+14 more)
+Cohesion: 0.22
+Nodes (9): code:typescript (// PASS: リソースベースのURL), code:typescript (// データアクセスロジックの抽象化), code:typescript (// ビジネスロジックをデータアクセスから分離), code:typescript (// リクエスト/レスポンス処理パイプライン), API設計パターン, RESTful API構造, サービスレイヤーパターン, ミドルウェアパターン (+1 more)
 
 ### Community 1359 - "Community 1359"
 Cohesion: 0.12
@@ -15913,11 +15909,11 @@ Nodes (15): code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36
 
 ### Community 1362 - "Community 1362"
 Cohesion: 0.04
-Nodes (48): Acknowledge immediately, process later, Anti_patterns, Bolt handles this automatically, code:python (from slack_bolt import App), code:python (# Development with Socket Mode), code:python (# Production with HTTP (Flask example)), code:python (from slack_bolt.adapter.socket_mode import SocketModeHandler), code:python (import hmac) (+40 more)
+Nodes (51): Acknowledge immediately, process later, Anti_patterns, Bolt handles this automatically, code:python (from slack_bolt import App), code:python (# Development with Socket Mode), code:python (# Production with HTTP (Flask example)), code:python (from slack_bolt.adapter.socket_mode import SocketModeHandler), code:python (import hmac) (+43 more)
 
 ### Community 1363 - "Community 1363"
-Cohesion: 0.04
-Nodes (49): Anti-Patterns, Data and Feature Hypotheses, Decision Brain, Error Analysis Loop, Iteration Compact, Machine Learning Engineering Workflow, Metric and Mistake Economics, Observation Ledger (+41 more)
+Cohesion: 0.03
+Nodes (69): 1. Define the Prediction Contract, 2. Lock the Data Contract, 4. Evaluate Before Promotion, 5. Package for Serving, 6. Operate the Model, Anti-Patterns, Core Workflow, Data and Feature Hypotheses (+61 more)
 
 ### Community 1364 - "Community 1364"
 Cohesion: 0.15
@@ -15936,8 +15932,8 @@ Cohesion: 0.07
 Nodes (26): Best Practices, code:python (# Linear), code:python (# dags/example_dag.py), code:python (# dags/taskflow_example.py), code:python (# dags/dynamic_dag_factory.py), code:python (# dags/branching_example.py), code:python (# dags/sensor_patterns.py), code:python (# dags/error_handling.py) (+18 more)
 
 ### Community 1368 - "Community 1368"
-Cohesion: 0.12
-Nodes (16): code:ruby (# app/models/support_chat.rb), code:ruby (# app/channels/support_chat_channel.rb), code:ruby (create_table :support_chats, id: :uuid do |t|), code:typescript (// hooks/useSupportChat.ts), code:tsx (// components/ChatWidget.tsx), code:typescript (// app/api/support-chat/route.ts), code:typescript (// For serverless, use Pusher, Ably, or similar), code:php (// app/Models/SupportChat.php) (+8 more)
+Cohesion: 0.11
+Nodes (25): 1. Basic Hover Animation, 2. Multi-State Animation, 3. Focus State Animation, 4. Disabled State, code:rust (<TextInput> {), code:rust (<Button> {), Key Patterns, code:rust (<View> {) (+17 more)
 
 ### Community 1369 - "Community 1369"
 Cohesion: 0.08
@@ -15997,35 +15993,35 @@ Nodes (24): code:json ({), code:block2 (agents: Invalid input), code:block3 (Dup
 
 ### Community 1383 - "Community 1383"
 Cohesion: 0.02
-Nodes (99): 1. Read the repo, 2. Build the evidence table, 3. Decide DAILY vs LIBRARY, 4. Build the install plan, 5. Create the optional library router, 6. Verify the result, Agent Sort, Classification Model (+91 more)
+Nodes (86): 1. Read the repo, 2. Build the evidence table, 3. Decide DAILY vs LIBRARY, 4. Build the install plan, 5. Create the optional library router, 6. Verify the result, Agent Sort, Classification Model (+78 more)
 
 ### Community 1384 - "Community 1384"
 Cohesion: 0.13
 Nodes (15): code:bash (psql $DATABASE_URL), Diagnostic Commands, 1. Performance de Queries (CRÍTICO), 2. Design de Schema (ALTO), 3. Segurança (CRÍTICO), Anti-Padrões a Sinalizar, Checklist de Revisão, Comandos de Diagnóstico (+7 more)
 
 ### Community 1385 - "Community 1385"
-Cohesion: 0.09
-Nodes (24): identical, _then, _, fromJson, adminNotes, adminUserId, assignmentId, attendanceId (+16 more)
+Cohesion: 0.08
+Nodes (26): AttendanceRequest, identical, _then, _, _AttendanceRequest, fromJson, adminNotes, adminUserId (+18 more)
 
 ### Community 1386 - "Community 1386"
 Cohesion: 0.18
 Nodes (22): findShellBinary(), fs, main(), passthrough(), path, readStdinRaw(), resolveTarget(), spawnNode() (+14 more)
 
 ### Community 1387 - "Community 1387"
-Cohesion: 0.09
-Nodes (24): code:bash (# WHOIS lookup), code:bash (# Meterpreter persistence), code:bash (# Linux enumeration), code:bash (# Create bootable USB), code:block2 (# Find exposed files), code:bash (# Ping sweep), code:bash (# TCP SYN scan (stealth)), code:bash (# Specific service scripts) (+16 more)
+Cohesion: 0.12
+Nodes (16): code:bash (# WHOIS lookup), code:bash (# Meterpreter persistence), code:bash (# Linux enumeration), code:bash (# Create bootable USB), code:block2 (# Find exposed files), code:bash (# Nikto web scanner), code:bash (# Directory brute forcing), Core Workflow (+8 more)
 
 ### Community 1388 - "Community 1388"
 Cohesion: 0.10
 Nodes (18): code:block1 (RED     → 失敗するテーブル駆動テストを作成), code:bash (# 基本的なカバレッジ), Go TDD コマンド, TDD サイクル, TDD ベストプラクティス, このコマンドの機能, カバレッジコマンド, カバレッジ目標 (+10 more)
 
 ### Community 1389 - "Community 1389"
-Cohesion: 0.25
-Nodes (8): code:markdown (## 実装計画: <タスク名>), 2.1 入力の配分, 2.2 クロスバリデーション, 2.3 (オプションだが推奨) デュアルモデル計画ドラフト, 2.4 実装計画の生成(Claude最終バージョン), フェーズ 2: マルチモデル協調分析, フェーズ 2 終了: 計画の配信(実装ではない), 実行ワークフロー
+Cohesion: 0.15
+Nodes (13): code:markdown (## 実装計画: <タスク名>), 1.1 プロンプト強化(最初に実行する必要があります), 1.2 コンテキスト取得, 1.3 完全性チェック, 1.4 要件の整合性, 2.1 入力の配分, 2.2 クロスバリデーション, 2.3 (オプションだが推奨) デュアルモデル計画ドラフト (+5 more)
 
 ### Community 1390 - "Community 1390"
-Cohesion: 0.08
-Nodes (22): 2. Schema Validation, 3. Environment-Specific Validation, 4. Configuration Testing, 5. Runtime Validation, 6. Configuration Migration, 7. Secure Configuration, 8. Documentation Generation, code:typescript (import Ajv from 'ajv';) (+14 more)
+Cohesion: 0.05
+Nodes (40): code:block1 (Screen Studio / 原始素材), code:block2 (示例提示词：), 1. Configuration Analysis, 2. Schema Validation, 3. Environment-Specific Validation, 4. Configuration Testing, 5. Runtime Validation, 6. Configuration Migration (+32 more)
 
 ### Community 1391 - "Community 1391"
 Cohesion: 0.07
@@ -16044,8 +16040,8 @@ Cohesion: 0.17
 Nodes (11): code:block1 (RED     → 실패하는 테이블 기반 테스트 작성), code:bash (# 기본 커버리지), Go TDD 커맨드, TDD 모범 사례, TDD 사이클, 관련 커맨드, 관련 항목, 사용 시점 (+3 more)
 
 ### Community 1395 - "Community 1395"
-Cohesion: 0.15
-Nodes (11): code:bash (# 데이터베이스), code:bash (/go-test             # Go용 TDD 워크플로우), code:bash (# 단위 테스트 (빠름, 외부 의존성 없음)), code:bash (# 계획 수립), ECC 워크플로우, Git 워크플로우, Go Microservice — 프로젝트 CLAUDE.md, 테스트 명령어 (+3 more)
+Cohesion: 0.11
+Nodes (17): code:block2 (cmd/), code:bash (# 데이터베이스), code:bash (/go-test             # Go용 TDD 워크플로우), code:bash (# 단위 테스트 (빠름, 외부 의존성 없음)), code:bash (# 계획 수립), ECC 워크플로우, Estrutura de Arquivos, File Structure (+9 more)
 
 ### Community 1396 - "Community 1396"
 Cohesion: 0.18
@@ -16072,8 +16068,8 @@ Cohesion: 0.25
 Nodes (8): 2.1 Distribute Inputs, 2.2 Cross-Validation, 2.3 (Optional but Recommended) Dual-Model Plan Draft, 2.4 Generate Implementation Plan (Claude Final Version), Execution Workflow, Phase 2 End: Plan Delivery (Not Execution), Phase 2: Multi-Model Collaborative Analysis, code:block6 (/ccg:execute .claude/plan/actual-feature-name.md)
 
 ### Community 1402 - "Community 1402"
-Cohesion: 0.40
-Nodes (3): Leiloeiro, JucisDfScraper, Scraper JUCIS-DF — Junta Comercial, Industrial e Serviços do Distrito Federal U
+Cohesion: 0.11
+Nodes (15): Leiloeiro, Leiloeiro, Leiloeiro, Leiloeiro, AbstractJuntaScraper, Remove espaços extras e retorna None se vazio., Classe base para todos os scrapers de Juntas Comerciais., JucapScraper (+7 more)
 
 ### Community 1403 - "Community 1403"
 Cohesion: 0.05
@@ -16096,20 +16092,20 @@ Cohesion: 0.20
 Nodes (9): code:block1 (RED     → 编写失败的表格驱动测试), Go TDD 命令, TDD 循环, TDD 最佳实践, 何时使用, 此命令的作用, 相关, 相关命令 (+1 more)
 
 ### Community 1408 - "Community 1408"
-Cohesion: 0.15
-Nodes (13): code:markdown (## 实施计划：<任务名称>), 1.1 提示增强（必须先执行）, 1.2 上下文检索, 1.3 完整性检查, 1.4 需求对齐, 2.1 分发输入, 2.2 交叉验证, 2.3（可选但推荐）双模型计划草案 (+5 more)
+Cohesion: 0.17
+Nodes (12): code:markdown (## 实施计划：<任务名称>), 1.2 上下文检索, 1.3 完整性检查, 1.4 需求对齐, 2.1 分发输入, 2.2 交叉验证, 2.3（可选但推荐）双模型计划草案, 2.4 生成实施计划（Claude 最终版本） (+4 more)
 
 ### Community 1409 - "Community 1409"
 Cohesion: 0.29
 Nodes (7): code:block8 (fix: 解决圣诞老人循环审查发现的问题（第 N 轮）), code:block9 (圣诞循环升级（超过3次迭代）), 工作流程, 步骤 2：构建评分标准, 步骤 4：裁决门, 步骤 5：修复循环（NAUGHTY 路径）, 步骤 7：最终报告
 
 ### Community 1410 - "Community 1410"
-Cohesion: 0.11
-Nodes (17): Cleanup, code:tsx (// WRONG: conditional hook), code:tsx (// WRONG: effect for derived state), code:tsx (useEffect(() => {), code:tsx (export function useDebounce<T>(value: T, delay: number): T {), Custom Hooks, Dependency Arrays, Lint Configuration (+9 more)
+Cohesion: 0.08
+Nodes (26): BeforeTest / AfterTest, Kotest Extensions, Test Lifecycle and Fixtures, BeforeTest / AfterTest, code:kotlin (class DatabaseTest : FunSpec({), BeforeTest / AfterTest, Kotest Extensions, Test Lifecycle and Fixtures (+18 more)
 
 ### Community 1411 - "Community 1411"
 Cohesion: 0.17
-Nodes (12): code:go (// Domain layer — sentinel errors), Banco de Dados, Code Style, Convenções Go, Critical Rules, Database, Error Handling, Estilo de Código (+4 more)
+Nodes (12): code:go (// Domain layer — sentinel errors), Banco de Dados, Convenções Go, Error Handling, Estilo de Código, Go 规范, Regras Críticas, Tratamento de Erro (+4 more)
 
 ### Community 1412 - "Community 1412"
 Cohesion: 0.07
@@ -16140,8 +16136,8 @@ Cohesion: 0.05
 Nodes (50): Adding Dependencies at Runtime, Approach 1: UV Scripts (Recommended), Approach 2: Docker-Based Jobs, code:bash (hf jobs uv run my_script.py --flavor cpu-basic --timeout 30m), code:bash (hf jobs uv run --image vllm/vllm-openai:latest --flavor a10g), code:python (from huggingface_hub import run_uv_job), code:python (# ❌ Will fail (remote container can't see your local path)), code:python (# ✅ Inline: read the local script file and pass its *content) (+42 more)
 
 ### Community 1419 - "Community 1419"
-Cohesion: 0.09
-Nodes (22): Finding #38: [MEDIUM] broken_authorization (Qwen 3.6), Finding #82: [MEDIUM] N+1 queries (Qwen 3.6), Problem, Problem, Proof / Evidence, Proof / Evidence, Suggested Fix, code:typescript (const { updates } = await req.json();) (+14 more)
+Cohesion: 0.06
+Nodes (32): Finding #38: [MEDIUM] broken_authorization (Qwen 3.6), Finding #76: [MEDIUM] incorrect_state_transitions (Qwen 3.6), Finding #82: [MEDIUM] N+1 queries (Qwen 3.6), Problem, Problem, Problem, Proof / Evidence, Proof / Evidence (+24 more)
 
 ### Community 1420 - "Community 1420"
 Cohesion: 0.12
@@ -16181,16 +16177,16 @@ Cohesion: 0.12
 Nodes (15): Anti-Patterns, Choosing a duration, Choosing a spring, Code Examples, code:tsx (// components/fade-in-card.tsx), Constraints / Non-Goals, Decision Guidance, End-to-end: tokens + springs + accessibility + SSR guard (+7 more)
 
 ### Community 1429 - "Community 1429"
-Cohesion: 0.10
-Nodes (22): identical, _then, _, fromJson, createdAt, hashCode, id, institutionId (+14 more)
+Cohesion: 0.08
+Nodes (26): identical, _then, DateTime get, InventoryRequest, InventoryRequest, _, fromJson, _InventoryRequest (+18 more)
 
 ### Community 1430 - "Community 1430"
 Cohesion: 0.12
 Nodes (16): Claude Code'un Her Şeyine Dair Kısa Kılavuz, code:bash (# Örnek skill yapısı), code:bash (# Örnek subagent yapısı), code:bash (# Etkin MCP'leri kontrol edin), code:bash (# Bir marketplace ekleyin), code:bash (# Etkin plugin'ler örneği), Editörler Hakkında, Hook'lar (+8 more)
 
 ### Community 1431 - "Community 1431"
-Cohesion: 0.10
-Nodes (18): Additional Resources, Automatic Escalation Triggers, Core Knowledge, Disposition Decision Trees, Escalation Chain, Escalation Protocols, Fraud Detection, Inspection and Grading (+10 more)
+Cohesion: 0.06
+Nodes (32): Communication Patterns, Key Templates, Tone Calibration, Communication Patterns, Tone Calibration, Communication Patterns, Key Templates, Tone Calibration (+24 more)
 
 ### Community 1432 - "Community 1432"
 Cohesion: 0.07
@@ -16201,8 +16197,8 @@ Cohesion: 0.07
 Nodes (40): Artifact Management, Screenshots, Traces, Video, Artifact Management, Screenshots, Traces, Video (+32 more)
 
 ### Community 1434 - "Community 1434"
-Cohesion: 0.06
-Nodes (31): code:perl (# 1. Two-arg open (security risk)), Anti-Patterns, code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), Data Structures, File I/O, How It Works (+23 more)
+Cohesion: 0.07
+Nodes (27): code:perl (# 1. Two-arg open (security risk)), Anti-Patterns, code:perl (use v5.36;), code:perl (use v5.36;), Data Structures, File I/O, How It Works, Modern Perl Development Patterns (+19 more)
 
 ### Community 1435 - "Community 1435"
 Cohesion: 0.08
@@ -16237,8 +16233,8 @@ Cohesion: 0.09
 Nodes (23): _, fromJson, approvedAt, approvedBy, attendanceId, createdAt, endedAt, hashCode (+15 more)
 
 ### Community 1443 - "Community 1443"
-Cohesion: 0.02
-Nodes (104): code:json (プラグインの `hooks/hooks.json` が Claude Code v2.1+ で自動読み込みされるため、`), code:block4, code:block6, code:block5, code:yaml (# .github/workflows/ai-review.yml), code:javascript (// Add try-catch or .catch()), └── .Ask/Ask-Resources.Json, API responses (+96 more)
+Cohesion: 0.04
+Nodes (63): code:json (プラグインの `hooks/hooks.json` が Claude Code v2.1+ で自動読み込みされるため、`), code:block4, code:block6, code:block5, code:yaml (# .github/workflows/ai-review.yml), code:javascript (// Add try-catch or .catch()), └── .Ask/Ask-Resources.Json, API responses (+55 more)
 
 ### Community 1444 - "Community 1444"
 Cohesion: 0.11
@@ -16289,8 +16285,8 @@ Cohesion: 0.07
 Nodes (26): Anthropic Prompt Caching, Cache Augmented Generation (CAG), Cache miss causes latency spike with additional overhead, Cache Without TTL, Cached responses become incorrect over time, Caching High Temperature Responses, Capabilities, code:block1 (1. Analyze query patterns) (+18 more)
 
 ### Community 1456 - "Community 1456"
-Cohesion: 0.15
-Nodes (18): applyPlaceholderDimensions(), beginEditPin(), cancelEditingPin(), clampPlaceholderSize(), finalizeEditingPin(), localCoords(), materializePlaceholderWidth(), onAnnotDown() (+10 more)
+Cohesion: 0.10
+Nodes (28): Vec, OtlpInstrumentationScope, OtlpKeyValue, OtlpResource, OtlpScopeSpans, OtlpSpan, OtlpSpanLink, OtlpSpanStatus (+20 more)
 
 ### Community 1457 - "Community 1457"
 Cohesion: 0.08
@@ -16329,8 +16325,8 @@ Cohesion: 0.14
 Nodes (17): DateTime, Session, SessionState, Utc, OtlpResourceSpans, build_otel_export(), build_otel_export_includes_session_and_tool_spans(), build_otel_export_links_delegated_session_to_parent_trace() (+9 more)
 
 ### Community 1466 - "Community 1466"
-Cohesion: 0.10
-Nodes (22): 1.1 Prompt Enhancement (MUST execute first), 1.2 Context Retrieval, 1.3 Completeness Check, 1.4 Requirement Alignment, Phase 1: Full Context Retrieval, code:block4 (mcp__ace-tool__search_context({), 1.2 Context Retrieval, 1.4 Requirement Alignment (+14 more)
+Cohesion: 0.12
+Nodes (18): 1.1 Prompt Enhancement (MUST execute first), 1.2 Context Retrieval, 1.3 Completeness Check, 1.4 Requirement Alignment, Phase 1: Full Context Retrieval, code:block4 (mcp__ace-tool__search_context({), 1.2 Context Retrieval, 1.4 Requirement Alignment (+10 more)
 
 ### Community 1467 - "Community 1467"
 Cohesion: 0.20
@@ -16357,8 +16353,8 @@ Cohesion: 0.10
 Nodes (19): Coverage Targets, Go TDD Command, Related, Related Commands, TDD Best Practices, TDD Cycle, What This Command Does, When to Use (+11 more)
 
 ### Community 1473 - "Community 1473"
-Cohesion: 0.09
-Nodes (22): code:json ({), code:json ({), code:json ({), Auto-format Python files with ruff, Block large file creation, Common Hook Recipes, Disabling a Hook, Require test files alongside new source files (+14 more)
+Cohesion: 0.11
+Nodes (24): code:python (class DatabaseTransaction:), code:python (# İyi: Context manager'ları kullanma), code:python (# Good: Using context managers), code:python (from contextlib import contextmanager), Context Manager Classes, Context Managers, Custom Context Managers, Resource Management (+16 more)
 
 ### Community 1474 - "Community 1474"
 Cohesion: 0.29
@@ -16366,7 +16362,7 @@ Nodes (7): Reviewer A: Claude Agent (always runs), Step 2: Build the Rubric, Ste
 
 ### Community 1475 - "Community 1475"
 Cohesion: 0.02
-Nodes (118): ../../../../../core/services/analytics_service.dart, Center, CircleAvatar, Column, Container, Expanded, GestureDetector, ListView (+110 more)
+Nodes (132): Center, Container, Divider, Icon, MhLoading, Scaffold, SizedBox, Center (+124 more)
 
 ### Community 1476 - "Community 1476"
 Cohesion: 0.09
@@ -16393,8 +16389,8 @@ Cohesion: 0.12
 Nodes (12): range, Recursively extract all text content from an element.          Skips text node, Replace a DOM element with new XML content.          Args:             elem:, Insert XML content after a DOM element.          Args:             elem: defu, Insert XML content before a DOM element.          Args:             elem: def, Append XML content as a child of a DOM element.          Args:             el, Get the next available rId for relationships files., Save the edited XML back to the file.          Serializes the DOM tree and wri (+4 more)
 
 ### Community 1482 - "Community 1482"
-Cohesion: 0.04
-Nodes (56): code:block1 (Screen Studio / raw footage), code:python (# Smart reframe (AI-guided subject tracking)), Core Thesis, Key Principles, Layer 1: Capture (Screen Studio / Raw Footage), Layer 2: Organization (Claude / Codex), Layer 6: Final Polish (Descript / CapCut), Reframe with FFmpeg (+48 more)
+Cohesion: 0.02
+Nodes (95): code:block1 (Screen Studio / raw footage), code:python (# Smart reframe (AI-guided subject tracking)), Core Thesis, Generated visuals with fal.ai, Key Principles, Layer 1: Capture (Screen Studio / Raw Footage), Layer 2: Organization (Claude / Codex), Layer 5: Generated Assets (ElevenLabs / fal.ai) (+87 more)
 
 ### Community 1483 - "Community 1483"
 Cohesion: 0.07
@@ -16418,7 +16414,7 @@ Nodes (22): ALGORITHMIC PHILOSOPHY CREATION, code:javascript (// ALWAYS use a se
 
 ### Community 1488 - "Community 1488"
 Cohesion: 0.07
-Nodes (25): 6.2 Integrar Polly Na Resposta, Automated Cleanup Lambda, Automated Cleanup Targets, AWS Cost Cleanup, Best Practices, Cleanup Workflow, code:bash (# Run cleanup across multiple accounts), code:bash (# Create CloudWatch alarm for cost anomalies) (+17 more)
+Nodes (27): 6.2 Integrar Polly Na Resposta, Automated Cleanup Lambda, Automated Cleanup Targets, AWS Cost Cleanup, Best Practices, Cleanup Workflow, code:bash (# Run cleanup across multiple accounts), code:bash (# Create CloudWatch alarm for cost anomalies) (+19 more)
 
 ### Community 1489 - "Community 1489"
 Cohesion: 0.13
@@ -16441,8 +16437,8 @@ Cohesion: 0.07
 Nodes (25): 1. Privilege, Ownership & Metadata Manipulation, 2. File/Folder Locking & Resource Denial, 3. Script Execution & Batch Invocation, 4. Dangerous Install/Uninstall & System Changes, 5. Mobile Application & OS Security (Android/iOS), 6. Information Disclosure & Network Exfiltration, 7. Service, Process & Stability Manipulation, 8. Obfuscation & Persistence (+17 more)
 
 ### Community 1494 - "Community 1494"
-Cohesion: 0.04
-Nodes (41): Authentication, code:rust (use azure_identity::DeveloperToolsCredential;), Credential Chain Order, DeveloperToolsCredential, Authentication, Azure Key Vault Certificates SDK for Rust, Best Practices, Certificate Lifecycle (+33 more)
+Cohesion: 0.07
+Nodes (26): code:bash (AZURE_KEYVAULT_URL=https://<vault-name>.vault.azure.net/), Environment Variables, Environment Variables, Environment Variables, Azure Key Vault Secrets SDK for Rust, Best Practices, code:sh (cargo add azure_security_keyvault_secrets azure_identity), code:rust (let secret = client) (+18 more)
 
 ### Community 1495 - "Community 1495"
 Cohesion: 0.08
@@ -16477,8 +16473,8 @@ Cohesion: 0.15
 Nodes (13): code:bash (/sessions                              # すべてのセッションをリスト表示（デフォ), code:bash (/sessions aliases                      # すべてのエイリアスをリスト表示), code:bash (/sessions load <id|alias>             # セッションを読み込む), code:bash (/sessions alias <id> <name>           # エイリアスを作成), code:bash (/sessions alias --remove <name>        # エイリアスを削除), code:bash (/sessions info <id|alias>              # セッション詳細を表示), アクション, エイリアスのリスト表示 (+5 more)
 
 ### Community 1503 - "Community 1503"
-Cohesion: 0.09
-Nodes (22): Best Practices, code:block1 (┌─────────────┐     ┌─────────────┐     ┌─────────────┐), code:python (class OrderSummaryProjection(Projection):), code:python (from elasticsearch import AsyncElasticsearch), code:python (class DailySalesProjection(Projection):), code:python (class CustomerActivityProjection(Projection):), Core Concepts, Do not use this skill when (+14 more)
+Cohesion: 0.08
+Nodes (23): Best Practices, code:block1 (┌─────────────┐     ┌─────────────┐     ┌─────────────┐), code:python (class OrderSummaryProjection(Projection):), code:python (from elasticsearch import AsyncElasticsearch), code:python (class DailySalesProjection(Projection):), code:python (class CustomerActivityProjection(Projection):), Core Concepts, Do not use this skill when (+15 more)
 
 ### Community 1504 - "Community 1504"
 Cohesion: 0.18
@@ -16557,8 +16553,8 @@ Cohesion: 0.18
 Nodes (9): Best Practices, code:json ({), code:json ({), Complementary Tools, dmux Workflows, Troubleshooting, What is dmux, When to Activate (+1 more)
 
 ### Community 1523 - "Community 1523"
-Cohesion: 0.04
-Nodes (60): code:go (package domain), code:typescript (interface RetryOptions {), code:typescript (const USER_ERROR_MESSAGES: Record<string, string> = {), Go, Python, code:python (# İyi: Spesifik exception'ları yakala), Exception Chaining, code:python (class AppError(Exception):) (+52 more)
+Cohesion: 0.06
+Nodes (33): code:go (package domain), code:typescript (interface RetryOptions {), code:typescript (const USER_ERROR_MESSAGES: Record<string, string> = {), Go, Python, Core Principles, Error Handling Checklist, Error Handling Patterns (+25 more)
 
 ### Community 1524 - "Community 1524"
 Cohesion: 0.18
@@ -16585,8 +16581,8 @@ Cohesion: 0.12
 Nodes (17): 1. Installation & Setup, 2. Basic Text Generation, 3. Streaming Responses, 4. Multimodal Input (Text + Image), 5. Function Calling / Tool Use, 6. Multi-turn Chat, 7. Model Selection Guide, code:bash (npm install @google/generative-ai) (+9 more)
 
 ### Community 1530 - "Community 1530"
-Cohesion: 0.06
-Nodes (32): code:yaml (name: CI/CD Pipeline), code:yaml (name: Release), code:yaml (name: Dependency Updates), code:yaml (name: Security Scan), Complete Pipeline Patterns, Pattern 1: Build → Test → Push → Deploy, Pattern 2: Automated Release with Changelog, Pattern 3: Dependency Auto-Update with PR (+24 more)
+Cohesion: 0.08
+Nodes (22): code:yaml (name: Test), code:yaml (name: Build and Push), code:yaml (name: Deploy to Kubernetes), code:yaml (name: Matrix Build), code:yaml (# .github/workflows/reusable-test.yml), code:yaml (name: Deploy to Production), Common Workflow Patterns, Deployment with Approvals (+14 more)
 
 ### Community 1531 - "Community 1531"
 Cohesion: 0.08
@@ -16625,8 +16621,8 @@ Cohesion: 0.07
 Nodes (25): 1. Content Pillars, 1. Headline & About Section, 2. Featured Section (Portfolio & Proof), 2. Strategic Engagement, 3. Experience Section (The Global Standard), 4. Skills & SEO, Best Practices, Common Pitfalls (+17 more)
 
 ### Community 1540 - "Community 1540"
-Cohesion: 0.09
-Nodes (21): LogLevel, package:flutter/foundation.dart, package:flutter_riverpod/flutter_riverpod.dart, clear, debug, info, level, _log (+13 more)
+Cohesion: 0.21
+Nodes (12): code:block1 (RED     → まず失敗するテストを書く), code:block1 (RED     → 先写一个失败的测试), code:rust (// RED: Write test first, use todo!() as placeholder), code:rust (// GREEN: Replace todo!() with minimal implementation), Step-by-Step TDD in Rust, Step-by-Step TDD in Rust, RED-GREEN-REFACTOR サイクル, RED-GREEN-REFACTOR 循环 (+4 more)
 
 ### Community 1541 - "Community 1541"
 Cohesion: 0.09
@@ -16725,8 +16721,8 @@ Cohesion: 0.18
 Nodes (11): How to Use This File, Edge Case 10: Dual-Reporting Obligations — UFLPA and Forced Labour Compliance, Edge Case 1: De Minimis Threshold Exploitation — Section 321 Abuse, Edge Case 2: Transshipment Circumventing AD/CVD Duties — EAPA Investigation, Edge Case 3: Dual-Use Goods — EAR/ITAR Jurisdictional Boundary, Edge Case 4: Post-Importation Transfer Pricing Adjustments, Edge Case 5: First Sale Valuation — Multi-Tier Supply Chain, Edge Case 6: Retroactive FTA Claims — Missed Preferential Treatment (+3 more)
 
 ### Community 1565 - "Community 1565"
-Cohesion: 0.06
-Nodes (34): 10. Delete Resources, 1. Create Application Insights Component (Workspace-based), 2. Get Connection String and Keys, 3. Create API Key, 4. Create Web Test (Availability Test), 5. Create Multi-Step Web Test, 6. Create Workbook, 7. Link Storage Account (+26 more)
+Cohesion: 0.13
+Nodes (18): 10. Delete Resources, 1. Create Application Insights Component (Workspace-based), 2. Get Connection String and Keys, 3. Create API Key, 4. Create Web Test (Availability Test), 5. Create Multi-Step Web Test, 6. Create Workbook, 7. Link Storage Account (+10 more)
 
 ### Community 1566 - "Community 1566"
 Cohesion: 0.08
@@ -16742,15 +16738,15 @@ Nodes (37): code:bash (tmux new -s dev), GitHub Actions CI/CD, Keyboard Shortcut
 
 ### Community 1569 - "Community 1569"
 Cohesion: 0.11
-Nodes (20): Branching Strategies, code:block3 (main (production releases)), GitFlow (Complex, Release-Cycle Driven), GitHub Flow (Simple, Recommended for Most), Trunk-Based Development (High-Velocity Teams), When to Use Which, code:block2 (main (主干)), code:block3 (main (生产发布版本)) (+12 more)
+Nodes (24): code:block26 (myproject/), code:python (# İyi: Import sırası - stdlib, third-party, local), code:python (# mypackage/__init__.py), Import Conventions, __init__.py for Package Exports, Package Organization, Standard Project Layout, code:python (# Good: Import order - stdlib, third-party, local) (+16 more)
 
 ### Community 1570 - "Community 1570"
 Cohesion: 0.11
 Nodes (18): 1️⃣ Offline Mode + Local-First Architecture ✅, 2️⃣ Realtime Cross-Device Document Locking ✅, 3️⃣ Task Timeline + Activity Log ✅, 4️⃣ Unified Notification Rules Engine 3.0 ✅, 5️⃣ AI-Assisted UX Module ✅, 6️⃣ Global Observability Panel for Admin ✅, 7️⃣ Performance Optimizations ✅, 8️⃣ Database Upgrades ✅ (+10 more)
 
 ### Community 1571 - "Community 1571"
-Cohesion: 0.10
-Nodes (16): code:block1 (skills/), Skills, Standard, Where to place skills, スキル, スキルの作成, スキルを使用します, スキルカテゴリ (+8 more)
+Cohesion: 0.11
+Nodes (16): code:` (You are an analyst who cross-reads skills to extract princip), code:block6 (# Good), code:block7 (# Rules Distillation Report), Batching, Cross-batch Merge, Design Principles, How It Works, Phase 2: Cross-read, Match & Verdict (LLM Judgment) (+8 more)
 
 ### Community 1572 - "Community 1572"
 Cohesion: 0.04
@@ -16762,7 +16758,7 @@ Nodes (24): Agent has too many tools, Agent internals not logged or traceable, A
 
 ### Community 1574 - "Community 1574"
 Cohesion: 0.12
-Nodes (13): Leiloeiro, Leiloeiro, Leiloeiro, Leiloeiro, Leiloeiro, JucealScraper, Scraper JUCEAL — Junta Comercial do Estado de Alagoas URL: http://www.juceal.al, JucebScraper (+5 more)
+Nodes (13): Leiloeiro, Leiloeiro, Leiloeiro, Leiloeiro, Leiloeiro, JucealScraper, Scraper JUCEAL — Junta Comercial do Estado de Alagoas URL: http://www.juceal.al, JucernScraper (+5 more)
 
 ### Community 1575 - "Community 1575"
 Cohesion: 0.09
@@ -16850,23 +16846,23 @@ Nodes (17): code:bash (# Dart/Flutter分析エラーの確認), code:text (1. fl
 
 ### Community 1596 - "Community 1596"
 Cohesion: 0.04
-Nodes (52): Authentication, @azure/storage-queue (TypeScript/JavaScript), Basic Worker Pattern, Batch Processing with Visibility Extension, Best Practices, Clear All Messages, Client Hierarchy, code:bash (npm install @azure/storage-queue @azure/identity) (+44 more)
+Nodes (51): Authentication, @azure/storage-queue (TypeScript/JavaScript), Basic Worker Pattern, Batch Processing with Visibility Extension, Best Practices, Clear All Messages, Client Hierarchy, code:bash (npm install @azure/storage-queue @azure/identity) (+43 more)
 
 ### Community 1597 - "Community 1597"
 Cohesion: 0.15
 Nodes (13): code:markdown (## 実装完了), 5.1 自動監査, 5.2 統合と修正, 5.3 配信確認, フェーズ 0: 計画の読み取り, フェーズ 1: クイックコンテキスト取得, フェーズ 3: プロトタイプの取得, フェーズ 4: コード実装 (+5 more)
 
 ### Community 1598 - "Community 1598"
-Cohesion: 0.07
-Nodes (37): Carrier Scorecarding, Core Knowledge, FMCSA Compliance Vetting, Market Intelligence, Portfolio Strategy, Rate Negotiation Fundamentals, RFP Process, Carrier Scorecarding (+29 more)
+Cohesion: 0.05
+Nodes (50): Additional Resources, Carrier Scorecarding, Core Knowledge, FMCSA Compliance Vetting, Market Intelligence, Portfolio Strategy, Rate Negotiation Fundamentals, RFP Process (+42 more)
 
 ### Community 1599 - "Community 1599"
 Cohesion: 0.13
 Nodes (14): code:markdown (## HANDOFF: [前のエージェント] -> [次のエージェント]), code:block7 (オーケストレーションレポート), code:markdown (### 並行フェーズ), code:block9 (/orchestrate custom "architect,tdd-guide,code-reviewer" "Red), Orchestrateコマンド, カスタムワークフローの例, ハンドオフドキュメント形式, ヒント (+6 more)
 
 ### Community 1600 - "Community 1600"
-Cohesion: 0.10
-Nodes (28): Best Practices (LOW), Code Quality (HIGH), Node.js/Backend Patterns (HIGH), Performance (MEDIUM), React/Next.js Patterns (HIGH), Review Checklist, code:tsx (// BAD: Missing dependency, stale closure), Best Practices (LOW) (+20 more)
+Cohesion: 0.11
+Nodes (24): Best Practices (LOW), Code Quality (HIGH), Node.js/Backend Patterns (HIGH), Performance (MEDIUM), React/Next.js Patterns (HIGH), Review Checklist, code:tsx (// BAD: Missing dependency, stale closure), Code Quality (HIGH) (+16 more)
 
 ### Community 1601 - "Community 1601"
 Cohesion: 0.20
@@ -16885,12 +16881,12 @@ Cohesion: 0.05
 Nodes (40): code:bash (rg -n "<query>" skills commands agents docs), code:bash (node scripts/install-plan.js --list-profiles), code:text (Use <skill-or-command>. It fits because <reason>.), code:text (Best matches:), code:text (Detected: <stack evidence>), Common Tasks, Core Principle, ECC Guide (+32 more)
 
 ### Community 1605 - "Community 1605"
-Cohesion: 0.08
-Nodes (25): code:bash (alias c='claude'), Custom Status Line, FUN STUFF / NOT CRITICAL JUST FUN TIPS, Terminal Aliases, Voice Transcription, code:bash (# 並列作業用にワークツリーを作成), code:markdown (フェーズ1: リサーチ（Exploreエージェント使用） → research-summary.md), Everything Claude Code 長文ガイド (+17 more)
+Cohesion: 0.05
+Nodes (37): Best Practices for Agents & Sub-Agents, code:markdown (Phase 1: RESEARCH (use Explore agent) → research-summary.md), code:bash (alias c='claude'), Custom Status Line, FUN STUFF / NOT CRITICAL JUST FUN TIPS, GROUNDWORK, Milestone, References (+29 more)
 
 ### Community 1606 - "Community 1606"
-Cohesion: 0.12
-Nodes (16): Claude Code CVE（2026年2月）, code:bash (# ゼロ幅およびbidi制御文字), エージェンティックセキュリティのすべて 簡潔ガイド, キルスイッチ, クロージング, サニタイゼーション, メモリ, モデルが見る前に添付ファイルをサニタイズ (+8 more)
+Cohesion: 0.16
+Nodes (27): checkColors(), checkCreamPalette(), checkElementAIPaletteDOM(), checkElementColors(), checkElementColorsDOM(), checkElementGlow(), checkElementGlowDOM(), checkElementIconTile() (+19 more)
 
 ### Community 1607 - "Community 1607"
 Cohesion: 0.15
@@ -16901,8 +16897,8 @@ Cohesion: 0.18
 Nodes (9): Django Development Patterns, Quick Reference, Service Layer Pattern, When to Activate, code:python (# apps/orders/services.py), Service Layer Pattern, Service Layer Deseni, サービスレイヤーパターン (+1 more)
 
 ### Community 1609 - "Community 1609"
-Cohesion: 0.12
-Nodes (15): code:bash (# Service Principal (for production/CI)), Environment Variables, Azure Identity SDK for Rust, Best Practices, ClientSecretCredential, code:sh (cargo add azure_identity), code:rust (use azure_identity::ManagedIdentityCredential;), code:rust (use azure_identity::ClientSecretCredential;) (+7 more)
+Cohesion: 0.08
+Nodes (23): Authentication, code:bash (# Service Principal (for production/CI)), Environment Variables, Azure Identity SDK for Rust, Best Practices, ClientSecretCredential, code:sh (cargo add azure_identity), code:rust (use azure_identity::DeveloperToolsCredential;) (+15 more)
 
 ### Community 1610 - "Community 1610"
 Cohesion: 0.11
@@ -16917,8 +16913,8 @@ Cohesion: 0.13
 Nodes (20): code:typescript (// ドメインのエラー階層を定義する), code:typescript (import { NextRequest, NextResponse } from 'next/server'), TypeScript / JavaScript, API Error Handler (Next.js / Express), code:typescript (import { Component, ErrorInfo, ReactNode } from 'react'), React Error Boundary, Result Pattern (no-throw style), Typed Error Classes (+12 more)
 
 ### Community 1613 - "Community 1613"
-Cohesion: 0.13
-Nodes (13): code:perl (use v5.36;), Basic Assertions, Best Practices, code:perl (use v5.36;), DO, DON'T, Mocking, Perl Testing Patterns (+5 more)
+Cohesion: 0.11
+Nodes (16): code:perl (use v5.36;), Basic Assertions, Best Practices, code:perl (use v5.36;), code:perl (use v5.36;), DO, DON'T, Mocking (+8 more)
 
 ### Community 1614 - "Community 1614"
 Cohesion: 0.13
@@ -16938,7 +16934,7 @@ Nodes (9): code:block3 (Here's what I found — confirm or edit anything:), code
 
 ### Community 1618 - "Community 1618"
 Cohesion: 0.05
-Nodes (38): Complete Example, Async Version, API 集成, code:block1 (我们刚刚发布了 [feature]。), code:block2 (激动地宣布：我们刚刚在[Company]推出了[feature]。), code:block3 (刚发布了一个很酷的东西 —— [feature]), code:block4 (今天学到：[具体技术见解]), code:block5 (我一直在使用的一种模式，它带来了真正的改变：) (+30 more)
+Nodes (37): Complete Example, Async Version, API 集成, code:block1 (我们刚刚发布了 [feature]。), code:block2 (激动地宣布：我们刚刚在[Company]推出了[feature]。), code:block3 (刚发布了一个很酷的东西 —— [feature]), code:block4 (今天学到：[具体技术见解]), code:block5 (我一直在使用的一种模式，它带来了真正的改变：) (+29 more)
 
 ### Community 1619 - "Community 1619"
 Cohesion: 0.08
@@ -16949,12 +16945,12 @@ Cohesion: 0.10
 Nodes (29): Pattern 1: Research + Implement, Pattern 2: Multi-File Feature, Pattern 3: Test + Fix Loop, Pattern 4: Cross-Harness, Pattern 5: Code Review Pipeline, Workflow Patterns, code:block4 (Pane 1 (Watcher): "Run the test suite in watch mode. When te), code:block5 (Pane 1 (Claude Code): "Review the security of the auth modul) (+21 more)
 
 ### Community 1621 - "Community 1621"
-Cohesion: 0.10
-Nodes (19): code:block7 (~/.claude/homunculus/), code:block2 (工作階段活動), code:json ({), 本能模型, Dosya Yapısı, v2 的新功能, 信心評分, 向後相容性 (+11 more)
+Cohesion: 0.06
+Nodes (31): code:block7 (~/.claude/homunculus/), code:block2 (工作階段活動), code:bash (mkdir -p ~/.claude/homunculus/{instincts/{personal,inherited), code:bash (# 啟動背景觀察者), code:json ({), 本能模型, code:bash (cat .mcp.json 2>/dev/null || echo "No existing .mcp.json"), code:json ({) (+23 more)
 
 ### Community 1622 - "Community 1622"
-Cohesion: 0.22
-Nodes (12): detectProjectType(), FRAMEWORK_RULES, fs, getComposerDeps(), getElixirDeps(), getGoDeps(), getPackageJsonDeps(), getPythonDeps() (+4 more)
+Cohesion: 0.11
+Nodes (19): detectProjectType(), FRAMEWORK_RULES, fs, getComposerDeps(), getElixirDeps(), getGoDeps(), getPackageJsonDeps(), getPythonDeps() (+11 more)
 
 ### Community 1623 - "Community 1623"
 Cohesion: 0.16
@@ -16981,8 +16977,8 @@ Cohesion: 0.11
 Nodes (20): assert, componentsSchemaPath, { execFileSync, spawnSync }, fs, modulesSchemaPath, os, path, profilesSchemaPath (+12 more)
 
 ### Community 1629 - "Community 1629"
-Cohesion: 0.07
-Nodes (26): 4. Converting class-based DI to Reader, 8. Gradual Adoption Strategies, After (fp-ts Reader), Before (Imperative with Classes), code:typescript (// Traditional class-based approach), code:typescript (import * as R from 'fp-ts/Reader';), code:typescript (// Easy to test with mock environment), code:typescript (// Wrap external API calls first) (+18 more)
+Cohesion: 0.12
+Nodes (15): 4. Converting class-based DI to Reader, After (fp-ts Reader), Before (Imperative with Classes), code:typescript (// Traditional class-based approach), code:typescript (import * as R from 'fp-ts/Reader';), code:typescript (// Easy to test with mock environment), Limitations, Pattern: Service classes to Reader (+7 more)
 
 ### Community 1630 - "Community 1630"
 Cohesion: 0.08
@@ -16993,8 +16989,8 @@ Cohesion: 0.05
 Nodes (36): A. Add UI/UX Keywords, B. Amplify the Vibe, C. Structure the Page, code:markdown (**Page Structure:**), code:block3 (Descriptive Name (#hexcode) for functional role), code:markdown ([One-line description of the page purpose and vibe]), code:markdown (A clean, trustworthy login page with a centered form and sub), code:markdown (Add a search bar to the header navigation.) (+28 more)
 
 ### Community 1632 - "Community 1632"
-Cohesion: 0.10
-Nodes (19): Best Practices, code:python (# main.py), code:python (# repositories/base_repository.py), code:python (# services/user_service.py), code:python (# api/v1/endpoints/users.py), code:python (# core/security.py), code:python (# tests/conftest.py), Common Pitfalls (+11 more)
+Cohesion: 0.18
+Nodes (11): code:python (# main.py), code:python (# repositories/base_repository.py), code:python (# services/user_service.py), code:python (# api/v1/endpoints/users.py), code:python (# core/security.py), Implementation Patterns, Pattern 1: Complete FastAPI Application, Pattern 2: CRUD Repository Pattern (+3 more)
 
 ### Community 1633 - "Community 1633"
 Cohesion: 0.20
@@ -17013,8 +17009,8 @@ Cohesion: 0.09
 Nodes (20): code:bash (python scripts/gmail.py search "from:boss@company.com is:unr), code:bash (# Search with Gmail query syntax), code:bash (# Get full message content), code:bash (# Send a simple email), code:bash (# Create a draft), code:bash (# Mark as read (remove UNREAD label)), code:bash (# List all Gmail labels (system and user-created)), Commands (+12 more)
 
 ### Community 1637 - "Community 1637"
-Cohesion: 0.13
-Nodes (3): collectStaticCssText(), StaticDocument, StaticElement
+Cohesion: 0.12
+Nodes (3): makeStaticStyle(), StaticDocument, StaticElement
 
 ### Community 1638 - "Community 1638"
 Cohesion: 0.06
@@ -17022,7 +17018,7 @@ Nodes (35): 1. Insert Alerts Into Training Code, 2. Monitor Alerts, 3. Inspect M
 
 ### Community 1639 - "Community 1639"
 Cohesion: 0.06
-Nodes (35): code:block3 (Score: 82/100 (+5 since yesterday) · band: strong), code:bash (mkdir -p .commitshow), How It Works, Production Audit, Busca Por Nome, code:block1 (C:\Users\renat\skills\junta-leiloeiros\), code:bash (pip install -r C:\Users\renat\skills\junta-leiloeiros\script), Coletar Dados (+27 more)
+Nodes (36): code:block3 (Score: 82/100 (+5 since yesterday) · band: strong), code:bash (mkdir -p .commitshow), How It Works, Production Audit, Busca Por Nome, code:block1 (C:\Users\renat\skills\junta-leiloeiros\), code:bash (pip install -r C:\Users\renat\skills\junta-leiloeiros\script), Coletar Dados (+28 more)
 
 ### Community 1640 - "Community 1640"
 Cohesion: 0.08
@@ -17077,8 +17073,8 @@ Cohesion: 0.11
 Nodes (24): AI & Machine Learning Integration, Alerting & Incident Response, Behavioral Traits, Capabilities, Chaos Engineering & Reliability Testing, Cost Optimization & Resource Management, Custom Dashboards & Visualization, Distributed Tracing & APM (+16 more)
 
 ### Community 1653 - "Community 1653"
-Cohesion: 0.10
-Nodes (20): code:typescript (// utils/calculator.ts), code:typescript (// services/api.service.ts), code:typescript (// services/email.service.ts), code:typescript (// services/user.service.ts), code:typescript (// utils/logger.ts), code:block3 (src/), code:typescript (// controllers/user.controller.ts), code:typescript (// repositories/user.repository.ts) (+12 more)
+Cohesion: 0.08
+Nodes (22): code:block3 (project/), code:json ({), Common Pitfalls, Design System Integration, Execution Protocol, File Structure Reference, Limitations, Orchestration Options (+14 more)
 
 ### Community 1654 - "Community 1654"
 Cohesion: 0.12
@@ -17097,12 +17093,12 @@ Cohesion: 0.08
 Nodes (23): 1. Saga Types, 2. Saga Execution States, Best Practices, code:block1 (Choreography                    Orchestration), code:python (from abc import ABC, abstractmethod), code:python (class OrderFulfillmentSaga(SagaOrchestrator):), code:python (class TimeoutSagaOrchestrator(SagaOrchestrator):), Core Concepts (+15 more)
 
 ### Community 1658 - "Community 1658"
-Cohesion: 0.07
-Nodes (26): Additional Resources, Automated Compliance Reporting, AWS Compliance Checker, Best Practices, code:bash (#!/bin/bash), code:bash (kiro-cli chat "Use aws-compliance-checker to run CIS benchma), Example Prompts, HIPAA Compliance Checks (+18 more)
+Cohesion: 0.04
+Nodes (42): Additional Resources, Automated Compliance Reporting, AWS Compliance Checker, Best Practices, code:bash (kiro-cli chat "Use aws-compliance-checker to run CIS benchma), Example Prompts, Kiro CLI Integration, Limitations (+34 more)
 
 ### Community 1659 - "Community 1659"
 Cohesion: 0.06
-Nodes (29): code:block1 (1. git diffを実行して変更を理解する), Code Review, コードレビュー, 程式碼審查, 코드 리뷰, よくある問題の検出, エージェントの使用, コードレビュー基準 (+21 more)
+Nodes (27): code:block1 (1. git diffを実行して変更を理解する), 程式碼審查, 코드 리뷰, よくある問題の検出, エージェントの使用, コードレビュー基準, コード品質, セキュリティ (+19 more)
 
 ### Community 1660 - "Community 1660"
 Cohesion: 0.08
@@ -17133,8 +17129,8 @@ Cohesion: 0.06
 Nodes (33): code:json ({), code:html (<!DOCTYPE html>), code:javascript (// embed.js), code:javascript (// batch-embed.js), Bulletmind Output Reference, Example 1 - Topic: Climate Change, Example 2 - Topic: Operating Systems, Examples (+25 more)
 
 ### Community 1667 - "Community 1667"
-Cohesion: 0.04
-Nodes (46): Automacao Com Ia, code:block1 (O usuario precisa criar um bot?), code:typescript (// Foto), code:python (from telegram import InlineKeyboardButton, InlineKeyboardMar), code:python (from telegram import ReplyKeyboardMarkup, KeyboardButton), code:python (from telegram import ReplyKeyboardRemove), code:typescript (// Telegraf com polling), code:python (from telegram import BotCommand) (+38 more)
+Cohesion: 0.05
+Nodes (41): code:bash (pip install stripe), Setup Inicial, Automacao Com Ia, code:typescript (// Foto), code:python (from telegram import InlineKeyboardButton, InlineKeyboardMar), code:python (from telegram import ReplyKeyboardMarkup, KeyboardButton), code:python (from telegram import ReplyKeyboardRemove), code:typescript (// Telegraf com polling) (+33 more)
 
 ### Community 1668 - "Community 1668"
 Cohesion: 0.20
@@ -17157,12 +17153,12 @@ Cohesion: 0.13
 Nodes (11): args, { execSync }, FLUTTER_DIR, flutterBin, fs, hasCargo, isFull, path (+3 more)
 
 ### Community 1673 - "Community 1673"
-Cohesion: 0.11
-Nodes (16): code:block1 (draw/src/text/), code:rust (pub struct Layouter {), code:rust (pub struct OwnedLayoutParams {), code:rust (pub struct Settings {), Documentation, DrawText Widget, IMPORTANT: Documentation Completeness Check, Layout Parameters (+8 more)
+Cohesion: 0.09
+Nodes (21): code:block1 (draw/src/text/), code:rust (pub struct Layouter {), code:rust (pub struct OwnedLayoutParams {), code:rust (pub struct Settings {), Documentation, Font Definition in DSL, IMPORTANT: Documentation Completeness Check, Layout Parameters (+13 more)
 
 ### Community 1674 - "Community 1674"
-Cohesion: 0.07
-Nodes (27): Agent speaks XML or code artifacts, Call flow (built-in AI mode), Call flow (webhook mode), Call recording, Caller hears silence after speaking, Caller hears silence after the greeting, code:python (from fastapi.responses import StreamingResponse), code:javascript (const OpenAI = require('openai');) (+19 more)
+Cohesion: 0.06
+Nodes (33): Agent speaks XML or code artifacts, Call flow (built-in AI mode), Call flow (webhook mode), Call recording, Caller hears silence after speaking, Caller hears silence after the greeting, code:block31 ({"text": "Let me check that for you.", "interim": true}), code:json ({ "text": "How can I help you?" }) (+25 more)
 
 ### Community 1675 - "Community 1675"
 Cohesion: 0.08
@@ -17181,8 +17177,8 @@ Cohesion: 0.20
 Nodes (8): Create Pull Request, Edge Cases, Phase 6 — OUTPUT, code:block9 (PR #<number>: <title>), Create Pull Request, Edge Cases, Phase 6 — OUTPUT, Phase 6 — OUTPUT
 
 ### Community 1679 - "Community 1679"
-Cohesion: 0.09
-Nodes (19): bullets, cargo, claudeMd, deps, doNot, gitConfig, goal, goMod (+11 more)
+Cohesion: 0.10
+Nodes (26): code:python (# İyi: Spesifik exception'ları yakala), Exception Chaining, code:python (class AppError(Exception):), Custom Exception Hierarchy, Python, code:python (def process_data(data: str) -> Result:), Custom Exception Hierarchy, Error Handling Patterns (+18 more)
 
 ### Community 1680 - "Community 1680"
 Cohesion: 0.08
@@ -17201,16 +17197,16 @@ Cohesion: 0.09
 Nodes (30): code:kotlin (class ItemRemoteDataSource(private val client: HttpClient) {), code:kotlin (// データ層), SQLDelight（KMP）, SQLDelight (KMP), code:kotlin (class ItemRepositoryImpl(), code:kotlin (@Entity(tableName = "items")), Data Layer, Ktor Network Client (KMP) (+22 more)
 
 ### Community 1684 - "Community 1684"
-Cohesion: 0.19
-Nodes (21): createBrowserDetector(), detectCli(), formatFindings(), handleStdin(), printUsage(), buildImportGraph(), detectFrameworkConfig(), FRAMEWORK_CONFIGS (+13 more)
+Cohesion: 0.10
+Nodes (19): code:go (// Bağımlılıklar için interface tanımlayın), code:go (// Adım 1: Interface/signature'ı tanımla), code:yaml (# GitHub Actions örneği), code:block1 (RED     → Önce başarısız bir test yaz), code:rust (// RED: Önce testi yaz, yer tutucu olarak todo!() kullan), code:rust (// GREEN: todo!()'yu minimal implementasyonla değiştir), CI/CD ile Entegrasyon, En İyi Uygulamalar (+11 more)
 
 ### Community 1685 - "Community 1685"
 Cohesion: 0.08
 Nodes (25): 10. **CLEAR**, 11. **GROW**, 1. **RTF (Role-Task-Format)**, 2. **Chain of Thought**, 3. **RISEN**, 4. **RODES**, 5. **Chain of Density**, 6. **RACE** (+17 more)
 
 ### Community 1686 - "Community 1686"
-Cohesion: 0.05
-Nodes (40): Best Practices, code:block1 (Query → ┬─► Vector Search ──► Candidates ─┐), code:python (from typing import List, Dict, Tuple), code:python (from elasticsearch import Elasticsearch), code:python (from typing import List, Dict, Optional, Callable), Core Concepts, Do's, Don'ts (+32 more)
+Cohesion: 0.07
+Nodes (29): code:python (from typing import List, Dict, Tuple), code:python (from elasticsearch import Elasticsearch), code:python (from typing import List, Dict, Optional, Callable), Templates, Best Practices, code:block1 (┌─────────────────────────────────────────────────┐), code:python (from pinecone import Pinecone, ServerlessSpec), code:python (import asyncpg) (+21 more)
 
 ### Community 1687 - "Community 1687"
 Cohesion: 0.20
@@ -17254,7 +17250,7 @@ Nodes (23): agenttrace Session Audit, Best Practices, CI Health Check, code:bash
 
 ### Community 1697 - "Community 1697"
 Cohesion: 0.10
-Nodes (18): blockers, constraints, context, contextDirPath, contextJsonPath, contextMdPath, decisions, existing (+10 more)
+Nodes (23): dependencies, dotenv, express, description, devDependencies, ts-node-dev, @types/express, @types/node (+15 more)
 
 ### Community 1698 - "Community 1698"
 Cohesion: 0.08
@@ -17262,7 +17258,7 @@ Nodes (23): 1. Preserve Functionality, 2. Apply Project Standards, 3. Enhance Cl
 
 ### Community 1699 - "Community 1699"
 Cohesion: 0.06
-Nodes (36): 1. Dependency Discovery, 2. Vulnerability Scanning, 3. License Compliance, 4. Outdated Dependencies, 5. Dependency Size Analysis, 6. Supply Chain Security, 7. Automated Remediation, 8. Monitoring and Alerts (+28 more)
+Nodes (35): 1. Dependency Discovery, 2. Vulnerability Scanning, 3. License Compliance, 4. Outdated Dependencies, 5. Dependency Size Analysis, 6. Supply Chain Security, 7. Automated Remediation, 8. Monitoring and Alerts (+27 more)
 
 ### Community 1700 - "Community 1700"
 Cohesion: 0.11
@@ -17317,8 +17313,8 @@ Cohesion: 0.30
 Nodes (10): 1 error remaining, 2 errors remaining, code:block5, code:block6, code:block7, 1 error remaining, 2 errors remaining, 1 error remaining (+2 more)
 
 ### Community 1713 - "Community 1713"
-Cohesion: 0.04
-Nodes (48): code:typescript (@Component({), code:typescript (// 正しい), code:typescript (const API_URL = new InjectionToken<string>('API_URL');), code:typescript (count = signal(0);), code:typescript (userResource = resource({), code:typescript (// 正しい: 副作用), code:typescript (// Reactive Forms — ほとんどのアプリの標準的なアプローチ), code:javascript (// 錯誤：變異) (+40 more)
+Cohesion: 0.05
+Nodes (40): code:typescript (@Component({), code:typescript (// 正しい), code:typescript (const API_URL = new InjectionToken<string>('API_URL');), code:typescript (count = signal(0);), code:typescript (userResource = resource({), code:typescript (// 正しい: 副作用), code:typescript (// Reactive Forms — ほとんどのアプリの標準的なアプローチ), code:typescript (// CORRECT) (+32 more)
 
 ### Community 1714 - "Community 1714"
 Cohesion: 0.08
@@ -17341,8 +17337,8 @@ Cohesion: 0.08
 Nodes (23): code:block1 (# 短期: 現在のセッションコンテキスト), 1. 分類, 2. 重複排除, 3. 保存, 4. インデックス化, GitHub / Linear の同期, アクティベートするタイミング, クロスソースナレッジの同期 (+15 more)
 
 ### Community 1719 - "Community 1719"
-Cohesion: 0.11
-Nodes (17): code:bash (# 브라우저에서 HTML 보고서 확인), code:block6 (WARNING:  불안정한 테스트 감지됨: tests/e2e/markets/trade.spec.ts), code:bash (# 모든 E2E 테스트 실행), code:block4, E2E 커맨드, 관련 에이전트, 다른 커맨드와의 연동, 모범 사례 (+9 more)
+Cohesion: 0.15
+Nodes (13): code:bash (# 브라우저에서 HTML 보고서 확인), code:block6 (WARNING:  불안정한 테스트 감지됨: tests/e2e/markets/trade.spec.ts), code:bash (# 모든 E2E 테스트 실행), code:block4, 관련 에이전트, 다른 커맨드와의 연동, 모범 사례, 불안정한 테스트 감지 (+5 more)
 
 ### Community 1720 - "Community 1720"
 Cohesion: 0.10
@@ -17381,8 +17377,8 @@ Cohesion: 0.12
 Nodes (15): Best Practices, code:block1, code:block5 (WARNING:  FLAKY TEST DETECTED: tests/e2e/markets/trade.spec.), Run the generated test, Arguments, Browser Configuration, Canonical Surface, Delegation (+7 more)
 
 ### Community 1729 - "Community 1729"
-Cohesion: 0.06
-Nodes (32): Finding #18: [CRITICAL] unhandled_edge_cases (Qwen 3.6), Finding #24: [HIGH] concurrency_issues (Qwen 3.6), Finding #49: [MEDIUM] concurrency_issues (Qwen 3.6), Finding #74: [MEDIUM] SQL Injection (Qwen 3.6), Problem, Problem, Problem, Problem (+24 more)
+Cohesion: 0.13
+Nodes (15): code:` (あなたはスキルをクロスリーディングして、ルールに昇格すべき原則を抽出するアナリストです。), code:block6 (# 良い例), code:block7 (# ルール蒸留レポート), code:json ({), サブエージェントプロンプト, サマリーテーブル, バッチ処理, バッチ間のマージ (+7 more)
 
 ### Community 1730 - "Community 1730"
 Cohesion: 0.08
@@ -17401,12 +17397,12 @@ Cohesion: 0.13
 Nodes (15): Authoritative Claim Block, code:markdown (Mobile optimization is no longer optional for SEO success. A), code:markdown ("[Direct quote from expert]," says [Expert Name], [Title/Rol), code:markdown ("The shift from keyword-driven search to intent-driven disco), code:markdown ([Topic] [verb: is/has/requires/involves] [clear, specific cl), code:markdown (E-E-A-T is the cornerstone of Google's content quality evalu), code:markdown (**[Topic/Question]**: [Complete, self-contained answer that ), code:markdown (**Ideal blog post length for SEO**: The optimal length for S) (+7 more)
 
 ### Community 1734 - "Community 1734"
-Cohesion: 0.11
-Nodes (19): UpdateService, package:flutter_riverpod/flutter_riverpod.dart, package:supabase_flutter/supabase_flutter.dart, ../services/logger_service.dart, cancelDownload, checkForUpdate, client, _downloadedFilePath (+11 more)
+Cohesion: 0.10
+Nodes (22): 2.1 Trivy (Recommended — Fast, Comprehensive), 2.2 Grype (Anchore Alternative), 2.3 Hadolint — Dockerfile Linting, 2.4 Secret Scanning in Images, 2.5 CI Integration (GitHub Actions — SHA-Pinned), code:block16 (# CVE-2023-1234 — only exploitable via X feature, not used i), code:bash (# Run directly), code:yaml (failure-threshold: warning) (+14 more)
 
 ### Community 1735 - "Community 1735"
-Cohesion: 0.07
-Nodes (29): code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), Deep Comparison with Builders, Exception Testing with Test2, Test2::V0 Modern Framework (+21 more)
+Cohesion: 0.06
+Nodes (32): code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), Deep Comparison with Builders, Exception Testing with Test2, Test2::V0 Modern Framework, Why Test2? (+24 more)
 
 ### Community 1736 - "Community 1736"
 Cohesion: 0.08
@@ -17430,7 +17426,7 @@ Nodes (23): Avoiding Evaluation Pitfalls, Building Evaluation Frameworks, code:p
 
 ### Community 1741 - "Community 1741"
 Cohesion: 0.10
-Nodes (18): Center, CustomRefreshIndicator, Positioned, Stack, package:flutter/material.dart, package:lottie/lottie.dart, ../../core/theme/app_colors.dart, package:flutter/material.dart (+10 more)
+Nodes (20): code:yaml (# .github/workflows/docs.yml), code:typescript (// scripts/generate-docs.ts), code:yaml (# .github/workflows/security.yml), code:typescript (// workflow-orchestrator.ts), code:yaml (# .github/workflows/ci-cd.yml), code:yaml (# .pre-commit-config.yaml), code:yaml (# .github/workflows/terraform.yml), code:yaml (# .github/workflows/monitoring.yml) (+12 more)
 
 ### Community 1742 - "Community 1742"
 Cohesion: 0.11
@@ -17497,8 +17493,8 @@ Cohesion: 0.08
 Nodes (23): action_log, code:block1 (┌──────────────┐       ┌──────────────┐       ┌─────────────), code:sql (SELECT COUNT(*) FROM action_log), code:sql (SELECT * FROM posts), accounts, code:sql (SELECT p.media_type,), code:sql (SELECT c.*, p.permalink), code:sql (SELECT DISTINCT hashtag, COUNT(*) as searches) (+15 more)
 
 ### Community 1758 - "Community 1758"
-Cohesion: 0.12
-Nodes (17): Additional Resources, Best Practices, code:bash (# Launch dashboard on default port (3000)), code:json ({), code:json ({), Complete Guide, Configuration, Default Configuration (+9 more)
+Cohesion: 0.14
+Nodes (15): Additional Resources, Best Practices, code:bash (# Last 24 hours), code:bash (# Launch dashboard on default port (3000)), Complete Guide, Exit Codes, Generate Reports, Interactive Dashboard (+7 more)
 
 ### Community 1759 - "Community 1759"
 Cohesion: 0.33
@@ -17514,7 +17510,7 @@ Nodes (6): Tests for models module., TestGetModels, TestIsMainlineOpenAIModel, T
 
 ### Community 1762 - "Community 1762"
 Cohesion: 0.03
-Nodes (77): author, name, url, bin, ecc, ecc-control-pane, ecc-install, bugs (+69 more)
+Nodes (83): author, name, url, bin, ecc, ecc-control-pane, ecc-install, bugs (+75 more)
 
 ### Community 1763 - "Community 1763"
 Cohesion: 0.08
@@ -17553,8 +17549,8 @@ Cohesion: 0.11
 Nodes (23): Advanced Protocols & Technologies, Behavioral Traits, Capabilities, Cloud Networking Expertise, Compliance & Governance, Disaster Recovery & Business Continuity, DNS & Service Discovery, Do not use this skill when (+15 more)
 
 ### Community 1772 - "Community 1772"
-Cohesion: 0.08
-Nodes (23): 3. Distributed Tracing, code:yaml (# prometheus.yml), code:hcl (# monitoring.tf), code:typescript (// metrics.ts), code:typescript (// dashboards/service-dashboard.ts), code:typescript (// tracing.ts), code:yaml (# fluent.conf), code:python (# structured_logging.py) (+15 more)
+Cohesion: 0.05
+Nodes (35): code:block21 (Write a Python function to process user data.), code:python (code_prompt = """), code:block23, 3. Distributed Tracing, code:yaml (# prometheus.yml), code:hcl (# monitoring.tf), code:typescript (// metrics.ts), code:typescript (// dashboards/service-dashboard.ts) (+27 more)
 
 ### Community 1773 - "Community 1773"
 Cohesion: 0.08
@@ -17622,11 +17618,11 @@ Nodes (23): Android Specific (MEDIUM), Approval Criteria, Architecture (CRITICAL
 
 ### Community 1789 - "Community 1789"
 Cohesion: 0.01
-Nodes (269): AnimationController, BoxFit, ChatRoom?, CustomPainter, File, Exception, SnackBar, AlertDialog (+261 more)
+Nodes (195): BoxFit, ChatRoom?, AlertDialog, Align, Center, ClipRRect, Column, Container (+187 more)
 
 ### Community 1790 - "Community 1790"
 Cohesion: 0.18
-Nodes (10): code:bash (# CMake configure), 运行的诊断命令, C++ Build and Fix, Diagnostic Commands Run, What This Command Does, When to Use, C++ Build and Fix, Diagnostic Commands Run (+2 more)
+Nodes (10): C++ Build and Fix, Diagnostic Commands Run, What This Command Does, When to Use, code:bash (# CMake configure), 运行的诊断命令, C++ Build and Fix, Diagnostic Commands Run (+2 more)
 
 ### Community 1791 - "Community 1791"
 Cohesion: 0.04
@@ -17638,11 +17634,11 @@ Nodes (22): double? get, _, fromJson, accuracy, attendanceId, batteryLevel, crea
 
 ### Community 1793 - "Community 1793"
 Cohesion: 0.04
-Nodes (55): code:python (from collections.abc import AsyncIterator), code:python (from fastapi import FastAPI, Request), Application Factory, Async Endpoints, code:python (from contextlib import asynccontextmanager), Dependencies, Error Handling, Examples (+47 more)
+Nodes (56): code:python (from collections.abc import AsyncIterator), code:python (from fastapi import FastAPI, Request), FastAPI Global Exception Handler, Application Factory, Async Endpoints, code:python (from contextlib import asynccontextmanager), Dependencies, Error Handling (+48 more)
 
 ### Community 1794 - "Community 1794"
 Cohesion: 0.14
-Nodes (12): Key Rules, Standard Library (SL.*), C++ 编码标准（C++ 核心准则）, 何时不应使用, 何时使用, 关键规则, 快速参考检查清单, 标准库 (SL.\*) (+4 more)
+Nodes (12): Enumerations (Enum.*), Key Rules, C++ 编码标准（C++ 核心准则）, 何时不应使用, 何时使用, 关键规则, 快速参考检查清单, 枚举 (Enum.\*) (+4 more)
 
 ### Community 1795 - "Community 1795"
 Cohesion: 0.10
@@ -17666,7 +17662,7 @@ Nodes (22): code:bash (npm run test:full-ui), code:bash (npx playwright test uni
 
 ### Community 1800 - "Community 1800"
 Cohesion: 0.04
-Nodes (47): Never hardcode or log tokens, ALWAYS validate the signature, Anti_patterns, code:python (# In your webhook handler), code:python (@app.route("/webhooks/whatsapp", methods=["POST"])), code:block11 (1. Twilio Console > Content Template Builder), code:python (# BAD - never do this), code:python (# Auth Token has full account access) (+39 more)
+Nodes (55): ALWAYS validate the signature, Anti_patterns, Auth Token in Source Code, code:python (# In your webhook handler), code:python (@app.route("/webhooks/whatsapp", methods=["POST"])), code:block11 (1. Twilio Console > Content Template Builder), code:python (# Auth Token has full account access), code:block14 (1. Twilio Console > Account > API credentials) (+47 more)
 
 ### Community 1801 - "Community 1801"
 Cohesion: 0.08
@@ -17722,7 +17718,7 @@ Nodes (22): Anti-Pattern 1, Anti-Pattern 2, Anti-Patterns to Avoid, Code Organiz
 
 ### Community 1814 - "Community 1814"
 Cohesion: 0.05
-Nodes (41): 1. Basic App Structure, 2. Cargo.toml Setup, 3. Handling Button Clicks, 4. Accessing and Modifying Widgets, API Reference Table, code:rust (use makepad_widgets::*;), code:rust (impl AppMain for App {), code:rust (// Get widget references) (+33 more)
+Nodes (36): 1. Basic App Structure, 3. Handling Button Clicks, 4. Accessing and Modifying Widgets, API Reference Table, code:rust (use makepad_widgets::*;), code:rust (impl AppMain for App {), code:rust (// Get widget references), Documentation (+28 more)
 
 ### Community 1815 - "Community 1815"
 Cohesion: 0.08
@@ -17782,11 +17778,7 @@ Nodes (32): Anti-Patterns, Best Practices, Client Configuration, code:block1 (Yo
 
 ### Community 1829 - "Community 1829"
 Cohesion: 0.10
-Nodes (17): assert, fs, {
-  getHomunculusDir,
-  normalizeRemoteUrl,
-  resolveProjectContext,
-}, httpsContext, httpsRepo, initRepo(), os, override (+9 more)
+Nodes (21): code:yaml (version: '3.8'), code:bash (# Deploy Jaeger Operator), Docker Compose, Jaeger Setup, Kubernetes Deployment, 1. Dockerfile Optimization & Multi-Stage Builds, 2. Container Security Hardening, 3. Docker Compose Orchestration (+13 more)
 
 ### Community 1830 - "Community 1830"
 Cohesion: 0.09
@@ -17809,24 +17801,24 @@ Cohesion: 0.14
 Nodes (13): code:bash (/tdd                    # 새 기능에 대한 단위 + 통합 테스트), code:bash (# 기능 계획 수립), ECC 워크플로우, Git 워크플로우, SaaS 애플리케이션 — 프로젝트 CLAUDE.md, 결제, 데이터베이스, 인증 (+5 more)
 
 ### Community 1835 - "Community 1835"
-Cohesion: 0.09
-Nodes (24): identical, _then, DateTime get, EquipmentBooking, EquipmentBooking, _, _EquipmentBooking, fromJson (+16 more)
+Cohesion: 0.10
+Nodes (21): @JsonSerializable, identical, _then, _, fromJson, bookedBy, bookedByName, createdAt (+13 more)
 
 ### Community 1836 - "Community 1836"
 Cohesion: 0.12
 Nodes (15): Agentes Relacionados, Boas Práticas de TDD, Comando TDD, Como Funciona, Integração com Outros Comandos, Notas Importantes, O Que Este Comando Faz, Quando Usar (+7 more)
 
 ### Community 1837 - "Community 1837"
-Cohesion: 0.11
-Nodes (19): code:python (class ApplicationError(Exception):), code:python (from contextlib import contextmanager), code:typescript (// Custom error classes), code:typescript (// Result type for explicit error handling), code:typescript (// Async/await with proper error handling), code:rust (use std::fs::File;), code:go (// Basic error handling), Language-Specific Patterns (+11 more)
+Cohesion: 0.08
+Nodes (22): Output Format, Refactor and Clean Code Implementation Playbook, Severity Levels, Best Practices, code:python (# Good error handling example), code:typescript (// Custom error classes), code:typescript (// Result type for explicit error handling), code:typescript (// Async/await with proper error handling) (+14 more)
 
 ### Community 1838 - "Community 1838"
 Cohesion: 0.11
 Nodes (16): code:bash (# 公式 Anthropic マーケットプレイスを追加), code:bash (# プラグインブラウザを開く), code:bash (# マーケットプレイスを追加), code:bash (# まずリポジトリをクローン), code:bash (# コマンドを試す（プラグインはネームスペース形式）), クイックスタート, ステップ2：ルールをインストール（必須）, ステップ3：使用開始 (+8 more)
 
 ### Community 1839 - "Community 1839"
-Cohesion: 0.16
-Nodes (14): code:block3 ([CRITICAL] Domain modülü Android framework import ediyor), code:block4 (## Review Summary), code:block3 ([CRITICAL] Domain 模块导入了 Android 框架), code:block4 (## 审查摘要), Onay Kriterleri, Rolünüz, Summary Format, Çıktı Formatı (+6 more)
+Cohesion: 0.11
+Nodes (20): code:block3 ([CRITICAL] Domain modülü Android framework import ediyor), code:block4 (## Review Summary), code:block3 ([CRITICAL] Domain 模块导入了 Android 框架), code:block4 (## 审查摘要), Adım 1: Bağlam Toplayın, Adım 2: Proje Yapısını Anlayın, Adım 2b: Güvenlik İncelemesi, Adım 3: Okuyun ve İnceleyin (+12 more)
 
 ### Community 1840 - "Community 1840"
 Cohesion: 0.15
@@ -17842,19 +17834,19 @@ Nodes (15): AnimatePresence contract, Anti-Patterns, Choosing the right pattern,
 
 ### Community 1843 - "Community 1843"
 Cohesion: 0.20
-Nodes (10): Compose (HIGH), Android 特定（中）, Compose（高）, Gradle 与构建（低）, Kotlin 惯用法（中）, 安全（严重）, 审查清单, 架构（严重） (+2 more)
+Nodes (10): code:kotlin (// BAD — swallows cancellation), Android 特定（中）, Coroutines & Flows (HIGH), Gradle 与构建（低）, Kotlin 惯用法（中）, 协程与 Flow（高）, 安全（严重）, 审查清单 (+2 more)
 
 ### Community 1844 - "Community 1844"
 Cohesion: 0.18
 Nodes (10): TDD 命令, TDD 最佳实践, 与其他命令的集成, 何时使用, 工作原理, 应包含的测试类型, 此命令的作用, 相关代理 (+2 more)
 
 ### Community 1845 - "Community 1845"
-Cohesion: 0.18
-Nodes (10): Git 工作流, SaaS 应用程序 — 项目 CLAUDE.md, 代码风格, 关键的端到端测试流程, 关键规则, 数据库, 测试策略, 计费 (+2 more)
+Cohesion: 0.15
+Nodes (12): code:bash (# Planning a feature), ECC Workflow, ECC 工作流, Git 工作流, SaaS 应用程序 — 项目 CLAUDE.md, Workflow ECC, 代码风格, 关键规则 (+4 more)
 
 ### Community 1846 - "Community 1846"
-Cohesion: 0.10
-Nodes (20): PARALLELIZATION, code:block3 (pass@k: 至少 k 次尝试中有一次成功), code:bash (# Create worktrees for parallel work), code:markdown (第一阶段：研究（使用探索智能体）→ research-summary.md), 代理与子代理的最佳实践, 令牌优化, 关于 Claude Code 的完整长篇指南, 参考资料 (+12 more)
+Cohesion: 0.12
+Nodes (17): PARALLELIZATION, code:block3 (pass@k: 至少 k 次尝试中有一次成功), code:bash (# Create worktrees for parallel work), code:markdown (第一阶段：研究（使用探索智能体）→ research-summary.md), 代理与子代理的最佳实践, 令牌优化, 关于 Claude Code 的完整长篇指南, 参考资料 (+9 more)
 
 ### Community 1847 - "Community 1847"
 Cohesion: 0.06
@@ -17862,7 +17854,7 @@ Nodes (35): code:solidity (function withdraw(uint256 amount) external {), code:s
 
 ### Community 1848 - "Community 1848"
 Cohesion: 0.02
-Nodes (113): Advanced Format (Multiple Conditions), bash Events, Basic Structure, Commands, Common Pitfalls, Event Type Guide, file Events, File Organization (+105 more)
+Nodes (89): Advanced Format (Multiple Conditions), bash Events, Basic Structure, Commands, Common Pitfalls, Event Type Guide, file Events, File Organization (+81 more)
 
 ### Community 1849 - "Community 1849"
 Cohesion: 0.14
@@ -17873,8 +17865,8 @@ Cohesion: 0.04
 Nodes (60): code:java (@Configuration), code:java (@Query("select m from MarketEntity m left join fetch m.posit), Caching, code:java (@OneToMany(mappedBy = "market", cascade = CascadeType.ALL, o), code:block9 (spring.datasource.hikari.maximum-pool-size=20), Connection Pooling (HikariCP), code:java (public interface MarketRepository extends JpaRepository<Mark), code:java (public interface MarketSummary {) (+52 more)
 
 ### Community 1851 - "Community 1851"
-Cohesion: 0.10
-Nodes (27): code:bash (# Python 3.8+、Windowsのみ), code:python (# conftest.py — モジュールの先頭に追加), code:yaml (env:), code:cpp (// 優先：objectNameとaccessibleNameの両方), code:python (from pywinauto import Desktop), code:python (dlg = page.wait_window("Confirm")          # ダイアログタイトルを待つ), code:python (table = page.by_id("tblUsers").wrapper_object()), Add Stable Identifiers to Qt Widgets (+19 more)
+Cohesion: 0.08
+Nodes (25): Log Exporter, Custom Logs, Correlated Logs, Integration with Logging, 4.1 Metrics to Track, 4.2 Logging & Tracing, 4.3 Evaluation Framework, 4. LLMOps & Observability (+17 more)
 
 ### Community 1852 - "Community 1852"
 Cohesion: 0.14
@@ -17882,11 +17874,11 @@ Nodes (13): code:markdown (## 交接：[前一個 Agent] -> [下一個 Agent]), 
 
 ### Community 1853 - "Community 1853"
 Cohesion: 0.11
-Nodes (20): @JsonSerializable, DeepCollectionEquality, EqualUnmodifiableMapView, identical, _then, _, fromJson, bucketName (+12 more)
+Nodes (20): DeepCollectionEquality, EqualUnmodifiableMapView, identical, _then, _, fromJson, bucketName, destinationPath (+12 more)
 
 ### Community 1854 - "Community 1854"
-Cohesion: 0.14
-Nodes (19): code:python (# Good: Clear and readable), code:python (# Good: Explicit configuration), 1. Readability Counts, 2. Explicit is Better Than Implicit, 3. EAFP - Easier to Ask Forgiveness Than Permission, code:python (# Good: EAFP style), Core Principles, 1. Readability Counts (+11 more)
+Cohesion: 0.13
+Nodes (20): Fuzzing (Go 1.18+), Basic Fuzz Test, code:go (func FuzzCompare(f *testing.F) {), Fuzz Test with Multiple Inputs, Fuzzing (Go 1.18+), Basic Fuzz Test, code:go (func FuzzParseJSON(f *testing.F) {), Fuzz Test with Multiple Inputs (+12 more)
 
 ### Community 1855 - "Community 1855"
 Cohesion: 0.14
@@ -17918,7 +17910,7 @@ Nodes (37): _make_project(), Create project directory structure and return a pro
 
 ### Community 1862 - "Community 1862"
 Cohesion: 0.03
-Nodes (70): Arrange-Act-Assert, code:csharp (public sealed class PostgresOrderRepositoryTests : IAsyncLif), Running Tests, Arrange-Act-Assert, ASP.NET Core Integration Tests, C# Testing Patterns, code:csharp ([Theory]), code:block6 (tests/) (+62 more)
+Nodes (68): Arrange-Act-Assert, code:csharp (public sealed class PostgresOrderRepositoryTests : IAsyncLif), code:bash (# すべてのテストを実行), code:bash (# テストを実行), Arrange-Act-Assert, ASP.NET Core Integration Tests, C# Testing Patterns, code:csharp ([Theory]) (+60 more)
 
 ### Community 1863 - "Community 1863"
 Cohesion: 0.11
@@ -17952,7 +17944,7 @@ Nodes (9): {
 
 ### Community 1868 - "Community 1868"
 Cohesion: 0.17
-Nodes (16): code:bash (# OCR to searchable PDF (supports 100+ languages)), 操作, code:bash (# Extract plain text), code:bash (# Pattern-based (SSN, email)), code:bash (curl -X POST https://api.nutrient.io/build \), Add Watermarks, Extract Text and Data, Fill PDF Forms (+8 more)
+Nodes (16): code:bash (# DOCX to PDF), code:bash (# OCR to searchable PDF (supports 100+ languages)), 操作, code:bash (# Extract plain text), code:bash (curl -X POST https://api.nutrient.io/build \), Add Watermarks, Convert Documents, Extract Text and Data (+8 more)
 
 ### Community 1869 - "Community 1869"
 Cohesion: 0.36
@@ -17975,8 +17967,8 @@ Cohesion: 0.16
 Nodes (8): ToolDefinition, adapt_messages_for_provider(), get_provider_builder(), PromptBuilder, PromptConfig, Prompt builder for normalizing prompts across providers., TestAdaptMessagesForProvider, TestPromptBuilder
 
 ### Community 1874 - "Community 1874"
-Cohesion: 0.33
-Nodes (4): Anti-Patterns to Avoid, Kotlin Coroutines & Flows, References, When to Activate
+Cohesion: 0.20
+Nodes (8): Anti-Patterns to Avoid, Dispatchers, Kotlin Coroutines & Flows, References, When to Activate, code:kotlin (// CPU-intensive work), Dispatchers, 调度器
 
 ### Community 1875 - "Community 1875"
 Cohesion: 0.12
@@ -18011,8 +18003,8 @@ Cohesion: 0.10
 Nodes (18): Basic Pattern, Best Practices, code:python (hf_jobs("uv", {), code:python (import trackio), code:python (# Hyperparameter sweep), code:python (dataset_split = dataset.train_test_split(test_size=0.1, seed), Common Training Patterns, ✅ CORRECT - With eval dataset: (+10 more)
 
 ### Community 1883 - "Community 1883"
-Cohesion: 0.04
-Nodes (54): 1. Session Memory, 2. Long-Term Memory, 3. Pattern Learning, Advanced Patterns, AgentDB Memory Patterns, Available Algorithms (9 Total), Best Practices, code:typescript (import { createAgentDBAdapter, migrateToAgentDB } from 'agen) (+46 more)
+Cohesion: 0.05
+Nodes (43): Advanced Patterns, AgentDB Memory Patterns, Available Algorithms (9 Total), Best Practices, CLI Operations, code:bash (# Export vectors to file), code:bash (# Run performance benchmarks), code:typescript (import { createAgentDBAdapter, migrateToAgentDB } from 'agen) (+35 more)
 
 ### Community 1884 - "Community 1884"
 Cohesion: 0.10
@@ -18039,8 +18031,8 @@ Cohesion: 0.08
 Nodes (22): 1. Diagnose the Weak Prompt, 2. Apply the RSCIT Framework, 3. Chain-of-Thought (CoT) Pattern, 4. Few-Shot Examples Pattern, 5. Structured JSON Output Pattern, 6. Reduce Hallucination Pattern, 7. Prompt Compression Techniques, Best Practices (+14 more)
 
 ### Community 1890 - "Community 1890"
-Cohesion: 0.06
-Nodes (29): Log Exporter, Custom Logs, Correlated Logs, Integration with Logging, 4.1 Metrics to Track, 4.2 Logging & Tracing, 4.3 Evaluation Framework, 4. LLMOps & Observability (+21 more)
+Cohesion: 0.11
+Nodes (17): Before implementation, Best Practices, code:bash (pip install microsoft-agents-hosting-core), code:bash (CONNECTIONS__SERVICE_CONNECTION__SETTINGS__CLIENTID=<client-), code:python (from openai import AsyncAzureOpenAI), code:python (@AGENT_APP.message("/logout")), Copilot Studio Client (Direct to Engine), Environment Variables (.env) (+9 more)
 
 ### Community 1891 - "Community 1891"
 Cohesion: 0.09
@@ -18163,8 +18155,8 @@ Cohesion: 0.08
 Nodes (22): code:block1 (SAM = TAM × Geographic % × Product Fit % × Market Readiness ), code:block2 (User: /market-opportunity), Do not use this skill when, Example Usage, Instructions, Instructions for Claude, Integration with Other Commands, Limitations (+14 more)
 
 ### Community 1921 - "Community 1921"
-Cohesion: 0.09
-Nodes (24): conftest.py, code:python (# config/settings/test.py), conftest.py, code:ini (# pytest.ini), conftest.py, pytest Configuration, Setup, Test Settings (+16 more)
+Cohesion: 0.06
+Nodes (33): code:python (# ステップ1: RED - 失敗するテストを書く), code:bash (# カバレッジでテストを実行), conftest.py, code:python (# config/settings/test.py), conftest.py, code:ini (# pytest.ini), conftest.py, pytest Configuration (+25 more)
 
 ### Community 1922 - "Community 1922"
 Cohesion: 0.08
@@ -18419,16 +18411,16 @@ Cohesion: 0.50
 Nodes (4): code:typescript (interface DrugInteractionPair {), Drug Interaction Checking, Drug Interaction Checking, 药物相互作用检查
 
 ### Community 1986 - "Community 1986"
-Cohesion: 0.15
-Nodes (11): Accessibility for Healthcare, Anti-Patterns, Healthcare EMR Development Patterns, How It Works, Locked Encounter Pattern, Medication Safety Pattern, Patient Safety First, UI Patterns for Clinical Data (+3 more)
+Cohesion: 0.10
+Nodes (22): Accessibility for Healthcare, Anti-Patterns, code:block1 (Patient Header (sticky — always visible)), How It Works, Locked Encounter Pattern, Medication Safety Pattern, Patient Safety First, Single-Page Encounter Flow (+14 more)
 
 ### Community 1987 - "Community 1987"
 Cohesion: 0.15
 Nodes (11): code:block6 (タスク: "認証トークン期限切れバグを修正"), code:block7 (タスク: "APIエンドポイントにレート制限を追加"), code:markdown (このタスクのコンテキストを取得する際:), 問題, エージェントとの統合, ベストプラクティス, 例1: バグ修正コンテキスト, 例2: 機能実装 (+3 more)
 
 ### Community 1988 - "Community 1988"
-Cohesion: 0.05
-Nodes (41): File Naming, File Organization, Project Structure, File Naming, File Organization, Project Structure, code:block15 (components/Button.tsx          # 组件使用帕斯卡命名法), code:block15 (components/Button.tsx          # PascalCase for components) (+33 more)
+Cohesion: 0.06
+Nodes (36): File Naming, File Organization, Project Structure, File Naming, File Organization, Project Structure, 2. KISS (Keep It Simple, Stupid), 3. DRY (Don't Repeat Yourself) (+28 more)
 
 ### Community 1989 - "Community 1989"
 Cohesion: 0.20
@@ -18459,8 +18451,8 @@ Cohesion: 0.50
 Nodes (4): Dose Validation, code:typescript (interface DoseValidationResult {), Dose Validation, 剂量验证
 
 ### Community 1996 - "Community 1996"
-Cohesion: 0.14
-Nodes (14): Smart Template System, code:block1 (患者头部信息（固定显示 — 始终可见）), code:block3 (用户选择药物), code:typescript (interface ClinicalTemplate {), Smart Template System, 临床数据界面模式, 医疗场景无障碍设计, 单页就诊流程 (+6 more)
+Cohesion: 0.20
+Nodes (10): code:block1 (患者头部信息（固定显示 — 始终可见）), code:block3 (用户选择药物), 临床数据界面模式, 医疗场景无障碍设计, 单页就诊流程, 反模式, 工作原理, 患者安全优先 (+2 more)
 
 ### Community 1997 - "Community 1997"
 Cohesion: 0.15
@@ -18472,7 +18464,7 @@ Nodes (11): code:bash (npm ls react), Common Failure Patterns, Dependency Issues
 
 ### Community 1999 - "Community 1999"
 Cohesion: 0.04
-Nodes (57): code:block1 (ユーザーリクエスト → Claudeがツールを選択 → PreToolUseフックが実行 → ツールが実行 → Post), code:bash (# minimal | standard | strict（デフォルト: standard）), code:typescript (interface HookInput {), code:json ({), code:javascript (// my-hook.js), code:block1 (User request → Claude picks a tool → PreToolUse hook runs → ), code:bash (bash ./install.sh --target claude --modules hooks-runtime), code:powershell (pwsh -File .\install.ps1 --target claude --modules hooks-run) (+49 more)
+Nodes (58): code:block1 (ユーザーリクエスト → Claudeがツールを選択 → PreToolUseフックが実行 → ツールが実行 → Post), code:bash (# minimal | standard | strict（デフォルト: standard）), code:typescript (interface HookInput {), code:json ({), code:javascript (// my-hook.js), code:block1 (User request → Claude picks a tool → PreToolUse hook runs → ), code:bash (bash ./install.sh --target claude --modules hooks-runtime), code:powershell (pwsh -File .\install.ps1 --target claude --modules hooks-run) (+50 more)
 
 ### Community 2000 - "Community 2000"
 Cohesion: 0.17
@@ -18494,8 +18486,8 @@ Cohesion: 0.05
 Nodes (58): Architecture Review Agent, code:yaml (# .github/review-swarm.yml), code:bash (# Get changed files from PR), code:markdown (🔒 **Security Issue: [Type]**), code:bash (# Run performance analysis), Configuration File, Custom Review Triggers, Performance Review Agent (+50 more)
 
 ### Community 2004 - "Community 2004"
-Cohesion: 0.02
-Nodes (103): BeforeTest / AfterTest, Best Practices, Coverage Commands, Coverage Targets, Custom Generators, Data-Driven Testing, Examples, Gradle Configuration (+95 more)
+Cohesion: 0.05
+Nodes (43): Best Practices, Coverage Commands, Coverage Targets, Data-Driven Testing, Examples, Gradle Configuration, How It Works, Integration with CI/CD (+35 more)
 
 ### Community 2005 - "Community 2005"
 Cohesion: 0.17
@@ -18634,8 +18626,8 @@ Cohesion: 0.05
 Nodes (50): code:python (# Bad), code:bash (python manage.py check               # Django system check), code:bash (python manage.py check               # Djangoシステムチェック), code:text ([SEVERITY] 問題のタイトル), Approval Criteria, CRITICAL — Migration Safety, CRITICAL — ORM Correctness, CRITICAL — ORMの正確性 (+42 more)
 
 ### Community 2039 - "Community 2039"
-Cohesion: 0.10
-Nodes (25): code:go (// 1. テストを書く（失敗）), code:go (func TestParallel(t *testing.T) {), code:go (func TestUser(t *testing.T) {), Organizing Related Tests, Parallel Subtests, Subtests and Sub-benchmarks, Organizing Related Tests, Parallel Subtests (+17 more)
+Cohesion: 0.13
+Nodes (20): code:go (func TestParallel(t *testing.T) {), code:go (func TestUser(t *testing.T) {), Organizing Related Tests, Parallel Subtests, Subtests and Sub-benchmarks, Organizing Related Tests, Parallel Subtests, Subtests and Sub-benchmarks (+12 more)
 
 ### Community 2040 - "Community 2040"
 Cohesion: 0.09
@@ -18686,7 +18678,7 @@ Cohesion: 0.09
 Nodes (21): Code Quality, Color and Surfaces, Component Patterns, Content, Design Audit, Fix Priority, How This Works, Iconography (+13 more)
 
 ### Community 2052 - "Community 2052"
-Cohesion: 0.13
+Cohesion: 0.14
 Nodes (13): Lead Rejection and Recycling, Lifecycle Stage Definitions, Mid-Market (Balanced), MQL Criteria Templates by Business Type, MQL-to-SQL SLA, Opportunity-to-Close SLA, PLG (Product-Led Growth), Recycling Nurture Sequence (+5 more)
 
 ### Community 2053 - "Community 2053"
@@ -18695,7 +18687,7 @@ Nodes (19): "A committee decides this", Authority Objections, Competition Object
 
 ### Community 2054 - "Community 2054"
 Cohesion: 0.05
-Nodes (52): Batch cut from edit decision list, Batch cut from edit decision list, code:bash (#!/bin/bash), code:bash (#!/bin/bash), Git Hooks, Pre-Commit Hook, Pre-Push Hook, Automated Verification Script (+44 more)
+Nodes (47): Batch cut from edit decision list, code:bash (#!/bin/bash), Automated Verification Script, code:bash (#!/bin/bash), code:bash (#!/bin/bash), code:bash (#!/bin/bash), Git Hooks, Pre-Commit Hook (+39 more)
 
 ### Community 2055 - "Community 2055"
 Cohesion: 0.09
@@ -18742,8 +18734,8 @@ Cohesion: 0.13
 Nodes (21): Advanced Query Techniques and Optimization, Analytics and Business Intelligence, Behavioral Traits, Capabilities, Cloud Database Architecture, Data Modeling and Schema Design, Database Security and Compliance, DevOps and Database Management (+13 more)
 
 ### Community 2066 - "Community 2066"
-Cohesion: 0.05
-Nodes (41): code:go (func TestUserRepository(t *testing.T) {), code:go (func setupTestDB(t *testing.T) *sql.DB {), code:go (func TestFileProcessing(t *testing.T) {), code:block1 (RED     → 先寫失敗的測試), code:go (// 定義依賴的介面), code:bash (# 基本覆蓋率), code:yaml (# GitHub Actions 範例), code:go (// 步驟 1：定義介面/簽章) (+33 more)
+Cohesion: 0.13
+Nodes (20): code:go (func setupTestDB(t *testing.T) *sql.DB {), code:go (func TestFileProcessing(t *testing.T) {), Helper Functions, Temporary Files and Directories, Test Helpers, Helper Functions, Temporary Files and Directories, Test Helpers (+12 more)
 
 ### Community 2067 - "Community 2067"
 Cohesion: 0.10
@@ -18762,12 +18754,12 @@ Cohesion: 0.09
 Nodes (21): 1. Create and Manage Tasks, 2. Manage Projects, 3. Manage Sections, 4. Search and Filter Tasks, 5. Bulk Task Creation, Common Patterns, Core Workflows, Due Date Handling (+13 more)
 
 ### Community 2071 - "Community 2071"
-Cohesion: 0.09
-Nodes (21): Clean Agile, Clean Architecture, Component design (summary), Dependency Rule, Design patterns (when and when not), Design smells (from Clean Code / Clean Architecture), Estimation, Heuristics (review checklist style) (+13 more)
+Cohesion: 0.05
+Nodes (38): Advanced Python Techniques, Advanced Table Extraction with Custom Settings, code:python (import pdfplumber), code:python (from reportlab.platypus import SimpleDocTemplate, Table, Tab), code:python (# Handle password-protected PDFs), code:bash (# Use qpdf to repair), code:python (# Fallback to OCR for scanned PDFs), Corrupted PDFs (+30 more)
 
 ### Community 2072 - "Community 2072"
-Cohesion: 0.04
-Nodes (55): Audio Methods, Audio Object, Audio Properties, code:python (from videodb.exceptions import (), Complete API Reference, Exceptions, Meeting Methods, Meeting Object (+47 more)
+Cohesion: 0.05
+Nodes (52): code:python (import videodb), Audio Methods, Audio Object, Audio Properties, code:python (from videodb.exceptions import (), Complete API Reference, Connection, Connection Methods (+44 more)
 
 ### Community 2073 - "Community 2073"
 Cohesion: 0.06
@@ -18815,7 +18807,7 @@ Nodes (7): Confidence Calculation, Important Guidelines, Instinct Promotion (Pro
 
 ### Community 2084 - "Community 2084"
 Cohesion: 0.10
-Nodes (18): Best Practices, code:block1 (SHOPIFY                          ODOO), code:python (import xmlrpc.client, requests), Data Flow Architecture, Example 1: Push an Odoo Sale Order for a Shopify Order (Python), Example 2: Shopify Webhook for Real-Time Orders, Examples, How It Works (+10 more)
+Nodes (18): Best Practices, Common Ports Reference, Constraints and Limitations, Legal Considerations, Nmap Cheat Sheet, Outputs and Deliverables, Prerequisites, Purpose (+10 more)
 
 ### Community 2085 - "Community 2085"
 Cohesion: 0.47
@@ -18842,8 +18834,8 @@ Cohesion: 0.12
 Nodes (16): code:text (1. go build ./...), code:bash (# 1. 基本建置檢查), code:go (// Vet：不可達的程式碼), code:text ([已修復] internal/handler/user.go:42), code:text (建置狀態：成功/失敗), Go Vet 問題, Go 建置錯誤解決專家, 修復策略 (+8 more)
 
 ### Community 2091 - "Community 2091"
-Cohesion: 0.05
-Nodes (19): Test ShopifyInitializer class., Create initializer instance., Test prompt with default value., Test prompt with user input., Test select option with valid choice., Test select option with invalid then valid choice., Test CLI installed check - success., Test CLI installed check - failure. (+11 more)
+Cohesion: 0.06
+Nodes (18): Test ShopifyInitializer class., Test prompt with default value., Test prompt with user input., Test select option with valid choice., Test select option with invalid then valid choice., Test CLI installed check - success., Test CLI installed check - failure., Test creating app configuration file. (+10 more)
 
 ### Community 2092 - "Community 2092"
 Cohesion: 0.10
@@ -18854,8 +18846,8 @@ Cohesion: 0.09
 Nodes (20): 1. Create and Find Contacts, 2. Manage Contact Tags, 3. Manage List Subscriptions, 4. Add Contacts to Automations, 5. Create Contact Tasks, ActiveCampaign Automation via Rube MCP, Bulk Contact Tagging, code:block1 (1. Call ACTIVE_CAMPAIGN_FIND_CONTACT with email) (+12 more)
 
 ### Community 2094 - "Community 2094"
-Cohesion: 0.08
-Nodes (23): code:bash (# Daily morning briefing), code:block10 (Cron: daily at 6 AM), code:block11 (Trigger: 30 min before each calendar event), code:bash (# Bootstrap your identity and context), code:block9 (Cron: every 30 min during work hours), Architecture, Autonomous Agent Harness, Autonomous PR Reviewer (+15 more)
+Cohesion: 0.10
+Nodes (19): category, _constructDownloadLink, _constructThumbnail, createdAt, downloadLink, driveFileId, FileAsset, fromJson (+11 more)
 
 ### Community 2095 - "Community 2095"
 Cohesion: 0.05
@@ -18970,8 +18962,8 @@ Cohesion: 0.13
 Nodes (20): Architecture & Project Structure, Behavioral Traits, Capabilities, Core Django Expertise, Database & ORM, Deployment & DevOps, Do not use this skill when, Example Interactions (+12 more)
 
 ### Community 2123 - "Community 2123"
-Cohesion: 0.11
-Nodes (19): Agents, code:bash (# 1. Fork and clone), Commands, Contributing to Everything Claude Code, Cross-Harness and Translations, Do, Don't, File Naming (+11 more)
+Cohesion: 0.05
+Nodes (38): 1. PR Title Format, 2. PR Description, 3. Review Process, Pull Request Process, 1. PRタイトル形式, 2. PR説明, 3. レビュープロセス, code:block12 (feat(skills): add rust-patterns skill) (+30 more)
 
 ### Community 2124 - "Community 2124"
 Cohesion: 0.13
@@ -19030,8 +19022,8 @@ Cohesion: 0.40
 Nodes (5): 1. 知覚可能（情報は提示可能でなければならない）, 2. 操作可能（インターフェースコンポーネントは使用可能でなければならない）, 3. 理解可能（情報は明確でなければならない）, 4. 堅牢（コンテンツは互換性がなければならない）, WCAG 2.2コアコンプライアンスチェックリスト
 
 ### Community 2138 - "Community 2138"
-Cohesion: 0.03
-Nodes (82): code:typescript (// vite.config.ts — build.rolldownOptions), code:typescript (// 関数形式：ヒューリスティックで分割), code:typescript (// BAD — 1つのユーティリティのインポートがViteにバレル全体を読み込ませる), code:typescript (// BAD), code:typescript (// vite.config.ts — SSRオプション), code:typescript (// vite.config.ts — optimizeDeps), code:typescript (// BAD: envPrefix を '' にすると全ての環境変数（シークレットを含む）がクライアントに公開される), code:typescript (// vite.config.ts — 最小限のインラインプラグイン) (+74 more)
+Cohesion: 0.02
+Nodes (89): code:typescript (// vite.config.ts — build.rolldownOptions), code:typescript (// 関数形式：ヒューリスティックで分割), code:typescript (// BAD — 1つのユーティリティのインポートがViteにバレル全体を読み込ませる), code:typescript (// BAD), code:typescript (// vite.config.ts — SSRオプション), code:typescript (// vite.config.ts — optimizeDeps), code:typescript (// vite.config.ts — Docker/コンテナ設定), code:typescript (// vite.config.ts — モノレポのファイルアクセス) (+81 more)
 
 ### Community 2139 - "Community 2139"
 Cohesion: 0.17
@@ -19039,7 +19031,7 @@ Nodes (11): code:block1 (/aside <質問>), code:block10 (User: /aside 現在取�
 
 ### Community 2140 - "Community 2140"
 Cohesion: 0.20
-Nodes (8): CORS Configuration, code:kotlin (// plugins/CORS.kt), CORS Configuration, CORS 設定, CORS 配置, Ktor 服务器模式, 何时启用, 快速参考：Ktor 模式
+Nodes (8): CORS Configuration, code:kotlin (// plugins/CORS.kt), CORS Configuration, Ktor Server Patterns, Quick Reference: Ktor Patterns, When to Activate, CORS 設定, CORS 配置
 
 ### Community 2141 - "Community 2141"
 Cohesion: 0.10
@@ -19054,8 +19046,8 @@ Cohesion: 0.09
 Nodes (20): 1. Detect Mode, 2. Discover Content, 3. Discover Style, 4. Build the Presentation, 5. Enforce Viewport Fit, 6. Validate, 7. Deliver, Accessibility (+12 more)
 
 ### Community 2144 - "Community 2144"
-Cohesion: 0.09
-Nodes (20): Best Practices for Agents & Sub-Agents, code:markdown (Phase 1: RESEARCH (use Explore agent) → research-summary.md), GROUNDWORK, Milestone, References, Resources, Some MCPs are Replaceable and Will Free Up Your Context Window, The Longform Guide to Everything Claude Code (+12 more)
+Cohesion: 0.10
+Nodes (18): Agent'lar ve Sub-Agent'lar için En İyi Uygulamalar, Bazı MCP'ler Değiştirilebilir ve Context Window'unuzu Serbest Bırakır, Claude Code'un Her Şeyine Dair Uzun Kılavuz, code:bash (# Günlük geliştirme), code:block3 (pass@k: k denemeden EN AZ BİRİ başarılı olur), code:bash (# Paralel iş için worktree'ler oluşturun), code:markdown (Faz 1: ARAŞTIRMA (Explore agent'ı kullan) → research-summary), Context ve Memory Yönetimi (+10 more)
 
 ### Community 2145 - "Community 2145"
 Cohesion: 0.18
@@ -19070,8 +19062,8 @@ Cohesion: 0.17
 Nodes (15): code:bash (# Add to ~/.gitconfig), code:gitignore (# Dependencies), Essential Configs, Git Configuration, Gitignore Patterns, Useful Aliases, code:bash (# User identity), Essential Configs (+7 more)
 
 ### Community 2148 - "Community 2148"
-Cohesion: 0.03
-Nodes (60): AgentShield — аудитор безопасности, code:bash (# Через переменную окружения), code:bash (# Профиль строгости хуков (по умолчанию: standard)), code:block18 (everything-claude-code/), code:bash (/skill-create                    # Анализировать текущий реп), code:bash (# Оставьте комментарий в любом issue:), code:bash (# Быстрое сканирование (установка не нужна)), code:bash (/instinct-status        # Показать изученные инстинкты с уве) (+52 more)
+Cohesion: 0.04
+Nodes (53): AgentShield — аудитор безопасности, code:bash (# Через переменную окружения), code:bash (# Профиль строгости хуков (по умолчанию: standard)), code:block18 (everything-claude-code/), code:bash (/skill-create                    # Анализировать текущий реп), code:bash (# Оставьте комментарий в любом issue:), code:bash (# Быстрое сканирование (установка не нужна)), code:bash (/instinct-status        # Показать изученные инстинкты с уве) (+45 more)
 
 ### Community 2149 - "Community 2149"
 Cohesion: 0.40
@@ -19115,7 +19107,7 @@ Nodes (40): Anti-Patterns, CI/CD Integration, code:bash (tmp_json=$(mktemp)), co
 
 ### Community 2160 - "Community 2160"
 Cohesion: 0.14
-Nodes (12): code:ts (export class CreateUserDto {), code:ts (@Catch()), DTOs and Validation, Exception Filters and Error Shape, DTOs and Validation, Exception Filters and Error Shape, NestJS Development Patterns, Persistence and Transactions (+4 more)
+Nodes (12): code:ts (@Module({), code:ts (@Catch()), Exception Filters and Error Shape, Modules, Controllers, and Providers, Exception Filters and Error Shape, Modules, Controllers, and Providers, NestJS Development Patterns, Persistence and Transactions (+4 more)
 
 ### Community 2161 - "Community 2161"
 Cohesion: 0.14
@@ -19130,12 +19122,12 @@ Cohesion: 0.13
 Nodes (14): code:block3 (# 本日のブリーフィング — [日付]), code:bash (claude /mail                    # メールのみのトリアージ), Prerequisites, 1. skip（自動アーカイブ）, 2. info_only（要約のみ）, 3. meeting_info（カレンダー照合）, 4. action_required（返信ドラフト）, 4ティア分類システム (+6 more)
 
 ### Community 2164 - "Community 2164"
-Cohesion: 0.11
-Nodes (17): code:bash (# 執行所有測試), code:bash (# 建置和部署前端), code:bash (# 前端（.env.local）), code:bash (# 執行測試), 測試指令, 何時使用, 前端（React Testing Library）, 專案指南技能（範例） (+9 more)
+Cohesion: 0.13
+Nodes (19): code:go (// 1. テストを書く（失敗）), code:go (func TestAdd(t *testing.T) {), code:go (func TestParseConfig(t *testing.T) {), Table-Driven Tests, Table-Driven Tests with Error Cases, Table-Driven Tests, Table-Driven Tests with Error Cases, 1. テスト駆動開発(TDD)ワークフロー (+11 more)
 
 ### Community 2165 - "Community 2165"
-Cohesion: 0.09
-Nodes (21): code:block1 (1. Run git diff to understand changes), Agent Usage, Approval Criteria, Code Quality, Code Review Standards, Common Issues to Catch, Integration with Other Rules, Performance (+13 more)
+Cohesion: 0.11
+Nodes (20): code:json ({), code:bash (# Add this repo as a marketplace), code:bash (# Clone the repo), Installation, Option 1: Install as Plugin (Recommended), Option 2: Manual Installation, 禁用钩子, code:markdown (# TDD ワークフロー) (+12 more)
 
 ### Community 2166 - "Community 2166"
 Cohesion: 0.19
@@ -19165,8 +19157,8 @@ Cohesion: 0.12
 Nodes (28): buildWarning(), CHECKLIST, detectSignals(), fs, GENERIC_SIGNALS, getFilePaths(), path, readContent() (+20 more)
 
 ### Community 2172 - "Community 2172"
-Cohesion: 0.14
-Nodes (17): AgentShield — Security Auditor, code:bash (# Comment on any issue:), code:bash (/instinct-status        # Show learned instincts with confid), Continuous Learning v2, Ecosystem Tools, Option A: Local Analysis (Built-in), Option B: GitHub App (Advanced), Skill Creator (+9 more)
+Cohesion: 0.11
+Nodes (17): code:block1 (RED     → 先寫失敗的測試), code:go (// 定義依賴的介面), code:bash (# 基本覆蓋率), code:yaml (# GitHub Actions 範例), code:go (// 步驟 1：定義介面/簽章), CI/CD 整合, Go 中的逐步 TDD, Go 測試模式 (+9 more)
 
 ### Community 2173 - "Community 2173"
 Cohesion: 0.10
@@ -19195,7 +19187,7 @@ Nodes (16): Authentication, Azure.ResourceManager.PostgreSql (.NET), Best Practi
 
 ### Community 2178 - "Community 2178"
 Cohesion: 0.02
-Nodes (20): aa, af, ca(), ea, fa, ha(), ia, j() (+12 more)
+Nodes (25): _a, aa, af, ca(), ea, fa, ga, ha() (+17 more)
 
 ### Community 2179 - "Community 2179"
 Cohesion: 0.21
@@ -19251,7 +19243,7 @@ Nodes (28): 60/40 rule:, Always include:, Always send multipart:, Auto-generate 
 
 ### Community 2190 - "Community 2190"
 Cohesion: 0.07
-Nodes (31): 2. Error Tracking Service Integration, 3. Structured Logging Implementation, 4. Error Alerting Configuration, 5. Error Grouping and Deduplication, 6. Performance Impact Tracking, 7. Error Recovery Strategies, 8. Error Dashboard, code:typescript (// error-tracker.ts) (+23 more)
+Nodes (33): 1. Error Tracking Analysis, 2. Error Tracking Service Integration, 3. Structured Logging Implementation, 4. Error Alerting Configuration, 5. Error Grouping and Deduplication, 6. Performance Impact Tracking, 7. Error Recovery Strategies, 8. Error Dashboard (+25 more)
 
 ### Community 2191 - "Community 2191"
 Cohesion: 0.13
@@ -19270,8 +19262,8 @@ Cohesion: 0.09
 Nodes (20): 1. never patterns (critical), 2. choose the mechanism (critical), 3. measurement (high), 4. scroll (high), 5. paint (medium-high), 6. layers (medium), 7. blur and filters (medium), 8. view transitions (low) (+12 more)
 
 ### Community 2195 - "Community 2195"
-Cohesion: 0.10
-Nodes (18): API Design Checklist, API Design Patterns, code:json ({), code:json ({), code:json ({), Collection Response (with Pagination), Error Response, Headers (+10 more)
+Cohesion: 0.08
+Nodes (25): Finding #25: [HIGH] Broken Authorization (Qwen 3.6), Finding #45: [MEDIUM] race_conditions (Qwen 3.6), Problem, Problem, Proof / Evidence, Proof / Evidence, Suggested Fix, Suggested Fix (+17 more)
 
 ### Community 2196 - "Community 2196"
 Cohesion: 0.13
@@ -19402,8 +19394,8 @@ Cohesion: 0.09
 Nodes (20): Best Practices, code:block1 (Framing: "This could go a lot of different ways. Quick quest), code:block2 (Framing: "Perfect — investor pitch it is. A couple more thin), code:block3 (Framing: "Two quick questions to nail the tone:"), Common Pitfalls, Example 1: Multi-Round — Investor Pitch Deck, Example 2: Single-Round — Business Email, Examples (+12 more)
 
 ### Community 2228 - "Community 2228"
-Cohesion: 0.10
-Nodes (22): Font Definition in DSL, Avatar Widget - Text/Image Toggle, code:rust (#[derive(Live, Widget)]), Messages Widget - Conversation View, PromptInput Widget, Slot Widget - Runtime Content Replacement, Widget Patterns, Best Practices (+14 more)
+Cohesion: 0.11
+Nodes (21): Avatar Widget - Text/Image Toggle, code:rust (#[derive(Live, Widget)]), Messages Widget - Conversation View, PromptInput Widget, Slot Widget - Runtime Content Replacement, Widget Patterns, Best Practices, code:rust (// Apply single property) (+13 more)
 
 ### Community 2229 - "Community 2229"
 Cohesion: 0.13
@@ -19526,16 +19518,16 @@ Cohesion: 0.10
 Nodes (19): 1. `/api/users/team/` (GET), 2. `/api/notifications` (GET, POST, PUT), Additional Safety: Development Mode Fallback, API 500 Error Resolution Report, Architectural Compliance, Conclusion, Failing Routes Identified, Files Modified (+11 more)
 
 ### Community 2259 - "Community 2259"
-Cohesion: 0.03
-Nodes (80): ASP.NET Core Integration, Add warmup trigger to initialize your code, Always use async/await, Azure Functions, Blocking Async Calls Cause Thread Starvation, Break work into smaller chunks, Check extension bundle (most common), code:csharp ([Function("StartLongProcess")]) (+72 more)
+Cohesion: 0.02
+Nodes (91): ASP.NET Core Integration, Add warmup trigger to initialize your code, Always use async/await, Anonymous Authorization Level in Production, Azure Functions, Blocking Async Calls Cause Thread Starvation, Blocking .Result Call, Blocking .Wait() Call (+83 more)
 
 ### Community 2260 - "Community 2260"
-Cohesion: 0.14
-Nodes (14): code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), 3引数open, DBI Placeholders, DBIx::Class (ORM Safety), Dynamic Column Allowlists (+6 more)
+Cohesion: 0.07
+Nodes (27): code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), Test::MockModule, code:perl (use v5.36;), code:perl (use v5.36;), 3引数open (+19 more)
 
 ### Community 2261 - "Community 2261"
-Cohesion: 0.11
-Nodes (17): sampleTask, { ui }, view, bell, notifs, { ui }, view, btn (+9 more)
+Cohesion: 0.10
+Nodes (18): sampleTask, { ui }, view, NotificationPanel(), bell, notifs, { ui }, view (+10 more)
 
 ### Community 2262 - "Community 2262"
 Cohesion: 0.18
@@ -19551,7 +19543,7 @@ Nodes (20): 1. Detect Mode, 2. Discover Content, 3. Discover Style, 4. Build the
 
 ### Community 2265 - "Community 2265"
 Cohesion: 0.13
-Nodes (5): CacheItem, MemoryCache, TelegramBotClient, registerHandlers(), main()
+Nodes (6): cache, CacheItem, MemoryCache, TelegramBotClient, registerHandlers(), main()
 
 ### Community 2266 - "Community 2266"
 Cohesion: 0.22
@@ -19565,13 +19557,17 @@ Nodes (7): Common Fix Patterns, Core Responsibilities, Diagnostic Commands, Go B
 Cohesion: 0.18
 Nodes (11): Execution Workflow, Phase 4: Code Implementation, Route A: Frontend/UI/Styles → Gemini, Route B: Backend/Logic/Algorithms → Codex, 5.1 Otomatik Audit, 5.2 Entegre Et ve Düzelt, Phase 0: Planı Oku, Phase 1: Hızlı Context Retrieval (+3 more)
 
+### Community 2269 - "Community 2269"
+Cohesion: 0.10
+Nodes (25): borderWidthsFromStyle(), browserFindingsFromMap(), checkClippedOverflow(), checkCreamPalette(), checkElementClippedOverflow(), checkElementClippedOverflowDOM(), checkElementGptBorderShadow(), checkElementGptBorderShadowDOM() (+17 more)
+
 ### Community 2270 - "Community 2270"
 Cohesion: 0.16
 Nodes (19): fs, hydrateSessionFromPath(), isSessionFileTarget(), { normalizeClaudeHistorySession, persistCanonicalSnapshot }, parseClaudeTarget(), path, resolveSessionRecord(), sessionAliases (+11 more)
 
 ### Community 2271 - "Community 2271"
 Cohesion: 0.04
-Nodes (56): compilerOptions, declaration, esModuleInterop, forceConsistentCasingInFileNames, lib, module, outDir, resolveJsonModule (+48 more)
+Nodes (47): compilerOptions, declaration, esModuleInterop, forceConsistentCasingInFileNames, lib, module, outDir, resolveJsonModule (+39 more)
 
 ### Community 2272 - "Community 2272"
 Cohesion: 0.09
@@ -19590,8 +19586,8 @@ Cohesion: 0.40
 Nodes (5): How It Works, Step 1 - Capture Intent, Step 4 - Vet External Matches, Step 5 - Rank Results, Step 6 - Present Decision Options
 
 ### Community 2276 - "Community 2276"
-Cohesion: 0.02
-Nodes (107): Continuous Mode, Integration with Hooks, Output Format, Phase 1: Build Verification, Phase 2: Type Check, Phase 3: Lint Check, Phase 4: Test Suite, Phase 5: Security Scan (+99 more)
+Cohesion: 0.05
+Nodes (62): Phase 1: Build Verification, Phase 2: Type Check, Phase 3: Lint Check, Phase 4: Test Suite, Phase 5: Security Scan, Phase 6: Diff Review, Verification Phases, Phase 1: Build Verification (+54 more)
 
 ### Community 2278 - "Community 2278"
 Cohesion: 0.15
@@ -19630,8 +19626,8 @@ Cohesion: 0.10
 Nodes (19): 1. Sprite Systems, 2. Tilemap Design, 2D Game Development, 3. 2D Physics, 4. Camera Systems, 5. Genre Patterns, 6. Anti-Patterns, Animation Principles (+11 more)
 
 ### Community 2287 - "Community 2287"
-Cohesion: 0.11
-Nodes (16): Attack Limitations, Common Test Payloads, Constraints and Limitations, Encoding Types, HTML Injection Testing, Injection Contexts, Outputs and Deliverables, Prerequisites (+8 more)
+Cohesion: 0.09
+Nodes (20): DBOS Go Best Practices, How to Use, Limitations, References, Rule Categories by Priority, When to Use, code:bash (npm install @dbos-inc/dbos-sdk@latest), code:typescript (import { DBOS } from "@dbos-inc/dbos-sdk";) (+12 more)
 
 ### Community 2288 - "Community 2288"
 Cohesion: 0.11
@@ -19646,8 +19642,8 @@ Cohesion: 0.09
 Nodes (23): code:typescript (// WRONG: Exported function without explicit types), code:typescript (// WRONG: any removes type safety), Console.log, Error Handling, Immutability, Input Validation, TypeScript/JavaScript Coding Style, code:typescript (// WRONG: Mutation) (+15 more)
 
 ### Community 2291 - "Community 2291"
-Cohesion: 0.11
-Nodes (15): Output Format, Best Practices, code:block1 (/api/v1/users), code:block2 (Accept: application/vnd.api+json; version=1), code:block3 (/api/users?version=1), Common Pitfalls, Core Concepts, Resources (+7 more)
+Cohesion: 0.09
+Nodes (22): Best Practices, code:block1 (/api/v1/users), code:block2 (Accept: application/vnd.api+json; version=1), code:block3 (/api/users?version=1), code:python (# Good: Resource-oriented endpoints), code:python (from typing import List, Optional), code:python (from fastapi import HTTPException, status), code:python (class UserResponse(BaseModel):) (+14 more)
 
 ### Community 2292 - "Community 2292"
 Cohesion: 0.17
@@ -19658,8 +19654,8 @@ Cohesion: 0.06
 Nodes (32): Additional Resources, AgentPhone, Authentication, Best Practices, code:block1 (Account), code:block10 (Authorization: Bearer YOUR_API_KEY), code:json ({), code:json ({) (+24 more)
 
 ### Community 2294 - "Community 2294"
-Cohesion: 0.12
-Nodes (15): Additional Resources, Bottleneck Identification, Communication Patterns, Decision Frameworks, Disruption Re-Sequencing, Job Priority Sequencing, Key Edge Cases, Performance Indicators (+7 more)
+Cohesion: 0.10
+Nodes (18): Ami Vs Llms, Backpropagation: A Equação Central, code:block14 (P(x) = exp(-E(x)) / Z), code:python (class EnergyBasedModel(nn.Module):), code:block16 (E(x, y) = ||f_theta(x) - g_phi(f_theta_bar(y))||^2), code:block5 (delta_L = dL/da_L  (gradiente na camada de saída)), code:block6 (L_gen = E[||f_theta(x_masked) - x_target||^2]), code:block7 (L_contrastive = -log( exp(sim(z_i, z_j) / tau) /) (+10 more)
 
 ### Community 2295 - "Community 2295"
 Cohesion: 0.15
@@ -19671,7 +19667,7 @@ Nodes (26): Path, main(), create_user(), delete_user(), ErrorDetail, ErrorRespon
 
 ### Community 2297 - "Community 2297"
 Cohesion: 0.10
-Nodes (18): Best Practices, code:block1 ([Root Goal]), code:python (class AttackTreeBuilder:), code:python (class MermaidExporter:), code:python (from typing import Set, Tuple), Core Concepts, Do's, Don'ts (+10 more)
+Nodes (19): Best Practices, code:block1 ([Root Goal]), code:python (class AttackTreeBuilder:), code:python (class MermaidExporter:), code:python (from typing import Set, Tuple), Core Concepts, Do's, Don'ts (+11 more)
 
 ### Community 2298 - "Community 2298"
 Cohesion: 0.10
@@ -19682,8 +19678,8 @@ Cohesion: 0.06
 Nodes (32): Behavioral X-Ray, Best Practices, code:bash (pip install bdistill), code:block2 (/xray                          # Full behavioral probe (30 q), code:block3 ("X-ray your behavioral patterns"), How It Works, Limitations, Output (+24 more)
 
 ### Community 2300 - "Community 2300"
-Cohesion: 0.11
-Nodes (19): Are saves/stars global or just local?, code:bash (git clone https://github.com/sickn33/antigravity-awesome-ski), code:text (/plugin marketplace add sickn33/antigravity-awesome-skills), code:bash (npx antigravity-awesome-skills), code:bash (npx antigravity-awesome-skills --path .agents/skills --tags ), code:bash (npx antigravity-awesome-skills --path .agents/skills --categ), code:bash (cd .agent/skills), Does this work with Windows? (+11 more)
+Cohesion: 0.12
+Nodes (23): code:python (def repeat(times: int):), Class-Based Decorators, Decorators, Function Decorators, Parameterized Decorators, Class-Based Decorators, code:python (import functools), code:python (class CountCalls:) (+15 more)
 
 ### Community 2301 - "Community 2301"
 Cohesion: 0.10
@@ -19691,7 +19687,7 @@ Nodes (19): 1. Trigger a Pipeline, 2. Monitor Pipelines and Workflows, 3. Inspec
 
 ### Community 2302 - "Community 2302"
 Cohesion: 0.02
-Nodes (101): Agent Fields, Agent Template, code:block2 (skills/), code:block4 (agents/your-agent-name.md), Command Template, Contributing Agents, Contributing Commands, Contributing Skills (+93 more)
+Nodes (94): Agent Fields, Agent Template, code:block2 (skills/), code:block4 (agents/your-agent-name.md), Command Template, Contributing Agents, Contributing Commands, Directory Structure (+86 more)
 
 ### Community 2303 - "Community 2303"
 Cohesion: 0.14
@@ -19718,8 +19714,8 @@ Cohesion: 0.10
 Nodes (19): 1. List and Search Subscribers, 2. Manage Subscriber Tags, 3. Unsubscribe a Subscriber, 4. List and View Broadcasts, 5. Delete a Broadcast, code:block1 (1. Call KIT_LIST_SUBSCRIBERS with email_address='user@exampl), code:block2 (1. Create tags in Kit web UI), Common Patterns (+11 more)
 
 ### Community 2309 - "Community 2309"
-Cohesion: 0.05
-Nodes (47): Authentication, BYOK (Bring Your Own Key), Client Configuration, code:typescript (const client = new CopilotClient({ githubToken: process.env.), code:typescript (// Create with explicit ID), code:typescript (const sessions = await client.listSessions();          // Li), code:typescript (const session = await client.createSession({), code:bash (copilot --headless --port 4321) (+39 more)
+Cohesion: 0.06
+Nodes (39): Authentication, BYOK (Bring Your Own Key), Client Configuration, code:typescript (const client = new CopilotClient({ githubToken: process.env.), code:typescript (// Create with explicit ID), code:typescript (const sessions = await client.listSessions();          // Li), code:typescript (const session = await client.createSession({), code:bash (copilot --headless --port 4321) (+31 more)
 
 ### Community 2310 - "Community 2310"
 Cohesion: 0.10
@@ -19730,16 +19726,16 @@ Cohesion: 0.07
 Nodes (37): 10. Prevention, 1. Initial Triage, 2. Observability Data Collection, 3. Hypothesis Generation, 4. Strategy Selection, 5. Intelligent Instrumentation, 6. Production-Safe Techniques, 7. Root Cause Analysis (+29 more)
 
 ### Community 2312 - "Community 2312"
-Cohesion: 0.14
-Nodes (14): 1. Frontmatter (Metadata), 2. Content (Instructions), Anatomy of a Skill - Understanding the Structure, 📁 Basic Folder Structure, code:block1 (skills/), Comprehensive Skill, Learning from Existing Skills, Minimum Viable Skill (+6 more)
+Cohesion: 0.03
+Nodes (62): 1. Frontmatter (Metadata), 2. Content (Instructions), Advanced Patterns, Anatomy of a Skill - Understanding the Structure, 📁 Basic Folder Structure, Be Specific, Clarity Test, code:block1 (skills/) (+54 more)
 
 ### Community 2313 - "Community 2313"
 Cohesion: 0.10
 Nodes (19): 🤖 AI & Automation (5 skills), 🎯 Benefits of This Recommendation, Business & Product (3 skills), code:block1 (skills/), 🏢 Corporate (4 skills), Creative & Design (5 skills), Development & Testing (7 skills), Infrastructure (2 skills) (+11 more)
 
 ### Community 2314 - "Community 2314"
-Cohesion: 0.03
-Nodes (76): code:python (class DatabaseTransaction:), code:python (# Bad: O(n²) due to string immutability), code:bash (# Code formatting), code:python (# Bad: Mutable default arguments), code:python (# İyi: Context manager'ları kullanma), code:python (# Good: Using context managers), code:python (# Bad: Returns full list in memory), code:python (from contextlib import contextmanager) (+68 more)
+Cohesion: 0.06
+Nodes (33): code:bash (# Code formatting), code:python (# Bad: Mutable default arguments), Anti-Patterns to Avoid, code:toml ([project]), Essential Commands, pyproject.toml Configuration, Python Development Patterns, Python Tooling Integration (+25 more)
 
 ### Community 2315 - "Community 2315"
 Cohesion: 0.11
@@ -19754,8 +19750,8 @@ Cohesion: 0.12
 Nodes (16): ✅ All transitions are auditable, Conclusion, Files Modified, ✅ Guests cannot trigger task transitions, Implementation Summary, Integration Points, ✅ No task is auto-completed without human action, ✅ PHASE 6.1 — Media Upload → Task Awareness (+8 more)
 
 ### Community 2318 - "Community 2318"
-Cohesion: 0.13
-Nodes (18): averageRgb01(), buildAnnotationsForCapture(), buildPinElement(), captureElementToBlob(), collectFontCssText(), compileShader(), cssColorToRgb01(), findBackdropAncestor() (+10 more)
+Cohesion: 0.09
+Nodes (21): Additional docs, Query Events, Quick Start, Screen Recording (Desktop Capture), VideoDB Skill, When to use, When to use what, Query Events (+13 more)
 
 ### Community 2319 - "Community 2319"
 Cohesion: 0.25
@@ -19763,15 +19759,15 @@ Nodes (7): Common Fix Patterns, Core Responsibilities, Key Principles, Prompt De
 
 ### Community 2320 - "Community 2320"
 Cohesion: 0.05
-Nodes (54): CI/CD Integration, code:yaml (# GitHub Actions), Continuous Testing, Pre-Commit Hook, Watch Mode During Development, CI/CD Integration, Continuous Testing, Pre-Commit Hook (+46 more)
+Nodes (53): CI/CD Integration, code:yaml (# GitHub Actions), Continuous Testing, Pre-Commit Hook, Watch Mode During Development, CI/CD Integration, Continuous Testing, Pre-Commit Hook (+45 more)
 
 ### Community 2321 - "Community 2321"
 Cohesion: 0.18
 Nodes (10): Integration with ECC, Phase 1: INITIATE - Core Problem, Phase 2: FOUNDATION - Problem Discovery, Phase 3: GROUNDING - Market & Context Research, Phase 4: DEEP DIVE - Vision & Users, Phase 5: GROUNDING - Technical Feasibility, Phase 6: DECISIONS - Scope & Approach, Product Requirements Document Generator (+2 more)
 
 ### Community 2322 - "Community 2322"
-Cohesion: 0.08
-Nodes (28): code:markdown (# In SKILL.md), code:block4 (~/.claude/skills/                    # Personal skills locat), code:block5 (~/.claude/skills/), code:markdown (# API Builder), Complete Specification, 📂 Directory Structure, Full-Featured Skill (Recommended), Level 1: Metadata (Name + Description) (+20 more)
+Cohesion: 0.09
+Nodes (23): 1. Signals: The New Reactive Primitive, code:typescript (import { signal, computed, effect } from "@angular/core";), code:typescript (import { Component, input, output, model } from "@angular/co), Core Concepts, Signal-Based Inputs and Outputs, Signal Queries (ViewChild/ContentChild), When to Use Signals vs RxJS, Error Handling (+15 more)
 
 ### Community 2323 - "Community 2323"
 Cohesion: 0.10
@@ -19794,7 +19790,7 @@ Cohesion: 0.15
 Nodes (13): code:text (1. swift build           -> エラーメッセージとエラーコードを解析), code:bash (# 解決済み依存関係バージョンのチェック), code:bash (# ビルドフォルダのクリーン), code:bash (# アクティブなツールチェーンのチェック), SPMトラブルシューティング, Swiftバージョンとツールチェーンの問題, Swiftビルドエラーリゾルバー, Xcodeビルドトラブルシューティング (+5 more)
 
 ### Community 2328 - "Community 2328"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (14): code:block4 (instinctsをインポート中: team-instincts.yaml), code:yaml (source: "inherited"), code:block6 (/instinct-import --from-skill-creator acme/webapp), code:block7 (PASS: インポート完了!), Skill Creator統合, インスティンクトインポートコマンド, インポートプロセス, ソーストラッキング (+6 more)
 
 ### Community 2329 - "Community 2329"
@@ -19895,11 +19891,11 @@ Nodes (11): 1. 分析, 2. 验证, 3. 安全移除, 4. 整合重复项, 不应使
 
 ### Community 2353 - "Community 2353"
 Cohesion: 0.03
-Nodes (83): Audio Generation, code:python (# Voice generation), Cost Estimation, CSM-1B (Conversational Speech), fal.ai Media Generation, MCP Requirement, MCP Tools, Model Discovery (+75 more)
+Nodes (82): Common Image Parameters, Cost Estimation, fal.ai Media Generation, Image Editing, Image Generation, MCP Requirement, MCP Tools, Model Discovery (+74 more)
 
 ### Community 2354 - "Community 2354"
-Cohesion: 0.07
-Nodes (31): 10. Dependency Security, code:bash (# Check for vulnerabilities), code:bash (# ALWAYS commit lock files), Lock Files, Regular Updates, Verification Steps, 定期更新, Lock Files (+23 more)
+Cohesion: 0.08
+Nodes (31): 10. Dependency Security, Lock Files, Regular Updates, Verification Steps, 10. Dependency Security, code:bash (# Check for vulnerabilities), code:bash (# ALWAYS commit lock files), Lock Files (+23 more)
 
 ### Community 2355 - "Community 2355"
 Cohesion: 0.11
@@ -19910,8 +19906,8 @@ Cohesion: 0.20
 Nodes (8): Configuration Template, Data Type Quick Reference, Index Cheat Sheet, PostgreSQL Patterns, Quick Reference, Related, When to Activate, When to Use This Skill
 
 ### Community 2357 - "Community 2357"
-Cohesion: 0.06
-Nodes (28): code:dockerfile (FROM node:18-alpine AS build), code:dockerfile (# キャッシュを活用するため、変更がない部分を上に), code:dockerfile (HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --), code:yaml (version: '3.8'), Cold Email Structure, Core Rules, Follow-Up Cadence, Hard Bans (+20 more)
+Cohesion: 0.08
+Nodes (21): code:dockerfile (FROM node:18-alpine AS build), code:dockerfile (# キャッシュを活用するため、変更がない部分を上に), code:dockerfile (HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --), Cold Email Structure, Core Rules, Follow-Up Cadence, Hard Bans, Investor Outreach (+13 more)
 
 ### Community 2358 - "Community 2358"
 Cohesion: 0.13
@@ -19926,8 +19922,8 @@ Cohesion: 0.16
 Nodes (19): buildReport(), crypto, fileExists(), findForbiddenContent(), fs, HERMES_BOUNDARY_MARKERS, lineNumberForIndex(), main() (+11 more)
 
 ### Community 2361 - "Community 2361"
-Cohesion: 0.17
-Nodes (10): Run and install, code:bash (# Install dependencies (creates/updates bun.lock or bun.lock), Best Practices, Bun Runtime, Examples, How It Works, Run and install, Scripts and env (+2 more)
+Cohesion: 0.33
+Nodes (4): Best Practices, Bun Runtime, How It Works, When to Use
 
 ### Community 2362 - "Community 2362"
 Cohesion: 0.17
@@ -19962,20 +19958,20 @@ Cohesion: 0.29
 Nodes (6): Core Protocols, Key Rules, Next Steps, Plan Modification Flow, Plan - Multi-Model Collaborative Planning, Plan Saving
 
 ### Community 2370 - "Community 2370"
-Cohesion: 0.10
-Nodes (29): Async Tests, code:rust (#[tokio::test]), code:rust (use proptest::prelude::*;), Parameterized Tests with rstest, Property-Based Tests, Test Patterns, Unit Tests, code:rust (#[cfg(test)]) (+21 more)
+Cohesion: 0.09
+Nodes (30): Async Tests, code:rust (#[tokio::test]), code:rust (use proptest::prelude::*;), Parameterized Tests with rstest, Property-Based Tests, Test Patterns, Unit Tests, code:rust (#[cfg(test)]) (+22 more)
 
 ### Community 2371 - "Community 2371"
-Cohesion: 0.15
-Nodes (11): code:bash (# フロントエンドのビルドとデプロイ), code:bash (# フロントエンド (.env.local)), アーキテクチャの概要, デプロイメントコマンド, デプロイメントワークフロー, デプロイ前チェックリスト, プロジェクトガイドラインスキル（例）, 使用するタイミング (+3 more)
+Cohesion: 0.09
+Nodes (23): Approval Boundaries / Least Agency, Attack Chain and Nodes / Components Involved, Attack Vectors / Surfaces, Claude Code CVEs (February 2026), Close, code:bash (# zero-width and bidi control characters), code:bash (rg -n 'curl|wget|nc|scp|ssh|enableAllProjectMcpServers|ANTHR), code:markdown (## external reference) (+15 more)
 
 ### Community 2372 - "Community 2372"
 Cohesion: 0.05
 Nodes (43): code:swift (// Swift 6.2: OK — async stays on MainActor, no data race), code:swift (// With MainActor default inference enabled:), code:swift (nonisolated final class PhotoProcessor {), code:swift (// Swift 6.1: ERROR), code:swift (// OK — ImageExporter is also @MainActor), code:swift (protocol Exportable {), code:swift (// Swift 6.1: ERROR — non-Sendable type may have shared muta), Anti-Patterns to Avoid (+35 more)
 
 ### Community 2373 - "Community 2373"
-Cohesion: 0.11
-Nodes (16): Best Practices, code:python (from pydantic import BaseModel, Field), code:python (import anthropic), code:typescript (import OpenAI from "openai";), Core Workflow, Edge Cases, Example 1: OpenAI Structured Outputs with Pydantic (Python), Example 2: Anthropic tool_use for Structured Extraction (Python) (+8 more)
+Cohesion: 0.10
+Nodes (19): code:block11 (GET    /api/markets              # 列出所有市场), code:block15 (components/Button.tsx          # 组件使用帕斯卡命名法), 1. 可读性优先, 2. KISS (保持简单，傻瓜), 3. DRY (不要重复自己), 4. YAGNI (你不会需要它), API 设计标准, REST API 约定 (+11 more)
 
 ### Community 2374 - "Community 2374"
 Cohesion: 0.17
@@ -19991,7 +19987,7 @@ Nodes (23): Execute, Generated Files, Key Rules, PM2 Init, Service Detection, Wo
 
 ### Community 2377 - "Community 2377"
 Cohesion: 0.09
-Nodes (21): code:block1 (Screen Studio / 生の素材), code:block12 (generate(app_id: "fal-ai/nano-banana-pro", input_data: {), code:block2 (プロンプトの例：), Generated visuals with fal.ai, fal.aiでのビジュアル生成, fal.aiでの音楽と効果音の生成, FFmpegで再フレーミングする, VideoDBで再フレーミングする (+13 more)
+Nodes (21): code:block1 (1. Run git diff to understand changes), Agent Usage, Approval Criteria, Code Quality, Code Review Standards, Common Issues to Catch, Integration with Other Rules, Performance (+13 more)
 
 ### Community 2378 - "Community 2378"
 Cohesion: 0.22
@@ -20179,7 +20175,7 @@ Nodes (19): 1. Monitor and Inspect Deployments, 2. Create and Manage Deployments
 
 ### Community 2424 - "Community 2424"
 Cohesion: 0.10
-Nodes (18): Any, Event, ConversationWithInterrupts, example_interrupt_scenario(), InterruptibleEvent, MockSynthesisResult, MockTranscription, Example: Interrupt System Implementation  This example demonstrates how to imp (+10 more)
+Nodes (18): Any, Event, ConversationWithInterrupts, example_interrupt_scenario(), InterruptibleEvent, MockTranscription, Example: Interrupt System Implementation  This example demonstrates how to imp, Add an event to the interruptible queue (+10 more)
 
 ### Community 2425 - "Community 2425"
 Cohesion: 0.10
@@ -20254,16 +20250,16 @@ Cohesion: 0.15
 Nodes (12): Best Practices, code:properties (# Database), code:java (String port = this.getConfiguration("server.port");), Configuration, Core Principle, How It Works, Red Flags & Anti-patterns, Reference Source Files (Internal) (+4 more)
 
 ### Community 2443 - "Community 2443"
-Cohesion: 0.12
-Nodes (15): VideoDBスキル, イベントのクエリ, インデックス + 検索（タイムスタンプ + 証拠）, クイックスタート, スクリーンレコーディング（デスクトップキャプチャ）, ソース, タイムライン編集 + 生成, デスクトップ知覚 (+7 more)
+Cohesion: 0.07
+Nodes (26): code:python (from videodb.exceptions import AuthenticationError, InvalidR), Common pitfalls, Error handling, Common pitfalls, Error handling, code:typescript (import { AgentMailError } from "@agentmail/sdk";), Error handling, VideoDBスキル (+18 more)
 
 ### Community 2444 - "Community 2444"
 Cohesion: 0.10
 Nodes (19): Base Color Presets, Best Practices, Color Customization, Color Format, Component Customization, CSS Variable System, Customize Styles, Customize Variants (+11 more)
 
 ### Community 2445 - "Community 2445"
-Cohesion: 0.05
-Nodes (40): code:javascript (// Discord.js - Deferred response), code:python (# Pycord - Deferred response), code:javascript (// Discord.js handles rate limits automatically, but for cus), code:python (# Pycord/discord.py handles rate limits automatically), code:javascript (// Discord.js Sharding Manager), code:python (# Pycord - AutoShardedBot), code:javascript (// src/commands/ping.js), code:javascript (// src/events/interactionCreate.js) (+32 more)
+Cohesion: 0.10
+Nodes (21): code:javascript (// Discord.js - Deferred response), code:python (# Pycord - Deferred response), code:javascript (// Discord.js handles rate limits automatically, but for cus), code:python (# Pycord/discord.py handles rate limits automatically), code:javascript (// Discord.js Sharding Manager), code:python (# Pycord - AutoShardedBot), code:javascript (// Discord.js - Buttons and Select Menus), code:javascript (// Modals (forms)) (+13 more)
 
 ### Community 2446 - "Community 2446"
 Cohesion: 0.10
@@ -20291,7 +20287,7 @@ Nodes (13): How to Use This File, Edge Case 10: Systematic Pilferage Pattern Acr
 
 ### Community 2452 - "Community 2452"
 Cohesion: 0.03
-Nodes (70): compilerOptions, declaration, esModuleInterop, forceConsistentCasingInFileNames, lib, module, outDir, resolveJsonModule (+62 more)
+Nodes (73): compilerOptions, declaration, esModuleInterop, forceConsistentCasingInFileNames, lib, module, outDir, resolveJsonModule (+65 more)
 
 ### Community 2453 - "Community 2453"
 Cohesion: 0.15
@@ -20318,8 +20314,8 @@ Cohesion: 0.11
 Nodes (17): 1. Layers, 2. Feature-First File Structure, 3. Component Responsibilities, 4. Domain Layer (Use Cases), 5. Dependency Injection, 6. Workflow: Add a New Feature, Business Logic Holder (ViewModel / Cubit / Controller / Provider), code:block2 (lib/) (+9 more)
 
 ### Community 2459 - "Community 2459"
-Cohesion: 0.29
-Nodes (7): 1. Signals: The New Reactive Primitive, code:typescript (import { signal, computed, effect } from "@angular/core";), code:typescript (import { Component, input, output, model } from "@angular/co), Core Concepts, Signal-Based Inputs and Outputs, Signal Queries (ViewChild/ContentChild), When to Use Signals vs RxJS
+Cohesion: 0.15
+Nodes (14): code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), 1. 使用 `v5.36` 编译指令, 2. 子程序签名, 3. 上下文敏感性, 4. 後置逆参照 (+6 more)
 
 ### Community 2460 - "Community 2460"
 Cohesion: 0.11
@@ -20362,12 +20358,12 @@ Cohesion: 0.11
 Nodes (18): Automatic Updates (Recommended), code:bash (npm run update:skills), code:bash (START_APP.bat), code:bash (# 1. Generate skills index), code:bash (git pull origin main), "Failed to copy skills", Git Users, Manual Update Options (+10 more)
 
 ### Community 2470 - "Community 2470"
-Cohesion: 0.03
-Nodes (70): 1) Pick by immediate goal, 2) Start with 3-5 skills, not 20, 3) Invoke skills consistently, 4) Build your personal shortlist, 🤖 AI & Agents, Antigravity Skill Bundles, 🐍 Backend & Languages, Beginner → Intermediate → Advanced (+62 more)
+Cohesion: 0.02
+Nodes (85): 1) Pick by immediate goal, 2) Start with 3-5 skills, not 20, 3) Invoke skills consistently, 4) Build your personal shortlist, 🤖 AI & Agents, Antigravity Skill Bundles, 🐍 Backend & Languages, Beginner → Intermediate → Advanced (+77 more)
 
 ### Community 2471 - "Community 2471"
 Cohesion: 0.11
-Nodes (18): API Fuzzing for Bug Bounty (`api-fuzzing-bug-bounty`), dotnet-backend-patterns (`dotnet-backend-patterns`), error-diagnostics-error-analysis (`error-diagnostics-error-analysis`), Example Prompts, Example Prompts, Example Prompts, Example Prompts, Example Prompts (+10 more)
+Nodes (18): API Fuzzing for Bug Bounty (`api-fuzzing-bug-bounty`), dotnet-backend-patterns (`dotnet-backend-patterns`), Example Prompts, Example Prompts, Example Prompts, Example Prompts, Example Prompts, form-cro (`form-cro`) (+10 more)
 
 ### Community 2472 - "Community 2472"
 Cohesion: 0.33
@@ -20422,7 +20418,7 @@ Cohesion: 0.15
 Nodes (12): code:bash (# ビルドチェック), CRITICAL（修正必須）, HIGH（修正すべき）, Kotlinコードレビュー, MEDIUM（検討すべき）, このコマンドの動作, レビューカテゴリ, 他のコマンドとの統合 (+4 more)
 
 ### Community 2485 - "Community 2485"
-Cohesion: 0.17
+Cohesion: 0.15
 Nodes (12): code:bash (# ビルドゲート（レビュー前に通る必要あり）), CRITICAL（修正必須）, HIGH（修正すべき）, MEDIUM（検討すべき）, Rustコードレビュー, このコマンドの動作, レビューカテゴリ, 他のコマンドとの統合 (+4 more)
 
 ### Community 2486 - "Community 2486"
@@ -20436,6 +20432,10 @@ Nodes (27): code:bash (command -v sqlite3 >/dev/null && echo "sqlite3 available"
 ### Community 2488 - "Community 2488"
 Cohesion: 0.06
 Nodes (31): code:text (show interfaces <interface>), code:text (show interfaces <interface> | include duplex|speed), code:text (ip -s link show <interface>), 1つのスイッチポートのCRC, Anti-Patterns, Counter Reference, CRCs On One Switch Port, CRCs Or Input Errors (+23 more)
+
+### Community 2489 - "Community 2489"
+Cohesion: 0.14
+Nodes (5): AwarenessIndicator(), useAwareness(), AwarenessService, AwarenessState, TaskUpdateAwareness
 
 ### Community 2490 - "Community 2490"
 Cohesion: 0.17
@@ -20514,7 +20514,7 @@ Cohesion: 0.17
 Nodes (10): Kotlin 代码审查, 与其他命令的集成, 严重（必须修复）, 中（考虑修复）, 使用时机, 审查类别, 批准标准, 此命令的功能 (+2 more)
 
 ### Community 2506 - "Community 2506"
-Cohesion: 0.18
+Cohesion: 0.20
 Nodes (10): Rust 代码审查, 与其他命令的集成, 中（考虑）, 何时使用, 关键（必须修复）, 审查类别, 批准标准, 此命令的作用 (+2 more)
 
 ### Community 2507 - "Community 2507"
@@ -20522,8 +20522,8 @@ Cohesion: 0.15
 Nodes (13): 10. Terminal Green, 11. Swiss Modern, 12. Paper & Ink, 1. Bold Signal, 2. Electric Studio, 3. Creative Voltage, 4. Dark Botanical, 5. Notebook Tabs (+5 more)
 
 ### Community 2508 - "Community 2508"
-Cohesion: 0.06
-Nodes (40): code:typescript (import { id, keccak256, AbiCoder } from 'ethers';), code:typescript (import { keccak256 } from 'ethers';), ethers v6, Node.js Keccak-256, viem, web3.js, code:javascript (import crypto from 'crypto';), code:typescript (import { keccak256, toUtf8Bytes, solidityPackedKeccak256, id) (+32 more)
+Cohesion: 0.10
+Nodes (27): code:typescript (import { id, keccak256, AbiCoder } from 'ethers';), code:typescript (import { keccak256 } from 'ethers';), ethers v6, viem, web3.js, code:typescript (import { keccak256, toUtf8Bytes, solidityPackedKeccak256, id), code:javascript (const hash = web3.utils.keccak256('hello');), code:bash (grep -rn "createHash.*sha3" --include="*.ts" --include="*.js) (+19 more)
 
 ### Community 2509 - "Community 2509"
 Cohesion: 0.17
@@ -20558,8 +20558,8 @@ Cohesion: 0.22
 Nodes (7): main(), Main class for Review Report Generator functionality, Execute the main functionality, Validate the target path exists and is accessible, Perform the main analysis or operation by compiling results, Generate the markdown report file, ReviewReportGenerator
 
 ### Community 2517 - "Community 2517"
-Cohesion: 0.16
-Nodes (12): fs, os, path, { sanitizeSessionId, readBridge, writeBridgeAtomic }, buildContextBar(), formatDuration(), fs, os (+4 more)
+Cohesion: 0.09
+Nodes (20): fs, os, path, { sanitizeSessionId, readBridge, writeBridgeAtomic }, buildContextBar(), formatDuration(), fs, os (+12 more)
 
 ### Community 2518 - "Community 2518"
 Cohesion: 0.13
@@ -20594,8 +20594,8 @@ Cohesion: 0.07
 Nodes (23): ABC, LLMProvider, Template: Multi-Provider Factory  Use this template to create a factory that s, # TODO: Implement Deepgram transcriber, # TODO: Implement AssemblyAI transcriber, # TODO: Implement Azure transcriber, # TODO: Implement Google transcriber, # TODO: Implement OpenAI agent (+15 more)
 
 ### Community 2526 - "Community 2526"
-Cohesion: 0.11
-Nodes (18): compilerOptions, declaration, declarationMap, esModuleInterop, forceConsistentCasingInFileNames, isolatedModules, lib, module (+10 more)
+Cohesion: 0.09
+Nodes (19): bullets, cargo, claudeMd, deps, doNot, gitConfig, goal, goMod (+11 more)
 
 ### Community 2527 - "Community 2527"
 Cohesion: 0.11
@@ -20684,7 +20684,7 @@ Nodes (18): [Black](https://developer.apple.com/design/human-interface-guideline
 
 ### Community 2546 - "Community 2546"
 Cohesion: 0.03
-Nodes (55): Source Types, Check Job Status, code:python ({), code:python (from huggingface_hub import list_jobs, inspect_job, fetch_jo), code:bash (hf jobs ps                    # List jobs), ✅ **Account & Authentication**, Action Required, After Submission (+47 more)
+Nodes (58): code:python (# Only use 5 sources (~$0.13)), Search Parameters, Source Types, xAI Live Search Reference, Check Job Status, code:python ({), code:python (from huggingface_hub import list_jobs, inspect_job, fetch_jo), code:bash (hf jobs ps                    # List jobs) (+50 more)
 
 ### Community 2547 - "Community 2547"
 Cohesion: 0.10
@@ -20731,8 +20731,8 @@ Cohesion: 0.12
 Nodes (15): Agent Execution Model, Agent Lifecycle, Agent Types Reference, Business Swarm (8 types), code:bash (# Option 1: Sequential (simple, reliable)), code:block2 (SPAWN -> INITIALIZE -> POLL_QUEUE -> CLAIM_TASK -> EXECUTE -), Data Swarm (3 types), Dynamic Scaling Rules (+7 more)
 
 ### Community 2558 - "Community 2558"
-Cohesion: 0.09
-Nodes (21): code:block1 (Screen Studio / 原始素材), code:block2 (示例提示词：), 1. Configuration Analysis, code:python (import os), VideoDB生成式音频, 何时激活, 使用ElevenLabs进行画外音, 使用fal.ai生成音乐和音效 (+13 more)
+Cohesion: 0.10
+Nodes (18): blockers, constraints, context, contextDirPath, contextJsonPath, contextMdPath, decisions, existing (+10 more)
 
 ### Community 2559 - "Community 2559"
 Cohesion: 0.20
@@ -20771,8 +20771,8 @@ Cohesion: 0.15
 Nodes (18): Advanced Python Patterns, Behavioral Traits, Capabilities, Data Science & Machine Learning, DevOps & Production Deployment, Do not use this skill when, Example Interactions, Instructions (+10 more)
 
 ### Community 2568 - "Community 2568"
-Cohesion: 0.25
-Nodes (8): code:text (1. cargo check          -> Parse error message and error cod), Resolution Workflow, Common Fix Patterns, Core Responsibilities, Key Principles, Resolution Workflow, Rust Build Error Resolver, Stop Conditions
+Cohesion: 0.17
+Nodes (12): code:text (1. cargo check          -> Parse error message and error cod), Borrow Checker Troubleshooting, Resolution Workflow, 借用检查器故障排除, Borrow Checker Troubleshooting, code:rust (// Problem: Cannot borrow as mutable because also borrowed a), Common Fix Patterns, Core Responsibilities (+4 more)
 
 ### Community 2569 - "Community 2569"
 Cohesion: 0.10
@@ -20799,12 +20799,12 @@ Cohesion: 0.06
 Nodes (29): Sheets, Sheets, [Best practices](https://developer.apple.com/design/human-interface-guidelines/sheets#Best-practices), [Change log](https://developer.apple.com/design/human-interface-guidelines/sheets#Change-log), code:swift (@State private var selectedItem: Item?), code:swift (enum SheetDestination: Identifiable, Hashable {), code:swift (extension View {), code:swift (struct StatusRow: View {) (+21 more)
 
 ### Community 2575 - "Community 2575"
-Cohesion: 0.07
-Nodes (33): .dockerignore, code:block13 (node_modules), .dockerignore, Anti-Patterns, code:bash (# Check DNS resolution inside container), Common Commands, Debugging, Debugging Network Issues (+25 more)
+Cohesion: 0.06
+Nodes (35): .dockerignore, code:block13 (node_modules), code:block16 (# 错误做法：在生产环境中使用 docker compose 而不进行编排), code:yaml (volumes:), .dockerignore, Anti-Patterns, code:bash (# Check DNS resolution inside container), Common Commands (+27 more)
 
 ### Community 2576 - "Community 2576"
-Cohesion: 0.14
-Nodes (14): Befehle für den Arbeitsalltag, code:block56 (/model opus), Empfohlene Einstellungen, Kontextfenster-Verwaltung, Kostenwarnung zu Agent-Teams, Strategische Compaction, Token-Optimierung, Agent Teams Cost Warning (+6 more)
+Cohesion: 0.06
+Nodes (29): Befehle für den Arbeitsalltag, code:json ({), code:block56 (/model opus), Empfohlene Einstellungen, Kontextfenster-Verwaltung, Kostenwarnung zu Agent-Teams, Strategische Compaction, Token-Optimierung (+21 more)
 
 ### Community 2577 - "Community 2577"
 Cohesion: 0.10
@@ -20875,8 +20875,8 @@ Cohesion: 0.18
 Nodes (10): Approval Criteria, CRITICAL (Must Fix), HIGH (Should Fix), Integration with Other Commands, MEDIUM (Consider), Related, Review Categories, Rust Code Review (+2 more)
 
 ### Community 2594 - "Community 2594"
-Cohesion: 0.09
-Nodes (21): MFA Enforcement, Additional Resources, Audit Categories, AWS Security Audit, Best Practices, code:bash (# List users without MFA), code:bash (# Find security groups open to the world), code:bash (# Find unencrypted EBS volumes) (+13 more)
+Cohesion: 0.07
+Nodes (28): Access Key Management, code:bash (# List policies with full admin access), code:bash (# Find old access keys (>90 days)), code:bash (# List unused roles (no activity in 90 days)), Find Overly Permissive Policies, IAM Security Checks, MFA Enforcement, Role and Policy Analysis (+20 more)
 
 ### Community 2595 - "Community 2595"
 Cohesion: 0.20
@@ -20971,20 +20971,20 @@ Cohesion: 0.11
 Nodes (17): 1. Manage Tasks, 2. Manage Projects and Sections, 3. Manage Teams and Users, 4. Parallel Operations, Asana Automation via Rube MCP, code:block1 (1. Call ASANA_GET_MULTIPLE_WORKSPACES), code:block2 (1. Call ASANA_GET_WORKSPACE_PROJECTS with workspace GID), Common Patterns (+9 more)
 
 ### Community 2618 - "Community 2618"
-Cohesion: 0.07
-Nodes (29): AAD with DefaultAzureCredential (Recommended), Authentication, @azure/cosmos (TypeScript/JavaScript), Best Practices, Bulk Operations, code:bash (npm install @azure/cosmos @azure/identity), code:typescript (import { BulkOperationType, OperationInput } from "@azure/co), code:typescript (const { container } = await database.containers.createIfNotE) (+21 more)
+Cohesion: 0.05
+Nodes (37): AAD with DefaultAzureCredential (Recommended), Authentication, @azure/cosmos (TypeScript/JavaScript), Best Practices, Bulk Operations, code:bash (npm install @azure/cosmos @azure/identity), code:typescript (const { resources } = await container.items), code:typescript (import { SqlQuerySpec } from "@azure/cosmos";) (+29 more)
 
 ### Community 2619 - "Community 2619"
-Cohesion: 0.12
-Nodes (17): code:javascript (// accessibility-test.js), code:javascript (// color-contrast.js), code:javascript (// keyboard-navigation.js), code:javascript (// screen-reader-test.js), code:markdown (## Manual Accessibility Testing), code:javascript (// Fix missing alt text), code:yaml (# .github/workflows/accessibility.yml), code:javascript (// report-generator.js) (+9 more)
+Cohesion: 0.13
+Nodes (17): code:bash (bash ~/.claude/skills/rules-distill/scripts/scan-rules.sh), code:block3 (ルール蒸留 — フェーズ 1：棚卸し), code:bash (bash ~/.claude/skills/rules-distill/scripts/scan-skills.sh), code:block3 (规则提炼 — 第一阶段：清点), code:block3 (Rules Distillation — Phase 1: Inventory), 1a. Collect skill inventory, 1a. スキルインベントリの収集, 1a. 收集技能清单 (+9 more)
 
 ### Community 2620 - "Community 2620"
 Cohesion: 0.15
 Nodes (13): Best Practices, code:python (with client.messages.stream(), Getting the Final Message, Handling Different Content Types, Quick Start, Stream Event Types, Async, code:python (def stream_with_progress(client, **kwargs):) (+5 more)
 
 ### Community 2621 - "Community 2621"
-Cohesion: 0.15
-Nodes (17): build_legacy_plugin_draft(), build_legacy_tool_draft(), classify_legacy_plugin_surface(), classify_legacy_tool_surface(), extract_legacy_skill_excerpt(), extract_legacy_tool_excerpt(), extract_legacy_tool_summary(), extract_legacy_tool_title() (+9 more)
+Cohesion: 0.10
+Nodes (19): Architecture, Best Practices, Commit Conventions, Commit Style: Conventional Commits, Configuration Files, Coverage, Do, Don't (+11 more)
 
 ### Community 2622 - "Community 2622"
 Cohesion: 0.10
@@ -20995,8 +20995,8 @@ Cohesion: 0.08
 Nodes (26): code:block15 (============================================================), code:block16 (============================================================), code:block17 (============================================================), code:block18 (============================================================), code:block19 (============================================================), code:bash (git add conductor/tracks/_archive/ conductor/tracks.md), code:block5 (ERROR: Track not found: {track-id}), code:block6 (ERROR: Track '{track-id}' is already archived.) (+18 more)
 
 ### Community 2624 - "Community 2624"
-Cohesion: 0.19
-Nodes (19): list_templates(), main(), AI Studio Image — Templates Pre-configurados  Biblioteca de templates prontos, list_templates(), main(), Templates reutilizáveis de conteúdo para Instagram.  Uso:     python scripts/, create_template(), delete_template() (+11 more)
+Cohesion: 0.11
+Nodes (20): Branching Strategies, code:block3 (main (production releases)), GitFlow (Complex, Release-Cycle Driven), GitHub Flow (Simple, Recommended for Most), Trunk-Based Development (High-Velocity Teams), When to Use Which, code:block2 (main (主干)), code:block3 (main (生产发布版本)) (+12 more)
 
 ### Community 2625 - "Community 2625"
 Cohesion: 0.11
@@ -21056,7 +21056,7 @@ Nodes (13): Auto-Open HTML Report in Browser, Bug Detection Mode Output Files:, 
 
 ### Community 2639 - "Community 2639"
 Cohesion: 0.13
-Nodes (14): Communication Guidelines, Context, Frontend - Frontend-Focused Development, Key Rules, Multi-Model Call Specification, Your Role, Multi-Model Call Specification, code:block2 (# New session call) (+6 more)
+Nodes (14): Communication Guidelines, Context, Frontend - Frontend-Focused Development, Key Rules, Multi-Model Call Specification, Your Role, Communication Guidelines, Context (+6 more)
 
 ### Community 2640 - "Community 2640"
 Cohesion: 0.05
@@ -21107,8 +21107,8 @@ Cohesion: 0.29
 Nodes (5): API コネクター ビルダー, ガード レール, 使用するとき, 品質チェックリスト, 関連スキル
 
 ### Community 2652 - "Community 2652"
-Cohesion: 0.08
-Nodes (21): code:bash (# common + 1つ以上の言語固有ルールセットをインストール), code:bash (# common ルールをインストール（すべてのプロジェクトに必須）), code:block4 (> このファイルは [common/xxx.md](../common/xxx.md) を <言語> 固有のコンテンツで), code:block1 (rules/), code:block4 (> 此文件通过 <语言> 特定内容扩展了 [common/xxx.md](../common/xxx.md)。), Structure, インストール, オプション 1: インストールスクリプト（推奨） (+13 more)
+Cohesion: 0.15
+Nodes (11): code:bash (# Install common rules (required for all projects)), code:block4 (> 此文件通过 <语言> 特定内容扩展了 [common/xxx.md](../common/xxx.md)。), 安装, 带有覆盖说明的通用规则, 添加新语言, 示例, 规则, 规则与技能 (+3 more)
 
 ### Community 2653 - "Community 2653"
 Cohesion: 0.20
@@ -21135,8 +21135,8 @@ Cohesion: 0.11
 Nodes (17): code:markdown (# Scholar Evaluation: <成果物>), Scholar Evaluation, 1. 問題と研究質問, 2. 文献とコンテキスト, 3. 方法論, 4. データと証拠, 5. 分析, 6. 結果と解釈 (+9 more)
 
 ### Community 2659 - "Community 2659"
-Cohesion: 0.20
-Nodes (8): code:json ({), skill-stocktake, スコープ, モード, 注意事項, 特定のプロジェクトをターゲットにする, 結果ファイルスキーマ, 高速スキャンフロー
+Cohesion: 0.13
+Nodes (13): code:block2 (スキャン中：), code:block4 (- [ ] 他のスキルとの内容の重複を確認済み), code:json ({), skill-stocktake, フェーズ 1 — インベントリ, フェーズ 2 — 品質評価, フェーズ 3 — サマリーテーブル, フェーズ 4 — 統合 (+5 more)
 
 ### Community 2660 - "Community 2660"
 Cohesion: 0.17
@@ -21171,7 +21171,7 @@ Cohesion: 0.20
 Nodes (9): code:bash (/backend <backend task açıklaması>), code:block2 (# Yeni session çağrısı), Context, Ana Kurallar, Backend - Backend Odaklı Geliştirme, İletişim Yönergeleri, Kullanım, Multi-Model Çağrı Spesifikasyonu (+1 more)
 
 ### Community 2668 - "Community 2668"
-Cohesion: 0.18
+Cohesion: 0.20
 Nodes (9): code:bash (/frontend <UI task açıklaması>), code:block2 (# Yeni session çağrısı), Context, Ana Kurallar, Frontend - Frontend Odaklı Geliştirme, İletişim Yönergeleri, Kullanım, Multi-Model Çağrı Spesifikasyonu (+1 more)
 
 ### Community 2669 - "Community 2669"
@@ -21187,8 +21187,8 @@ Cohesion: 0.29
 Nodes (8): code:markdown (# {项目名称}), 工作流程, 步骤 1：项目分析, 步骤 2：生成 CLAUDE.md, 步骤 4：生成或增强 README.md, 步骤 5：添加 LICENSE, 步骤 6：添加 CONTRIBUTING.md, 步骤 7：添加 GitHub Issue 模板（如果存在 .github/ 目录或指定了 GitHub 仓库）
 
 ### Community 2672 - "Community 2672"
-Cohesion: 0.15
-Nodes (13): code:text (1. cargo check          -> 解析错误信息和错误代码), code:bash (# Check dependency tree for conflicts), code:text ([已修复] src/handler/user.rs:42), 停止条件, Cargo.toml Troubleshooting, Cargo.toml 故障排除, Rust 构建错误解决器, 关键原则 (+5 more)
+Cohesion: 0.22
+Nodes (9): code:text (1. cargo check          -> 解析错误信息和错误代码), code:text ([已修复] src/handler/user.rs:42), 停止条件, Rust 构建错误解决器, 关键原则, 常见修复模式, 核心职责, 解决工作流 (+1 more)
 
 ### Community 2673 - "Community 2673"
 Cohesion: 0.12
@@ -21219,8 +21219,8 @@ Cohesion: 0.14
 Nodes (13): code:bash (# 1. 基本ビルドチェック), code:go (// Vet: 到達不可能なコード), code:text ([修正済] internal/handler/user.go:42), code:text (ビルドステータス: SUCCESS/FAILED), 停止条件, Go Vetの問題, Goビルドエラーリゾルバー, 中核的な責任 (+5 more)
 
 ### Community 2680 - "Community 2680"
-Cohesion: 0.03
-Nodes (68): code:solidity (interface IERC20Metadata {), code:bash (cast call <token_address> "decimals()(uint8)" --rpc-url <rpc), code:typescript (import { Contract, formatUnits } from 'ethers';), code:python (from decimal import Decimal), code:python (class SlippageError(Exception):), code:python (import os), code:python (class DomainError(Exception):), code:python (from functools import lru_cache) (+60 more)
+Cohesion: 0.04
+Nodes (50): code:solidity (interface IERC20Metadata {), code:bash (cast call <token_address> "decimals()(uint8)" --rpc-url <rpc), code:typescript (import { Contract, formatUnits } from 'ethers';), code:python (class DomainError(Exception):), code:python (from functools import lru_cache), code:python (try:), Cache by chain and token, ethersを使ったTypeScript (+42 more)
 
 ### Community 2681 - "Community 2681"
 Cohesion: 0.05
@@ -21259,24 +21259,24 @@ Cohesion: 0.11
 Nodes (17): code:go (type Calculator interface {), code:go (func TestCalculate(t *testing.T) {), code:bash (go test -v ./...), code:go (func Calculate(input Input) (Output, error) {), code:go (func BenchmarkCalculate(b *testing.B) {), code:bash (# Run all tests), code:block7 (package/), Go Test Command (+9 more)
 
 ### Community 2690 - "Community 2690"
-Cohesion: 0.20
-Nodes (10): code:rust (pub struct Input {), code:bash (cargo test), code:rust (pub fn process(input: &Input) -> Result<Output, Error> {), code:bash (cargo llvm-cov), Step 1: Define Interface, Step 2: Write Tests, Step 3: Run Tests (RED), Step 4: Implement (GREEN) (+2 more)
+Cohesion: 0.22
+Nodes (9): code:rust (pub struct Input {), code:bash (cargo test), code:rust (pub fn process(input: &Input) -> Result<Output, Error> {), code:bash (cargo llvm-cov), Step 1: Define Interface, Step 3: Run Tests (RED), Step 4: Implement (GREEN), Step 5: Check Coverage (+1 more)
 
 ### Community 2691 - "Community 2691"
-Cohesion: 0.07
+Cohesion: 0.08
 Nodes (24): code:typescript (// Use try/catch with proper error handling), code:typescript (// BAD: mutation), ArkTS Language Constraints, Comments, Destructuring & Spread, Error Handling, File Organization, Formatting (+16 more)
 
 ### Community 2692 - "Community 2692"
-Cohesion: 0.16
-Nodes (17): ensure_registry(), get_project_skills(), load_projects(), load_registry(), main(), match(), normalize(), query_to_capabilities() (+9 more)
+Cohesion: 0.05
+Nodes (49): Audio Generation, code:python (# Voice generation), CSM-1B (Conversational Speech), ThinkSound (Video-to-Audio), VideoDB Generative Audio, Audio Generation, code:python (import os), CSM-1B (Conversational Speech) (+41 more)
 
 ### Community 2693 - "Community 2693"
 Cohesion: 0.15
 Nodes (16): configDiffers(), ECC_SERVERS, { execFileSync }, findSubSections(), fs, { getPackageManager }, LEGACY_ALIASES, log() (+8 more)
 
 ### Community 2694 - "Community 2694"
-Cohesion: 0.05
-Nodes (46): 1. Trajectory Tracking, 2. Verdict Judgment, 3. Memory Distillation, Advanced Patterns, CLI Operations, code:bash (# Initialize AgentDB for ReasoningBank), code:typescript (// Learn from backend optimization), code:bash (# Export trajectories and patterns) (+38 more)
+Cohesion: 0.04
+Nodes (49): Quick Start with API, Advanced Patterns, CLI Operations, code:bash (# Initialize AgentDB for ReasoningBank), code:typescript (// Learn from backend optimization), code:bash (# Export trajectories and patterns), code:bash (# Check source database exists), code:typescript (// Enable context synthesis for better quality) (+41 more)
 
 ### Community 2695 - "Community 2695"
 Cohesion: 0.14
@@ -21287,12 +21287,12 @@ Cohesion: 0.09
 Nodes (29): dashboard, health, provenance, tracker, versioning, { applyMigrations, getAppliedMigrations }, { assertValidEntity, validateEntity }, { createQueryApi } (+21 more)
 
 ### Community 2697 - "Community 2697"
-Cohesion: 0.13
-Nodes (18): code:ts (import { submit } from '@angular/forms/signals';), code:ts (import {Component, signal} from '@angular/core';), Common Pitfalls (DO NOT DO THESE), Creating a Form, Disabled / Readonly / Hidden, Imports, Reactive Forms, Signal Forms (+10 more)
+Cohesion: 0.11
+Nodes (22): Accessing State, code:ts (// Access the field by calling it), code:ts (form().invalid()), code:ts (import { submit } from '@angular/forms/signals';), code:ts (import {Component, signal} from '@angular/core';), Common Pitfalls (DO NOT DO THESE), Creating a Form, Disabled / Readonly / Hidden (+14 more)
 
 ### Community 2698 - "Community 2698"
-Cohesion: 0.11
-Nodes (19): Benefits, Best Practices, code:javascript (mcp__claude-flow__memory_usage {), code:bash (# Enable debug output), Complete Guide, Debugging Hooks, Hook Timeouts, Hooks Not Executing (+11 more)
+Cohesion: 0.08
+Nodes (24): Benefits, Best Practices, code:javascript (mcp__claude-flow__memory_usage {), code:javascript (// .claude/hooks/custom-quality-check.js), code:json ({), code:bash (# Enable debug output), Complete Guide, Custom Hook Creation (+16 more)
 
 ### Community 2699 - "Community 2699"
 Cohesion: 0.08
@@ -21371,8 +21371,8 @@ Cohesion: 0.05
 Nodes (44): code:bash (# HAPパッケージのビルド（グローバルhvigor環境）), code:text ([REVIEW] src/main/ets/pages/HomePage.ets:15), 1. State Management: V2 Only (ArkUI State Management V2), 1. 状態管理: V2のみ（ArkUI State Management V2）, 2. Routing: Navigation Only, 2. ルーティング: Navigationのみ, ArkTS Syntax Constraints (Compilation Blockers), ArkUI Animation Guidelines (+36 more)
 
 ### Community 2718 - "Community 2718"
-Cohesion: 0.11
-Nodes (16): Best Practices, code:markdown (## Context Routing), code:block3 (User: go ham), code:block4 (User: ham savings), Commands, Example 1: First-time setup, Example 2: Checking savings, Examples (+8 more)
+Cohesion: 0.12
+Nodes (15): Best Practices, code:markdown (## Context Routing), code:block3 (User: go ham), code:block4 (User: ham savings), Commands, Example 1: First-time setup, Example 2: Checking savings, Examples (+7 more)
 
 ### Community 2719 - "Community 2719"
 Cohesion: 0.11
@@ -21427,8 +21427,8 @@ Cohesion: 0.04
 Nodes (41): IT Manager Hospital: Management Scenarios, Scenario 1: Preventing Human Error via Barcoding, Scenario 2: Handling an Outage in the ICU Network, Scenario 3: Preparation for ONA Excellence (Nível 3), Scenario 4: LGPD Compliance for Health Records, 1. Digital Maturity & Accreditation, 1. Patient Safety through Technology, 2. High-Availability for Life-Critical Infrastructure (+33 more)
 
 ### Community 2732 - "Community 2732"
-Cohesion: 0.09
-Nodes (18): assert, commandsDir, content, frontmatter, fs, path, repoRoot, test() (+10 more)
+Cohesion: 0.20
+Nodes (10): assert, fs, loadPlugin(), main(), os, path, { pathToFileURL }, runTest() (+2 more)
 
 ### Community 2733 - "Community 2733"
 Cohesion: 0.17
@@ -21452,15 +21452,15 @@ Nodes (17): Best Practices, code:bash (# Get the workforce template to compare U
 
 ### Community 2738 - "Community 2738"
 Cohesion: 0.06
-Nodes (33): 10.1 Peak Season Adjustments (October–January), 10.2 Weather Event Adjustments, 10.3 Produce / Perishable Season Adjustments (April–September), 10.4 Month-End / Quarter-End Adjustments, 10.5 Adjustment Interaction Rules, 10. Seasonal Adjustment Factors, 1.1 Scoring Methodology, 1.2 Full Severity Matrix (+25 more)
+Nodes (33): Appendix A — Quick-Reference Decision Cards, code:block11 (IF severity ≥ 3           → YES, to manager), code:block12 (IF value < $250 and portal available → FILE (automated, low ), code:block13 (IF customer impact ≥ Level 4 → YES, authorize now, sort out ), code:block14 (1. ACTIVATE triage mode), 10.1 Peak Season Adjustments (October–January), 10.2 Weather Event Adjustments, 10.3 Produce / Perishable Season Adjustments (April–September) (+25 more)
 
 ### Community 2739 - "Community 2739"
 Cohesion: 0.11
 Nodes (17): API Endpoints, code:block1 (POST /api/notes with valid data → 201 + note object), DELETE /api/notes/:id, GET /api/notes, GET /api/notes/:id, GET /health, Health Check, Notes Resource (+9 more)
 
 ### Community 2740 - "Community 2740"
-Cohesion: 0.13
-Nodes (15): 5. Server-Side Rendering (HIGH), code:typescript (// app.config.ts), code:html (<!-- Critical above-the-fold content -->), code:typescript (@Injectable({ providedIn: "root" })), Configure Incremental Hydration, Defer Non-Critical Content, Use TransferState for SSR Data, 4. Server-Side Rendering & Hydration (+7 more)
+Cohesion: 0.10
+Nodes (21): 5. Server-Side Rendering (HIGH), code:typescript (// app.config.ts), code:html (<!-- Critical above-the-fold content -->), code:typescript (@Injectable({ providedIn: "root" })), Configure Incremental Hydration, Defer Non-Critical Content, Use TransferState for SSR Data, 2. Standalone Components (+13 more)
 
 ### Community 2741 - "Community 2741"
 Cohesion: 0.20
@@ -21595,8 +21595,8 @@ Cohesion: 0.18
 Nodes (10): Usage, 使用方法, Backend - Backend-Focused Development, Communication Guidelines, Context, Key Rules, Usage, Your Role (+2 more)
 
 ### Community 2772 - "Community 2772"
-Cohesion: 0.20
-Nodes (10): Usage, code:bash (/frontend <UI task description>), 使用方法, Communication Guidelines, Context, Frontend - Frontend-Focused Development, Key Rules, Usage (+2 more)
+Cohesion: 0.18
+Nodes (10): Usage, code:bash (/frontend <UI task description>), 使用方法, Usage, Communication Guidelines, Context, Frontend - Frontend-Focused Development, Key Rules (+2 more)
 
 ### Community 2773 - "Community 2773"
 Cohesion: 0.11
@@ -21615,8 +21615,8 @@ Cohesion: 0.07
 Nodes (40): code:block5 (generate(), code:block7 (generate(), Image-to-Video, Kling Video v3 Pro, Seedance 1.0 Pro (ByteDance), Veo 3 (Google DeepMind), Video Generation, Video Parameters (+32 more)
 
 ### Community 2777 - "Community 2777"
-Cohesion: 0.14
-Nodes (14): code:perl (use v5.36;), 2. Subroutine Signatures, 3. Context Sensitivity, 4. Postfix Dereferencing, 5. The `isa` Operator (5.32+), code:perl (use v5.36;), code:perl (use v5.36;), Core Principles (+6 more)
+Cohesion: 0.12
+Nodes (17): code:perl (use v5.36;), 1. Use `v5.36` Pragma, 2. Subroutine Signatures, 3. Context Sensitivity, 4. Postfix Dereferencing, 5. The `isa` Operator (5.32+), code:perl (# Good: Modern preamble), code:perl (use v5.36;) (+9 more)
 
 ### Community 2778 - "Community 2778"
 Cohesion: 0.22
@@ -21632,7 +21632,7 @@ Nodes (24): code:block3 (SearchPluginTool({), code:block4 (GetPluginDetailsTool(
 
 ### Community 2781 - "Community 2781"
 Cohesion: 0.01
-Nodes (225): app_colors.dart, ../../../../../core/error/failure.dart, Left, Right, Left, Right, MapEntry, Left (+217 more)
+Nodes (196): ../../../../../core/error/failure.dart, ../../../../../core/services/analytics_service.dart, Left, Right, GovernanceLog, Left, Right, Column (+188 more)
 
 ### Community 2782 - "Community 2782"
 Cohesion: 0.11
@@ -21648,7 +21648,7 @@ Nodes (17): CI/CD Pipeline, Customizing the Mock, Environment Variables, Firebas
 
 ### Community 2785 - "Community 2785"
 Cohesion: 0.09
-Nodes (25): 1. Array Operations, Chaining: Combine Operations, code:typescript (const pricesInCents = [999, 1499, 2999, 4999];), code:typescript (interface User {), code:typescript (const isActive = (user: User): boolean => user.isActive;), code:typescript (interface CartItem {), code:typescript (const calculateTotal = (items: CartItem[]): number =>), code:typescript (const getActivePremiumNames = (users: User[]): string[] =>) (+17 more)
+Nodes (24): 1. Array Operations, Chaining: Combine Operations, code:typescript (const pricesInCents = [999, 1499, 2999, 4999];), code:typescript (interface User {), code:typescript (const isActive = (user: User): boolean => user.isActive;), code:typescript (interface CartItem {), code:typescript (const calculateTotal = (items: CartItem[]): number =>), code:typescript (const getActivePremiumNames = (users: User[]): string[] =>) (+16 more)
 
 ### Community 2786 - "Community 2786"
 Cohesion: 0.20
@@ -21688,7 +21688,7 @@ Nodes (15): APP_DIR, categories, catViolations, crawl(), dependencyGraph, durati
 
 ### Community 2795 - "Community 2795"
 Cohesion: 0.05
-Nodes (72): ContextGraphEntity, ContextGraphRelation, RemoteDispatchAction, String, Vec, OtlpInstrumentationScope, OtlpKeyValue, OtlpResource (+64 more)
+Nodes (59): ContextGraphEntity, ContextGraphRelation, RemoteDispatchAction, String, MemoryConnectorConfig, build_legacy_plugin_draft(), build_legacy_skill_draft(), build_legacy_tool_draft() (+51 more)
 
 ### Community 2796 - "Community 2796"
 Cohesion: 0.05
@@ -21763,16 +21763,16 @@ Cohesion: 0.11
 Nodes (18): 1. Wordmark (Logotype), 2. Lettermark (Monogram), 3. Pictorial Mark (Brand Mark), 4. Abstract Mark, 5. Mascot, 6. Emblem, 7. Combination Mark, Aesthetic Styles (+10 more)
 
 ### Community 2814 - "Community 2814"
-Cohesion: 0.12
-Nodes (15): 1. Readability First, 2. KISS (Keep It Simple, Stupid), 3. DRY (Don't Repeat Yourself), 4. YAGNI (You Aren't Gonna Need It), API Design Standards, Code Quality Principles, Coding Standards & Best Practices, Database Queries (+7 more)
+Cohesion: 0.15
+Nodes (17): code:rust (use rstest::{rstest, fixture};), code:rust (#[cfg(test)]), Parameterized Tests with `rstest`, Test Helpers, Test Organization Patterns, Parameterized Tests with `rstest`, Test Helpers, Test Organization Patterns (+9 more)
 
 ### Community 2815 - "Community 2815"
 Cohesion: 0.12
-Nodes (17): 1. Overview, 2. Colors, 3. Typography, 5. Components, 6. Do's and Don'ts, Buttons, Cards / Containers, Design System: MediaHive (+9 more)
+Nodes (17): 1. Overview, 2. Colors, 4. Elevation, 5. Components, 6. Do's and Don'ts, Buttons, Cards / Containers, Design System: MediaHive (+9 more)
 
 ### Community 2816 - "Community 2816"
-Cohesion: 0.12
-Nodes (15): VideoDB 技能, 何时使用什么, 使用场景, 屏幕录制（桌面捕获）, 快速开始, 时间线编辑 + 生成, 来源, 查询事件 (+7 more)
+Cohesion: 0.15
+Nodes (17): code:rust (assert_eq!(2 + 2, 4);                                    // ), Assertion Macros, code:rust (// src/user.rs), Module-Level Test Organization, Unit Tests, Assertion Macros, Module-Level Test Organization, Unit Tests (+9 more)
 
 ### Community 2817 - "Community 2817"
 Cohesion: 0.10
@@ -21795,8 +21795,8 @@ Cohesion: 0.03
 Nodes (66): Archive Snapshot, Async Operations, Azure App Configuration SDK for Java, Best Practices, Clear Read-Only, code:java (ConfigurationSetting updated = configClient.setConfiguration), code:java (// Only update if ETag matches (no concurrent modifications)), code:java (ConfigurationSetting deleted = configClient.deleteConfigurat) (+58 more)
 
 ### Community 2822 - "Community 2822"
-Cohesion: 0.11
-Nodes (17): Authentication, Azure.Messaging.EventHubs (.NET), Best Practices, Checkpointing Strategies, Client Types, code:bash (# Core package (sending and simple receiving)), code:csharp (using Azure.Messaging.EventHubs;), code:csharp (// Checkpoint every 100 events) (+9 more)
+Cohesion: 0.12
+Nodes (14): Claude Settings Audit, code:bash (ls -la), code:bash (cat .claude/settings.json 2>/dev/null || echo "No existing s), code:markdown (## Detected Tech Stack), Important Rules, Limitations, Output Format, Package Manager Rules (+6 more)
 
 ### Community 2823 - "Community 2823"
 Cohesion: 0.12
@@ -21823,8 +21823,8 @@ Cohesion: 0.33
 Nodes (8): Approval Criteria, Diagnostic Commands, Framework Checks, Prompt Defense Baseline, Reference, Review Output Format, code:text ([SEVERITY] Issue title), Review Output Format
 
 ### Community 2829 - "Community 2829"
-Cohesion: 0.12
-Nodes (14): Authentication, Azure.ResourceManager.ArizeAIObservabilityEval, Best Practices, code:bash (dotnet add package Azure.ResourceManager.ArizeAIObservabilit), code:csharp (// Access resource directly by ID (without listing)), Direct Resource Access, Enums, Environment Variables (+6 more)
+Cohesion: 0.10
+Nodes (16): code:block1 (skills/), Skills, Standard, Where to place skills, スキル, スキルの作成, スキルを使用します, スキルカテゴリ (+8 more)
 
 ### Community 2830 - "Community 2830"
 Cohesion: 0.11
@@ -21835,8 +21835,8 @@ Cohesion: 0.11
 Nodes (16): Controlled Skills, Design Orchestration (Meta-Skill), Design Philosophy, Enforcement Rules, Entry Conditions, Exit Conditions, Limitations, Operating Model (+8 more)
 
 ### Community 2832 - "Community 2832"
-Cohesion: 0.12
-Nodes (15): code:block1 (Error: Database connection timeout after 30s), Distributed Systems Debugging, Error Aggregation and Pattern Recognition, Error Analysis and Resolution Implementation Playbook, Error Analysis Deliverables, Error Detection and Classification, Error Detection Strategy, Error Taxonomy (+7 more)
+Cohesion: 0.17
+Nodes (17): buildSkillEvaluationScaffold(), roundRate(), summarize(), buildSkillEvaluationScaffold(), roundRate(), summarize(), { buildSkillEvaluationScaffold }, { buildSkillHealthReport } (+9 more)
 
 ### Community 2833 - "Community 2833"
 Cohesion: 0.25
@@ -21907,8 +21907,8 @@ Cohesion: 0.04
 Nodes (52): Anpassung, Token-Optimierung, WARNING: Wichtige Hinweise, Codex macOS App + CLI Support, Customization, Key Limitation, Multi-Agent Support, Quick Start (Codex App + CLI) (+44 more)
 
 ### Community 2850 - "Community 2850"
-Cohesion: 0.15
-Nodes (11): code:python (# Kötü - N+1 sorguları), code:python (# Toplu oluşturma), Middleware, Django Geliştirme Desenleri, Hızlı Referans, N+1 Sorgu Önleme, Ne Zaman Etkinleştirmeli, Performans Optimizasyonu (+3 more)
+Cohesion: 0.18
+Nodes (9): code:python (# Kötü - N+1 sorguları), code:python (# Toplu oluşturma), Django Geliştirme Desenleri, Hızlı Referans, N+1 Sorgu Önleme, Ne Zaman Etkinleştirmeli, Performans Optimizasyonu, Toplu Operasyonlar (+1 more)
 
 ### Community 2851 - "Community 2851"
 Cohesion: 0.12
@@ -21919,8 +21919,8 @@ Cohesion: 0.12
 Nodes (16): Claude Code v2.1.116 の argv 重複バグ（詳細）, Claude Code 側の挙動, code:json ("command": "C:/Users/sugig/.claude/skills/continuous-learnin), code:js (spawn('C:/Users/sugig/.claude/skills/continuous-learning/hoo), code:json ({), code:js (spawn('bash "C:/Users/sugig/.claude/skills/continuous-learni), code:bash ("C:\Program Files\Git\bin\bash.exe" "C:\Program Files\Git\bi), HOOK-FIX-20260421 Addendum — v2.1.116 argv 重複バグ (+8 more)
 
 ### Community 2853 - "Community 2853"
-Cohesion: 0.13
-Nodes (16): code:bash (#!/bin/bash), Cleanup Scripts, code:bash (#!/bin/bash), code:bash (# Apply lifecycle policy to transition old objects to cheape), S3 Lifecycle Automation, Safe Cleanup (Dry-Run First), Automated Security Audit Script, Git 钩子 (+8 more)
+Cohesion: 0.10
+Nodes (18): Best Practices, code:block1 (SHOPIFY                          ODOO), code:python (import xmlrpc.client, requests), Data Flow Architecture, Example 1: Push an Odoo Sale Order for a Shopify Order (Python), Example 2: Shopify Webhook for Real-Time Orders, Examples, How It Works (+10 more)
 
 ### Community 2854 - "Community 2854"
 Cohesion: 0.15
@@ -21931,8 +21931,8 @@ Cohesion: 0.07
 Nodes (26): Communication Patterns, Decision Frameworks, Demand Charge Mitigation ROI, Energy Procurement, Examples, How It Works, Internal Stakeholders, Key Edge Cases (+18 more)
 
 ### Community 2856 - "Community 2856"
-Cohesion: 0.14
-Nodes (14): code:block40 (GET /v1/calls/{call_id}), code:bash (curl -X GET "https://api.agentphone.to/v1/calls/call_ghi012"), code:json ({), Get Call Details, code:python (遗传风险评分 = (一级亲属患病数 × 0.4) +), 分析步骤, 步骤1: 确定分析目标, 步骤2: 读取家庭数据 (+6 more)
+Cohesion: 0.08
+Nodes (24): code:block40 (GET /v1/calls/{call_id}), code:bash (curl -X GET "https://api.agentphone.to/v1/calls/call_ghi012"), code:json ({), Get Call Details, code:python (遗传风险评分 = (一级亲属患病数 × 0.4) +), code:block3 (⚠️ 免责声明:), Limitations, When to Use (+16 more)
 
 ### Community 2857 - "Community 2857"
 Cohesion: 0.14
@@ -21979,12 +21979,12 @@ Cohesion: 0.25
 Nodes (7): Build e Correção, Estratégias de Recuperação, Passo 1: Detectar Sistema de Build, Passo 2: Parsear e Agrupar Erros, Passo 3: Loop de Correção (Um Erro por Vez), Passo 4: Guardrails, Passo 5: Resumo
 
 ### Community 2868 - "Community 2868"
-Cohesion: 0.06
-Nodes (30): code:block1 (テスト（Python）), code:block13 (AutomationId  >  Name（テキスト）  >  ClassName + インデックス  >  XPath), code:python (# 実行時の検査 — REPLに貼り付けてツリーを探索), code:python (# コントロールが表示されるのを待つ), code:python (# オンデマンドスクリーンショット), code:python (# 隔離 — PlaywrightのtestのFixmeと同等), code:python (# BAD: 固定スリープ), code:python (# BAD: 主要戦略として脆弱なクラス+インデックスロケーター) (+22 more)
+Cohesion: 0.04
+Nodes (57): code:block1 (テスト（Python）), code:block13 (AutomationId  >  Name（テキスト）  >  ClassName + インデックス  >  XPath), code:python (# 実行時の検査 — REPLに貼り付けてツリーを探索), code:python (# コントロールが表示されるのを待つ), code:python (# オンデマンドスクリーンショット), code:python (# 隔離 — PlaywrightのtestのFixmeと同等), code:bash (# Python 3.8+、Windowsのみ), code:python (# conftest.py — モジュールの先頭に追加) (+49 more)
 
 ### Community 2869 - "Community 2869"
-Cohesion: 0.17
-Nodes (12): code:bash (vercel link --repo --scope <team-slug>), code:bash (vercel link --scope <team-slug>), code:bash (bash /mnt/skills/user/deploy-to-vercel/resources/deploy.sh [), code:bash (# Deploy current directory), code:bash (command -v vercel), code:bash (vercel deploy [path] -y --no-wait), code:bash (skill_dir="<path-to-skill>"), code:block9 (Linking this project to <team name> on Vercel. This will cre) (+4 more)
+Cohesion: 0.14
+Nodes (15): code:bash (vercel link --repo --scope <team-slug>), code:bash (vercel link --scope <team-slug>), code:bash (bash /mnt/skills/user/deploy-to-vercel/resources/deploy.sh [), code:bash (# Deploy current directory), code:bash (command -v vercel), code:bash (vercel deploy [path] -y --no-wait), code:bash (skill_dir="<path-to-skill>"), code:bash (vercel inspect <deployment-url>) (+7 more)
 
 ### Community 2870 - "Community 2870"
 Cohesion: 0.28
@@ -22055,8 +22055,8 @@ Cohesion: 0.13
 Nodes (15): code:json ({), code:json ({), code:json ({), code:json (// apps/web/turbo.json), code:typescript (// Custom remote cache server (Express)), code:json (// turbo.json for self-hosted cache), code:bash (# Use self-hosted cache), code:bash (# Build specific package) (+7 more)
 
 ### Community 2887 - "Community 2887"
-Cohesion: 0.10
-Nodes (34): actionLabel(), applyParamDefaults(), applyParamValue(), buildConfigureRow(), buildConfirmedRow(), buildCyclingRow(), buildDots(), buildGeneratingRow() (+26 more)
+Cohesion: 0.26
+Nodes (12): applyParamDefaults(), applyParamValue(), closedClipPath(), getVisibleVariantEl(), hideParamsPanel(), openTunePopover(), parseVariantParams(), popoverDirection() (+4 more)
 
 ### Community 2888 - "Community 2888"
 Cohesion: 0.11
@@ -22087,12 +22087,12 @@ Cohesion: 0.15
 Nodes (20): Example Session, code:bash (# プライマリビルドチェック), Go Build and Fix, code:`text (User: /go-build), code:text (Kullanıcı: /go-build), Exemplo de Sessão, Örnek Oturum, このコマンドの機能 (+12 more)
 
 ### Community 2895 - "Community 2895"
-Cohesion: 0.12
-Nodes (16): Best Practices, code:json ({), Compaction Decision Guide, Configuration, Context Composition Awareness, Context Optimization Tools, Duplicate Instruction Detection, Hook Setup (+8 more)
+Cohesion: 0.08
+Nodes (22): Automated Security Tests, Pre-Deployment Security Checklist, Resources, Security Review Skill, Security Testing, When to Activate, Best Practices, code:json ({) (+14 more)
 
 ### Community 2896 - "Community 2896"
-Cohesion: 0.54
-Nodes (8): code:`text (User: /kotlin-build), Example Session, code:block4, セッション例, 示例会话, code:block3, Example Session, Example Session
+Cohesion: 0.19
+Nodes (16): code:`text (User: /kotlin-build), Example Session, code:bash (# プライマリビルドチェック), code:block4, Kotlinビルドと修正, このコマンドの動作, セッション例, 使用するタイミング (+8 more)
 
 ### Community 2897 - "Community 2897"
 Cohesion: 0.15
@@ -22169,8 +22169,8 @@ Cohesion: 0.20
 Nodes (10): CRITICAL -- Security, HIGH -- Async Correctness, HIGH -- Error Handling, HIGH -- Idiomatic Patterns, HIGH -- Node.js Specifics, HIGH -- Type Safety, MEDIUM -- Best Practices, MEDIUM -- Performance (+2 more)
 
 ### Community 2911 - "Community 2911"
-Cohesion: 0.12
-Nodes (14): Anti-Patterns, Automation Preflight, Change-Window Preflight, code:python (import ipaddress), code:python (SECURITY_PATTERNS = [), Dangerous Command Detection, Duplicate IPs And Subnet Overlaps, Examples (+6 more)
+Cohesion: 0.10
+Nodes (18): Center, CustomRefreshIndicator, Positioned, Stack, package:flutter/material.dart, package:lottie/lottie.dart, ../../core/theme/app_colors.dart, package:flutter/material.dart (+10 more)
 
 ### Community 2912 - "Community 2912"
 Cohesion: 0.04
@@ -22222,7 +22222,7 @@ Nodes (25): code:bash (# For GitHub Copilot CLI), Install Globally (Recommended)
 
 ### Community 2924 - "Community 2924"
 Cohesion: 0.06
-Nodes (36): Advanced Features (where applicable), Async/Await Best Practices, Building and Running, Character Limits and Truncation, Code Best Practices, Code Composability and Reusability, Code Quality, code:typescript (import axios, { AxiosError } from "axios";) (+28 more)
+Nodes (32): Async/Await Best Practices, Building and Running, Character Limits and Truncation, Code Best Practices, Code Composability and Reusability, code:typescript (import axios, { AxiosError } from "axios";), code:typescript (// Shared API request function), code:typescript (// Good: Async network request) (+24 more)
 
 ### Community 2925 - "Community 2925"
 Cohesion: 0.11
@@ -22362,7 +22362,7 @@ Nodes (16): code:bash (vexor "<QUERY>" [--path <ROOT>] [--mode <MODE>] [--ext .p
 
 ### Community 2959 - "Community 2959"
 Cohesion: 0.04
-Nodes (70): code:python (image = coll.generate_image(), code:python (# URL), code:python (# force=True skips the error if the video is already indexed), code:python (from videodb.exceptions import InvalidRequestError), 1. Install SDK, 2. Configure API key, code:bash (pip install "videodb[capture]" python-dotenv), code:bash (pip install videodb python-dotenv) (+62 more)
+Nodes (80): code:bash (python << 'EOF'), code:python (image = coll.generate_image(), code:python (# URL), code:python (# force=True skips the error if the video is already indexed), code:python (from videodb.exceptions import InvalidRequestError), 1. Install SDK, 2. Configure API key, code:python (from dotenv import load_dotenv) (+72 more)
 
 ### Community 2960 - "Community 2960"
 Cohesion: 0.18
@@ -22373,12 +22373,12 @@ Cohesion: 0.16
 Nodes (10): Any, WhatsApp Template Management - CRUD operations via API., Manage WhatsApp message templates programmatically., List all templates, optionally filtered by status (APPROVED, PENDING, REJECTED)., Create a new message template.          Args:             name: Template name, Delete a template by name.          Note: This deletes ALL translations of the, List only approved templates ready for use., List templates awaiting approval. (+2 more)
 
 ### Community 2962 - "Community 2962"
-Cohesion: 0.04
-Nodes (49): Agents, code:block36 (rules/), code:json ({), Hooks, Kernkonzepte, Rules, Skills, Agents (+41 more)
+Cohesion: 0.05
+Nodes (42): Agents, code:block36 (rules/), Hooks, Kernkonzepte, Rules, Skills, Agents, code:json ({) (+34 more)
 
 ### Community 2963 - "Community 2963"
-Cohesion: 0.17
-Nodes (10): code:bash (# 安装通用 + 一个或多个语言特定的规则集), code:bash (# 创建目标目录), 安装, 带覆盖说明的通用规则, 示例, 规则, 规则 vs 技能, 规则优先级 (+2 more)
+Cohesion: 0.07
+Nodes (24): Structure, code:bash (# common + 1つ以上の言語固有ルールセットをインストール), code:bash (# common ルールをインストール（すべてのプロジェクトに必須）), code:block4 (> このファイルは [common/xxx.md](../common/xxx.md) を <言語> 固有のコンテンツで), code:block1 (rules/), インストール, オプション 1: インストールスクリプト（推奨）, オプション 2: 手動インストール (+16 more)
 
 ### Community 2964 - "Community 2964"
 Cohesion: 0.11
@@ -22433,8 +22433,8 @@ Cohesion: 0.12
 Nodes (17): Agent Loop Without Step Limit, Agent Without Error Recovery, Agent Without Structured Output, Agent Without Thread ID, Agent Without Timeout, Collaboration, Delegation Triggers, Destructive Actions Without Rollback (+9 more)
 
 ### Community 2977 - "Community 2977"
-Cohesion: 0.22
-Nodes (11): code:typescript (// Extract, Transform, Load), ETL 模式, Change Data Capture (CDC), code:typescript (// Listen to PostgreSQL changes and sync to ClickHouse), Data Pipeline Patterns, ETL Pattern, Change Data Capture (CDC), Data Pipeline Patterns (+3 more)
+Cohesion: 0.12
+Nodes (14): Anti-Patterns to Avoid, Apply Strategy, Code Review Checklist, code:bash (# Check Prisma version), Environment Detection, Limitations, Migration Safety, Performance (+6 more)
 
 ### Community 2978 - "Community 2978"
 Cohesion: 0.17
@@ -22530,8 +22530,8 @@ Cohesion: 0.18
 Nodes (14): code:block4 (1. List all files/data this command will modify or delete), Destructive Bash Gate (every destructive command), Edit / MultiEdit Gate (first edit per file), Gate Types, Routine Bash Gate (once per session), Write Gate (first new file creation), code:block2 (Before editing {file_path}, present these facts:), code:block3 (Before creating {file_path}, present these facts:) (+6 more)
 
 ### Community 3000 - "Community 3000"
-Cohesion: 0.10
-Nodes (17): Leiloeiro, Leiloeiro, AbstractJuntaScraper, normalize_situacao(), parse_leiloeiros(), Base abstrata para scrapers de leiloeiros das Juntas Comerciais do Brasil. Cada, Coleta e retorna a lista de leiloeiros do estado., Ponto de entrada principal — respeita rate limit e loga resultado. (+9 more)
+Cohesion: 0.13
+Nodes (8): normalize_situacao(), parse_leiloeiros(), Base abstrata para scrapers de leiloeiros das Juntas Comerciais do Brasil. Cada, Coleta e retorna a lista de leiloeiros do estado., Ponto de entrada principal — respeita rate limit e loga resultado., Normaliza status para ATIVO / CANCELADO / SUSPENSO / IRREGULAR., Factory que preenche estado/junta/url_fonte automaticamente., Scrapers de Juntas Comerciais do Brasil.
 
 ### Community 3001 - "Community 3001"
 Cohesion: 0.12
@@ -22599,7 +22599,7 @@ Nodes (15): 1. Create and Manage Records, 2. Search and Filter Records, 3. Manag
 
 ### Community 3017 - "Community 3017"
 Cohesion: 0.04
-Nodes (51): API Key Authentication, Authentication, Microsoft Entra ID (Recommended for Production), Using OpenAI SDK Directly with Azure, 1. Send Events (Batch), 2. Send Events (Buffered - High Volume), 3. Receive Events (Production - EventProcessorClient), 4. Partition Operations (+43 more)
+Nodes (55): API Key Authentication, Authentication, Microsoft Entra ID (Recommended for Production), Using OpenAI SDK Directly with Azure, 1. Send Events (Batch), 2. Send Events (Buffered - High Volume), 3. Receive Events (Production - EventProcessorClient), 4. Partition Operations (+47 more)
 
 ### Community 3018 - "Community 3018"
 Cohesion: 0.25
@@ -22618,8 +22618,8 @@ Cohesion: 0.17
 Nodes (11): 1. Collect All Errors, 2. Fix Strategy (MINIMAL CHANGES), 3. Common Fixes, Build Error Resolver, Core Responsibilities, DO and DON'T, Priority Levels, Prompt Defense Baseline (+3 more)
 
 ### Community 3022 - "Community 3022"
-Cohesion: 0.05
-Nodes (37): agentskills.io compliant frontmatter, Body Structure (§1.2.1), Bundled Scripts, Clarity Gate v2.1, code:bash (# Generate claim ID), code:bash (# Compute hash), code:block3 (Claim Extracted --> Does Source of Truth Exist?), code:markdown (<!-- CG-EXCLUSION:BEGIN id=auth-legacy-1 -->) (+29 more)
+Cohesion: 0.04
+Nodes (48): agentskills.io compliant frontmatter, Body Structure (§1.2.1), Bundled Scripts, Changelog, Clarity Gate v2.1, code:bash (# Generate claim ID), code:bash (# Compute hash), code:block3 (Claim Extracted --> Does Source of Truth Exist?) (+40 more)
 
 ### Community 3023 - "Community 3023"
 Cohesion: 0.07
@@ -22634,8 +22634,8 @@ Cohesion: 0.12
 Nodes (15): Best Practices, Daily Gift, Format Selection, How It Works, Key Features, Limitations, Overview, Related Skills (+7 more)
 
 ### Community 3026 - "Community 3026"
-Cohesion: 0.04
-Nodes (44): code:bash (go get github.com/dbos-inc/dbos-transact-golang/dbos@latest), code:go (package main), code:go (func fetchData(ctx context.Context) (string, error) {), Critical Rules, DBOS Configuration and Launch, DBOS Go Best Practices, How to Use, Installation (+36 more)
+Cohesion: 0.08
+Nodes (23): code:bash (go get github.com/dbos-inc/dbos-transact-golang/dbos@latest), code:go (package main), code:go (func fetchData(ctx context.Context) (string, error) {), Critical Rules, DBOS Configuration and Launch, Installation, Key Constraints, Workflow and Step Structure (+15 more)
 
 ### Community 3027 - "Community 3027"
 Cohesion: 0.33
@@ -22666,12 +22666,16 @@ Cohesion: 0.15
 Nodes (17): 1. Requirements Analysis, 2. Architecture Review, 3. Step Breakdown, 4. Implementation Order, Best Practices, Plan Format, Planning Process, Red Flags to Check (+9 more)
 
 ### Community 3034 - "Community 3034"
-Cohesion: 0.15
+Cohesion: 0.17
 Nodes (12): 1. 初始扫描, 2. OWASP Top 10 检查, 3. 代码模式审查, 何时运行, 关键原则, 参考, 安全审查员, 审查工作流 (+4 more)
 
 ### Community 3035 - "Community 3035"
-Cohesion: 0.12
-Nodes (18): code:json ({), code:json ({), code:bash (# Global directories), 1. Enable Observation Hooks, 2. Initialize Directory Structure, 3. Use the Instinct Commands, Quick Start, 1. 启用观察钩子 (+10 more)
+Cohesion: 0.10
+Nodes (17): assert, fs, {
+  getHomunculusDir,
+  normalizeRemoteUrl,
+  resolveProjectContext,
+}, httpsContext, httpsRepo, initRepo(), os, override (+9 more)
 
 ### Community 3036 - "Community 3036"
 Cohesion: 0.33
@@ -22710,12 +22714,12 @@ Cohesion: 0.33
 Nodes (6): code:block2 (セッションを [セッションファイルへの実際の解決パス] に保存しました。), ステップ1: コンテキストの収集, ステップ3: セッションファイルを書き込む, ステップ4: 以下のすべてのセクションをファイルに記入する, ステップ5: ファイルをユーザーに表示する, プロセス
 
 ### Community 3045 - "Community 3045"
-Cohesion: 0.09
-Nodes (24): code:json (// package.json), Installation, code:bash (# Install cargo-packager), code:toml ([package.metadata.packager]), code:bash (# Install dependencies), code:bash (# Build NSIS installer), code:bash (# Build package), code:toml (# Linux (Debian)) (+16 more)
+Cohesion: 0.17
+Nodes (13): code:json (// package.json), Installation, code:bash (# Install dependencies), Linux (Debian/Ubuntu), 1. Setup and Configuration, 2. Run Quality Checks, 3. Implement Best Practices, code:bash (# Use the analyzer script) (+5 more)
 
 ### Community 3046 - "Community 3046"
-Cohesion: 0.11
-Nodes (21): code:sql (-- 중복이 있을 수 있는 데이터용 (예: 여러 소스에서 수집된 경우)), code:sql (-- 집계 메트릭을 유지하기 위한 용도), code:sql (CREATE TABLE markets_analytics (), ReplacingMergeTree (去重), code:sql (-- For data that may have duplicates (e.g., from multiple so), code:sql (-- For maintaining aggregated metrics), AggregatingMergeTree (Pre-aggregation), MergeTree Engine (Most Common) (+13 more)
+Cohesion: 0.09
+Nodes (27): code:sql (-- 重複がある可能性のあるデータ（複数のソースからなど）用), code:sql (-- 集計メトリクスの維持用), code:sql (CREATE TABLE markets_analytics (), ReplacingMergeTree (去重), code:sql (-- 用於可能有重複的資料（例如來自多個來源）), code:sql (-- 用於維護聚合指標), ReplacingMergeTree（去重）, code:sql (-- For data that may have duplicates (e.g., from multiple so) (+19 more)
 
 ### Community 3047 - "Community 3047"
 Cohesion: 0.13
@@ -22726,8 +22730,8 @@ Cohesion: 0.20
 Nodes (10): code:yaml (# Enable strict mTLS mesh-wide), code:yaml (# Install cert-manager issuer for Istio), code:yaml (# SPIRE Server configuration), code:yaml (# Linkerd enables mTLS automatically), Template 1: Istio mTLS (Strict Mode), Template 2: Istio Destination Rule for mTLS, Template 3: Cert-Manager with Istio, Template 4: SPIFFE/SPIRE Integration (+2 more)
 
 ### Community 3049 - "Community 3049"
-Cohesion: 0.12
-Nodes (15): session, context, contextDir, existingDirs, existingIdx, gitActivity, isInit, memContent (+7 more)
+Cohesion: 0.11
+Nodes (17): Azure Maps (.NET), Best Practices, Client Hierarchy, code:bash (# Search (geocoding, reverse geocoding)), code:bash (AZURE_MAPS_SUBSCRIPTION_KEY=<your-subscription-key>), code:block6 (Azure.Maps.Search), Common Types, Environment Variables (+9 more)
 
 ### Community 3050 - "Community 3050"
 Cohesion: 0.05
@@ -22811,7 +22815,7 @@ Nodes (8): 中 — 性能, 中 — 最佳实践, 关键 — 安全性, 关键 �
 
 ### Community 3070 - "Community 3070"
 Cohesion: 0.15
-Nodes (11): code:kotlin (// BAD — SQL インジェクション), ProGuard / R8, code:kotlin (// BAD), Kotlin セキュリティ, Secrets Management, WebView セキュリティ, シークレット管理, データ保護 (+3 more)
+Nodes (11): code:kotlin (// BAD — SQL インジェクション), ProGuard / R8, code:xml (<!-- res/xml/network_security_config.xml -->), Kotlin セキュリティ, Network Security, WebView セキュリティ, データ保護, ネットワークセキュリティ (+3 more)
 
 ### Community 3071 - "Community 3071"
 Cohesion: 0.13
@@ -22822,8 +22826,8 @@ Cohesion: 0.15
 Nodes (15): code:markdown (# 生成器状态 — 第 NNN 次迭代), Backend (if needed), Code Quality, Creative Quality — Avoiding AI Slop, Frontend, Interaction with Evaluator, Key Principles, Prompt Defense Baseline (+7 more)
 
 ### Community 3073 - "Community 3073"
-Cohesion: 0.22
-Nodes (9): code:text (1. ./gradlew build        -> 解析错误信息), code:text ([已修复] src/main/kotlin/com/example/service/UserService.kt:42), Kotlin 构建错误解决器, 停止条件, 关键原则, 常见修复模式, 核心职责, 解决工作流 (+1 more)
+Cohesion: 0.18
+Nodes (10): code:text (1. ./gradlew build        -> 解析错误信息), code:text ([已修复] src/main/kotlin/com/example/service/UserService.kt:42), Kotlin 构建错误解决器, プロンプト防御ベースライン, 停止条件, 关键原则, 常见修复模式, 核心职责 (+2 more)
 
 ### Community 3074 - "Community 3074"
 Cohesion: 0.25
@@ -22866,8 +22870,8 @@ Cohesion: 0.14
 Nodes (12): Best Practices, Common Pitfalls, Example 1: Cozy Farming Game, Example 2: Multiplayer Shooter, Example 3: 2D Puzzle Mobile, Examples, Limitations, Overview (+4 more)
 
 ### Community 3084 - "Community 3084"
-Cohesion: 0.13
-Nodes (16): applyPlaceholderSizingStyles(), createInsertPlaceholder(), cursorForInsertAxis(), detectInsertAxis(), detectInsertAxisFromStyle(), ensureInsertLine(), handleMouseMove(), hideInsertLine() (+8 more)
+Cohesion: 0.14
+Nodes (19): code:python (# Bad: O(n²) due to string immutability), code:python (# Bad: Returns full list in memory), Avoid String Concatenation in Loops, code:python (# Bad: Regular class uses __dict__ (more memory)), Generator for Large Data, Memory and Performance, Using __slots__ for Memory Efficiency, Avoid String Concatenation in Loops (+11 more)
 
 ### Community 3085 - "Community 3085"
 Cohesion: 0.07
@@ -22882,8 +22886,8 @@ Cohesion: 0.09
 Nodes (20): 安全政策, 安全资源, 报告漏洞, 支持版本, 范围, Claude Code 的 CVE（2026 年 2 月）, code:yaml (# docker-compose.yml), code:bash (# regex to detect unicode tag smuggling) (+12 more)
 
 ### Community 3088 - "Community 3088"
-Cohesion: 0.02
-Nodes (105): 1. Readability First, 2. KISS (Keep It Simple, Stupid), 3. DRY (Don't Repeat Yourself), 4. YAGNI (You Aren't Gonna Need It), API Design Standards, Code Quality Principles, Coding Standards & Best Practices, Input Validation (+97 more)
+Cohesion: 0.03
+Nodes (71): 1. Readability First, 2. KISS (Keep It Simple, Stupid), 3. DRY (Don't Repeat Yourself), 4. YAGNI (You Aren't Gonna Need It), API Design Standards, Code Quality Principles, Coding Standards & Best Practices, Database Queries (+63 more)
 
 ### Community 3089 - "Community 3089"
 Cohesion: 0.07
@@ -22899,23 +22903,23 @@ Nodes (22): AURA trust-check adapter, Boundary & threats, Carry the AURA badge, 
 
 ### Community 3092 - "Community 3092"
 Cohesion: 0.14
-Nodes (16): clearHandled(), clearSession(), ensureInsertPlaceholder(), findInsertAnchorInDom(), isInsertGeneratingSession(), isSessionHandled(), loadSession(), pickVariantContent() (+8 more)
+Nodes (20): applyPlaceholderDimensions(), clearHandled(), clearSession(), cycleVariant(), ensureInsertPlaceholder(), findInsertAnchorInDom(), isInsertGeneratingSession(), isSessionHandled() (+12 more)
 
 ### Community 3093 - "Community 3093"
 Cohesion: 0.14
 Nodes (14): Flaky Test Handling, code:typescript (// Quarantine), 1. Plan, 2. Create, 3. Execute, Core Responsibilities, E2E Test Runner, Flaky Test Handling (+6 more)
 
 ### Community 3094 - "Community 3094"
-Cohesion: 0.15
-Nodes (14): Backup Key, code:rust (use azure_security_keyvault_keys::models::RestoreKeyParamete), code:rust (let key = client), code:rust (use azure_security_keyvault_keys::models::{CreateKeyParamete), code:rust (client.delete_key("key-name", None).await?;), code:rust (use azure_security_keyvault_keys::ResourceExt;), code:rust (let backup = client.backup_key("key-name", None).await?;), Core Operations (+6 more)
+Cohesion: 0.08
+Nodes (25): Azure Key Vault Keys SDK for Rust, Backup Key, Best Practices, code:sh (cargo add azure_security_keyvault_keys azure_identity), code:rust (use azure_security_keyvault_keys::models::RestoreKeyParamete), code:rust (// For cryptographic operations, use the key's operations), code:rust (let key = client), code:rust (use azure_security_keyvault_keys::models::{CreateKeyParamete) (+17 more)
 
 ### Community 3095 - "Community 3095"
 Cohesion: 0.20
 Nodes (10): CRITICAL -- Hook Rules, CRITICAL -- React Security, HIGH -- Accessibility, HIGH -- Hook Correctness, HIGH -- Rendering and State Correctness, HIGH -- Server/Client Boundary (Next.js App Router / RSC), MEDIUM -- Composition, MEDIUM -- Forms (+2 more)
 
 ### Community 3096 - "Community 3096"
-Cohesion: 0.12
-Nodes (16): code:json ({), Phase 7: Health Checks, code:json ({), Phase 7: Health Checks, code:json ({), code:json ({), code:json ({), Collection Response (with Pagination) (+8 more)
+Cohesion: 0.14
+Nodes (19): code:python (# Good: Clear and readable), code:python (# Good: Explicit configuration), 1. Readability Counts, 2. Explicit is Better Than Implicit, 3. EAFP - Easier to Ask Forgiveness Than Permission, code:python (# Good: EAFP style), Core Principles, 1. Readability Counts (+11 more)
 
 ### Community 3097 - "Community 3097"
 Cohesion: 0.22
@@ -23117,12 +23121,12 @@ Cohesion: 0.07
 Nodes (25): Benchmarks, Data & Expert Methods, By Format Type, By Industry (Landing Page), By Traffic Source, Conversion Rate Benchmarks, Core Performance Metrics (2024–2025), Cost Benchmarks, Cost Per Lead by Channel (+17 more)
 
 ### Community 3143 - "Community 3143"
-Cohesion: 0.05
-Nodes (44): 1. Check Your Setup, 2. Get API Key (If Needed), 3. Test Connection, 4. Common Operations, Anti-Pattern to Avoid, code:bash (# View an issue), code:bash (npx tsx scripts/linear-ops.ts create-project "Phase X: Featu), code:bash (npx tsx scripts/linear-ops.ts create-issue "Phase X: Feature) (+36 more)
+Cohesion: 0.04
+Nodes (56): 1. Check Your Setup, 2. Get API Key (If Needed), 3. Test Connection, 4. Common Operations, Anti-Pattern to Avoid, code:bash (# View an issue), code:bash (npx tsx scripts/linear-ops.ts create-project "Phase X: Featu), code:bash (npx tsx scripts/linear-ops.ts create-issue "Phase X: Feature) (+48 more)
 
 ### Community 3144 - "Community 3144"
-Cohesion: 0.17
-Nodes (12): code:block29 (ERROR: Track not found: {track-id}), code:block30 (============================================================), code:block31 (============================================================), code:bash (rm -rf conductor/tracks/{track-id}), code:bash (git add conductor/tracks.md), code:block34 (============================================================), 1. Find Track, 2. Check In-Progress Status (+4 more)
+Cohesion: 0.14
+Nodes (19): code:kotlin (suspend fun findUserById(id: UUID): UserRow? =), code:kotlin (suspend fun createUser(request: CreateUserRequest): User =), DAO Entity Usage, DSL Query, Examples, HikariCP Configuration, code:kotlin (val hikariConfig = HikariConfig().apply {), DAO Entity Usage (+11 more)
 
 ### Community 3145 - "Community 3145"
 Cohesion: 0.12
@@ -23146,7 +23150,7 @@ Nodes (14): 1. Mock vs. Fake vs. Real Object, 2. Creating Mocks, 3. Registering 
 
 ### Community 3150 - "Community 3150"
 Cohesion: 0.03
-Nodes (68): 1. Always Use {{}}, 2. Use Quotes for Spaces, 3. Match Exact Node Names, 4. No Nested {{}}, Access Nested Fields, Advanced Patterns, Arrays, Available Methods (+60 more)
+Nodes (68): Access Nested Fields, Advanced Patterns, Arrays, Available Methods, Best Practices, ❌ Code Nodes, code:block1 ({{expression}}), code:javascript (// Node without spaces) (+60 more)
 
 ### Community 3151 - "Community 3151"
 Cohesion: 0.12
@@ -23293,8 +23297,8 @@ Cohesion: 0.12
 Nodes (15): Approval Criteria, code:bash (npm run typecheck --if-present       # Canonical TypeScript ), CRITICAL -- Security, Diagnostic Commands, HIGH -- Async Correctness, HIGH -- Error Handling, HIGH -- Idiomatic Patterns, HIGH -- Node.js Specifics (+7 more)
 
 ### Community 3187 - "Community 3187"
-Cohesion: 0.08
-Nodes (24): ============================================================, 4.2 Variaveis De Ambiente Lambda, 4.3 Requirements.Txt, 5.1 Criar Tabela, 5.2 Schema Do Usuario, 5.3 Ttl Automatico (Expirar Dados Antigos), 6.1 Vozes Disponiveis (Portugues), 6.3 Ssml Para Controle De Voz (+16 more)
+Cohesion: 0.06
+Nodes (31): ============================================================, 4.2 Variaveis De Ambiente Lambda, 4.3 Requirements.Txt, 5.1 Criar Tabela, 5.2 Schema Do Usuario, 5.3 Ttl Automatico (Expirar Dados Antigos), 6.1 Vozes Disponiveis (Portugues), 6.3 Ssml Para Controle De Voz (+23 more)
 
 ### Community 3188 - "Community 3188"
 Cohesion: 0.12
@@ -23313,16 +23317,16 @@ Cohesion: 0.12
 Nodes (16): 1. Reproduce the Bug, 2. Gather Evidence, 3. Form a Hypothesis, 5. Find Root Cause, 6. Implement Fix, 7. Test the Fix, 8. Prevent Regression, code:block1 (1. Get exact steps to reproduce) (+8 more)
 
 ### Community 3192 - "Community 3192"
-Cohesion: 0.08
-Nodes (26): code:pseudo (function index()), code:pseudo (class ChatChannel), code:pseudo (class AdminNotificationChannel), code:pseudo (function broadcast_message():), code:block14 (ChatWidget (root container)), code:pseudo (function useSupportChat():), code:block16 (Header: "Support Chats"), code:block17 (Header: user@example.com [Archive/Restore button]) (+18 more)
+Cohesion: 0.15
+Nodes (18): Any, InventoryData, apply_font_properties(), apply_paragraph_properties(), apply_replacements(), check_duplicate_keys(), clear_paragraph_bullets(), detect_frame_overflow() (+10 more)
 
 ### Community 3193 - "Community 3193"
 Cohesion: 0.12
 Nodes (15): 1. Enhanced Network Monitoring, 2. Improved Firebase Initialization, 3. Offline Development Support, Additional Recommendations, Conclusion, Files Modified, Firebase Firestore Connectivity Issue - Comprehensive Fix Summary, How to Test the Fix (+7 more)
 
 ### Community 3194 - "Community 3194"
-Cohesion: 0.13
-Nodes (14): Output, Çıktı, code:block6 (PASS: Import complete!), Flags, Instinct Import Command, Merge Behavior, Output, Usage (+6 more)
+Cohesion: 0.18
+Nodes (10): Output, Çıktı, code:block6 (PASS: Import complete!), Flags, Instinct Import Command, Merge Behavior, Output, Usage (+2 more)
 
 ### Community 3195 - "Community 3195"
 Cohesion: 0.40
@@ -23357,8 +23361,8 @@ Cohesion: 0.12
 Nodes (15): code:json ({), code:json ({), Comparison Notes (Research: Jan 2025), Configuration, Continuous Learning Skill - DEPRECATED, Hook Setup, How It Works, Original v1 Documentation (archival) (+7 more)
 
 ### Community 3203 - "Community 3203"
-Cohesion: 0.04
-Nodes (55): CI/CD Integration, code:yaml (name: Verification), GitHub Actions Example, Load Testing with K6, Metrics to Monitor, Phase 10: Documentation Review, Phase 6: Performance Testing, code:javascript (// load-test.js) (+47 more)
+Cohesion: 0.03
+Nodes (81): Dependency Security Scanning, CI/CD Integration, code:yaml (name: Verification), GitHub Actions Example, Load Testing with K6, Metrics to Monitor, Phase 10: Documentation Review, Phase 1: Build (+73 more)
 
 ### Community 3204 - "Community 3204"
 Cohesion: 0.14
@@ -23374,11 +23378,11 @@ Nodes (12): Any, main(), Validate no hardcoded secrets (OWASP A04).     Checks: 
 
 ### Community 3207 - "Community 3207"
 Cohesion: 0.11
-Nodes (17): 2. Object Transformations, code:typescript (// Generic pick utility), code:typescript (function sanitizeForLogging(user: User): Omit<User, 'passwor), code:typescript (// Generic omit utility), code:typescript (interface Settings {), code:typescript (// Manual spread nesting), Functional Approach, Functional Approach (+9 more)
+Nodes (18): 2. Object Transformations, code:typescript (// Generic pick utility), code:typescript (function sanitizeForLogging(user: User): Omit<User, 'passwor), code:typescript (// Generic omit utility), code:typescript (interface Settings {), code:typescript (// Manual spread nesting), Functional Approach, Functional Approach (+10 more)
 
 ### Community 3208 - "Community 3208"
-Cohesion: 0.04
-Nodes (53): 📦 Batch Operations, code:bash (# Start with a simple workflow), code:bash (# Optimize existing workflow), code:javascript (// Step 1: Initialize swarm coordination), code:bash (# Pre-task: Setup GitHub context), code:bash (# Profile workflow performance), code:bash (# Download and analyze logs), Common Commands (+45 more)
+Cohesion: 0.03
+Nodes (69): Batch cut from edit decision list, code:bash (#!/bin/bash), code:bash (#!/bin/bash), Phase 8: File Operations, 📦 Batch Operations, code:bash (# Start with a simple workflow), code:bash (# Optimize existing workflow), code:javascript (// Step 1: Initialize swarm coordination) (+61 more)
 
 ### Community 3209 - "Community 3209"
 Cohesion: 0.18
@@ -23389,8 +23393,8 @@ Cohesion: 0.12
 Nodes (16): Advanced Task Tool Parameters, code:python (# Simple tasks -> Direct dispatch to Haiku), code:python (# Enable Playwright MCP for E2E testing), code:python (# Opus for planning/architecture ONLY), code:python (# Launch 10+ Haiku agents in parallel for unit test suite), code:python (# Launch background agent - returns immediately with output_), code:python (# First call returns agent_id), code:block9 (Task Received) (+8 more)
 
 ### Community 3211 - "Community 3211"
-Cohesion: 0.11
-Nodes (17): code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), Test::MockModule, Web 安全, XSS 预防, 会话和标头安全, Perl 测试模式 (+9 more)
+Cohesion: 0.13
+Nodes (15): code:perl (use v5.36;), code:perl (use v5.36;), code:bash (# Basic coverage report), code:perl (use v5.36;), Coverage with Devel::Cover, Integration Testing, Running Coverage, Running Coverage (+7 more)
 
 ### Community 3212 - "Community 3212"
 Cohesion: 0.12
@@ -23437,8 +23441,8 @@ Cohesion: 0.16
 Nodes (15): code:bash (mvn clean test), Coverage with JaCoCo, Maven Configuration (Complete), Coverage with JaCoCo, Maven Configuration (Complete), Coverage (JaCoCo), code:xml (<plugin>), Coverage with JaCoCo (+7 more)
 
 ### Community 3224 - "Community 3224"
-Cohesion: 0.06
-Nodes (31): Brute-Force with Hydra, Brute-Force with Medusa, code:bash (# Quick SSH port scan), code:bash (# Syntax: ssh -L <local_port>:<remote_host>:<remote_port> us), code:bash (# Syntax: ssh -R <remote_port>:<local_host>:<local_port> use), code:bash (# Create SOCKS proxy on local port 1080), code:bash (# Jump through intermediate host), code:bash (# Check sudo privileges) (+23 more)
+Cohesion: 0.09
+Nodes (22): Brute-Force with Hydra, Brute-Force with Medusa, code:bash (# Quick SSH port scan), code:bash (# Check sudo privileges), code:bash (# Banner grabbing), code:bash (# ssh-audit - comprehensive SSH audit), code:bash (# Single username, password list), code:bash (# Basic brute-force) (+14 more)
 
 ### Community 3225 - "Community 3225"
 Cohesion: 0.12
@@ -23473,8 +23477,8 @@ Cohesion: 0.12
 Nodes (14): 与 ECC 集成, 何时激活, 四阶段循环, 恢复启发式方法, 智能体内省调试, 范围边界, 输出标准, 阶段 1：失败捕获 (+6 more)
 
 ### Community 3233 - "Community 3233"
-Cohesion: 0.12
-Nodes (13): Exa Search, MCP Requirement, Related Skills, Tips, When to Activate, MCP Requirement, code:json ("exa-web-search": {), Exa Search (+5 more)
+Cohesion: 0.11
+Nodes (14): Exa Search, MCP Requirement, Related Skills, Tips, When to Activate, MCP Requirement, code:json ("exa-web-search": {), MCP Requirement (+6 more)
 
 ### Community 3234 - "Community 3234"
 Cohesion: 0.13
@@ -23497,8 +23501,8 @@ Cohesion: 0.11
 Nodes (5): Entity, initializeSeed(), params, regenerate(), setup()
 
 ### Community 3239 - "Community 3239"
-Cohesion: 0.18
-Nodes (8): Development Workflow, Feature Implementation Workflow, 功能实现工作流, 开发工作流, code:block1 (<类型>: <描述>), Git 工作流, Pull Request 工作流, 提交消息格式
+Cohesion: 0.10
+Nodes (14): Development Workflow, Feature Implementation Workflow, code:markdown (# 好：并行执行), 代理编排, 可用代理, 多视角分析, 并行任务执行, 立即使用代理 (+6 more)
 
 ### Community 3240 - "Community 3240"
 Cohesion: 0.18
@@ -23521,8 +23525,8 @@ Cohesion: 0.19
 Nodes (14): CONTEXT GATHERING, DECISION MATRIX, ETHICAL GUARDRAILS, Execution Steps, FAILURE MODES - DO NOT DO THESE, Limitations, Mechanism, OUTPUT QUALITY CHECK (+6 more)
 
 ### Community 3245 - "Community 3245"
-Cohesion: 0.13
-Nodes (13): 10. Dependency Security, 6. CSRF Protection, Automated Security Tests, CSRF Tokens, Pre-Deployment Security Checklist, Resources, SameSite Cookies, Security Checklist (+5 more)
+Cohesion: 0.11
+Nodes (18): code:bash (node skills/vercel-optimize/scripts/build-docs.mjs), code:bash (node --test packages/vercel-optimize-tests/test/*.test.mjs), Common changes, Contributing to `vercel-optimize`, Output contracts, Rules, code:block12, code:block13 (+10 more)
 
 ### Community 3246 - "Community 3246"
 Cohesion: 0.04
@@ -23533,8 +23537,8 @@ Cohesion: 0.05
 Nodes (42): code:java (import com.azure.identity.EnvironmentCredential;), code:bash (AZURE_TENANT_ID=<tenant-id>), Environment Credential, Required Environment Variables, Azure CLI, Azure Developer CLI, Azure Identity SDK for TypeScript, Azure PowerShell (+34 more)
 
 ### Community 3248 - "Community 3248"
-Cohesion: 0.13
-Nodes (15): code:rust (use std::sync::Arc;), code:rust (use tokio::task::JoinSet;), code:rust (use tokio::sync::{mpsc, broadcast, oneshot, watch};), code:rust (use anyhow::{Context, Result, bail};), code:rust (use tokio::signal;), code:rust (use async_trait::async_trait;), code:rust (use futures::stream::{self, Stream, StreamExt};), Pattern 4: Graceful Shutdown (+7 more)
+Cohesion: 0.14
+Nodes (15): Code Review Checklist, code:markdown (## What), PR Description Template, PR Title Format, Pull Request Workflow, code:markdown (## 内容), Code Review Checklist, code:block11 (<type>(<scope>): <description>) (+7 more)
 
 ### Community 3249 - "Community 3249"
 Cohesion: 0.04
@@ -23570,11 +23574,11 @@ Nodes (23): Cancel a Batch, code:python (import time), code:python (for result i
 
 ### Community 3257 - "Community 3257"
 Cohesion: 0.13
-Nodes (15): code:block13 (Error pushing to Hub), code:block14 (404 Client Error: Not Found), code:python (from huggingface_hub import HfApi), code:python (try:), code:bash (export DEBUG=true), code:bash (# Test authentication), 5. Add Error Handling, Debugging Techniques (+7 more)
+Nodes (14): package:flutter/material.dart, package:lucide_icons_flutter/lucide_icons.dart, package:lucide_icons/lucide_icons.dart, actionType, actorId, actorName, createdAt, description (+6 more)
 
 ### Community 3258 - "Community 3258"
 Cohesion: 0.15
-Nodes (12): Adaptive Architecture, code:block1 (📊 ADAPTIVE INTELLIGENCE LAYER), Adaptation Effectiveness, Adaptive Architecture, Adaptive Strategy Design, Adaptive Swarm Coordinator, Best Practices, Learning Progress (+4 more)
+Nodes (12): Adaptive Architecture, code:block1 (📊 ADAPTIVE INTELLIGENCE LAYER), 1. Topology Adaptation Engine, 2. Self-Organizing Coordination, 3. Machine Learning Integration, Adaptive Architecture, Adaptive Strategy Design, Adaptive Swarm Coordinator (+4 more)
 
 ### Community 3259 - "Community 3259"
 Cohesion: 0.15
@@ -23642,7 +23646,7 @@ Nodes (8): Integration, Phase 1 — FRAME, Phase 2 — GROUND, Phase 3 — DECID
 
 ### Community 3275 - "Community 3275"
 Cohesion: 0.13
-Nodes (13): Anti-Patterns, Data and Feature Hypotheses, Decision Brain, Error Analysis Loop, Machine Learning Engineering Workflow, Metric and Mistake Economics, Output Expectations, Related Skills (+5 more)
+Nodes (13): code:ts (// Bad: triggers recalc on all children), code:tsx (const x = useMotionValue(0);), code:ts ("use client";), code:css (.animating { will-change: transform, opacity; }), Compositing layers and will-change, Contents, CSS variables inheritance trap, CSS vs JS animations (+5 more)
 
 ### Community 3276 - "Community 3276"
 Cohesion: 0.20
@@ -23689,8 +23693,8 @@ Cohesion: 0.12
 Nodes (21): Animation Patterns Reference, Background Effects, code:css (/* Fade + Slide Up (most versatile) */), code:css (/* Gradient Mesh — layered radial gradients for depth */), code:javascript (/* 3D Tilt on Hover — adds depth to cards/panels */), Effect-to-Feeling Guide, Entrance Animations, Interactive Effects (+13 more)
 
 ### Community 3287 - "Community 3287"
-Cohesion: 0.07
-Nodes (26): code:dart (// タイムアウトと HTTPS 強制を設定した Dio), code:dart (// BAD — SQL インジェクション), code:xml (<!-- AndroidManifest.xml — エクスポートされるコンポーネントを制限 -->), code:dart (// webview_flutter v4+ API (WebViewController + WebViewWidge), code:dart (// BAD), code:dart (// Dio with timeout and HTTPS enforcement), code:dart (// BAD — SQL injection), code:xml (<!-- AndroidManifest.xml — restrict exported components -->) (+18 more)
+Cohesion: 0.05
+Nodes (33): code:dart (// タイムアウトと HTTPS 強制を設定した Dio), code:dart (// BAD — SQL インジェクション), code:xml (<!-- AndroidManifest.xml — エクスポートされるコンポーネントを制限 -->), code:dart (// webview_flutter v4+ API (WebViewController + WebViewWidge), code:dart (// BAD), code:dart (// Dio with timeout and HTTPS enforcement), code:dart (// BAD — SQL injection), code:xml (<!-- AndroidManifest.xml — restrict exported components -->) (+25 more)
 
 ### Community 3288 - "Community 3288"
 Cohesion: 0.12
@@ -23721,20 +23725,20 @@ Cohesion: 0.15
 Nodes (12): Output Format, code:bash (npm run build --if-present), Core Responsibilities, Diagnostic Commands, Key Principles, Output Format, React Build Resolver, Resolution Workflow (+4 more)
 
 ### Community 3295 - "Community 3295"
-Cohesion: 0.13
-Nodes (15): Advanced System Prompt Template, code:python (# Use HF MCP tools to find existing datasets), code:bash (# Initialize new dataset), code:bash (# Quick setup with any template), code:text (You are an AI assistant expert at using MCP tools effectivel), code:bash (# Add MCP-focused examples), code:bash (uv run scripts/dataset_manager.py list_templates), code:bash (uv run scripts/dataset_manager.py quick_setup --repo_id "you) (+7 more)
+Cohesion: 0.11
+Nodes (18): compilerOptions, declaration, declarationMap, esModuleInterop, forceConsistentCasingInFileNames, isolatedModules, lib, module (+10 more)
 
 ### Community 3296 - "Community 3296"
-Cohesion: 0.12
-Nodes (15): 1. Pipeline API, 2. Model Selection, 3. Device Selection, 4. Quantization Options, Browser-Specific Considerations, code:javascript (const pipe = await pipeline('text-generation', 'onnx-communi), code:javascript (// Optimized for browsers with quantization), code:javascript (import { pipeline } from '@huggingface/transformers';) (+7 more)
+Cohesion: 0.13
+Nodes (15): code:javascript (const generator = await pipeline('text-generation', 'onnx-co), code:javascript (const translator = await pipeline('translation', 'Xenova/nll), code:javascript (const summarizer = await pipeline('summarization');), code:javascript (const classifier = await pipeline('zero-shot-classification'), code:javascript (const classifier = await pipeline('text-classification');), code:javascript (const ner = await pipeline('token-classification');), code:javascript (const qa = await pipeline('question-answering');), Named Entity Recognition (NER) (+7 more)
 
 ### Community 3297 - "Community 3297"
 Cohesion: 0.12
 Nodes (14): code:text (問いのタイプ), 1. ユーザーがすでに提供した情報から始める, 2. リクエストを分類する, 3. 最も軽量な有効な証拠パスを優先する, 4. 証拠の境界を明示してレポートする, 5. タスクを手動のままにすべきか決定する, よくある落とし穴, スキルスタック (+6 more)
 
 ### Community 3298 - "Community 3298"
-Cohesion: 0.22
-Nodes (13): Carousel(), CarouselApi, CarouselContent(), CarouselContext, CarouselContextProps, CarouselItem(), CarouselNext(), CarouselOptions (+5 more)
+Cohesion: 0.03
+Nodes (84): ActivityLog, ActivityPage(), Dashboard(), FilmFrameCorners(), TimelineDivider(), BORDER_COLORS, buildCalendarDays(), CalendarEvent (+76 more)
 
 ### Community 3299 - "Community 3299"
 Cohesion: 0.12
@@ -23753,12 +23757,12 @@ Cohesion: 0.13
 Nodes (14): code:bash (# 설정), code:bash (npx playwright test                        # 모든 E2E 테스트 실행), code:typescript (// 격리), 1. 계획, 2. 생성, 3. 실행, E2E 테스트 러너, 기본 도구: Agent Browser (+6 more)
 
 ### Community 3303 - "Community 3303"
-Cohesion: 0.12
-Nodes (19): code:markdown (# 実装計画: [機能名]), code:markdown (# Plano de Implementação: [Nome da Funcionalidade]), 1. 要件分析, 2. アーキテクチャレビュー, 3. ステップの分割, 4. 実装順序, Formato do Plano, あなたの役割 (+11 more)
+Cohesion: 0.09
+Nodes (24): code:markdown (# 実装計画: [機能名]), code:markdown (# Plano de Implementação: [Nome da Funcionalidade]), 1. 要件分析, 1. 요구사항 분석, 2. アーキテクチャレビュー, 2. 아키텍처 검토, 3. ステップの分割, 3. 단계 분해 (+16 more)
 
 ### Community 3304 - "Community 3304"
-Cohesion: 0.04
-Nodes (53): 1단계: 플러그인 설치, 2단계: 룰 설치 (필수), 3단계: 사용 시작, AgentShield — 보안 감사 도구, code:bash (# 마켓플레이스 추가), code:bash (# 저장소 클론), code:block18 (/ecc:plan "OAuth를 사용한 사용자 인증 추가"), code:block19 (/tdd                                          → tdd-guide: 버) (+45 more)
+Cohesion: 0.03
+Nodes (60): 1단계: 플러그인 설치, 2단계: 룰 설치 (필수), 3단계: 사용 시작, AgentShield — 보안 감사 도구, code:bash (# 마켓플레이스 추가), code:bash (# 저장소 클론), code:markdown (# TDD 워크플로우), code:block17 (rules/) (+52 more)
 
 ### Community 3305 - "Community 3305"
 Cohesion: 0.13
@@ -23781,16 +23785,16 @@ Cohesion: 0.13
 Nodes (14): Agent Orkestrasyonu, Başarı Metrikleri, code:block1 (agents/          — 28 özel subagent), Everything Claude Code (ECC) — Agent Talimatları, Geliştirme İş Akışı, Git İş Akışı, Güvenlik Kuralları, Kodlama Stili (+6 more)
 
 ### Community 3310 - "Community 3310"
-Cohesion: 0.07
-Nodes (27): Adding a New Language, code:bash (# Install common + one or more language-specific rule sets), code:block5 (> This file extends [common/xxx.md](../common/xxx.md) with <), Common rules with override notes, Example, Installation, Option 1: Install Script (Recommended), Option 2: Manual Installation (+19 more)
+Cohesion: 0.08
+Nodes (23): Adding a New Language, code:bash (# Install common + one or more language-specific rule sets), code:block5 (> This file extends [common/xxx.md](../common/xxx.md) with <), Common rules with override notes, Example, Installation, Option 1: Install Script (Recommended), Option 2: Manual Installation (+15 more)
 
 ### Community 3311 - "Community 3311"
 Cohesion: 0.15
 Nodes (12): Security Reviewer, 1. İlk Tarama, 2. OWASP Top 10 Kontrolü, 3. Kod Kalıbı İncelemesi, Acil Durum Müdahalesi, Anahtar Prensipler, Başarı Metrikleri, İnceleme İş Akışı (+4 more)
 
 ### Community 3312 - "Community 3312"
-Cohesion: 0.10
-Nodes (18): Core File Structure, Backend (pytest), code:bash (# Build and deploy frontend), code:bash (# Frontend (.env.local)), code:block2 (project/), Critical Rules, Deployment Commands, Deployment Workflow (+10 more)
+Cohesion: 0.12
+Nodes (17): code:javascript (// accessibility-test.js), code:javascript (// color-contrast.js), code:javascript (// keyboard-navigation.js), code:javascript (// screen-reader-test.js), code:markdown (## Manual Accessibility Testing), code:javascript (// Fix missing alt text), code:yaml (# .github/workflows/accessibility.yml), code:javascript (// report-generator.js) (+9 more)
 
 ### Community 3313 - "Community 3313"
 Cohesion: 0.12
@@ -23830,7 +23834,7 @@ Nodes (7): Best Practices, Commands, Examples, How It Works, Next.js and Turbopa
 
 ### Community 3322 - "Community 3322"
 Cohesion: 0.12
-Nodes (16): Analysis Commands, Core Responsibilities, Performance Optimizer, Prompt Defense Baseline, Red Flags - Act Immediately, Success Metrics, When to Run, 分析命令 (+8 more)
+Nodes (15): code:bash (# バンドル分析), Prompt Defense Baseline, コア責務, パフォーマンスオプティマイザー, プロンプト防御ベースライン, レッドフラグ - 即座にアクション, 分析コマンド, 実行タイミング (+7 more)
 
 ### Community 3323 - "Community 3323"
 Cohesion: 0.15
@@ -23857,7 +23861,7 @@ Cohesion: 0.12
 Nodes (14): Elasticsearch, Kafka, 1. 定义操作问题, 2. 研究目标平台架构, 3. 构建最小可用面板, 4. 剔除装饰性面板, API网关/入口, 仪表盘构建器 (+6 more)
 
 ### Community 3329 - "Community 3329"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (15): Basic Message Request, Claude API — Java, Client Initialization, code:xml (<dependency>), code:groovy (implementation("com.anthropic:anthropic-java:2.15.0")), code:java (import com.anthropic.client.AnthropicClient;), code:java (import com.anthropic.models.messages.MessageCreateParams;), code:java (import com.anthropic.core.http.StreamResponse;) (+7 more)
 
 ### Community 3330 - "Community 3330"
@@ -23881,8 +23885,8 @@ Cohesion: 0.07
 Nodes (40): code:python (# Begin ingestion), Batch Config Summary, Complete Workflow, Generating Streams, RTStream Methods, RTStream Reference, Starting and Stopping, Transcription (+32 more)
 
 ### Community 3335 - "Community 3335"
-Cohesion: 0.07
-Nodes (26): AI gives wrong or made-up information, code:javascript (async function callWithRetry(fn, maxRetries = 3) {), code:javascript (import PQueue from 'p-queue';), Handling Rate Limits, Request Queue, Retry with Exponential Backoff, User-Facing Handling, Best Practices (+18 more)
+Cohesion: 0.11
+Nodes (17): AI gives wrong or made-up information, code:javascript (async function callWithRetry(fn, maxRetries = 3) {), code:javascript (import PQueue from 'p-queue';), Handling Rate Limits, Request Queue, Retry with Exponential Backoff, User-Facing Handling, Best Practices (+9 more)
 
 ### Community 3336 - "Community 3336"
 Cohesion: 0.12
@@ -23893,7 +23897,7 @@ Cohesion: 0.10
 Nodes (24): code:go (package main), Best Practices, code:block1 (Don't communicate by sharing memory;), code:bash (# Run tests with race detector), code:go (func selectPatterns() {), Core Concepts, Do's, Don'ts (+16 more)
 
 ### Community 3338 - "Community 3338"
-Cohesion: 0.17
+Cohesion: 0.15
 Nodes (12): 1. Initial Scan, 2. OWASP Top 10 Check, 3. Code Pattern Review, Common False Positives, Core Responsibilities, Emergency Response, Key Principles, Reference (+4 more)
 
 ### Community 3339 - "Community 3339"
@@ -24022,7 +24026,7 @@ Nodes (14): code:block1 (STYLE_BASE = """), code:block2 (最终提示词 = STYLE
 
 ### Community 3370 - "Community 3370"
 Cohesion: 0.04
-Nodes (67): code:python (@pytest.fixture(autouse=True)), code:python (# Function scope (varsayılan) - her test için çalışır), Autouse Fixtures, Basic Fixture Usage, code:python (@pytest.fixture(params=[1, 2, 3])), Common Patterns, Conftest.py for Shared Fixtures, Fixture Scopes (+59 more)
+Nodes (77): code:python (@pytest.fixture(autouse=True)), code:python (# Function scope (varsayılan) - her test için çalışır), Async Fixture, Async Tests with pytest-asyncio, Autouse Fixtures, Basic Fixture Usage, Best Practices, code:python (@pytest.fixture(params=[1, 2, 3])) (+69 more)
 
 ### Community 3371 - "Community 3371"
 Cohesion: 0.04
@@ -24041,8 +24045,8 @@ Cohesion: 0.12
 Nodes (14): code:text (QUESTION TYPE), 1. Start from what the user already gave you, 2. Classify the ask, 3. Take the lightest useful evidence path first, 4. Report with explicit evidence boundaries, 5. Decide whether the task should stay manual, Guardrails, Output Format (+6 more)
 
 ### Community 3375 - "Community 3375"
-Cohesion: 0.06
-Nodes (27): code:python (import os), code:markdown (| ソース | 検索日 | 識別子/クエリ | フィルター | 結果 | 注記 |), USPTO Database, code:python (import os), code:bash (export USPTO_API_KEY="..."), code:markdown (| Source | Date searched | Identifier/query | Filters | Resu), USPTO Database, Assignment Workflow (+19 more)
+Cohesion: 0.07
+Nodes (25): code:python (import os), code:markdown (| ソース | 検索日 | 識別子/クエリ | フィルター | 結果 | 注記 |), USPTO Database, code:bash (export USPTO_API_KEY="..."), code:markdown (| Source | Date searched | Identifier/query | Filters | Resu), USPTO Database, Assignment Workflow, Authentication and Secrets (+17 more)
 
 ### Community 3376 - "Community 3376"
 Cohesion: 0.12
@@ -24054,7 +24058,7 @@ Nodes (14): code:python (# permissions.py), code:python (# models.py), Authoriza
 
 ### Community 3378 - "Community 3378"
 Cohesion: 0.06
-Nodes (38): Error Handling, App Configuration Provider, Authentication, Azure App Configuration SDK for TypeScript, Best Practices, code:bash (# Low-level CRUD SDK), code:typescript (import { load } from "@azure/app-configuration-provider";), code:typescript (// Create snapshot) (+30 more)
+Nodes (33): App Configuration Provider, Authentication, Azure App Configuration SDK for TypeScript, Best Practices, code:bash (# Low-level CRUD SDK), code:typescript (import { load } from "@azure/app-configuration-provider";), code:typescript (// Create snapshot), code:typescript (// Create settings with labels) (+25 more)
 
 ### Community 3379 - "Community 3379"
 Cohesion: 0.16
@@ -24179,12 +24183,12 @@ Cohesion: 0.13
 Nodes (14): [1\. Introduction](https://developer.apple.com/design/human-interface-guidelines/researchkit#1-Introduction), [2\. Determine eligibility](https://developer.apple.com/design/human-interface-guidelines/researchkit#2-Determine-eligibility), [3\. Get informed consent](https://developer.apple.com/design/human-interface-guidelines/researchkit#3-Get-informed-consent), [4\. Request permission to access data](https://developer.apple.com/design/human-interface-guidelines/researchkit#4-Request-permission-to-access-data), [Change log](https://developer.apple.com/design/human-interface-guidelines/researchkit#Change-log), [Conducting research](https://developer.apple.com/design/human-interface-guidelines/researchkit#Conducting-research), [Creating the onboarding experience](https://developer.apple.com/design/human-interface-guidelines/researchkit#Creating-the-onboarding-experience), [Developer documentation](https://developer.apple.com/design/human-interface-guidelines/researchkit#Developer-documentation) (+6 more)
 
 ### Community 3408 - "Community 3408"
-Cohesion: 0.15
-Nodes (13): code:python (import logging), code:python (import os), code:bash (python script.py), code:python (# View logs), code:bash (hf jobs logs <job-id>), code:python (from huggingface_hub import fetch_job_logs), code:python (from huggingface_hub import inspect_job, fetch_job_logs), 1. Add Logging (+5 more)
+Cohesion: 0.10
+Nodes (21): code:python (import logging), code:python (import os), code:bash (python script.py), code:python (# View logs), code:bash (hf jobs logs <job-id>), code:python (from huggingface_hub import fetch_job_logs), code:python (try:), code:python (from huggingface_hub import inspect_job, fetch_job_logs) (+13 more)
 
 ### Community 3409 - "Community 3409"
-Cohesion: 0.04
-Nodes (47): code:python (import os), Layer 5: Generated Assets (ElevenLabs / fal.ai), Music and SFX with fal.ai, VideoDB generative audio, Voiceover with ElevenLabs, ElevenLabs（API経由、MCPなし）, Async Pattern, ✅ **Account & Authentication** (+39 more)
+Cohesion: 0.03
+Nodes (62): ✅ **Account & Authentication**, Authentication Errors, code:python (# hf_jobs MCP tool — $HF_TOKEN is auto-replaced with real to), code:python (# Push models), code:python (# Upload to S3, GCS, etc.), code:python (# POST results to your API), code:python (# hf_jobs MCP tool:), code:python (from huggingface_hub import run_job, run_uv_job) (+54 more)
 
 ### Community 3410 - "Community 3410"
 Cohesion: 0.14
@@ -24272,7 +24276,7 @@ Nodes (12): code:python (event = LineageEvent(), code:python (import re), code:p
 
 ### Community 3431 - "Community 3431"
 Cohesion: 0.03
-Nodes (59): 1. Data Transformation, 2. Filtering & Aggregation, 3. String Processing with Regex, 4. Data Validation, 5. Statistical Analysis, Additional Resources, code:python (# Basic template for Python Code nodes), code:python (# ❌ WRONG - Will raise KeyError) (+51 more)
+Nodes (62): #1: Importing External Libraries (Python-Specific!), #2: Empty Code or Missing Return, #3: Incorrect Return Format, #4: KeyError on Dictionary Access, #5: Webhook Body Nesting, Additional Resources, code:python (# Basic template for Python Code nodes), code:python (# ❌ WRONG - Will raise KeyError) (+54 more)
 
 ### Community 3432 - "Community 3432"
 Cohesion: 0.19
@@ -24292,7 +24296,7 @@ Nodes (19): code:typescript (type CreateOrderInput = {), code:typescript (export
 
 ### Community 3436 - "Community 3436"
 Cohesion: 0.18
-Nodes (11): Advanced Commands (14), CLI Commands, Core Commands (12), Example Commands, Hive-Mind Commands, code:bash (# Initialize), Consensus Mechanisms, Hive-Mind Commands (+3 more)
+Nodes (11): Advanced Commands (14), CLI Commands, Core Commands (12), Example Commands, Hive-Mind Commands, Advanced Commands (14), CLI Commands, code:bash (# Initialize) (+3 more)
 
 ### Community 3437 - "Community 3437"
 Cohesion: 0.19
@@ -24319,8 +24323,8 @@ Cohesion: 0.14
 Nodes (13): Prompt Defense Baseline, 1. Analyze, 2. Verify, 3. Remove Safely, 4. Consolidate Duplicates, Core Responsibilities, Key Principles, Prompt Defense Baseline (+5 more)
 
 ### Community 3443 - "Community 3443"
-Cohesion: 0.13
-Nodes (15): 🔧 Specialized Packs, 🍎 The "Apple Platform Design" Pack, 🎯 The "Architecture & Design" Pack, 🤖 The "Automation Builder" Pack, ☁️ The "Azure AI & Cloud" Pack, 💳 The "Commerce & Payments" Pack, 🧱 The "DDD & Evented Architecture" Pack, 📄 The "Documents & Presentations" Pack (+7 more)
+Cohesion: 0.12
+Nodes (13): code:block9 ($ /rules-distill), End-to-end run, Example, エンドツーエンド実行, ルール蒸留, 使用場面, 使用时机, 例 (+5 more)
 
 ### Community 3444 - "Community 3444"
 Cohesion: 0.19
@@ -24455,7 +24459,7 @@ Cohesion: 0.18
 Nodes (8): Choosing the Right Tool, code:block11 (Need video ads?), Cost Comparison for 100 Ad Variations, Decision Tree, Generative AI Tools for Ad Creative, Platform-Specific Image Specs, Recommended Workflow for Scaled Ad Production, When to Use Generative Tools
 
 ### Community 3477 - "Community 3477"
-Cohesion: 0.13
+Cohesion: 0.14
 Nodes (13): Usage, code:bash (# Execute plan file), 使用方法, 与 /ccg:plan 的关系, 关键规则, 执行 - 多模型协同执行, 核心协议, Usage (+5 more)
 
 ### Community 3478 - "Community 3478"
@@ -24476,7 +24480,7 @@ Nodes (9): 2. Generating Content, code:dart (final response = await model.genera
 
 ### Community 3482 - "Community 3482"
 Cohesion: 0.05
-Nodes (38): code:block1 (テキスト形式は一貫していて繰り返しがあるか？), code:block2 ([正規表現パーサー] ─── 構造を抽出（95〜98% の精度）), code:python (@dataclass(frozen=True)), code:python (def process_document(), code:block1 (文本格式是否一致且重复？), code:block2 ([正则表达式解析器] ─── 提取结构（95-98% 准确率）), code:python (def validate_with_llm(), 1. Regex Parser (Handles the Majority) (+30 more)
+Nodes (47): code:python (@dataclass(frozen=True)), code:python (def process_document(), code:python (def validate_with_llm(), Scene search, AgentApplication Routing, 1. Data Transformation, 2. Filtering & Aggregation, 3. String Processing with Regex (+39 more)
 
 ### Community 3483 - "Community 3483"
 Cohesion: 0.12
@@ -24487,8 +24491,8 @@ Cohesion: 0.13
 Nodes (15): Bar chart, Chord diagram, code:javascript (g.selectAll("circle")), code:javascript (function drawChordDiagram(data) {), code:javascript (function drawHeatmap(data) {), code:javascript (const pie = d3.pie()), code:javascript (const simulation = d3.forceSimulation(nodes)), code:javascript (function drawBarChart(data, svgElement) {) (+7 more)
 
 ### Community 3485 - "Community 3485"
-Cohesion: 0.17
-Nodes (10): Arguments, Notes, Operator Notes, Sessions Command, Usage, Arguments, Notes, Operator Notes (+2 more)
+Cohesion: 0.13
+Nodes (15): code:bash (# List all sessions), Examples, 示例, Arguments, Examples, Notes, Operator Notes, Sessions Command (+7 more)
 
 ### Community 3486 - "Community 3486"
 Cohesion: 0.08
@@ -24499,8 +24503,8 @@ Cohesion: 0.33
 Nodes (4): Best Practices, Bun Runtime, How It Works, When to Use
 
 ### Community 3488 - "Community 3488"
-Cohesion: 0.18
-Nodes (14): AS-REP Roasting, code:bash (# Impacket), code:bash (# Using kerbrute), code:powershell (# Get krbtgt hash via DCSync first), code:powershell (# Mimikatz), Credential Attacks, DCSync Attack, Kerberoasting (+6 more)
+Cohesion: 0.12
+Nodes (14): assert, fs, hooksJsonPath, observeRunner, os, path, repoRoot, runTests() (+6 more)
 
 ### Community 3489 - "Community 3489"
 Cohesion: 0.20
@@ -24519,8 +24523,8 @@ Cohesion: 0.40
 Nodes (5): Agent Roles, Agent Spawning with MCP, Agent Roles, Agent Spawning with MCP, code:javascript (// Spawn research agents)
 
 ### Community 3493 - "Community 3493"
-Cohesion: 0.13
-Nodes (16): code:block9 (PR #<number>: <title>), Create Pull Request, Edge Cases, Phase 1 — VALIDATE, Phase 5 — VERIFY, Phase 6 — OUTPUT, code:bash (git branch --show-current), エッジケース (+8 more)
+Cohesion: 0.17
+Nodes (10): code:block9 (PR #<number>: <title>), Create Pull Request, Edge Cases, Phase 5 — VERIFY, Phase 6 — OUTPUT, フェーズ 6 — OUTPUT, Phase 6 — OUTPUT, Create Pull Request (+2 more)
 
 ### Community 3494 - "Community 3494"
 Cohesion: 0.11
@@ -24531,8 +24535,8 @@ Cohesion: 0.29
 Nodes (7): Phase 4: Introspection Report, Phase 4: Introspection Report, code:markdown (## Agent Self-Debug Report), Four-Phase Loop, Phase 2: Root-Cause Diagnosis, Phase 3: Contained Recovery, Phase 4: Introspection Report
 
 ### Community 3496 - "Community 3496"
-Cohesion: 0.11
-Nodes (16): Test Dependencies, When to Use, code:xml (<dependencies>), Test Dependencies, Test Dependencies, Camel Route Testi, CompletableFuture Testi, Event Service Testi (+8 more)
+Cohesion: 0.08
+Nodes (23): When to Use, Assertion'lar, Async İşlem Testi, Camel Route Testi, Camel Route Testi, CompletableFuture Testi, Doğrulama En İyi Uygulamaları, En İyi Uygulamalar (+15 more)
 
 ### Community 3497 - "Community 3497"
 Cohesion: 0.18
@@ -24543,7 +24547,7 @@ Cohesion: 0.12
 Nodes (15): 22 Art Direction Styles, Banner Sizes & Art Direction Styles Reference, Complete Banner Sizes, CTA Rules, Design Principles, Pinterest Research Queries, Print, Print Specs (+7 more)
 
 ### Community 3499 - "Community 3499"
-Cohesion: 0.29
+Cohesion: 0.33
 Nodes (6): code:block1 (VERIFICATION: [PASS/FAIL]), Saída, 검증 커맨드, 인자, 지시사항, 출력
 
 ### Community 3500 - "Community 3500"
@@ -24551,16 +24555,16 @@ Cohesion: 0.12
 Nodes (14): Angular Aria, Angular Developer Guidelines, Anti-Patterns, Components, Creating New Projects, Dependency Injection, Forms, Reactivity and Data Management (+6 more)
 
 ### Community 3501 - "Community 3501"
-Cohesion: 0.33
-Nodes (4): Best Practices, Bun Runtime, How It Works, When to Use
+Cohesion: 0.20
+Nodes (8): Best Practices, Bun Runtime, Examples, How It Works, Run and install, Runtime API, Testing, When to Use
 
 ### Community 3502 - "Community 3502"
 Cohesion: 0.15
 Nodes (20): Button Interaction, code:tsx (import { motion, AnimatePresence } from "motion/react"), Examples, Modal with AnimatePresence, Reduced Motion Example, Scroll Parallax, Shared Layout (Crossfade), Skeleton Loading (+12 more)
 
 ### Community 3503 - "Community 3503"
-Cohesion: 0.06
-Nodes (32): 1. Event Store Architecture, 2. Event Store Requirements, Best Practices, code:block1 (┌─────────────────────────────────────────────────────┐), code:sql (-- Events table), code:python (from esdbclient import EventStoreDBClient, NewEvent, StreamS), Core Concepts, Do not use this skill when (+24 more)
+Cohesion: 0.17
+Nodes (10): Best Practices, Do not use this skill when, Do's, Don'ts, Event Store Design, Instructions, Limitations, Resources (+2 more)
 
 ### Community 3504 - "Community 3504"
 Cohesion: 0.22
@@ -24588,7 +24592,7 @@ Nodes (15): API Endpoint Discovery, Authenticated Fuzzing (Raw Request), code:ba
 
 ### Community 3510 - "Community 3510"
 Cohesion: 0.08
-Nodes (27): 5. Null-Safe Access, code:typescript (interface Config {), code:typescript (// Generic deep merge for one level of nesting), code:typescript (function getDatabaseHost(config: Config): string {), code:typescript (const getDatabaseHost = (config: Config): string =>), code:typescript (import * as O from 'fp-ts/Option';), code:typescript (import * as R from 'fp-ts/Record';), code:typescript (interface Profile {) (+19 more)
+Nodes (28): 5. Null-Safe Access, code:typescript (interface Config {), code:typescript (// Generic deep merge for one level of nesting), code:typescript (function getDatabaseHost(config: Config): string {), code:typescript (const getDatabaseHost = (config: Config): string =>), code:typescript (import * as O from 'fp-ts/Option';), code:typescript (import * as R from 'fp-ts/Record';), code:typescript (interface Profile {) (+20 more)
 
 ### Community 3511 - "Community 3511"
 Cohesion: 0.11
@@ -24603,16 +24607,16 @@ Cohesion: 0.22
 Nodes (11): code:block20 (# Find all errors for a specific time window (Elasticsearch)), code:block21 (🚨 INCIDENT: Payment Processing Errors), code:block22 (✅ INCIDENT UPDATE: Mitigation Applied), Communication Templates, Incident Investigation Tools, Incident Response Workflow, Production Incident Response, Communication Templates (+3 more)
 
 ### Community 3514 - "Community 3514"
-Cohesion: 0.22
-Nodes (5): API Response Format, Common Patterns, Design Patterns, Repository Pattern, Skeleton Projects
+Cohesion: 0.12
+Nodes (11): code:javascript (// Setup fault tolerance), Error Handling Examples, Examples Swarm Strategy, Error Handling Examples, 5-Question Reboot Check, Error Log, Phase 1: [Title], Phase 2: [Title] (+3 more)
 
 ### Community 3515 - "Community 3515"
 Cohesion: 0.22
 Nodes (11): code:block17, pm2-logs.md, code:`markdown (すべてのPM2ログを表示します。), pm2-logs.md, code:`markdown (Tüm PM2 loglarını göster.), pm2-logs.md, code:`markdown (查看所有 PM2 日志。), pm2-logs.md (+3 more)
 
 ### Community 3516 - "Community 3516"
-Cohesion: 0.15
-Nodes (13): Additional Resources, Additional Resources, Best Practices, code:json ({), code:json ({), Complete Guide, Configuration, Default Configuration (+5 more)
+Cohesion: 0.18
+Nodes (14): code:python (# tests/test_api.py), API ViewSet Testing, DRF API Testing, Serializer Testing, API ViewSet Testing, code:python (# tests/test_serializers.py), DRF API Testing, Serializer Testing (+6 more)
 
 ### Community 3517 - "Community 3517"
 Cohesion: 0.13
@@ -24627,8 +24631,8 @@ Cohesion: 0.13
 Nodes (14): Boundary damping, code:ts (function onPointerUp(e: PointerEvent) {), code:ts (function applyDamping(offset: number, max: number): number {), code:ts (function onPointerDown(e: PointerEvent) {), code:ts (let activeTouchId: number | null = null;), code:ts (function applyFriction(delta: number, isAtBoundary: boolean)), code:ts (function handleSwipeEnd(direction: "left" | "right", distanc), Contents (+6 more)
 
 ### Community 3520 - "Community 3520"
-Cohesion: 0.15
-Nodes (12): Best Practices, code:block1 (Business Requirements → Security Requirements → Technical Co), Core Concepts, Do's, Don'ts, Resources, When to Use This Skill, 1. Requirement Categories (+4 more)
+Cohesion: 0.12
+Nodes (17): code:python (import stripe), Custom Tokenization (Advanced), Tokenization, Using Payment Processor Tokens, code:python (subprocess.run(['ping', '-c', '4', user_input])  # Array arg), code:python (import secrets), code:python (# Parameterized queries), code:javascript (// Use textContent for plain text) (+9 more)
 
 ### Community 3521 - "Community 3521"
 Cohesion: 0.13
@@ -24655,8 +24659,8 @@ Cohesion: 0.13
 Nodes (15): Advanced Patterns, code:typescript (// Validate based on other field values), code:typescript (// Transform strings to numbers), code:typescript (// Trim strings before validation), code:typescript (// Multiple possible types), code:typescript (// For nested structures like trees), code:typescript (// Base schemas), code:typescript (// Create reusable validation middleware) (+7 more)
 
 ### Community 3527 - "Community 3527"
-Cohesion: 0.14
-Nodes (12): code:python (# middleware/active_user_middleware.py), Custom Middleware, Middleware, Custom Middleware, Middleware, Django 开发模式, カスタムミドルウェア, ミドルウェア (+4 more)
+Cohesion: 0.12
+Nodes (14): Authentication, Azure.ResourceManager.ArizeAIObservabilityEval, Best Practices, code:bash (dotnet add package Azure.ResourceManager.ArizeAIObservabilit), code:csharp (// Access resource directly by ID (without listing)), Direct Resource Access, Enums, Environment Variables (+6 more)
 
 ### Community 3528 - "Community 3528"
 Cohesion: 0.14
@@ -24675,8 +24679,8 @@ Cohesion: 0.05
 Nodes (43): code:text (my_crate/), code:rust (use rstest::rstest;), code:rust (// 本番トレイト — 統合テストがインポートできるように pub にする), code:bash (cargo llvm-cov                       # サマリー), code:bash (cargo test                       # すべてのテストを実行), 参考, code:rust (#[tokio::test]), 参考 (+35 more)
 
 ### Community 3532 - "Community 3532"
-Cohesion: 0.14
-Nodes (14): code:perl (use v5.36;), code:bash (# Basic coverage report), code:perl (use v5.36;), Coverage with Devel::Cover, Integration Testing, Running Coverage, code:perl (use v5.36;), Coverage with Devel::Cover (+6 more)
+Cohesion: 0.18
+Nodes (14): code:kotlin (// tables/UsersTable.kt), code:kotlin (object UserRolesTable : Table("user_roles") {), Composite Tables, DSL Style Tables, Table Definitions, Composite Tables, DSL Style Tables, Table Definitions (+6 more)
 
 ### Community 3533 - "Community 3533"
 Cohesion: 0.13
@@ -24687,8 +24691,8 @@ Cohesion: 0.13
 Nodes (15): Automate in CI/CD:, Both signing keys configured, Callback endpoint without signature verification, HTTP URL instead of HTTPS, Limitations, Localhost URL in QStash publish, QStash publish without error handling, QStash signing keys hardcoded (+7 more)
 
 ### Community 3535 - "Community 3535"
-Cohesion: 0.15
-Nodes (14): AI-Assisted Review, Automated Code Review Workflow, code:python (# Context-aware review prompt for Claude 4.5 Sonnet), Initial Triage, Model Selection (2025), Multi-Tool Static Analysis, Review Routing, AI-Assisted Review (+6 more)
+Cohesion: 0.12
+Nodes (14): code:python (# middleware/active_user_middleware.py), Middleware, Custom Middleware, Middleware, Custom Middleware, Middleware, Django 开发模式, Özel Middleware (+6 more)
 
 ### Community 3536 - "Community 3536"
 Cohesion: 0.15
@@ -24791,8 +24795,8 @@ Cohesion: 0.18
 Nodes (11): CRITICAL -- Error Handling, CRITICAL -- Security, HIGH -- Architecture, HIGH -- JPA / Relational Database, HIGH -- Panache MongoDB [QUARKUS only], MEDIUM -- Concurrency and State, MEDIUM -- Java Idioms and Performance, MEDIUM -- NoSQL General (+3 more)
 
 ### Community 3561 - "Community 3561"
-Cohesion: 0.08
-Nodes (30): Any, AutoImageProcessor, BatchFeature, Compose, EvalPrediction, build_transforms(), DataTrainingArguments, main() (+22 more)
+Cohesion: 0.06
+Nodes (47): Any, AutoImageProcessor, BatchFeature, Compose, EvalPrediction, build_transforms(), DataTrainingArguments, main() (+39 more)
 
 ### Community 3562 - "Community 3562"
 Cohesion: 0.18
@@ -24859,8 +24863,8 @@ Cohesion: 0.13
 Nodes (13): Best Practices, Core Concepts, Documentation Lookup (Context7), Example: Next.js middleware, Example: Prisma query, Example: Supabase auth methods, Examples, How it works (+5 more)
 
 ### Community 3578 - "Community 3578"
-Cohesion: 0.15
-Nodes (11): code:dart (Row(), code:dart (@override), Debugging Layout Issues, Flutter Errors Skill, InputDecorator Cannot Have Unbounded Width, References, RenderBox Was Not Laid Out, RenderFlex Overflowed (+3 more)
+Cohesion: 0.12
+Nodes (15): session, context, contextDir, existingDirs, existingIdx, gitActivity, isInit, memContent (+7 more)
 
 ### Community 3579 - "Community 3579"
 Cohesion: 0.06
@@ -24875,8 +24879,8 @@ Cohesion: 0.18
 Nodes (8): code:tsx (import { BasicDialog } from './examples/dialog-example';), `dialog-example.tsx`, `dropdown-example.tsx`, Examples, Learn More, Radix UI Design System - Skill Examples, Styling, Usage
 
 ### Community 3582 - "Community 3582"
-Cohesion: 0.22
-Nodes (9): AttendanceRequest, _, AttendanceRequest, fromJson, package:freezed_annotation/freezed_annotation.dart, _AttendanceRequest, expired, RequestStatus (+1 more)
+Cohesion: 0.12
+Nodes (14): code:javascript (// src/commands/ping.js), code:javascript (// src/events/interactionCreate.js), code:javascript (// src/deploy-commands.js), Discord.js v14 Foundation, Calculate memory including /tmp usage, Cloud Run Service Pattern, code:dockerfile (# Dockerfile - Multi-stage build for smaller image), code:javascript (// src/index.js) (+6 more)
 
 ### Community 3583 - "Community 3583"
 Cohesion: 0.14
@@ -24903,32 +24907,16 @@ Cohesion: 0.08
 Nodes (27): code:fsharp (type OrderError =), code:fsharp (let findUser (id: Guid) : User option =), code:fsharp (type OrderDeps =), code:fsharp (type PaymentState =), code:fsharp (let placeOrder request =), code:fsharp ([<RequireQualifiedAccess>]), Computation Expressions, Dependency Injection (+19 more)
 
 ### Community 3589 - "Community 3589"
-Cohesion: 0.18
-Nodes (14): code:typescript (import { CryptographyClient } from "@azure/keyvault-keys";), code:typescript (// Encrypt), code:typescript (import { createHash } from "node:crypto";), code:typescript (// Wrap a key (encrypt it for storage)), Create CryptographyClient, Cryptographic Operations, Encrypt/Decrypt, Sign/Verify (+6 more)
+Cohesion: 0.30
+Nodes (12): canPerformAction(), getOfflineContract(), isActionAllowedOffline(), OFFLINE_CONTRACTS, OfflineAction, OfflineContract, canPerformAction(), getOfflineContract() (+4 more)
 
 ### Community 3590 - "Community 3590"
 Cohesion: 0.07
-Nodes (38): API Tests, Integration Tests, Test Categories, Unit Tests, code:java (@QuarkusTest), code:java (@ExtendWith(MockitoExtension.class)), Integration Tests with Real Database, Key Testing Patterns (+30 more)
+Nodes (38): Integration Tests with Real Database, Key Testing Patterns, Quarkus TDD Workflow, Resource Layer Tests (REST Assured), Testing Camel Routes, Testing CompletableFuture, Testing Event Services, Unit Tests with @Nested Organization (+30 more)
 
 ### Community 3591 - "Community 3591"
-Cohesion: 0.23
-Nodes (9): { readStdin, runExistingHook, transformToClaude }, {
-  getSessionsDir,
-  getDateTimeString,
-  getTimeString,
-  findFiles,
-  ensureDir,
-  appendFile,
-  log
-}, main(), path, claudeInput, { readStdin, runExistingHook, transformToClaude }, {
-  getSessionsDir,
-  getDateTimeString,
-  getTimeString,
-  findFiles,
-  ensureDir,
-  appendFile,
-  log
-}, main() (+1 more)
+Cohesion: 0.12
+Nodes (15): 1. Pipeline API, 2. Model Selection, 3. Device Selection, 4. Quantization Options, Browser-Specific Considerations, code:javascript (const pipe = await pipeline('text-generation', 'onnx-communi), code:javascript (// Optimized for browsers with quantization), code:javascript (import { pipeline } from '@huggingface/transformers';) (+7 more)
 
 ### Community 3592 - "Community 3592"
 Cohesion: 0.04
@@ -24943,8 +24931,8 @@ Cohesion: 0.09
 Nodes (22): code:block1 (Context Budget Report), code:block3 (User: /context-budget --verbose), code:block2 (User: /context-budget), code:block4 (User: I want to add 5 more MCP servers, do I have room?), Best Practices, Context Budget, Examples, How It Works (+14 more)
 
 ### Community 3595 - "Community 3595"
-Cohesion: 0.11
-Nodes (18): Directory Structure, API Response Format, Best Practices, Directory Structure, Express.js API Template, Middleware Stack, Setup Steps, Tech Stack (+10 more)
+Cohesion: 0.12
+Nodes (15): API Response Format, Best Practices, Directory Structure, Express.js API Template, Middleware Stack, Setup Steps, Tech Stack, Best Practices (+7 more)
 
 ### Community 3596 - "Community 3596"
 Cohesion: 0.20
@@ -24988,7 +24976,7 @@ Nodes (19): Output Format, code:text (1. go build ./...     -> 에러 메시지 
 
 ### Community 3606 - "Community 3606"
 Cohesion: 0.14
-Nodes (14): Best Practices, code:block1 (Article 6 - Lawful Bases:), code:block2 (Right to Access (Art. 15)      ─┐), code:markdown (## GDPR Implementation Checklist), Core Concepts, Do's, Don'ts, Resources (+6 more)
+Nodes (13): ChainedTokenCredential (Custom Chain), ClientCertificateCredential, ClientSecretCredential, code:csharp (var certificate = X509CertificateLoader.LoadCertificateFromF), code:csharp (// Azure CLI), code:csharp (// System-assigned managed identity), Credential Types, Developer Credentials (+5 more)
 
 ### Community 3607 - "Community 3607"
 Cohesion: 0.15
@@ -25023,8 +25011,8 @@ Cohesion: 0.13
 Nodes (13): code:json ({), vs Homunculus, Local development - check local.settings.json, Missing Extension Packages Cause Silent Failures, Hook Kurulumu, İlgili, Kalıp Tipleri, Karşılaştırma Notları (Araştırma: Ocak 2025) (+5 more)
 
 ### Community 3615 - "Community 3615"
-Cohesion: 0.05
-Nodes (40): code:block1 ([Rol] olarak, [eylem] yapmak istiyorum, böylece [fayda] elde), code:json ({), code:typescript (// İç state'i test etme), code:typescript (// Kullanıcıların gördüğünü test et), code:typescript (// Kolayca bozulur), code:typescript (// Değişikliklere karşı dayanıklı), code:typescript (describe('Semantik Arama', () => {), code:typescript (// Testler birbirine bağımlı) (+32 more)
+Cohesion: 0.06
+Nodes (29): code:json ({), code:typescript (// İç state'i test etme), code:typescript (// Kullanıcıların gördüğünü test et), code:typescript (// Kolayca bozulur), code:typescript (// Değişikliklere karşı dayanıklı), code:typescript (// Testler birbirine bağımlı), code:typescript (// Her test kendi verisini hazırlar), 1. Koddan ÖNCE Testler (+21 more)
 
 ### Community 3616 - "Community 3616"
 Cohesion: 0.22
@@ -25171,8 +25159,8 @@ Cohesion: 0.25
 Nodes (6): Codemap Format, code:typescript (import { functionName } from '@/module'), Generation Process, [Module Name], Update Codemaps Command, Your Task
 
 ### Community 3652 - "Community 3652"
-Cohesion: 0.24
-Nodes (13): ensure_data_dir(), list_snapshots(), main(), prune_snapshots(), Read the most recent snapshot., Read a specific snapshot by filename., Remove old snapshots, keeping the N most recent., Create data directory if it doesn't exist. (+5 more)
+Cohesion: 0.15
+Nodes (15): code:kotlin (// 良い例: コルーチンサポートのために newSuspendedTransaction を使用), code:kotlin (// Good: Use newSuspendedTransaction for coroutine support), Suspend Transaction Support, Transaction Isolation, Transactions, code:kotlin (suspend fun readCommittedQuery(): List<User> =), Suspend Transaction Support, Transaction Isolation (+7 more)
 
 ### Community 3653 - "Community 3653"
 Cohesion: 0.09
@@ -25188,7 +25176,7 @@ Nodes (15): apply_color(), apply_viewbox_size(), extract_svgs(), generate_batch(
 
 ### Community 3656 - "Community 3656"
 Cohesion: 0.20
-Nodes (8): 云与基础设施安全技能, 何时激活, 资源, 部署前云安全检查清单, 배포 전 클라우드 보안 체크리스트, 참고 자료, 클라우드 및 인프라 보안 스킬, 활성화 시점
+Nodes (8): Cloud & Infrastructure Security Skill, Pre-Deployment Cloud Security Checklist, Resources, When to Activate, 배포 전 클라우드 보안 체크리스트, 참고 자료, 클라우드 및 인프라 보안 스킬, 활성화 시점
 
 ### Community 3657 - "Community 3657"
 Cohesion: 0.25
@@ -25236,7 +25224,7 @@ Nodes (21): 1. Install Dependencies, 2. Configure PostCSS, 3. Import Tailwind CS
 
 ### Community 3667 - "Community 3667"
 Cohesion: 0.07
-Nodes (32): Observability / Logging, Restrict tools and paths, Run untrusted work in isolation, Sandboxing, Separate the identity first, code:yaml (services:), まずアイデンティティを分離, サンドボックス (+24 more)
+Nodes (34): Observability / Logging, Restrict tools and paths, Run untrusted work in isolation, Sandboxing, Separate the identity first, Claude Code CVE（2026年2月）, code:yaml (services:), code:bash (# ゼロ幅およびbidi制御文字) (+26 more)
 
 ### Community 3668 - "Community 3668"
 Cohesion: 0.07
@@ -25247,12 +25235,12 @@ Cohesion: 0.09
 Nodes (19): Anti-Patterns, Backwards Imported Character, Blender Motion State Inspection, code:markdown (## Blender Motion Inspection), Core Principle, Examples, How It Works, Inspection Workflow (+11 more)
 
 ### Community 3670 - "Community 3670"
-Cohesion: 0.20
-Nodes (10): code:block2 (チェックポイント比較: $NAME), code:block3 ([開始] --> /checkpoint create "feature-start"), チェックポイントコマンド, チェックポイント一覧表示, チェックポイント作成, チェックポイント検証, ワークフロー, 使用します方法 (+2 more)
+Cohesion: 0.25
+Nodes (7): code:block2 (チェックポイント比較: $NAME), チェックポイントコマンド, チェックポイント一覧表示, チェックポイント作成, チェックポイント検証, 使用します方法, 引数
 
 ### Community 3671 - "Community 3671"
-Cohesion: 0.15
-Nodes (14): Advanced PDF Cropping, Batch PDF Processing with Error Handling, code:python (import pypdfium2 as pdfium), code:bash (# Extract all images with original quality), code:python (import os), code:python (from pypdf import PdfWriter, PdfReader), Complex Workflows, Extract Figures/Images from PDF (+6 more)
+Cohesion: 0.04
+Nodes (53): 1. Visao Geral Do Ecossistema, 2.1 Pre-Requisitos, AMAZON ALEXA — Voz Inteligente com Claude, code:block1 ([Alexa Device] → [Alexa Cloud] → [AWS Lambda] → [Claude API]), code:block21, Componentes Da Arquitetura Auri, Criar Skill Com Template, Deploy Completo (Skill + Lambda) (+45 more)
 
 ### Community 3672 - "Community 3672"
 Cohesion: 0.07
@@ -25279,8 +25267,8 @@ Cohesion: 0.13
 Nodes (13): code:text (SOURCE), 1. Resolve the exact thread, 2. Read before drafting, 3. Handle codes as a focused retrieval task, 4. Report exact evidence, Guardrails, Messages Ops, Output Format (+5 more)
 
 ### Community 3678 - "Community 3678"
-Cohesion: 0.11
-Nodes (20): Advanced Patterns (Concepts), Anti-Patterns, code:ts (const isLowEnd =), Core Principle, Debugging, Device Adaptation, Final Rule, Full Example (+12 more)
+Cohesion: 0.12
+Nodes (17): Advanced Patterns (Concepts), Anti-Patterns, code:bash (npm install motion), Core Principle, Debugging, Final Rule, How It Works, Installation (+9 more)
 
 ### Community 3679 - "Community 3679"
 Cohesion: 0.14
@@ -25353,8 +25341,8 @@ Cohesion: 0.12
 Nodes (8): main(), Add custom font families.          Args:             fonts: Dict of font_type, Add custom spacing values.          Args:             spacing: Dict of name:, Add custom breakpoints.          Args:             breakpoints: Dict of name:, Add plugin requirements.          Args:             plugins: List of plugin n, Get plugin recommendations based on configuration.          Returns:, Validate configuration.          Returns:             Tuple of (valid, messag, Add custom colors to theme.          Args:             colors: Dict of color_
 
 ### Community 3695 - "Community 3695"
-Cohesion: 0.13
-Nodes (15): code:block2 (EVAL CHECK: feature-name), code:block4 (EVAL DEFINITIONS), Argumentos, Comando Eval, Eval Kontrol Et, Eval'ları Listele, Eval 커맨드, Listar Evals (+7 more)
+Cohesion: 0.12
+Nodes (18): code:block2 (EVAL CHECK: feature-name), code:block4 (EVAL DEFINITIONS), Argumentos, Argümanlar, Comando Eval, Eval Komutu, Eval Kontrol Et, Eval'ları Listele (+10 more)
 
 ### Community 3696 - "Community 3696"
 Cohesion: 0.16
@@ -25365,8 +25353,8 @@ Cohesion: 0.13
 Nodes (13): Executing Plans, Limitations, Overview, Remember, Step 1: Load and Review Plan, Step 2: Execute Batch, Step 3: Report, Step 4: Continue (+5 more)
 
 ### Community 3698 - "Community 3698"
-Cohesion: 0.48
-Nodes (6): extractSpecifiers(), HEAVY_PATTERNS, isEdgeRuntimeFile(), isMiddleware(), metadata, scan()
+Cohesion: 0.13
+Nodes (13): 1. Read the repo, 3. Decide DAILY vs LIBRARY, 4. Build the install plan, 5. Create the optional library router, 6. Verify the result, Agent Sort, Classification Model, Core Workflow (+5 more)
 
 ### Community 3699 - "Community 3699"
 Cohesion: 0.17
@@ -25489,8 +25477,8 @@ Cohesion: 0.06
 Nodes (60): Client, Any, Any, collect(), _collect_query_lineage(), _collect_schema_link_lineage(), main(), _parse_full_name() (+52 more)
 
 ### Community 3729 - "Community 3729"
-Cohesion: 0.14
-Nodes (8): main(), check(), check(), check(), sync(), sync(), POST(), createClient()
+Cohesion: 0.20
+Nodes (15): blendRgba(), clampByte(), firstCssUrl(), getLayerValue(), loadVisualContrastImage(), parseObjectPosition(), parsePositionPair(), parsePositionToken() (+7 more)
 
 ### Community 3730 - "Community 3730"
 Cohesion: 0.13
@@ -25557,8 +25545,8 @@ Cohesion: 0.13
 Nodes (13): Analysis Output, Author, code:block1 (Options Flow Summary — 2026-05-13), code:block2 (Analyze options flow for my watchlist:), Configuration, Example Output, Key Discovery, Limitations (+5 more)
 
 ### Community 3746 - "Community 3746"
-Cohesion: 0.07
-Nodes (21): Examples Swarm Strategy, 5-Question Reboot Check, Error Log, Phase 1: [Title], Phase 2: [Title], Progress Log, Session: [DATE], Test Results (+13 more)
+Cohesion: 0.15
+Nodes (13): Current Phase, Decisions Made, Errors Encountered, Goal, Key Questions, Notes, Phase 1: Requirements & Discovery, Phase 2: Planning & Structure (+5 more)
 
 ### Community 3747 - "Community 3747"
 Cohesion: 0.14
@@ -25581,8 +25569,8 @@ Cohesion: 0.19
 Nodes (13): Architectural Principles, Code Quality Standards, Core Expertise, Distributed Computing Excellence, Do not use this skill when, Enterprise Patterns, Framework & Tooling Proficiency, Functional Programming Mastery (+5 more)
 
 ### Community 3752 - "Community 3752"
-Cohesion: 0.17
-Nodes (11): Best Practices, code:block1 (S - Spoofing       → Authentication threats), Core Concepts, Do's, Don'ts, Resources, When to Use This Skill, 1. STRIDE Categories (+3 more)
+Cohesion: 0.14
+Nodes (12): code:dockerfile (FROM python:3.11-slim AS builder), code:yaml (version: "3.9"), code:yaml, Deploy Commands, DEVOPS-DEPLOY — Da Ideia para Producao, Do Not Use This Skill When, Docker Compose (Dev Local), Dockerfile Otimizado (Python) (+4 more)
 
 ### Community 3753 - "Community 3753"
 Cohesion: 0.14
@@ -25738,8 +25726,8 @@ Cohesion: 0.22
 Nodes (8): Coordinate Task Execution, Description, Details, Example Usage, Important Reminders, 🎯 Key Principle, MCP Tool Usage in Claude Code, See Also
 
 ### Community 3790 - "Community 3790"
-Cohesion: 0.29
-Nodes (7): Best Practices, Database Schema, Environment Variables, Next.js SaaS Template, SaaS Features, Setup Steps, Tech Stack
+Cohesion: 0.12
+Nodes (15): Best Practices, Database Schema, Directory Structure, Environment Variables, Next.js SaaS Template, SaaS Features, Setup Steps, Tech Stack (+7 more)
 
 ### Community 3791 - "Community 3791"
 Cohesion: 0.22
@@ -25750,8 +25738,8 @@ Cohesion: 0.11
 Nodes (21): 1. Via `ActivatedRoute` (Traditional), 2. Via Component Inputs (Modern), Accessing Resolved Data, Best Practices, code:ts (export const userResolver: ResolveFn<User> = (route, state) ), Configuring the Route, Creating a Resolver, Data Resolvers (+13 more)
 
 ### Community 3793 - "Community 3793"
-Cohesion: 0.14
-Nodes (12): code:dockerfile (FROM python:3.11-slim AS builder), code:yaml (version: "3.9"), code:yaml, Deploy Commands, DEVOPS-DEPLOY — Da Ideia para Producao, Do Not Use This Skill When, Docker Compose (Dev Local), Dockerfile Otimizado (Python) (+4 more)
+Cohesion: 0.15
+Nodes (14): code:powershell ([Environment]::SetEnvironmentVariable('ECC_CONTEXT_MONITOR_C), code:bash (# Über Umgebungsvariable), code:bash (# Hook-Strenge-Profil (Standard: standard)), Cross-Platform-Unterstützung, Hook-Laufzeitsteuerung, Paketmanager-Erkennung, code:bash (# Via environment variable), code:bash (# Hook strictness profile (default: standard)) (+6 more)
 
 ### Community 3794 - "Community 3794"
 Cohesion: 0.10
@@ -25767,10 +25755,10 @@ Nodes (13): Best Practices, Core Concepts, Documentation Lookup (Context7), Exam
 
 ### Community 3797 - "Community 3797"
 Cohesion: 0.11
-Nodes (19): code:bash (npm install motion), code:bash (cat package.json | grep -E '"motion"|"framer-motion"'), code:ts (// Correct (modern)), Installation, Version, Advanced Patterns (Concepts), Anti-Patterns, Core Principle (+11 more)
+Nodes (18): code:ts (const isLowEnd =), Device Adaptation, Full Example, Modal Essentials, Advanced Patterns (Concepts), Anti-Patterns, code:tsx (import React, { useEffect, useRef, useState } from "react"), Core Principle (+10 more)
 
 ### Community 3798 - "Community 3798"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (9): Best Practices, CLI Design Principles, CLI Tool Template, code:bash (npm login), Directory Structure, Key Components, Publishing, Setup Steps (+1 more)
 
 ### Community 3799 - "Community 3799"
@@ -25790,8 +25778,8 @@ Cohesion: 0.14
 Nodes (13): 10. Release & Rollout Discipline, 1. Production-First Engineering, 2. Android OS Respect, 3. Capacitor + Next.js Hybrid Rules, 4. Performance Budgets (Hard Thresholds), 5. Mandatory Instrumentation, 6. Regression Protection, 7. Battery & Background Discipline (+5 more)
 
 ### Community 3803 - "Community 3803"
-Cohesion: 0.38
-Nodes (9): displayQuickAnswer(), downloadResults(), main(), parseCliArgs(), pollUntilComplete(), printHelp(), reportSummary(), sleep() (+1 more)
+Cohesion: 0.15
+Nodes (13): 60-Second Talking Track, code:bash (# Weekly downloads), code:bash (gh api repos/affaan-m/ECC \), code:bash (gh api repos/affaan-m/ECC/traffic/views), GitHub App installs, GitHub repository adoption, GitHub traffic (maintainer access required), Metrics and Sponsorship Playbook (+5 more)
 
 ### Community 3804 - "Community 3804"
 Cohesion: 0.14
@@ -25811,7 +25799,7 @@ Nodes (10): code:php (// Vulnerable PHP code example), code:bash (# System files
 
 ### Community 3809 - "Community 3809"
 Cohesion: 0.15
-Nodes (11): code:block1 (Patient Header (sticky — always visible)), Single-Page Encounter Flow, Accessibility for Healthcare, Anti-Patterns, Healthcare EMR Development Patterns, How It Works, Locked Encounter Pattern, Patient Safety First (+3 more)
+Nodes (11): code:dart (Row(), code:dart (@override), Debugging Layout Issues, Flutter Errors Skill, InputDecorator Cannot Have Unbounded Width, References, RenderBox Was Not Laid Out, RenderFlex Overflowed (+3 more)
 
 ### Community 3810 - "Community 3810"
 Cohesion: 0.14
@@ -25858,8 +25846,8 @@ Cohesion: 0.14
 Nodes (14): code:block1 (- 分析不同时间点的ROM测量值), code:block2 (- 追踪肌力等级变化（MMT评分）), code:block3 (- 平衡测试分数趋势), code:block4 (- 分析晨起疼痛趋势), code:block5 (- 特定训练项目与疼痛关系), code:block6 (依从性 = (实际训练次数 / 计划训练次数) × 100%), 执行步骤, 第1步：数据读取 (+6 more)
 
 ### Community 3821 - "Community 3821"
-Cohesion: 0.15
-Nodes (13): Bean Validation, code:java (// 悪い例：検証なし), code:java (@Target({ElementType.FIELD, ElementType.PARAMETER})), Custom Validators, Input Validation, Bean Validation, code:java (// KÖTÜ: Validation yok), Bean Validation (+5 more)
+Cohesion: 0.14
+Nodes (14): api/ Directory, code:block3 (features/), code:typescript (// features/my-feature/api/myFeatureApi.ts), code:block5 (components/), code:block6 (hooks/), code:block7 (helpers/), code:block8 (types/), Complete Feature Example (+6 more)
 
 ### Community 3822 - "Community 3822"
 Cohesion: 0.20
@@ -25883,7 +25871,7 @@ Nodes (14): 1. Data Preparation, 2. Choose the Right Plot Type, 3. Use Figure-Le
 
 ### Community 3827 - "Community 3827"
 Cohesion: 0.04
-Nodes (48): Best Practices, code:bash (# macOS with Homebrew), code:yaml (name: ShellCheck), code:yaml (shellcheck:), code:bash (# Problem), code:block2 (# Specify target shell), code:bash (shellcheck script.sh), code:bash (shellcheck --format=gcc script.sh) (+40 more)
+Nodes (51): Best Practices, CI/CD Integration Configuration, code:bash (# macOS with Homebrew), code:bash (#!/bin/bash), code:block11 (# Shell dialect to analyze against), code:bash (# Problem), code:block2 (# Specify target shell), code:bash (shellcheck script.sh) (+43 more)
 
 ### Community 3828 - "Community 3828"
 Cohesion: 0.12
@@ -25895,15 +25883,15 @@ Nodes (11): code:sql (CREATE INDEX idx_users_email ON users(email);), code:sql (
 
 ### Community 3830 - "Community 3830"
 Cohesion: 0.10
-Nodes (37): Option, RemoteDispatchKind, Value, Commands, From, MemoryConnectorConfig, MessageType, build_legacy_remote_add_command() (+29 more)
+Nodes (38): ContextGraphRecallEntry, Option, RemoteDispatchKind, Value, Commands, From, MessageType, build_legacy_remote_add_command() (+30 more)
 
 ### Community 3831 - "Community 3831"
-Cohesion: 0.15
-Nodes (10): assert, dirs, fs, legacyShimsDir, path, readme, repoRoot, shims (+2 more)
+Cohesion: 0.19
+Nodes (14): configureVoiceContext(), finishVoiceSession(), isEmbeddedPreviewBrowser(), releaseVoiceEngine(), startVoice(), steerSpeechRecognitionCtor(), steerVoiceContext(), steerVoiceErrorMessage() (+6 more)
 
 ### Community 3832 - "Community 3832"
-Cohesion: 0.06
-Nodes (35): A skill gives incorrect or outdated advice, Are these skills free to use?, Can I invoke a whole bundle like `@Essentials` or `/web-wizard`?, Can I update an "Official" skill?, Can I use multiple skills at once?, Can these skills hack my computer?, code:bash (@brainstorming help me design this, then use @writing-plans ), code:bash (npm run security:docs) (+27 more)
+Cohesion: 0.04
+Nodes (54): A skill gives incorrect or outdated advice, Are saves/stars global or just local?, Are these skills free to use?, Can I invoke a whole bundle like `@Essentials` or `/web-wizard`?, Can I update an "Official" skill?, Can I use multiple skills at once?, Can these skills hack my computer?, code:bash (git clone https://github.com/sickn33/antigravity-awesome-ski) (+46 more)
 
 ### Community 3833 - "Community 3833"
 Cohesion: 0.15
@@ -25922,8 +25910,8 @@ Cohesion: 0.18
 Nodes (8): Best Practices, Connecting with stdio, Core concepts, How It Works, MCP Server Patterns, Official SDKs and Docs, Remote (Streamable HTTP), When to Use
 
 ### Community 3837 - "Community 3837"
-Cohesion: 0.02
-Nodes (84): code:bash (bash ~/.claude/skills/rules-distill/scripts/scan-rules.sh), code:block3 (ルール蒸留 — フェーズ 1：棚卸し), code:` (あなたはスキルをクロスリーディングして、ルールに昇格すべき原則を抽出するアナリストです。), code:block6 (# 良い例), code:block7 (# ルール蒸留レポート), code:json ({), code:bash (bash ~/.claude/skills/rules-distill/scripts/scan-skills.sh), code:block3 (规则提炼 — 第一阶段：清点) (+76 more)
+Cohesion: 0.13
+Nodes (15): code:` (你是一位通过交叉阅读技能来提取应提升为规则的原则的分析师。), code:block6 (# 良好做法), code:block7 (# 规则提炼报告), code:json ({), 保存结果, 分批处理, 子智能体提示, 工作原理 (+7 more)
 
 ### Community 3838 - "Community 3838"
 Cohesion: 0.20
@@ -25970,8 +25958,8 @@ Cohesion: 0.14
 Nodes (12): Code Reviewer, code:bash (# Analyze a PR), code:bash (python .agent/skills/code-reviewer/scripts/code_quality_chec), code:bash (python .agent/skills/code-reviewer/scripts/review_report_gen), 📝 Examples, Generating a weekly report, 🔧 How It Works, 🚀 Quick Start (+4 more)
 
 ### Community 3849 - "Community 3849"
-Cohesion: 0.08
-Nodes (25): code:typescript (const item: Product = {), code:typescript (await container.item("product-1", "electronics").delete();), code:typescript (import { PatchOperation } from "@azure/cosmos";), code:typescript (const { database } = await client.databases.createIfNotExist), code:typescript (interface Product {), code:typescript (const { resource } = await container), code:typescript (const { resource: existing } = await container), Core Operations (+17 more)
+Cohesion: 0.15
+Nodes (13): code:typescript (const item: Product = {), code:typescript (await container.item("product-1", "electronics").delete();), code:typescript (import { PatchOperation } from "@azure/cosmos";), code:typescript (const { database } = await client.databases.createIfNotExist), code:typescript (const { resource } = await container), code:typescript (const { resource: existing } = await container), Core Operations, Database & Container Setup (+5 more)
 
 ### Community 3850 - "Community 3850"
 Cohesion: 0.25
@@ -26018,8 +26006,8 @@ Cohesion: 0.12
 Nodes (17): 前提条件, 前提条件, Core Concepts, Stream Generation, code:python (# From a video), Core Concepts, Stream Generation, コアコンセプト (+9 more)
 
 ### Community 3861 - "Community 3861"
-Cohesion: 0.10
-Nodes (20): code:bash (npm run observability:ready), ECC 2.0 Observability Readiness, Operator Workflow, Reference Pressure, Signal Model, code:text (📦 Your Computer Environment), code:bash (:{Write a diary entry using the diary skill} Today I finishe), ✨ Core Features (+12 more)
+Cohesion: 0.12
+Nodes (15): code:text (📦 Your Computer Environment), code:bash (:{Write a diary entry using the diary skill} Today I finishe), ✨ Core Features, 📂 Directory Structure, 🚀 How to Use (Usage), 🛠️ Setup & Prerequisites, Step 1.5: Refresh Project Context (Automation Script), Step 1: Local Project Archiving (AI Execution) (+7 more)
 
 ### Community 3862 - "Community 3862"
 Cohesion: 0.13
@@ -26107,7 +26095,7 @@ Nodes (6): 可用代理, 成功指标, 核心哲学, 模块化规则, 用户级�
 
 ### Community 3883 - "Community 3883"
 Cohesion: 0.15
-Nodes (13): code:rust (let secret = client), code:rust (use azure_security_keyvault_secrets::models::SetSecretParame), code:rust (use azure_security_keyvault_secrets::models::UpdateSecretPro), code:rust (client.delete_secret("secret-name", None).await?;), code:rust (use azure_security_keyvault_secrets::ResourceExt;), code:rust (use azure_security_keyvault_secrets::models::SecretClientGet), Core Operations, Delete Secret (+5 more)
+Nodes (11): code:` (用户：/e2e 测试市场搜索和查看流程), code:`, E2E 命令, E2E 커맨드, 何时使用, 使用示例, 工作原理, 此命令的作用 (+3 more)
 
 ### Community 3884 - "Community 3884"
 Cohesion: 0.13
@@ -26130,8 +26118,8 @@ Cohesion: 0.13
 Nodes (17): code:javascript (// Run this for each page in the flow BEFORE writing the dem), code:text (/purchase-requests/new:), 方法, 方法, How, Output, Phase 1: Discover, What to look for (+9 more)
 
 ### Community 3889 - "Community 3889"
-Cohesion: 0.17
-Nodes (15): Changelog Generation, code:bash (# Create annotated tag), Creating Releases, Release Management, Semantic Versioning, Changelog Generation, code:block19 (MAJOR.MINOR.PATCH), code:bash (# Generate changelog from commits) (+7 more)
+Cohesion: 0.04
+Nodes (62): Batch cut from edit decision list, code:bash (#!/bin/bash), Anti-Patterns, Changelog Generation, code:bash (# See conflicted files), code:bash (# 1. Keep feature branches small and short-lived), code:bash (# Create annotated tag), code:block31 (# BAD: Committing directly to main) (+54 more)
 
 ### Community 3890 - "Community 3890"
 Cohesion: 0.22
@@ -26162,8 +26150,8 @@ Cohesion: 0.07
 Nodes (39): Parallel Tests, Table-Driven Tests, Test Helpers, Test Patterns, code:go (func setupTestDB(t *testing.T) *sql.DB {), code:go (for _, tt := range tests {), Table-Driven Tests, code:go (tests := []struct {) (+31 more)
 
 ### Community 3897 - "Community 3897"
-Cohesion: 0.09
-Nodes (25): code:bash (# See conflicted files), code:bash (# 1. Keep feature branches small and short-lived), Conflict Prevention Strategies, Conflict Resolution, Identify Conflicts, Resolve Conflicts, code:markdown (## 内容), code:bash (# Check for conflicts before merge) (+17 more)
+Cohesion: 0.15
+Nodes (11): Alerting Rules, Best Practices, code:yaml (apiVersion: monitoring.coreos.com/v1), Do not use this skill when, Do's, Don'ts, Instructions, Limitations (+3 more)
 
 ### Community 3898 - "Community 3898"
 Cohesion: 0.18
@@ -26178,8 +26166,8 @@ Cohesion: 0.05
 Nodes (42): UI To Vue, API Key Handling, CLI Usage, code:text (screenshots/), code:bash (npx ui-to-vue-converter@1.0.2 --input ./designs --ui element), code:json ({), Conversion Model, Inputs (+34 more)
 
 ### Community 3901 - "Community 3901"
-Cohesion: 0.17
-Nodes (12): checkClippedOverflow(), checkElementClippedOverflow(), checkElementClippedOverflowDOM(), checkElementTextOverflowDOM(), checkRepeatedSectionKickers(), checkRepeatedSectionKickersDOM(), checkRepeatedSectionKickersFromDoc(), classSelector() (+4 more)
+Cohesion: 0.23
+Nodes (11): Icon(), ICON_VARIANT_MAP, IconName, IconProps, IconVariant, normalizeName(), Duotone, Filled (+3 more)
 
 ### Community 3902 - "Community 3902"
 Cohesion: 0.18
@@ -26214,8 +26202,8 @@ Cohesion: 0.15
 Nodes (12): 5. Performance, 1. Análise do Estado Atual, 1. Modularidade & Separação de Responsabilidades, 2. Escalabilidade, 2. Levantamento de Requisitos, 3. Manutenibilidade, 3. Proposta de Design, 4. Análise de Trade-offs (+4 more)
 
 ### Community 3910 - "Community 3910"
-Cohesion: 0.13
-Nodes (13): Additional Resources, Automatic Escalation Triggers, Communication Patterns, Escalation Chain, Escalation Protocols, Examples, How It Works, Inventory Demand Planning (+5 more)
+Cohesion: 0.06
+Nodes (35): Additional Resources, Automatic Escalation Triggers, Communication Patterns, Decision Frameworks, Escalation Chain, Escalation Protocols, Examples, Forecast Method Selection by Demand Pattern (+27 more)
 
 ### Community 3911 - "Community 3911"
 Cohesion: 0.29
@@ -26227,7 +26215,7 @@ Nodes (6): Agentes Disponíveis, Exemplo de CLAUDE.md no Nível de Usuário, Fil
 
 ### Community 3913 - "Community 3913"
 Cohesion: 0.18
-Nodes (11): Auth Token in Source Code, Hardcoded Phone Numbers, Hardcoded Twilio Credentials, No E.164 Phone Number Validation, No Opt-Out Keyword Handling, No Twilio Exception Handling, Not Checking Opt-Out Before Sending, Not Handling Specific Error Codes (+3 more)
+Nodes (13): checkElementHeroEyebrow(), checkElementHeroEyebrowDOM(), checkElementOversizedH1(), checkElementOversizedH1DOM(), checkElementQuality(), checkElementQualityDOM(), checkHeroEyebrow(), checkOversizedH1() (+5 more)
 
 ### Community 3914 - "Community 3914"
 Cohesion: 0.17
@@ -26238,8 +26226,8 @@ Cohesion: 0.30
 Nodes (12): code:bash (XDEBUG_MODE=coverage php artisan test --coverage), code:bash (vendor/bin/pint --test), code:bash (vendor/bin/psalm), Phase 2: Linting and Static Analysis, Phase 3: Tests and Coverage, code:bash (php artisan test), Phase 2: Linting and Static Analysis, Phase 3: Tests and Coverage (+4 more)
 
 ### Community 3916 - "Community 3916"
-Cohesion: 0.18
-Nodes (13): Advanced Patterns, code:markdown (## Basic Usage), code:markdown (## Related Workflows), code:markdown (## Instructions), code:markdown (Use React class components...), Common Mistakes to Avoid, Conditional Logic, Cross-References (+5 more)
+Cohesion: 0.17
+Nodes (13): Automatic Rollback, code:bash (# Rollback only failed files (preserve good changes)), Rollback Failed Changes, Automatic Rollback, Best Practices, code:bash (# Rollback to last known good state), Complete Guide, Exit Codes (+5 more)
 
 ### Community 3917 - "Community 3917"
 Cohesion: 0.29
@@ -26330,8 +26318,8 @@ Cohesion: 0.14
 Nodes (12): code:text (公开状态), 1. 首先阅读公开信息, 2. 对工作进行分类, 3. 判断是否需要 Linear, 4. 保持两个系统一致, 使用时机, 审查规则, 核心工作流 (+4 more)
 
 ### Community 3937 - "Community 3937"
-Cohesion: 0.08
-Nodes (30): Bare-Metal Install (Raspberry Pi OS / Debian / Ubuntu), code:bash (# Step 1: Assign a static IP (edit /etc/dhcpcd.conf on Pi OS), Docker (Recommended), Installation, code:dockerfile (# Aşama: bağımlılıklar), code:yaml (# docker-compose.override.yml (otomatik yüklenir, sadece dev), code:bash (# Geliştirme (override'ı otomatik yükler)), code:dockerfile (# Stage: dependencies) (+22 more)
+Cohesion: 0.11
+Nodes (23): Bare-Metal Install (Raspberry Pi OS / Debian / Ubuntu), code:bash (# Step 1: Assign a static IP (edit /etc/dhcpcd.conf on Pi OS), Docker (Recommended), Installation, code:dockerfile (# Stage: dependencies), Development vs Production Dockerfile, Docker Compose for Local Development, Override Files (+15 more)
 
 ### Community 3938 - "Community 3938"
 Cohesion: 0.12
@@ -26366,8 +26354,8 @@ Cohesion: 0.14
 Nodes (12): code:json ({), code:json ({), vs Homunculus, 設定, Hook 設定, 持續學習技能, 模式類型, 比較筆記（研究：2025 年 1 月） (+4 more)
 
 ### Community 3946 - "Community 3946"
-Cohesion: 0.25
-Nodes (8): Best Practices, Build Targets, Directory Structure, Electron Desktop App Template, Key Concepts, Process Model, Setup Steps, Tech Stack
+Cohesion: 0.13
+Nodes (13): Best Practices, Build Targets, Electron Desktop App Template, Key Concepts, Process Model, Setup Steps, Tech Stack, Best Practices (+5 more)
 
 ### Community 3947 - "Community 3947"
 Cohesion: 0.20
@@ -26434,8 +26422,8 @@ Cohesion: 0.29
 Nodes (5): Checklist Before Recording, Common Pitfalls, Three-Phase Process, UI Demo Video Recorder, When to Use
 
 ### Community 3963 - "Community 3963"
-Cohesion: 0.15
-Nodes (12): All tests passed, Build successful!, Common Errors Fixed, Diagnostic Commands Run, Fix Strategy, Kotlin Build and Fix, No issues, Related (+4 more)
+Cohesion: 0.29
+Nodes (6): Build successful!, Diagnostic Commands Run, Kotlin Build and Fix, No issues, What This Command Does, When to Use
 
 ### Community 3964 - "Community 3964"
 Cohesion: 0.11
@@ -26472,8 +26460,8 @@ Cohesion: 0.27
 Nodes (8): sync-ecc-to-codex.sh script, compose_ecc_block(), generate_prompt_file(), log(), replace_ecc_section(), require_path(), run_or_echo(), write_extension_prompt()
 
 ### Community 3971 - "Community 3971"
-Cohesion: 0.15
-Nodes (13): code:bash (# Step 1: Discover databases), code:bash (# Save Burp request to file (login.txt):), code:bash (# Create bulkfile.txt:), code:bash (# High level and risk for thorough testing), code:bash (# Target specific columns), code:bash (# Get interactive OS shell (requires DBA privileges)), Example 1: Complete Database Enumeration, Example 2: POST Request Injection (+5 more)
+Cohesion: 0.17
+Nodes (9): Coverage, Framework, Python Testing, Agent Roles, Agent Spawning with MCP, code:javascript (// Spawn testing agents), Purpose, Testing Swarm Strategy (+1 more)
 
 ### Community 3972 - "Community 3972"
 Cohesion: 0.11
@@ -26493,7 +26481,7 @@ Nodes (11): main(), CK_HOME, CURRENT_SESSION, daysAgo(), extractClaudeMdGoal(), 
 
 ### Community 3976 - "Community 3976"
 Cohesion: 0.17
-Nodes (8): AbstractJuntaScraper, Leiloeiro, Leiloeiro, GenericJuntaScraper, Scraper genérico para juntas que usam formato padrão de tabela HTML. Estados se, Scraper genérico para juntas com tabela HTML padrão.     Subclasses definem ape, JucepaScraper, Scraper JUCEPA — Junta Comercial do Estado do Pará URL: https://www.jucepa.pa.g
+Nodes (8): AbstractJuntaScraper, Leiloeiro, Leiloeiro, GenericJuntaScraper, Scraper genérico para juntas que usam formato padrão de tabela HTML. Estados se, Scraper genérico para juntas com tabela HTML padrão.     Subclasses definem ape, JucepiScraper, Scraper JUCEPI — Junta Comercial do Estado do Piauí URL: https://portal.pi.gov.
 
 ### Community 3977 - "Community 3977"
 Cohesion: 0.10
@@ -26528,8 +26516,8 @@ Cohesion: 0.14
 Nodes (12): code:text (PUBLIC STATUS), 1. Read the public surface first, 2. Classify the work, 3. Decide whether Linear is warranted, 4. Keep the two systems consistent, Core Workflow, Good Use Cases, Operating Model (+4 more)
 
 ### Community 3985 - "Community 3985"
-Cohesion: 0.13
-Nodes (15): code:cpp (// RAII: Resource Acquisition Is Initialization), code:cpp (#include <memory>), code:rust (// Move semantics (default)), code:c (// C doesn't have RAII, but we can use patterns), code:cpp (// C++: Use containers instead of raw arrays), code:rust (// Rust: Bounds checking by default), code:cpp (// C++: Thread-safe shared state), code:rust (// Rust: Data race prevention at compile time) (+7 more)
+Cohesion: 0.18
+Nodes (12): 4. Client-Side Data Fetching (MEDIUM-HIGH), code:tsx (// INCORRECT — every component adds its own), Deduplicate global event listeners, localStorage: version + minimize, Passive listeners for scroll, SWR / TanStack Query for deduplication, 4. Client-Side Data Fetching (MEDIUM-HIGH), code:ts (window.addEventListener("scroll", handler, { passive: true }) (+4 more)
 
 ### Community 3986 - "Community 3986"
 Cohesion: 0.17
@@ -26541,7 +26529,7 @@ Nodes (41): exa-search, Related Skills, Best Practices, code:bash (npx skills ad
 
 ### Community 3988 - "Community 3988"
 Cohesion: 0.18
-Nodes (13): code:yaml (name: Monorepo Coordination), 🚀 Complete Workflows, Example 1: Full-Stack Application CI/CD, Example 2: Monorepo Management, Example 3: Multi-Repo Synchronization, Real-World Examples, code:yaml (name: Full-Stack CI/CD with Swarms), code:bash (# Synchronize multiple repositories) (+5 more)
+Nodes (11): code:typescript (interface Product {), Create Document, 5. Converting imperative loops to functional operations, After (fp-ts), After (fp-ts functional operations), Before (Imperative), Before (Imperative), code:typescript (import * as A from 'fp-ts/Array';) (+3 more)
 
 ### Community 3989 - "Community 3989"
 Cohesion: 0.20
@@ -26568,12 +26556,12 @@ Cohesion: 0.22
 Nodes (8): Angular UI Patterns, code:html (<!-- Angular template pattern for data states -->), Core Principles, Overview, Quick Reference, References, Structure, Version
 
 ### Community 3995 - "Community 3995"
-Cohesion: 0.17
-Nodes (13): Basic Structure, code:xml (<w:p>), code:xml (<!-- Bold -->), code:xml (<!-- Numbered list -->), code:xml (<w:tbl>), code:xml (<!-- Page break before new section (common pattern) -->), Document Content Patterns, Headings and Styles (+5 more)
+Cohesion: 0.18
+Nodes (11): assert, fs, os, path, run(), { scanSupplyChainIocs }, SCRIPT_PATH, { spawnSync } (+3 more)
 
 ### Community 3996 - "Community 3996"
-Cohesion: 0.13
-Nodes (15): Analyze Competitor Strategy, Calculate ASO Score, code:block10 (Hey Claude—I just added the "app-store-optimization" skill. ), code:block11 (Hey Claude—I just added the "app-store-optimization" skill. ), code:block5 (Hey Claude—I just added the "app-store-optimization" skill. ), code:block6 (Hey Claude—I just added the "app-store-optimization" skill. ), code:block7 (Hey Claude—I just added the "app-store-optimization" skill. ), code:block8 (Hey Claude—I just added the "app-store-optimization" skill. ) (+7 more)
+Cohesion: 0.15
+Nodes (13): code:bash (# Step 1: Discover databases), code:bash (# Save Burp request to file (login.txt):), code:bash (# Create bulkfile.txt:), code:bash (# High level and risk for thorough testing), code:bash (# Target specific columns), code:bash (# Get interactive OS shell (requires DBA privileges)), Example 1: Complete Database Enumeration, Example 2: POST Request Injection (+5 more)
 
 ### Community 3997 - "Community 3997"
 Cohesion: 0.17
@@ -26644,8 +26632,8 @@ Cohesion: 0.15
 Nodes (12): App Shortcuts, [Best practices](https://developer.apple.com/design/human-interface-guidelines/app-shortcuts#Best-practices), [Change log](https://developer.apple.com/design/human-interface-guidelines/app-shortcuts#Change-log), [Developer documentation](https://developer.apple.com/design/human-interface-guidelines/app-shortcuts#Developer-documentation), [Editorial guidelines](https://developer.apple.com/design/human-interface-guidelines/app-shortcuts#Editorial-guidelines), [iOS, iPadOS](https://developer.apple.com/design/human-interface-guidelines/app-shortcuts#iOS-iPadOS), [macOS](https://developer.apple.com/design/human-interface-guidelines/app-shortcuts#macOS), [Platform considerations](https://developer.apple.com/design/human-interface-guidelines/app-shortcuts#Platform-considerations) (+4 more)
 
 ### Community 4014 - "Community 4014"
-Cohesion: 0.12
-Nodes (15): Arguments, code:bash (# List all sessions), Examples, Notes, Operator Notes, Sessions Command, Usage, Sessions 命令 (+7 more)
+Cohesion: 0.17
+Nodes (10): Arguments, Notes, Operator Notes, Sessions Command, Usage, Sessions 命令, 参数, 备注 (+2 more)
 
 ### Community 4015 - "Community 4015"
 Cohesion: 0.15
@@ -26677,7 +26665,7 @@ Nodes (11): Accessing the API, code:block1 (/api/datasets), code:bash (curl -s "
 
 ### Community 4022 - "Community 4022"
 Cohesion: 0.17
-Nodes (10): Plan - マルチモデル協調計画, コアプロトコル, 关键规则, 核心协议, 計画の保存, 計画変更フロー, 计划 - 多模型协同规划, 计划保存 (+2 more)
+Nodes (11): 1. Workflow Organization, 2. Security, 3. Performance, Best Practices, code:javascript (// action.yml), Custom Actions, Overview, Swarm Action Development (+3 more)
 
 ### Community 4023 - "Community 4023"
 Cohesion: 0.05
@@ -26712,8 +26700,8 @@ Cohesion: 0.14
 Nodes (12): API Base URL, Authenticated endpoints (free API key), code:bash (# Crypto intelligence), code:bash (curl -X POST https://maxiaworld.app/api/public/register \), code:bash (# Sell a service), Free endpoints (no auth), Key facts, Limitations (+4 more)
 
 ### Community 4031 - "Community 4031"
-Cohesion: 0.15
-Nodes (13): 4. Search Filters Reference, code:block11 (ip:1.2.3.4                  # Specific IP address), code:block12 (country:US                  # Two-letter country code), code:block13 (org:"Google"                # Organization name), code:block14 (product:nginx               # Software product), code:block15 (vuln:CVE-2019-0708          # Specific CVE), code:block16 (has_screenshot:true         # Has screenshot available), Geographic Filters (+5 more)
+Cohesion: 0.17
+Nodes (12): code:block29 (ERROR: Track not found: {track-id}), code:block30 (============================================================), code:block31 (============================================================), code:bash (rm -rf conductor/tracks/{track-id}), code:bash (git add conductor/tracks.md), code:block34 (============================================================), 1. Find Track, 2. Check In-Progress Status (+4 more)
 
 ### Community 4032 - "Community 4032"
 Cohesion: 0.09
@@ -26756,8 +26744,8 @@ Cohesion: 0.14
 Nodes (12): camelCase Aliases, code:python (class MyModel(BaseModel):), code:python (class MyUpdate(BaseModel):), code:python (class MyInDB(MyResponse):), Database Document, Integration Steps, Limitations, Multi-Model Pattern (+4 more)
 
 ### Community 4042 - "Community 4042"
-Cohesion: 0.25
-Nodes (7): code:markdown (## EVAL: 功能名称), code:block4 (功能模块定义), Eval 命令, 列出评估, 参数, 定义评估, 用法
+Cohesion: 0.14
+Nodes (11): code:markdown (## EVAL: 功能名称), code:block4 (功能模块定义), Arguments, Canonical Surface, Delegation, Eval Command (Legacy Shim), Eval 命令, 列出评估 (+3 more)
 
 ### Community 4043 - "Community 4043"
 Cohesion: 0.10
@@ -26792,8 +26780,8 @@ Cohesion: 0.22
 Nodes (7): main(), ProjectScaffolder, Main class for project scaffolder functionality, Execute the main functionality, Validate the target path exists and is accessible, Perform the main analysis or operation, Generate and display the report
 
 ### Community 4052 - "Community 4052"
-Cohesion: 0.18
-Nodes (12): code:python (# settings.py - CSRFはデフォルトで有効), code:python (from django.views.decorators.csrf import csrf_exempt), code:python (# settings.py - CSRF is enabled by default), CSRF Protection, CSRF 防护, CSRF保護, Default CSRF Protection, Exempting Views (Use Carefully) (+4 more)
+Cohesion: 0.17
+Nodes (10): code:block2 (# 短期：現在のセッションコンテキスト), code:block3 (# MCPツール経由), 1. 永続的なメモリ, 2. スケジュール済み操作（Crons）, アクティベーション時期, アーキテクチャ, コアコンポーネント, 同意とセーフティバウンダリ (+2 more)
 
 ### Community 4053 - "Community 4053"
 Cohesion: 0.13
@@ -26820,8 +26808,8 @@ Cohesion: 0.14
 Nodes (12): 1. Initial Test Run, 2. Smart Error Grouping, 3. Systematic Fixing Process, 4. Fix Order Strategy, 5. Final Verification, Best Practices, code:bash (uv run pytest tests/path/to/test_file.py -v), Example Workflow (+4 more)
 
 ### Community 4059 - "Community 4059"
-Cohesion: 0.10
-Nodes (21): code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), Deep Comparison with Builders, Exception Testing with Test2, Subtests (+13 more)
+Cohesion: 0.13
+Nodes (15): code:perl (use v5.36;), code:perl (use v5.36;), Named Captures and `/x` Flag, Precompiled Patterns, Regular Expressions, code:perl (use v5.36;), code:perl (use v5.36;), Deep Comparison with Builders (+7 more)
 
 ### Community 4060 - "Community 4060"
 Cohesion: 0.15
@@ -26845,7 +26833,7 @@ Nodes (32): Architecture Highlights, Async Worker Pattern, Best Practices, code:
 
 ### Community 4065 - "Community 4065"
 Cohesion: 0.03
-Nodes (66): 1. Audio Jumping/Cutting Off, 1. Error Handling, 1. Producer-Consumer with Queues, 1. Transcriber (Audio → Text), 1. Unit Test Workers in Isolation, 2. Agent (Text → Response), 2. Echo/Feedback Loop, 2. Graceful Shutdown (+58 more)
+Nodes (58): 1. Error Handling, 1. Producer-Consumer with Queues, 1. Transcriber (Audio → Text), 1. Unit Test Workers in Isolation, 2. Agent (Text → Response), 2. Graceful Shutdown, 2. Integration Test Pipeline, 2. Streaming Generators (+50 more)
 
 ### Community 4066 - "Community 4066"
 Cohesion: 0.14
@@ -26856,8 +26844,8 @@ Cohesion: 0.17
 Nodes (10): code:block17 (theme-name/), Limitations, Overview, Quality Gates, Related Workflow Bundles, Theme Structure, When to Use This Workflow, WordPress 7.0 Theme Checklist (+2 more)
 
 ### Community 4068 - "Community 4068"
-Cohesion: 0.15
-Nodes (11): code:python (# Bad - N+1クエリ), code:python (# 一括作成), Django 開発パターン, N+1クエリの防止, いつ有効化するか, クイックリファレンス, シグナル, シグナルパターン (+3 more)
+Cohesion: 0.17
+Nodes (10): code:python (# Bad - N+1クエリ), code:python (# 一括作成), Django 開発パターン, N+1クエリの防止, いつ有効化するか, クイックリファレンス, シグナル, シグナルパターン (+2 more)
 
 ### Community 4069 - "Community 4069"
 Cohesion: 0.22
@@ -26888,31 +26876,31 @@ Cohesion: 0.15
 Nodes (12): artifacts, autocannonData, dayjs, files, fs, lighthouseData, path, playwrightDir (+4 more)
 
 ### Community 4076 - "Community 4076"
-Cohesion: 0.17
-Nodes (11): code:bash (# Database), Environment Variables, Git 工作流, Go 微服务 — 项目 CLAUDE.md, Go 规范, Variáveis de Ambiente, 代码风格, 关键规则 (+3 more)
+Cohesion: 0.14
+Nodes (14): code:bash (# Database), code:bash (# Planning), ECC Workflow, ECC 工作流, Environment Variables, Fluxo Git, Git 工作流, Go Microservice — CLAUDE.md de Projeto (+6 more)
 
 ### Community 4077 - "Community 4077"
 Cohesion: 0.33
 Nodes (5): code:block1 (验证： [通过/失败]), 参数, 说明, 输出, 验证命令
 
 ### Community 4079 - "Community 4079"
-Cohesion: 0.33
-Nodes (6): code:terraform (# PASS: CORRECT: Restricted security group), 3. 네트워크 보안, VPC and Firewall Configuration, VPC 和防火墙配置, VPC 및 방화벽 구성, 확인 단계
+Cohesion: 0.18
+Nodes (11): code:terraform (# PASS: CORRECT: Restricted security group), 3. Network Security, 3. 네트워크 보안, 7. Backup & Disaster Recovery, Cloud Security Checklist, Verification Steps, Verification Steps, VPC and Firewall Configuration (+3 more)
 
 ### Community 4080 - "Community 4080"
 Cohesion: 0.17
-Nodes (12): code:bash (mkdir -p ~/.claude/homunculus/{instincts/{personal,inherited), code:bash (# 啟動背景觀察者), code:bash (cat .mcp.json 2>/dev/null || echo "No existing .mcp.json"), code:json ({), code:json ({), Linear MCP (if Linear usage detected), MCP Server Suggestions, Sentry MCP (if Sentry SDK detected) (+4 more)
+Nodes (10): code:block1 (テキスト形式は一貫していて繰り返しがあるか？), code:block2 ([正規表現パーサー] ─── 構造を抽出（95〜98% の精度）), アーキテクチャパターン, ベストプラクティス, 使用場面, 実際のメトリクス, 意思決定フレームワーク, 構造化テキスト解析における正規表現 vs LLM (+2 more)
 
 ### Community 4081 - "Community 4081"
 Cohesion: 0.04
-Nodes (45): 1. Long Functions, 1. Readability First, 2. Deep Nesting, 2. KISS (Keep It Simple, Stupid), 3. DRY (Don't Repeat Yourself), 3. Magic Numbers, 4. YAGNI (You Aren't Gonna Need It), Async/Await Best Practices (+37 more)
+Nodes (55): code:typescript (// ✅ GOOD: Select only needed columns), code:typescript (// ❌ BAD: N+1 query problem), Database Patterns, N+1 Query Prevention, Query Optimization, Transaction Pattern, 1. Long Functions, 1. Readability First (+47 more)
 
 ### Community 4082 - "Community 4082"
-Cohesion: 0.10
-Nodes (19): code:pseudo (// Always use background jobs for email), code:pseudo (// Poll every 5 seconds when disconnected), Common Pitfalls, Database Recommendations, Email Processing Recommendations, Email Template Tips, Fallback Strategy, Implementation Pattern (+11 more)
+Cohesion: 0.03
+Nodes (61): code:pseudo (function index()), code:pseudo (class ChatChannel), code:pseudo (class AdminNotificationChannel), code:pseudo (function broadcast_message():), code:block14 (ChatWidget (root container)), code:pseudo (function useSupportChat():), code:block16 (Header: "Support Chats"), code:block17 (Header: user@example.com [Archive/Restore button]) (+53 more)
 
 ### Community 4083 - "Community 4083"
-Cohesion: 0.17
+Cohesion: 0.18
 Nodes (10): code:block3 ([Start] --> /checkpoint create "feature-start"), Workflow, Fluxo, 工作流, Arguments, Checkpoint Command, List Checkpoints, Usage (+2 more)
 
 ### Community 4084 - "Community 4084"
@@ -26936,8 +26924,8 @@ Cohesion: 0.17
 Nodes (11): 1. Objective of Staging, 2. Governance Milestone Structure, 3. Why This Staging Matters, 4. What Is Frozen During Phase 13, 5. Governance Lock Declaration, 6. Phase 13 Completion Criteria (Milestone Version), 7. Strategic Perspective, Phase 13 — Governance Milestone Plan (+3 more)
 
 ### Community 4089 - "Community 4089"
-Cohesion: 0.17
-Nodes (6): code:markdown (# 好：平行執行), Agent 協調, 可用 Agents, 多觀點分析, 平行任務執行, 立即使用 Agent
+Cohesion: 0.21
+Nodes (12): Advanced Merge and Split Operations, Basic PDF Loading and Rendering, code:javascript (import { PDFDocument } from 'pdf-lib';), code:javascript (import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';), code:javascript (import * as pdfjsLib from 'pdfjs-dist';), Create Complex PDFs from Scratch, Extract Annotations and Forms, Extract Text with Coordinates (+4 more)
 
 ### Community 4090 - "Community 4090"
 Cohesion: 0.17
@@ -26945,7 +26933,7 @@ Nodes (6): Check if an author already exists in people.xml., Add author to peopl
 
 ### Community 4091 - "Community 4091"
 Cohesion: 0.17
-Nodes (10): code:block1 (Is the text format consistent and repeating?), code:block2 (Source Text), Anti-Patterns to Avoid, Architecture Pattern, Best Practices, Decision Framework, Real-World Metrics, Regex vs LLM for Structured Text Parsing (+2 more)
+Nodes (12): code:bash (# Enumerate AI API endpoints), code:bash (# Enumerate abilities manifest), code:bash (# Check sync storage endpoints), code:bash (# Test DataViews filter injection), code:bash (# Check PHP version support), New Attack Surfaces in WordPress 7.0, Testing Abilities API, Testing AI Connector Endpoints (+4 more)
 
 ### Community 4092 - "Community 4092"
 Cohesion: 0.29
@@ -26996,8 +26984,8 @@ Cohesion: 0.20
 Nodes (8): Best Practices, Connecting with stdio, Core concepts, How It Works, MCP Server Patterns, Official SDKs and Docs, Remote (Streamable HTTP), When to Use
 
 ### Community 4104 - "Community 4104"
-Cohesion: 0.20
-Nodes (12): Common Imports, 6. Dependency Injection with Context, Setup Dependencies, Testing with Mock Dependencies, Use in Components, 6. Dependency Injection with Context, code:typescript (import * as RTE from 'fp-ts/ReaderTaskEither'), code:typescript (function UserProfile({ userId }: { userId: string }) {) (+4 more)
+Cohesion: 0.17
+Nodes (10): Plan - マルチモデル協調計画, コアプロトコル, 关键规则, 核心协议, 計画の保存, 計画変更フロー, 计划 - 多模型协同规划, 计划保存 (+2 more)
 
 ### Community 4105 - "Community 4105"
 Cohesion: 0.08
@@ -27009,7 +26997,7 @@ Nodes (6): Error Handling, Key Options, Output Formats, Quick Command Reference,
 
 ### Community 4107 - "Community 4107"
 Cohesion: 0.17
-Nodes (10): code:block3 (⚠️ 免责声明:), Limitations, When to Use, 免责声明, 医学安全边界, 安全原则, 家庭健康分析技能, 技能概述 (+2 more)
+Nodes (10): code:block1 (文本格式是否一致且重复？), code:block2 ([正则表达式解析器] ─── 提取结构（95-98% 准确率）), 何时使用, 决策框架, 实际指标, 应避免的反模式, 最佳实践, 架构模式 (+2 more)
 
 ### Community 4108 - "Community 4108"
 Cohesion: 0.07
@@ -27052,8 +27040,8 @@ Cohesion: 0.17
 Nodes (12): code:bash (# Create new monorepo), code:json (// turbo.json), code:bash (# Turborepo Remote Cache (Vercel)), code:json (// package.json (root)), code:json (// packages/ui/package.json), Build Optimization, Configuration, Initial Setup (+4 more)
 
 ### Community 4118 - "Community 4118"
-Cohesion: 0.05
-Nodes (38): code:html (<!-- Vulnerable code example -->), code:html (<!-- Fake login form overlay -->), code:block11 (http://target.com/page?msg=%3Cdiv%20style%3D%22position%3Afi), code:html (<!-- Full page overlay -->), code:html (<!-- Style injection -->), code:html (<!-- Redirect via meta refresh -->), code:html (<!-- Hijack existing form -->), code:html (<!-- Embed external content -->) (+30 more)
+Cohesion: 0.04
+Nodes (54): Attack Limitations, code:html (<!-- Vulnerable code example -->), code:html (<!-- Fake login form overlay -->), code:block11 (http://target.com/page?msg=%3Cdiv%20style%3D%22position%3Afi), code:html (<!-- Full page overlay -->), code:html (<!-- Style injection -->), code:html (<!-- Redirect via meta refresh -->), code:html (<!-- Hijack existing form -->) (+46 more)
 
 ### Community 4119 - "Community 4119"
 Cohesion: 0.15
@@ -27068,8 +27056,8 @@ Cohesion: 0.20
 Nodes (10): Architecture, Async Operations, Best Practices, Configuration, Event-Driven, Logging, Quarkus-Specific, Testing (+2 more)
 
 ### Community 4122 - "Community 4122"
-Cohesion: 0.17
-Nodes (12): Example 1: Basic Manifest V3 Structure, code:json ({), code:bash (npm install -g faf-cli), code:json ({), Installation Options, Option 1: CLI (Recommended), Option 2: MCP Server (Claude Code), Option 3: Browser Extension (+4 more)
+Cohesion: 0.09
+Nodes (25): Best Practices, code:javascript (// background.js (Service Worker)), Do not use this skill when, Example 1: Basic Manifest V3 Structure, Example 2: Message Passing Policy, Examples, Instructions, Limitations (+17 more)
 
 ### Community 4123 - "Community 4123"
 Cohesion: 0.27
@@ -27081,23 +27069,23 @@ Nodes (13): code:bash (linkedin post fetch <url> [flags] --json -q), code:bash (
 
 ### Community 4125 - "Community 4125"
 Cohesion: 0.06
-Nodes (29): code:ts (// Bad: triggers recalc on all children), code:tsx (const x = useMotionValue(0);), code:ts ("use client";), code:css (.animating { will-change: transform, opacity; }), Compositing layers and will-change, Contents, CSS variables inheritance trap, CSS vs JS animations (+21 more)
+Nodes (27): code:tsx (import { AnimatePresence, motion } from "motion/react"), code:css (.icon {), code:css (@keyframes enter {), code:tsx (<div className="animate-enter animate-enter-section" style={), code:tsx ({"Track expenses, build habits".split(" ").map((word, i) => ), code:tsx (<motion.div), Contents, Contextual Animations (+19 more)
 
 ### Community 4126 - "Community 4126"
 Cohesion: 0.15
 Nodes (13): code:bash (# List registry hives), code:bash (# Scan for file objects), code:bash (# List processes), code:bash (# Network connections), code:bash (# Loaded DLLs per process), code:bash (# Detect code injection), DLL and Module Analysis, Essential Plugins (+5 more)
 
 ### Community 4127 - "Community 4127"
-Cohesion: 0.20
-Nodes (10): devDependencies, postcss, tailwindcss, @tailwindcss/postcss, @tauri-apps/api, @tauri-apps/cli, @types/node, @types/react (+2 more)
+Cohesion: 0.33
+Nodes (9): Approach, Do not use this skill when, Focus Areas, Instructions, Limitations, Output, Use this skill when, What I Can Analyze (+1 more)
 
 ### Community 4128 - "Community 4128"
 Cohesion: 0.22
 Nodes (9): code:block3 (Subject: Action needed — your payment didn't go through), code:block4 (Subject: Quick reminder — update your payment for [Product]), code:block5 (Subject: Your [Product] account will be paused in 3 days), code:block6 (Subject: Last chance to keep your [Product] account active), Dunning Email Sequence, Email 1: Payment Failed (Day 0), Email 2: Reminder (Day 3), Email 3: Urgency (Day 7) (+1 more)
 
 ### Community 4129 - "Community 4129"
-Cohesion: 0.12
-Nodes (15): Basic Message Request, Claude API — cURL / Raw HTTP, code:bash (export ANTHROPIC_API_KEY="your-api-key"), code:bash (curl https://api.anthropic.com/v1/messages \), code:block4 (event: message_start), code:bash (# Opus 4.6: adaptive thinking (recommended)), Extended Thinking, Required Headers (+7 more)
+Cohesion: 0.20
+Nodes (11): Basic Message Request, Claude API — cURL / Raw HTTP, code:bash (export ANTHROPIC_API_KEY="your-api-key"), code:bash (curl https://api.anthropic.com/v1/messages \), code:block4 (event: message_start), code:bash (# Opus 4.6: adaptive thinking (recommended)), Extended Thinking, Required Headers (+3 more)
 
 ### Community 4130 - "Community 4130"
 Cohesion: 0.15
@@ -27144,8 +27132,8 @@ Cohesion: 0.18
 Nodes (10): Always Use Pipelines, Best Practices, Choose Appropriate Metrics, code:python (# Good: Preprocessing in pipeline), code:python (# Good), code:python (model = RandomForestClassifier(n_estimators=100, random_stat), Fit on Training Data Only, Scale Features When Required (+2 more)
 
 ### Community 4141 - "Community 4141"
-Cohesion: 0.17
-Nodes (11): code:javascript (// action.yml), Custom Actions, Swarm Action Development, 1. Workflow Organization, 2. Security, 3. Performance, Best Practices, Custom Actions (+3 more)
+Cohesion: 0.29
+Nodes (6): 1. Workflow Organization, 2. Security, 3. Performance, Best Practices, Overview, Workflow Automation - GitHub Actions Integration
 
 ### Community 4142 - "Community 4142"
 Cohesion: 0.15
@@ -27160,8 +27148,8 @@ Cohesion: 0.22
 Nodes (9): [Designing custom gestures in visionOS](https://developer.apple.com/design/human-interface-guidelines/gestures#Designing-custom-gestures-in-visionOS), [Double tap](https://developer.apple.com/design/human-interface-guidelines/gestures#Double-tap), [iOS, iPadOS](https://developer.apple.com/design/human-interface-guidelines/gestures#iOS-iPadOS), [macOS](https://developer.apple.com/design/human-interface-guidelines/gestures#macOS), [Platform considerations](https://developer.apple.com/design/human-interface-guidelines/gestures#Platform-considerations), [tvOS](https://developer.apple.com/design/human-interface-guidelines/gestures#tvOS), [visionOS](https://developer.apple.com/design/human-interface-guidelines/gestures#visionOS), [watchOS](https://developer.apple.com/design/human-interface-guidelines/gestures#watchOS) (+1 more)
 
 ### Community 4145 - "Community 4145"
-Cohesion: 0.04
-Nodes (50): Antigravity IDE, "Can I create my own skills?", "Can I load all skills into the model at once?", "Can I see all available skills?", Claude Code (CLI), code:bash (./scripts/activate-skills.sh --clear Essentials), code:block13 (Use @skill-creator to help me build a custom skill for [your), code:bash (# In your terminal/chat with Claude Code:) (+42 more)
+Cohesion: 0.03
+Nodes (62): Antigravity IDE, "Can I create my own skills?", "Can I load all skills into the model at once?", "Can I see all available skills?", Claude Code (CLI), code:bash (./scripts/activate-skills.sh --clear Essentials), code:block10 (You: Use @tailwind-patterns to make the blog posts look mode), code:block11 (You: Use @seo-audit to optimize the blog for search engines) (+54 more)
 
 ### Community 4146 - "Community 4146"
 Cohesion: 0.15
@@ -27231,6 +27219,10 @@ Nodes (11): Executive Summary, Friction Hotspots (top areas), Generated by /anal
 Cohesion: 0.17
 Nodes (11): API Security Testing, Authentication Testing, Authorization Testing, BOLA/IDOR Testing, GraphQL Security, Input Validation Testing, JWT Testing, OWASP API Security Top 10 (+3 more)
 
+### Community 4163 - "Community 4163"
+Cohesion: 0.20
+Nodes (7): Best Practices, Chrome Extension Template, Development Tips, Manifest V3 Concepts, Permissions, Setup Steps, Tech Stack
+
 ### Community 4164 - "Community 4164"
 Cohesion: 0.22
 Nodes (7): code:xml (<Application.DataTemplates>), code:csharp (public override void OnFrameworkInitializationCompleted()), Composition & Mapping, Integration in App.axaml, Registration, View Injection, ViewModel-to-View Mapping
@@ -27272,8 +27264,8 @@ Cohesion: 0.15
 Nodes (11): 1. Scan Context, 2. Minimal Interaction, 3. Generate Plan, Checklist Guidelines, code:markdown (# Plan), Concise Planning, Goal, Limitations (+3 more)
 
 ### Community 4174 - "Community 4174"
-Cohesion: 0.13
-Nodes (13): Eval Storage, code:block12 (.claude/), Best Practices, Eval Harness Skill, Eval Storage, Metrics, pass@k, pass^k (+5 more)
+Cohesion: 0.08
+Nodes (21): Best Practices, Eval Harness Skill, Eval Storage, Metrics, pass@k, pass^k, Philosophy, When to Activate (+13 more)
 
 ### Community 4175 - "Community 4175"
 Cohesion: 0.15
@@ -27429,7 +27421,7 @@ Nodes (12): 1. Broken Connections, 2. Circular Dependencies, 3. Multiple Start N
 
 ### Community 4213 - "Community 4213"
 Cohesion: 0.11
-Nodes (17): ProGuard / R8, code:xml (<!-- res/xml/network_security_config.xml -->), code:kotlin (// BAD — SQL injection), ProGuard / R8, Authentication, Data Protection, Input Validation, Kotlin Security (+9 more)
+Nodes (17): ProGuard / R8, code:kotlin (// BAD), code:kotlin (// BAD — SQL injection), ProGuard / R8, Authentication, Data Protection, Input Validation, Kotlin Security (+9 more)
 
 ### Community 4214 - "Community 4214"
 Cohesion: 0.33
@@ -27520,8 +27512,8 @@ Cohesion: 0.29
 Nodes (10): Path, check_hardcoded_strings(), check_locale_completeness(), find_locale_files(), flatten_keys(), main(), Flatten nested dict keys., Check for hardcoded strings in code files. (+2 more)
 
 ### Community 4236 - "Community 4236"
-Cohesion: 0.29
-Nodes (8): Auto-Label Based on Content, Dynamic Agent Assignment, Issue Label Automation, Auto-Label Based on Content, code:javascript (// .github/swarm-labels.json), code:bash (# Assign agents based on issue content), Dynamic Agent Assignment, Issue Label Automation
+Cohesion: 0.13
+Nodes (15): Auto-Label Based on Content, Dynamic Agent Assignment, Issue Label Automation, 1. Issue Templates, 2. Label Strategy, 3. Comment Etiquette, Auto-Label Based on Content, Best Practices (+7 more)
 
 ### Community 4237 - "Community 4237"
 Cohesion: 0.11
@@ -27540,8 +27532,8 @@ Cohesion: 0.50
 Nodes (4): Commands, Examples, Usage, code:bash (next dev)
 
 ### Community 4241 - "Community 4241"
-Cohesion: 0.21
-Nodes (12): code:bash (# Get structured JSON output), code:bash (# Verify single file), JSON Output for CI/CD, Run Verification, Verification Checks, Verification Criteria, code:bash (# Verify specific task output), code:bash (# Verify multiple files in parallel) (+4 more)
+Cohesion: 0.17
+Nodes (10): 定期更新, 10. 依赖项安全, 何时激活, 安全审查技能, 安全检查清单, 安全测试, 自动化安全测试, 资源 (+2 more)
 
 ### Community 4242 - "Community 4242"
 Cohesion: 0.15
@@ -27557,7 +27549,7 @@ Nodes (60): 2. NanoClaw REPL, code:bash (# Step 1: Implement (let it be thorough
 
 ### Community 4245 - "Community 4245"
 Cohesion: 0.14
-Nodes (12): Enumerations (Enum.*), Key Rules, 关键规则, 枚举 (Enum.\*), C++ Coding Standards (C++ Core Guidelines), code:cpp (// Enum.3 + Enum.5: Scoped enum, no ALL_CAPS), Cross-Cutting Principles, Enumerations (Enum.*) (+4 more)
+Nodes (12): Key Rules, Standard Library (SL.*), 关键规则, 标准库 (SL.\*), C++ Coding Standards (C++ Core Guidelines), code:cpp (// SL.con.1 + SL.con.2: Prefer vector/array over C arrays), Cross-Cutting Principles, Key Rules (+4 more)
 
 ### Community 4246 - "Community 4246"
 Cohesion: 0.15
@@ -27624,8 +27616,8 @@ Cohesion: 0.17
 Nodes (11): Cost & Licensing, Developer Experience, Documentation, Evaluation Criteria, Invocation, Long-term Viability, Maturity & Support, Performance & Scalability (+3 more)
 
 ### Community 4262 - "Community 4262"
-Cohesion: 0.29
-Nodes (6): Kotlinビルドエラーリゾルバー, コア責務, プロンプト防御ベースライン, 一般的な修正パターン, 主要原則, 診断コマンド
+Cohesion: 0.20
+Nodes (10): code:text ([FIXED] src/main/kotlin/com/example/service/UserService.kt:4), Kotlinビルドエラーリゾルバー, Output Format, Çıktı Formatı, コア責務, 一般的な修正パターン, 主要原則, 出力フォーマット (+2 more)
 
 ### Community 4263 - "Community 4263"
 Cohesion: 0.50
@@ -27636,7 +27628,7 @@ Cohesion: 0.17
 Nodes (11): API Documentation, Avoid, Code Comments, Documentation Quality, Documentation Types, Good Documentation, Guides, README.md (+3 more)
 
 ### Community 4265 - "Community 4265"
-Cohesion: 0.40
+Cohesion: 0.33
 Nodes (5): code:block1 (検証結果: [PASS/FAIL]), 出力, 引数, 手順, 検証コマンド
 
 ### Community 4266 - "Community 4266"
@@ -27724,8 +27716,8 @@ Cohesion: 0.21
 Nodes (12): code:bash (# Table format (default)), code:bash (# Watch mode with live updates), code:block6 (📊 Truth Metrics Dashboard), Metrics Explained, Truth Score Dashboard, Truth Scoring System, View Truth Metrics, code:bash (# View current truth scores (default: table format)) (+4 more)
 
 ### Community 4287 - "Community 4287"
-Cohesion: 0.33
-Nodes (3): {fontFamily}, MyAnimation(), {fontFamily}
+Cohesion: 0.22
+Nodes (7): {fontFamily}, Highlight(), MyAnimation(), {fontFamily}, postSerializedFindings(), renderBrowserFindings(), serializeFindings()
 
 ### Community 4288 - "Community 4288"
 Cohesion: 0.18
@@ -27750,8 +27742,8 @@ Nodes (9): assert, fs, {
 }, os, path, runTests(), test(), writeJson() (+1 more)
 
 ### Community 4291 - "Community 4291"
-Cohesion: 0.11
-Nodes (18): code:bash (# 1. Check if Redis is running), code:bash (# 1. Include the password in the URL), code:bash (# 1. Set REDIS_URL in .env), code:bash (# 1. Check the configured path), code:bash (# 1. Verify credentials are set), code:bash (# 1. Verify MinIO is running), 5. Redis Connection Issues, 5a. Cannot Connect to Redis (+10 more)
+Cohesion: 0.22
+Nodes (9): code:bash (# 1. Reduce resolution in your job request), code:bash (# Reduce steps in the job inputs), code:bash (# In ComfyUI, use fp8 or quantized checkpoints), code:block9 (Enable VAE tiling in your ComfyUI workflow by adding a "VAED), 2. OOM (Out of Memory) Errors, 2a. Resolution or Batch Size Too Large, 2b. Too Many Steps, 2c. Model Quantization (+1 more)
 
 ### Community 4292 - "Community 4292"
 Cohesion: 0.18
@@ -27774,8 +27766,8 @@ Cohesion: 0.17
 Nodes (12): code:block1 (START: What is the organization's tolerance for energy cost ), code:block2 (Delivery year: 2028), code:block3 (Annual Cost = Σ(hourly volume × hourly price) + fixed charge), Data Assembly Checklist, 1.1 Pre-Procurement Intelligence Gathering, 1.2 Fixed vs. Index vs. Block-and-Index Decision Tree, 1.3 Layered Procurement Methodology, 1.4 RFP Process for Deregulated Markets (+4 more)
 
 ### Community 4297 - "Community 4297"
-Cohesion: 0.15
-Nodes (11): code:block16 (skills/), Continuous Improvement Checklist, Limitations, Makepad Skills Evolution, Personalization, Quick Navigation, References, Skill File Locations (+3 more)
+Cohesion: 0.04
+Nodes (50): After Completing a Feature, After Creating a Widget, After Debugging, After Solving a Problem, Auto-Evolution Prompts, code:bash (# Install makepad-skills with hooks enabled), code:markdown (<!-- Evolution: 2024-01-15 | source: my-app | author: @zhang), code:bash (# Create branch for your contribution) (+42 more)
 
 ### Community 4298 - "Community 4298"
 Cohesion: 0.15
@@ -27822,8 +27814,8 @@ Cohesion: 0.43
 Nodes (8): Multi-Model Call Specification, code:block2 (TaskOutput({ task_id: "<task_id>", block: true, timeout: 600), Multi-Model Çağrı Spesifikasyonu, マルチモデル呼び出し仕様, 多模型调用规范, code:block1 (Bash({), Multi-Model Call Specification, Multi-Model Call Specification
 
 ### Community 4309 - "Community 4309"
-Cohesion: 0.25
-Nodes (8): 10. Settlement Negotiation Response (Accepting), Body, code:block20 (Claim Settlement Acceptance — PRO {{pro_number}} | Claim {{o), code:block21 ({{carrier_claims_contact}},), Subject Line, Tone Guidance, What NOT to Say, When to Use
+Cohesion: 0.10
+Nodes (20): Table of Contents, Variable Reference, 10. Settlement Negotiation Response (Accepting), 13. Carrier Performance Warning, Body, Body, code:block20 (Claim Settlement Acceptance — PRO {{pro_number}} | Claim {{o), code:block21 ({{carrier_claims_contact}},) (+12 more)
 
 ### Community 4310 - "Community 4310"
 Cohesion: 0.17
@@ -27834,8 +27826,8 @@ Cohesion: 0.17
 Nodes (11): [Best practices](https://developer.apple.com/design/human-interface-guidelines/sliders#Best-practices), [Change log](https://developer.apple.com/design/human-interface-guidelines/sliders#Change-log), [Developer documentation](https://developer.apple.com/design/human-interface-guidelines/sliders#Developer-documentation), [iOS, iPadOS](https://developer.apple.com/design/human-interface-guidelines/sliders#iOS-iPadOS), [macOS](https://developer.apple.com/design/human-interface-guidelines/sliders#macOS), [Platform considerations](https://developer.apple.com/design/human-interface-guidelines/sliders#Platform-considerations), [Related](https://developer.apple.com/design/human-interface-guidelines/sliders#Related), [Resources](https://developer.apple.com/design/human-interface-guidelines/sliders#Resources) (+3 more)
 
 ### Community 4312 - "Community 4312"
-Cohesion: 0.17
-Nodes (11): checkTypography(), BORDER_SAFE_TAGS, BRAND_FONT_DOMAINS, GENERIC_FONTS, GITHUB_DOMAINS, GOOGLE_DOMAINS, isBrandFontOnOwnDomain(), KNOWN_SERIF_FONTS (+3 more)
+Cohesion: 0.12
+Nodes (29): createBrowserDetector(), confirm(), detectCli(), formatFindings(), handleStdin(), printUsage(), buildImportGraph(), detectFrameworkConfig() (+21 more)
 
 ### Community 4313 - "Community 4313"
 Cohesion: 0.17
@@ -27946,8 +27938,8 @@ Cohesion: 0.18
 Nodes (10): code:markdown (# [Descriptive Pattern Name]), /learn - Extract Reusable Patterns, Notes, Output Format, Process, Trigger, What to Extract, Formato de Saída (+2 more)
 
 ### Community 4340 - "Community 4340"
-Cohesion: 0.04
-Nodes (44): #1: Empty Code or Missing Return (Most Common), #2: Expression Syntax Confusion, #3: Incorrect Return Wrapper, #4: Missing Null Checks, #5: Webhook Body Nesting, Additional Resources, code:javascript (// Basic template for Code nodes), code:javascript (// ❌ WRONG: Object without array wrapper) (+36 more)
+Cohesion: 0.05
+Nodes (42): #1: Empty Code or Missing Return (Most Common), #2: Expression Syntax Confusion, #3: Incorrect Return Wrapper, #4: Missing Null Checks, #5: Webhook Body Nesting, Additional Resources, Built-in Functions & Helpers, code:javascript (// Basic template for Code nodes) (+34 more)
 
 ### Community 4341 - "Community 4341"
 Cohesion: 0.15
@@ -27990,12 +27982,12 @@ Cohesion: 0.29
 Nodes (5): Limitations, Prompt Improvement Checklist, 📝 Prompt Library, Resources, When to Use This Skill
 
 ### Community 4351 - "Community 4351"
-Cohesion: 0.05
-Nodes (44): 1. **API Documentation**, 2. **Architecture Documentation**, 3. **Code Documentation**, 4. **User Documentation**, 5. **Documentation Automation**, Automated Documentation Generation Implementation Playbook, Clone and setup, Install dependencies (+36 more)
+Cohesion: 0.04
+Nodes (56): Advanced Patterns, Best Practices Summary, code:python (# test_example.py), code:python (# conftest.py), code:python (# test_properties.py), code:python (# tests/), code:python (# Good test names), code:python (# test_markers.py) (+48 more)
 
 ### Community 4352 - "Community 4352"
-Cohesion: 0.13
-Nodes (17): code:sql (-- PASS: GOOD: Use indexed columns first), 聚合, code:sql (-- PASS: GOOD: Use ClickHouse-specific aggregation functions), Aggregations, code:sql (-- ✅ GOOD: Use indexed columns first), code:sql (-- ✅ GOOD: Use ClickHouse-specific aggregation functions), code:sql (-- Calculate running totals), Efficient Filtering (+9 more)
+Cohesion: 0.20
+Nodes (12): code:sql (-- PASS: GOOD: Use indexed columns first), 聚合, code:sql (-- PASS: GOOD: Use ClickHouse-specific aggregation functions), code:sql (-- Calculate running totals), Window Functions, Aggregations, Efficient Filtering, Query Optimization Patterns (+4 more)
 
 ### Community 4353 - "Community 4353"
 Cohesion: 0.15
@@ -28042,8 +28034,8 @@ Cohesion: 0.15
 Nodes (11): Content Pillars Framework, Example for a SaaS Founder, Limitations, Pillar Development Questions, Questions to Ask, Queue Management, Related Skills, Scheduling Best Practices (+3 more)
 
 ### Community 4364 - "Community 4364"
-Cohesion: 0.07
-Nodes (27): Best Practices, code:python (import sqlite3), code:python (import cProfile), code:python (# Use indexes for frequently queried columns), code:bash (# Profile a script), code:python (# Install: pip install line-profiler), code:python (from line_profiler import LineProfiler), code:python (# Install: pip install memory-profiler) (+19 more)
+Cohesion: 0.10
+Nodes (22): code:python (import pandas as pd), code:python (from typing import Callable, Dict, List, Tuple, Any), Implementation Patterns, code:python (class ApplicationError(Exception):), code:python (from contextlib import contextmanager), code:python (# Install: pip install pytest-benchmark), Quick Start, code:python (import numpy as np) (+14 more)
 
 ### Community 4365 - "Community 4365"
 Cohesion: 0.08
@@ -28086,12 +28078,12 @@ Cohesion: 0.15
 Nodes (11): Clerk Skill, code:json ({), Core Principle: Secrets Never Exposed, Docker Skill, Integration with Other Skills, Limitations, npm Scripts, Quick Reference Card (+3 more)
 
 ### Community 4375 - "Community 4375"
-Cohesion: 0.10
-Nodes (27): code:json ({), URI, code:json ({ "file": "src/auth/middleware.ts", "line": 42, "title": "Au), code:json ({), code:json ({ "uri": "https://github.com/org/repo/pull/456", "title": "T), Content, Directory, File + line (+19 more)
+Cohesion: 0.09
+Nodes (28): code:json ({), URI, code:json ({ "file": "src/auth/middleware.ts", "line": 42, "title": "Au), code:json ({), code:json ({ "uri": "https://github.com/org/repo/pull/456", "title": "T), Content, Directory, File + line (+20 more)
 
 ### Community 4376 - "Community 4376"
 Cohesion: 0.15
-Nodes (15): CONVERSATION DESIGN:, Front-load the answer, Keep responses short (10-20 seconds max), Measure and budget latency for each component:, Measure continuously:, Optimization strategies:, Optimization Tips:, PIPELINE ARCHITECTURE: (+7 more)
+Nodes (15): Advanced: Distinguish interruption types:, Basic barge-in:, CONVERSATION DESIGN:, Front-load the answer, Generating Text-Length Responses for Voice, Implement barge-in detection:, Keep responses short (10-20 seconds max), Optimization Tips: (+7 more)
 
 ### Community 4377 - "Community 4377"
 Cohesion: 0.22
@@ -28118,8 +28110,8 @@ Cohesion: 0.15
 Nodes (11): Core Invariants (NON-NEGOTIABLE), Depth Before Breadth, Evidence Standard, For Every Significant Finding, Limitations, Process: 5 Iterations, Rules, When to Use (+3 more)
 
 ### Community 4383 - "Community 4383"
-Cohesion: 0.05
-Nodes (37): Abilities API, AI Connector API, Brute-Force Blocked, Cannot Access Admin Panel, code:bash (# Enumerate AI API endpoints), code:bash (# Enumerate abilities manifest), code:bash (# Check sync storage endpoints), code:bash (# Test DataViews filter injection) (+29 more)
+Cohesion: 0.07
+Nodes (25): Abilities API, AI Connector API, Brute-Force Blocked, Cannot Access Admin Panel, Common WordPress Paths, Constraints and Limitations, DataViews, Detection Evasion (+17 more)
 
 ### Community 4384 - "Community 4384"
 Cohesion: 0.15
@@ -28127,7 +28119,7 @@ Nodes (11): code:block16 (plugin-name/), Key Features for Plugin Developers, Lim
 
 ### Community 4385 - "Community 4385"
 Cohesion: 0.17
-Nodes (11): Best Practices, Performance Considerations, When to Use This Skill, Blocked by Dependency, Checkpoint Rejection, Commit Performance, Error Recovery, Failed Tests After GREEN (+3 more)
+Nodes (11): Best Practices, Performance Considerations, When to Use This Skill, Commit Performance, Extend, Don't Replace, Regression Prevention, Test Migration, Test Suite Performance (+3 more)
 
 ### Community 4386 - "Community 4386"
 Cohesion: 0.17
@@ -28154,8 +28146,8 @@ Cohesion: 0.48
 Nodes (7): Example Output, code:block6, Örnek Çıktı, 出力例, code:markdown (---), Example Output, Example Output
 
 ### Community 4392 - "Community 4392"
-Cohesion: 0.18
-Nodes (9): ADFS Golden SAML, Advanced Active Directory Attacks Reference, Child to Parent Domain (SID History), code:powershell (# Get Enterprise Admins SID from parent), code:bash (# Dump trust key), code:bash (# Dump with ADFSDump), Forest to Forest (Trust Ticket), Table of Contents (+1 more)
+Cohesion: 0.17
+Nodes (6): code:markdown (# 好：平行執行), Agent 協調, 可用 Agents, 多觀點分析, 平行任務執行, 立即使用 Agent
 
 ### Community 4393 - "Community 4393"
 Cohesion: 0.17
@@ -28203,7 +28195,7 @@ Nodes (12): 1. Set up d3.js, 2. Choose the integration pattern, 3. Structure the
 
 ### Community 4404 - "Community 4404"
 Cohesion: 0.17
-Nodes (12): code:bash (# 1. Explore the source dataset), code:bash (# Transform MMLU to QA format with correct answers extracted), code:bash (# Export multiple splits and combine), code:bash (# Filter for high-quality examples), code:bash (# 1. Query source data), Combined Workflow Examples, Example 1: Create Training Subset from Existing Dataset, Example 2: Transform and Reshape Data (+4 more)
+Nodes (10): code:block1 (Is the text format consistent and repeating?), code:block2 (Source Text), Anti-Patterns to Avoid, Architecture Pattern, Best Practices, Decision Framework, Real-World Metrics, Regex vs LLM for Structured Text Parsing (+2 more)
 
 ### Community 4405 - "Community 4405"
 Cohesion: 0.17
@@ -28274,24 +28266,24 @@ Cohesion: 0.22
 Nodes (9): 1. Start with Planning, 2. Use the Right Agent for the Job, 3. Enable Relevant Hooks, 4. Maintain Lessons Learned, 5. Review Agent Output, 6. Iterate with Feedback, 7. Use Skills for Complex Workflows, 8. Combine Auto and Manual Steering (+1 more)
 
 ### Community 4422 - "Community 4422"
-Cohesion: 0.02
-Nodes (95): code:go (func TestAdd(t *testing.T) {), code:go (// Define interface for dependencies), code:go (// Bağımlılıklar için interface tanımlayın), Fuzzing (Go 1.18+), code:block1 (RED     → 首先编写一个失败的测试), code:go (func TestHealthHandler(t *testing.T) {), Basic Fuzz Test, Best Practices (+87 more)
+Cohesion: 0.03
+Nodes (65): code:go (// Define interface for dependencies), code:block1 (RED     → 首先编写一个失败的测试), code:yaml (# GitHub Actions example), code:go (func TestHealthHandler(t *testing.T) {), Best Practices, Go Testing Patterns, Golden Files, HTTP Handler Testing (+57 more)
 
 ### Community 4423 - "Community 4423"
 Cohesion: 0.15
 Nodes (11): Accelerator Applications, Asset Guidance, Core Workflow, Financial Model, Golden Rule, Investor Materials, One-Pager / Memo, Pitch Deck (+3 more)
 
 ### Community 4424 - "Community 4424"
-Cohesion: 0.22
-Nodes (7): code:kotlin (// Validate request data in routes), Ktor Server Patterns, Quick Reference: Ktor Patterns, Request Validation, When to Activate, Request Validation, 请求验证
+Cohesion: 0.20
+Nodes (8): Ktor Server Patterns, Quick Reference: Ktor Patterns, Status Pages (Error Handling), When to Activate, code:kotlin (// plugins/StatusPages.kt), Status Pages (Error Handling), StatusPages（エラーハンドリング）, 状态页（错误处理）
 
 ### Community 4425 - "Community 4425"
 Cohesion: 0.25
 Nodes (7): code:block1 (/instinct-export                           # すべての個人インスティンクトを), インスティンクトエクスポートコマンド, フラグ, プライバシーに関する考慮事項, 使用方法, 出力形式, 実行内容
 
 ### Community 4426 - "Community 4426"
-Cohesion: 0.09
-Nodes (21): code:markdown (# セキュリティレビューレポート), code:bash (# 檢查有弱點的相依性), code:markdown (# 安全性審查報告), code:block15, code:block16, code:block2 (a) 執行自動化安全性工具), code:block3 (對每個類別檢查：), 成功指標 (+13 more)
+Cohesion: 0.12
+Nodes (14): code:bash (# 檢查有弱點的相依性), code:block2 (a) 執行自動化安全性工具), code:block3 (對每個類別檢查：), 成功指標, 1. 初始掃描階段, 2. OWASP Top 10 分析, 何時執行安全性審查, 分析指令 (+6 more)
 
 ### Community 4427 - "Community 4427"
 Cohesion: 0.25
@@ -28358,16 +28350,16 @@ Cohesion: 0.17
 Nodes (11): 1. SSL Configuration Error, 2. Inconsistent Offline Detection, 3. Improved Configuration Loading, Enhanced Debugging Features, Files Modified, Firebase Connectivity Issues - Resolved, Issues Identified and Fixed, Prevention (+3 more)
 
 ### Community 4439 - "Community 4439"
-Cohesion: 0.07
-Nodes (29): 1. State with Option (Maybe It's There, Maybe Not), 4. RemoteData Pattern (The Right Way to Handle Async State), Basic Pattern, Chaining Optional Values, code:typescript (// ❌ BAD: Impossible states are possible), Functional Programming in React, Hook with RemoteData, Libraries (+21 more)
+Cohesion: 0.05
+Nodes (39): 1. State with Option (Maybe It's There, Maybe Not), 6. Dependency Injection with Context, 7. React 19 Patterns, Basic Pattern, Chaining Optional Values, Functional Programming in React, Libraries, Limitations (+31 more)
 
 ### Community 4440 - "Community 4440"
 Cohesion: 0.17
 Nodes (12): Auto-Wait, Browser Lifecycle, code:go (// Launch and connect to a browser), code:go (el, err := page.Element("#login-btn")), code:go (err := rod.Try(func() {), code:go (// Set a 5-second timeout for the entire operation chain), code:go (// CSS selector (most common)), code:go (// This will automatically wait until the element exists) (+4 more)
 
 ### Community 4441 - "Community 4441"
-Cohesion: 0.22
-Nodes (9): code:tsx (function Messages({ items, isThinking, processingStartedAt }), code:tsx (type WorkingIndicatorProps = {), Architecture Examples, code:yaml (Requirements:), Example 1: MVP E-commerce (Solo Developer), Example 2: SaaS Product (5-10 Developers), Example 3: Enterprise (100K+ Users), Examples (+1 more)
+Cohesion: 0.16
+Nodes (10): code:tsx (function Messages({ items, isThinking, processingStartedAt }), code:tsx (type WorkingIndicatorProps = {), Architecture Examples, code:yaml (Requirements:), Example 1: MVP E-commerce (Solo Developer), Example 2: SaaS Product (5-10 Developers), Example 3: Enterprise (100K+ Users), Examples Swarm Strategy (+2 more)
 
 ### Community 4442 - "Community 4442"
 Cohesion: 0.38
@@ -28375,7 +28367,7 @@ Nodes (7): code:cmake (# CMakeLists.txt（抜粋）), CMake/CTest Quickstart, co
 
 ### Community 4443 - "Community 4443"
 Cohesion: 0.17
-Nodes (12): code:bash (npx tsx scripts/linear-ops.ts project-status <project-name> ), code:bash (# Start working on a project), code:bash (npx tsx scripts/linear-ops.ts link-initiative <project-name>), code:bash (# Link a project to an initiative), code:bash (npx tsx scripts/linear-ops.ts unlink-initiative <project-nam), code:bash (# Remove incorrect link), code:bash (# 1. Create project linked to initiative), Complete Project Lifecycle Example (+4 more)
+Nodes (10): 10. Dependency Security, Automated Security Tests, Lock Files, Pre-Deployment Security Checklist, Resources, Security Checklist, Security Review Skill, Security Testing (+2 more)
 
 ### Community 4444 - "Community 4444"
 Cohesion: 0.17
@@ -28418,8 +28410,8 @@ Cohesion: 0.18
 Nodes (11): code:block1 (Phase 1: Auto-Format (Silent)), Config Protection (Defense Against Rule-Gaming), How It Works, Package Manager Enforcement, Three-Phase Architecture, What the Main Agent Sees, Config Protection (Defense Against Rule-Gaming), How It Works (+3 more)
 
 ### Community 4454 - "Community 4454"
-Cohesion: 0.17
-Nodes (12): Assertion'lar, Async İşlem Testi, Camel Route Testi, Doğrulama En İyi Uygulamaları, En İyi Uygulamalar, Entegrasyon Testi, Event-Driven Test, Performans (+4 more)
+Cohesion: 0.21
+Nodes (12): code:bash (# Get structured JSON output), code:bash (# Verify single file), JSON Output for CI/CD, Run Verification, Verification Checks, Verification Criteria, code:bash (# Verify specific task output), code:bash (# Verify multiple files in parallel) (+4 more)
 
 ### Community 4455 - "Community 4455"
 Cohesion: 0.22
@@ -28430,12 +28422,12 @@ Cohesion: 0.25
 Nodes (8): AI responses too slow for good UX, code:javascript (function validateOutput(output, schema) {), code:javascript (// For factual content), Domain-Specific Validation, Handling Hallucinations, Output Validation, Use Cases to Avoid, User Expectations
 
 ### Community 4457 - "Community 4457"
-Cohesion: 0.21
-Nodes (10): code:kotlin (// build-logic/src/main/kotlin/kmp-library.gradle.kts), Android Clean Architecture, Anti-Patterns to Avoid, Convention Plugins (Gradle), References, When to Activate, コンベンションプラグイン（Gradle）, 约定插件 (Gradle) (+2 more)
+Cohesion: 0.18
+Nodes (9): code:kotlin (sealed interface Try<out T> {), Android Clean Architecture, Anti-Patterns to Avoid, Error Handling, References, Result/Try Pattern, When to Activate, Error Handling (+1 more)
 
 ### Community 4458 - "Community 4458"
-Cohesion: 0.17
-Nodes (11): code:tsx (import { AnimatePresence, motion } from "motion/react"), code:css (.icon {), code:css (@keyframes enter {), code:tsx (<div className="animate-enter animate-enter-section" style={), code:tsx ({"Track expenses, build habits".split(" ").map((word, i) => ), code:tsx (<motion.div), Contents, Contextual Animations (+3 more)
+Cohesion: 0.18
+Nodes (11): code:block1 (SS = Z × σ_d × √(LT)), code:block2 (SS = Z × √(LT_avg × σ_d² + d_avg² × σ_LT²)), code:block3 (SS = Z × σ_d × √(LT + R)), code:block4 (Optimal SL = 1 − (H / (H + S × D/Q))), 2.1 Standard Safety Stock (Normal Demand, Fixed Lead Time), 2.2 Safety Stock with Lead Time Variability, 2.3 Safety Stock with Review Period, 2.4 Safety Stock for Intermittent Demand (+3 more)
 
 ### Community 4459 - "Community 4459"
 Cohesion: 0.11
@@ -28554,8 +28546,8 @@ Cohesion: 0.17
 Nodes (10): 🔨 Andru.ia Skill-Smith (The Forge), 📝 Descripción, FASE 1: ADN de la Skill, FASE 2: Materialización, FASE 3: Despliegue e Integración, 🛠️ Flujo de Trabajo (Protocolo de Forja), 📋 Instrucciones Generales, Limitations (+2 more)
 
 ### Community 4488 - "Community 4488"
-Cohesion: 0.13
-Nodes (14): Active Directory Attacks, Certificate Services Attacks (AD CS), code:bash (# Find vulnerable templates), code:bash (ntlmrelayx.py -t http://ca.domain.local/certsrv/certfnsh.asp), Constraints, ESC1 - Misconfigured Templates, ESC8 - Web Enrollment Relay, Essential Tools (+6 more)
+Cohesion: 0.04
+Nodes (52): Active Directory Attacks, AS-REP Roasting, Certificate Services Attacks (AD CS), code:bash (# Detect clock skew), code:bash (# Impacket), code:bash (# Start Responder (disable SMB/HTTP for relay)), code:bash (crackmapexec smb 10.10.10.0/24 --gen-relay-list targets.txt), code:bash (# Find vulnerable templates) (+44 more)
 
 ### Community 4489 - "Community 4489"
 Cohesion: 0.17
@@ -28590,8 +28582,8 @@ Cohesion: 0.18
 Nodes (10): code:perl (use Test2::V0;), code:bash (prove -l t/              # adds lib/ to @INC), code:bash (cover -test), Coverage, Framework, Mocking, Perl Testing, Pitfalls (+2 more)
 
 ### Community 4497 - "Community 4497"
-Cohesion: 0.04
-Nodes (44): Add Commit Message Linting, Add Pre-Push Hook, Adopting Hooks on an Existing Project, Bypassing Hooks (When Needed), CI Integration, code:bash (# Create a pre-commit hook manually), code:bash (# In your repo, set a shared hooks directory), code:yaml (# .github/workflows/lint.yml) (+36 more)
+Cohesion: 0.05
+Nodes (35): Adopting Hooks on an Existing Project, Bypassing Hooks (When Needed), CI Integration, code:bash (# Create a pre-commit hook manually), code:bash (# In your repo, set a shared hooks directory), code:yaml (# .github/workflows/lint.yml), code:yaml (# Validate that lint-staged would pass (catch bypassed hooks), code:json (// ❌ Slow: runs on ALL files every commit) (+27 more)
 
 ### Community 4498 - "Community 4498"
 Cohesion: 0.18
@@ -28607,11 +28599,11 @@ Nodes (10): Allowing AI Bots in robots.txt, ChatGPT, Claude, code:block1 (User-a
 
 ### Community 4501 - "Community 4501"
 Cohesion: 0.05
-Nodes (42): AI API costs spiral out of control, AI API Key Exposed, AI Browser Extension, AI Product Architecture, AI Product Architecture, AI Product Differentiation, AI Telegram Bot, AI Wrapper Product (+34 more)
+Nodes (35): AI API costs spiral out of control, AI API Key Exposed, AI Browser Extension, AI Product Architecture, AI Product Differentiation, AI Telegram Bot, AI Wrapper Product, AI Writing Tool (+27 more)
 
 ### Community 4502 - "Community 4502"
-Cohesion: 0.07
-Nodes (29): 11. Testing Modern Angular, 2. Standalone Components, 3. Zoneless Angular, 5. Modern Routing Patterns, Angular Expert, Angular Version Timeline, Best Practices Summary, Bootstrapping Without NgModule (+21 more)
+Cohesion: 0.06
+Nodes (33): 11. Testing Modern Angular, 3. Zoneless Angular, 5. Modern Routing Patterns, 8. State Management Patterns, 9. Forms with Signals (Coming in v22+), Angular Expert, Angular Version Timeline, Best Practices Summary (+25 more)
 
 ### Community 4503 - "Community 4503"
 Cohesion: 0.12
@@ -28630,8 +28622,8 @@ Cohesion: 0.11
 Nodes (27): Advanced Patterns, Best Practices Summary, code:python (async def batch_process(items: List[str], batch_size: int = ), code:python (import asyncio), Fundamental Patterns, Quick Start, Resources, 1. Use Connection Pools (+19 more)
 
 ### Community 4507 - "Community 4507"
-Cohesion: 0.22
-Nodes (11): 7. React 19 Patterns, use() for Promises (React 19+), useActionState for Forms (React 19+), useOptimistic for Instant Feedback (React 19+), 7. React 19 Patterns, code:typescript (import { use, Suspense } from 'react'), code:typescript (import { useActionState } from 'react'), code:typescript (import { useOptimistic } from 'react') (+3 more)
+Cohesion: 0.17
+Nodes (12): code:block20 (1. Define API route handlers (nextjs-app-router)), code:block21 (1. Receive webhooks from Stripe (stripe-integration)), code:block22 (1. Configure cron schedule (upstash-qstash)), code:block23 (1. Publish to URL group (upstash-qstash)), code:block24 (1. Start with simple QStash messages (upstash-qstash)), Collaboration, Delegation Triggers, Fan-out Notifications (+4 more)
 
 ### Community 4508 - "Community 4508"
 Cohesion: 0.05
@@ -28674,7 +28666,7 @@ Cohesion: 0.17
 Nodes (10): Context, Do not use this skill when, Instructions, Limitations, Output Format, Requirements, Resources, Safety (+2 more)
 
 ### Community 4518 - "Community 4518"
-Cohesion: 0.22
+Cohesion: 0.25
 Nodes (9): Basic Message Request, Claude API — C#, Client Initialization, code:bash (dotnet add package Anthropic), code:csharp (using Anthropic;), code:csharp (using Anthropic.Models.Messages;), Installation, Streaming (+1 more)
 
 ### Community 4519 - "Community 4519"
@@ -28690,8 +28682,8 @@ Cohesion: 0.17
 Nodes (10): Automated Documentation Generation, Context, Do not use this skill when, Instructions, Limitations, Output Format, Requirements, Resources (+2 more)
 
 ### Community 4522 - "Community 4522"
-Cohesion: 0.04
-Nodes (45): code:python (# Before: Simple instruction), code:python (rag_prompt = """), code:python (evaluation = """), code:python (judge_prompt = """), code:python (class PromptVersion:), code:python (robust_prompt = """), code:block15 (Answer customer questions about our product.), code:markdown (You are a senior customer support specialist for TechCorp wi) (+37 more)
+Cohesion: 0.06
+Nodes (35): code:python (# Before: Simple instruction), code:python (rag_prompt = """), code:python (evaluation = """), code:python (judge_prompt = """), code:python (class PromptVersion:), code:python (robust_prompt = """), code:block18 (Analyze this sales data and provide insights.), code:python (analysis_prompt = """) (+27 more)
 
 ### Community 4523 - "Community 4523"
 Cohesion: 0.17
@@ -28706,8 +28698,8 @@ Cohesion: 0.17
 Nodes (10): Context, Do not use this skill when, Instructions, Limitations, Output Format, Refactor and Clean Code, Requirements, Resources (+2 more)
 
 ### Community 4526 - "Community 4526"
-Cohesion: 0.17
-Nodes (12): code:block20 (1. Define API route handlers (nextjs-app-router)), code:block21 (1. Receive webhooks from Stripe (stripe-integration)), code:block22 (1. Configure cron schedule (upstash-qstash)), code:block23 (1. Publish to URL group (upstash-qstash)), code:block24 (1. Start with simple QStash messages (upstash-qstash)), Collaboration, Delegation Triggers, Fan-out Notifications (+4 more)
+Cohesion: 0.18
+Nodes (11): code:python (import cProfile), code:bash (# Profile a script), code:python (# Install: pip install line-profiler), code:python (from line_profiler import LineProfiler), code:python (# Install: pip install memory-profiler), code:bash (# Install: pip install py-spy), Pattern 1: cProfile - CPU Profiling, Pattern 2: line_profiler - Line-by-Line Profiling (+3 more)
 
 ### Community 4527 - "Community 4527"
 Cohesion: 0.18
@@ -28730,8 +28722,8 @@ Cohesion: 0.17
 Nodes (10): Acceptance Criteria Gate, code:md (## Problem), Create Issue Gate, Handoff to Execution, Issue Creation Mode, Limitations, Overview, Required Fields (+2 more)
 
 ### Community 4532 - "Community 4532"
-Cohesion: 0.20
-Nodes (9): code:` (User: /e2e 마켓 검색 및 조회 흐름 테스트), code:block1 (User: /e2e Test the market search and view flow), code:block2, Comando E2E, Como Funciona, Exemplo de Uso, O Que Este Comando Faz, Quando Usar (+1 more)
+Cohesion: 0.17
+Nodes (11): code:` (User: /e2e 마켓 검색 및 조회 흐름 테스트), code:block1 (User: /e2e Test the market search and view flow), code:block1 (Kullanıcı: /e2e Piyasa arama ve görüntüleme akışını test et), code:block2, Comando E2E, Como Funciona, Exemplo de Uso, O Que Este Comando Faz (+3 more)
 
 ### Community 4533 - "Community 4533"
 Cohesion: 0.33
@@ -28794,8 +28786,8 @@ Cohesion: 0.17
 Nodes (10): Affaan / ECC Defaults, Brand Voice, Collection Workflow, Downstream Use, Hard Bans, Output Contract, Persistence Rules, Source Priority (+2 more)
 
 ### Community 4548 - "Community 4548"
-Cohesion: 0.01
-Nodes (146): adminNavItems, ConflictResolutionModalProps, Button, ButtonProps, CampaignItem, CampaignPhase, mapCampaign(), campaignService (+138 more)
+Cohesion: 0.02
+Nodes (110): ConflictResolutionModalProps, Button, ButtonProps, CampaignItem, CampaignPhase, mapCampaign(), campaignService, useCampaigns() (+102 more)
 
 ### Community 4549 - "Community 4549"
 Cohesion: 0.17
@@ -28806,8 +28798,8 @@ Cohesion: 0.07
 Nodes (24): Architecture, Contributing, Development Notes, Key Commands, Project Overview, Prompt Defense Baseline, Skills, code:bash (# すべてのテストを実行) (+16 more)
 
 ### Community 4551 - "Community 4551"
-Cohesion: 0.22
-Nodes (11): code:typescript (async function safeRetrieve(queryEmbedding: number[], option), Connection Pooling, Error Handling, Monitoring and Logging, Production Patterns, code:typescript (// Singleton pattern for shared adapter), code:typescript (// Performance monitoring), Connection Pooling (+3 more)
+Cohesion: 0.18
+Nodes (8): assert, commandsDir, content, frontmatter, fs, path, repoRoot, test()
 
 ### Community 4552 - "Community 4552"
 Cohesion: 0.22
@@ -28835,7 +28827,7 @@ Nodes (6): Step 1: Scan Project Structure, Step 3: Diff Detection, Step 4: Add M
 
 ### Community 4558 - "Community 4558"
 Cohesion: 0.03
-Nodes (124): Formato De Resposta, code:block9, Teste Especifico De Intent, " 🌍" → 9468, 248, 233  (Emoji Vira 3 Tokens!), Account lockout, Analyze for patterns, API Version Downgrade Attack (crAPI example), Attacker workflow: (+116 more)
+Nodes (142): Formato De Resposta, code:block9, Teste Especifico De Intent, " 🌍" → 9468, 248, 233  (Emoji Vira 3 Tokens!), Account lockout, Analyze for patterns, API Version Downgrade Attack (crAPI example), Attacker workflow: (+134 more)
 
 ### Community 4559 - "Community 4559"
 Cohesion: 0.18
@@ -28882,8 +28874,8 @@ Cohesion: 0.20
 Nodes (11): code:bash (# Read the build file), code:bash (git diff -- '*.java'), Approval Criteria, Diagnostic Commands, Framework Detection (run first), Onay Kriterleri, Prompt Defense Baseline, Tanı Komutları (+3 more)
 
 ### Community 4570 - "Community 4570"
-Cohesion: 0.25
-Nodes (7): code:block2 (檢查點比較：$NAME), Checkpoint 指令, 使用方式, 列出檢查點, 參數, 建立檢查點, 驗證檢查點
+Cohesion: 0.18
+Nodes (10): code:block3 ([開始] --> /checkpoint create "feature-start"), code:block2 (檢查點比較：$NAME), Checkpoint 指令, ワークフロー, 使用方式, 列出檢查點, 參數, 工作流程 (+2 more)
 
 ### Community 4571 - "Community 4571"
 Cohesion: 0.20
@@ -28902,20 +28894,20 @@ Cohesion: 0.18
 Nodes (10): code:bash (# 分析), 停止条件, Flutterビルドと修正, このコマンドの動作, 一般的に修正されるエラー, 使用するタイミング, 修正戦略, 実行される診断コマンド (+2 more)
 
 ### Community 4575 - "Community 4575"
-Cohesion: 0.17
-Nodes (12): code:block10 (You: Use @tailwind-patterns to make the blog posts look mode), code:block11 (You: Use @seo-audit to optimize the blog for search engines), code:block12 (You: Use @test-driven-development to add tests, then @vercel), code:block8 (You: Use @brainstorming to design a blog system for my Next.), code:block9 (You: Use @nextjs-best-practices to scaffold the blog with Ap), Complete Example: Building a Feature End-to-End, Step 1: Plan (use @brainstorming), Step 2: Implement (use @nextjs-best-practices) (+4 more)
+Cohesion: 0.18
+Nodes (11): 8. Gradual Adoption Strategies, code:typescript (// Wrap external API calls first), code:typescript (// Bridge from Either to thrown errors), code:typescript (// Phase 1: Internal functions use fp-ts), code:typescript (// Step 1: Change type signature first), code:typescript (describe('UserService', () => {), Strategy 1: Start at the Boundaries, Strategy 2: Create Bridge Functions (+3 more)
 
 ### Community 4576 - "Community 4576"
-Cohesion: 0.36
-Nodes (9): merge_ready_worktrees(), merge_ready_worktrees_one_pass(), merge_session_worktree(), process_merge_queue(), rebase_session_worktree(), WorktreeBulkMergeOutcome, WorktreeMergeFailure, WorktreeMergeOutcome (+1 more)
+Cohesion: 0.18
+Nodes (11): code:bash (# Install cargo-packager), code:toml ([package.metadata.packager]), code:bash (# Build NSIS installer), code:bash (# Build package), code:toml (# Linux (Debian)), Configure Cargo.toml, Desktop Packaging, Install Tools (+3 more)
 
 ### Community 4577 - "Community 4577"
 Cohesion: 0.22
 Nodes (11): 1. Vector Storage, 2. Similarity Search, 3. Hybrid Search (Vector + Metadata), code:typescript (// Store with automatic embedding), code:typescript (// Find similar documents), Core Features, 1. Vector Storage, 2. Similarity Search (+3 more)
 
 ### Community 4578 - "Community 4578"
-Cohesion: 0.29
-Nodes (9): Best Practices, code:javascript (// background.js (Service Worker)), Do not use this skill when, Example 2: Message Passing Policy, Examples, Instructions, Limitations, Troubleshooting (+1 more)
+Cohesion: 0.18
+Nodes (9): 5. XSS 방지, 배포 전 보안 체크리스트, 보안 리뷰 스킬, 보안 체크리스트, 보안 테스트, 자동화된 보안 테스트, 참고 자료, 확인 단계 (+1 more)
 
 ### Community 4579 - "Community 4579"
 Cohesion: 0.12
@@ -28923,7 +28915,7 @@ Nodes (17): code:block1 (As a [ユーザーのタイプ],), code:block2 (KEY_INS
 
 ### Community 4580 - "Community 4580"
 Cohesion: 0.22
-Nodes (11): code:bash (# Check source database exists), code:typescript (// Enable context synthesis for better quality), Issue: Low confidence scores, Issue: Memory growing too large, Issue: Migration fails, Troubleshooting, code:typescript (// Enable automatic optimization), Issue: Low confidence scores (+3 more)
+Nodes (11): code:typescript (// Extract, Transform, Load), ETL 模式, Change Data Capture (CDC), code:typescript (// Listen to PostgreSQL changes and sync to ClickHouse), Data Pipeline Patterns, ETL Pattern, Change Data Capture (CDC), Data Pipeline Patterns (+3 more)
 
 ### Community 4581 - "Community 4581"
 Cohesion: 0.07
@@ -28938,7 +28930,7 @@ Cohesion: 0.18
 Nodes (11): code:markdown (# 悪い例 - 1 つのエージェントがすべてを行う), code:markdown (# 悪い例 - セッション間にメモリなし), code:markdown (# 悪い例 - エージェントファイルまたは CLAUDE.md に API キー), code:markdown (# 悪い例 - ソロユーザーのエージェニック OS に PostgreSQL), code:markdown (# 悪い例 - Markdown テーブルではなくコードのルーティングロジック), アンチパターン, シンプルな状態に外部データベース, ステートレスなセッション (+3 more)
 
 ### Community 4584 - "Community 4584"
-Cohesion: 0.29
+Cohesion: 0.25
 Nodes (6): code:bash (# すべてのセッションをリスト表示), Sessionsコマンド, 使用方法, 例, 備考, 引数
 
 ### Community 4585 - "Community 4585"
@@ -28946,8 +28938,8 @@ Cohesion: 0.18
 Nodes (9): code:block1 (1. ハンドラーを特定（onClick、onSubmit、onChangeなど）), code:block2 (範囲内の各Zustand ストア / React コンテキストについて：), code:block4 (TOUCHPOINT: [ボタンラベル] in [Component:line]), /click-path-audit — 行動フロー監査, この解決する問題, ステップ1：マップ状態ストア, ステップ2：各タッチポイントを監査, 動作方法 (+1 more)
 
 ### Community 4586 - "Community 4586"
-Cohesion: 0.22
-Nodes (11): Advanced Workflows, code:bash (# Watch directory for changes), code:bash (# Export to Prometheus), code:bash (# Install pre-commit hook), Continuous Verification, Monitoring Integration, Pre-commit Hooks, Advanced Workflows (+3 more)
+Cohesion: 0.18
+Nodes (9): code:block2 (web_search_exa(query: "2026年最新人工智能发展", numResults: 5)), get\_code\_context\_exa, web\_search\_exa, Exa 搜索, MCP 要求, 何时激活, 提示, 核心工具 (+1 more)
 
 ### Community 4587 - "Community 4587"
 Cohesion: 0.18
@@ -28963,15 +28955,15 @@ Nodes (24): code:vue (<template>), code:ts (const route = useRoute()), code:ts (
 
 ### Community 4590 - "Community 4590"
 Cohesion: 0.18
-Nodes (7): code:typescript (// NEVER: Hardcoded secrets), Agent Support, Secret Management, TypeScript/JavaScript Security, TypeScript/JavaScript 安全, 代理支持, 密钥管理
+Nodes (10): code:go (func SaveSession(context playwright.BrowserContext, filepath), code:go (import (), Code Examples, Human-Like Typing & Interaction, Interceptor Labels, Observability, OpenTelemetry Integration, Playwright Go Automation - Implementation Playbook (+2 more)
 
 ### Community 4591 - "Community 4591"
 Cohesion: 0.25
 Nodes (8): assert, path, repoRoot, runPython(), runTests(), runtimeHelpersPath, { spawnSync }, test()
 
 ### Community 4592 - "Community 4592"
-Cohesion: 0.11
-Nodes (27): AudioConfig, VideoConfig, AudioConfig, code:python (import videodb), code:python (from videodb import VideoConfig, ResizeMode), VideoConfig, AudioConfig, Connection (+19 more)
+Cohesion: 0.16
+Nodes (20): AudioConfig, VideoConfig, AudioConfig, code:python (from videodb import VideoConfig, ResizeMode), VideoConfig, AudioConfig, Transcode, transcode Parameters (+12 more)
 
 ### Community 4593 - "Community 4593"
 Cohesion: 0.10
@@ -28986,8 +28978,8 @@ Cohesion: 0.20
 Nodes (10): code:bash (node scripts/install-plan.js --target joycode --profile full), code:bash (node scripts/install-apply.js --target joycode --profile ful), code:bash (node scripts/install-apply.js --target joycode --modules rul), code:text (.joycode/), code:bash (node scripts/uninstall.js --target joycode), Install, JoyCode Adapter Guide, Layout (+2 more)
 
 ### Community 4596 - "Community 4596"
-Cohesion: 0.23
-Nodes (11): code:bash (go vet ./...), Diagnostic Commands, Onay Kriterleri, Tanı Komutları, 批准标准, 诊断命令, 승인 기준, 진단 커맨드 (+3 more)
+Cohesion: 0.14
+Nodes (18): code:bash (go vet ./...), Diagnostic Commands, İnceleme Öncelikleri, KRİTİK -- Güvenlik, KRİTİK -- Hata İşleme, Onay Kriterleri, ORTA -- En İyi Uygulamalar, ORTA -- Performans (+10 more)
 
 ### Community 4597 - "Community 4597"
 Cohesion: 0.29
@@ -29042,8 +29034,8 @@ Cohesion: 0.25
 Nodes (8): Action Definition and CLI Invocation, code:java (@Override), code:java (@Action("hello")), code:bash (bin/dispatcher hello), code:java (String port = this.getConfiguration("server.port");), Configuration Access, Examples, Minimal Application Initialization
 
 ### Community 4610 - "Community 4610"
-Cohesion: 0.18
-Nodes (11): code:typescript (// Exclude specific properties), code:typescript (// Make all properties required), code:typescript (// Type-safe object/map), code:typescript (// Make all properties optional), code:typescript (// Select specific properties), Omit<T, K>, Partial<T>, Pick<T, K> (+3 more)
+Cohesion: 0.22
+Nodes (11): Create Learning Plugin, List Available Templates, Manage Plugins, Quick Start with CLI, code:bash (# Interactive wizard), code:bash (# Show all plugin templates), code:bash (# List installed plugins), Create Learning Plugin (+3 more)
 
 ### Community 4611 - "Community 4611"
 Cohesion: 0.22
@@ -29054,8 +29046,8 @@ Cohesion: 0.20
 Nodes (10): code:block1 (# Export'ları bul, sonra herhangi bir yerde import edilip ed), code:block2 (Ölü Kod Temizliği), Refactor Clean, Adım 1: Ölü Kodu Tespit Et, Adım 2: Bulguları Kategorize Et, Adım 3: Güvenli Silme Döngüsü, Adım 4: DİKKAT Öğelerini İdare Et, Adım 5: Duplikatları Birleştir (+2 more)
 
 ### Community 4613 - "Community 4613"
-Cohesion: 0.29
-Nodes (8): code:ini (# .perlcriticrc — security-focused configuration), code:bash (# Check a file), perlcritic Security Policies, perlcritic 安全策略, Running perlcritic, Security Tooling, 安全工具, 运行 perlcritic
+Cohesion: 0.22
+Nodes (11): 1. Session Memory, 2. Long-Term Memory, 3. Pattern Learning, code:typescript (class SessionMemory {), code:typescript (// Learn from successful interactions), Memory Patterns, 1. Session Memory, 2. Long-Term Memory (+3 more)
 
 ### Community 4614 - "Community 4614"
 Cohesion: 0.33
@@ -29066,8 +29058,8 @@ Cohesion: 0.25
 Nodes (8): Authentication Issues, code:block1 (401 Client Error: Unauthorized for url: https://huggingface.), code:python (# In your script), code:block3 (403 Client Error: Forbidden for url: https://huggingface.co/), code:block4 (KeyError: 'HF_TOKEN'), Error: 401 Unauthorized, Error: 403 Forbidden, Error: Token not found in environment
 
 ### Community 4616 - "Community 4616"
-Cohesion: 0.18
-Nodes (10): code:block1 (**[SEVERITY]** file.ts:123), Best Practices (MEDIUM), Check Categories, Code Quality (HIGH), Code Review Command, Decision, Report Format, Security Issues (CRITICAL) (+2 more)
+Cohesion: 0.22
+Nodes (11): code:bash (# Set quality gate thresholds), Define Quality Gates, 🚪 Quality Gates & Checks, Status Checks, Track Review Metrics, code:yaml (# Required status checks in branch protection), code:bash (# Monitor review effectiveness), Define Quality Gates (+3 more)
 
 ### Community 4617 - "Community 4617"
 Cohesion: 0.25
@@ -29127,7 +29119,7 @@ Nodes (9): assert, { failed }, fs, os, path, { run, hashToolCall, extractFilePat
 
 ### Community 4631 - "Community 4631"
 Cohesion: 0.17
-Nodes (12): code:bash (# データベース), code:bash (/go-test             # GoのTDDワークフロー), code:bash (# ユニットテスト（高速、外部依存なし）), code:bash (# 計画), ECCワークフロー, Git ワークフロー, Go マイクロサービス — プロジェクト CLAUDE.md, テストコマンド (+4 more)
+Nodes (11): code:bash (# データベース), code:bash (/go-test             # GoのTDDワークフロー), code:bash (# ユニットテスト（高速、外部依存なし）), code:bash (# 計画), ECCワークフロー, Git ワークフロー, Go マイクロサービス — プロジェクト CLAUDE.md, テストコマンド (+3 more)
 
 ### Community 4632 - "Community 4632"
 Cohesion: 0.06
@@ -29191,7 +29183,7 @@ Nodes (10): DEFAULT_WORKFLOWS_DIR, extractCheckoutSteps(), findViolations(), fs,
 
 ### Community 4647 - "Community 4647"
 Cohesion: 0.25
-Nodes (6): Fast Tool Registry, O(1) Tool Lookup Implementation, Related V3 Skills, V3 MCP Optimization, What This Skill Does, code:typescript (// src/core/mcp/fast-tool-registry.ts)
+Nodes (6): code:bash (# Initialize MCP optimization analysis), Quick Start, Related V3 Skills, V3 MCP Optimization, What This Skill Does, Quick Start
 
 ### Community 4648 - "Community 4648"
 Cohesion: 0.14
@@ -29234,8 +29226,8 @@ Cohesion: 0.22
 Nodes (11): 1. Requirements Document, 2. Data Model Specification, 3. API Specification, code:markdown (# System Requirements Specification), code:yaml (entities:), code:yaml (openapi: 3.0.0), Specification Deliverables, 1. Requirements Document (+3 more)
 
 ### Community 4658 - "Community 4658"
-Cohesion: 0.18
-Nodes (11): #1: Importing External Libraries (Python-Specific!), #2: Empty Code or Missing Return, #3: Incorrect Return Format, #4: KeyError on Dictionary Access, #5: Webhook Body Nesting, code:python (# ❌ WRONG: Trying to import external library), code:python (# ❌ WRONG: No return statement), code:python (# ❌ WRONG: Returning dict instead of list) (+3 more)
+Cohesion: 0.22
+Nodes (11): 1. Distributed Task Queue, 2. Cross-Repo Testing, 3. Monorepo Migration, Advanced Features, code:bash (npx claude-flow skill run github-multi-repo queue \), code:bash (npx claude-flow skill run github-multi-repo test \), code:bash (npx claude-flow skill run github-multi-repo to-monorepo \), 1. Distributed Task Queue (+3 more)
 
 ### Community 4659 - "Community 4659"
 Cohesion: 0.14
@@ -29290,20 +29282,20 @@ Cohesion: 0.22
 Nodes (11): code:bash (# Generate performance reports), code:bash (# Initialize hierarchical swarm), code:bash (# Coordinate complex workflows), MCP Tool Integration, Performance & Analytics, Swarm Management, Task Orchestration, MCP Tool Integration (+3 more)
 
 ### Community 4672 - "Community 4672"
-Cohesion: 0.22
-Nodes (8): code:block2 (cmd/), Estrutura de Arquivos, File Structure, Fluxo Git, Go Microservice — CLAUDE.md de Projeto, Visão Geral do Projeto, 文件结构, 파일 구조
-
-### Community 4673 - "Community 4673"
-Cohesion: 0.03
-Nodes (57): 60-Second Talking Track, code:bash (# Weekly downloads), code:bash (gh api repos/affaan-m/ECC \), code:bash (gh api repos/affaan-m/ECC/traffic/views), GitHub App installs, GitHub repository adoption, GitHub traffic (maintainer access required), Metrics and Sponsorship Playbook (+49 more)
-
-### Community 4674 - "Community 4674"
-Cohesion: 0.22
-Nodes (11): code:block2 (NullPointerException), Common Stack Trace Patterns, Interpreting Stack Traces, Stack Trace Analysis, Stack Trace Enrichment, code:block3 (TimeoutException: Operation timed out after 30000ms), code:block4 (ConcurrentModificationException), Common Stack Trace Patterns (+3 more)
-
-### Community 4675 - "Community 4675"
 Cohesion: 0.18
 Nodes (11): code:block11 (Initial Buy = Season Forecast × Initial Commitment % − Carry), code:block12 (Sell-Through Rate = Units Sold / (Units Sold + Units On-Hand), code:block13 (Liquidation Net Recovery = (Liquidation Price × Remaining Un), 6.1 Seasonal Buy Planning, 6.2 Markdown Timing and Depth Model, 6.3 Season-End Liquidation Decision, 6. Seasonal Buy and Markdown Timing Models, In-Season Reorder Triggers (+3 more)
+
+### Community 4673 - "Community 4673"
+Cohesion: 0.04
+Nodes (44): code:text (ECC v2.0.0-rc.1 keeps the public surface honest:), code:text (Strong point on eval discipline.), code:text (This workflow direction is right: optimize the harness, not ), code:text (ECC v2.0.0-rc.1 preview pack is ready for final release revi), LinkedIn Post: Partner-Friendly Summary, Social Launch Copy (X + LinkedIn), X Post: Proof + Metrics, X Post: Release Announcement (+36 more)
+
+### Community 4674 - "Community 4674"
+Cohesion: 0.18
+Nodes (11): Hardcoded Discord Token, Interaction Without Error Handling, No Rate Limit Handling, Registering Commands in Loop, Requesting All Intents, Slow Operation Without Defer, Syncing Commands on Ready Event, Token in Client-Side Code (+3 more)
+
+### Community 4675 - "Community 4675"
+Cohesion: 0.22
+Nodes (11): 4. RemoteData Pattern (The Right Way to Handle Async State), code:typescript (// ❌ BAD: Impossible states are possible), Hook with RemoteData, The Pattern, Why RemoteData Beats Booleans, 4. RemoteData Pattern (The Right Way to Handle Async State), code:typescript (function useRemoteData<T>(fetchFn: () => Promise<T>) {), code:typescript (// RemoteData has exactly 4 states - no impossible combinati) (+3 more)
 
 ### Community 4676 - "Community 4676"
 Cohesion: 0.25
@@ -29341,12 +29333,12 @@ Cohesion: 0.17
 Nodes (10): Experiment Boundaries, Form Conversion Rate Optimization (Form CRO), Limitations, Mobile Optimization (Mandatory), Phase 0: Form Health & Friction Index (Required), Purpose, Questions to Ask (If Needed), Related Skills (+2 more)
 
 ### Community 4683 - "Community 4683"
-Cohesion: 0.07
-Nodes (28): 3. Data Normalization, 7. When to Use What, API Response to App State, API Response (What You Get), App State (What You Need), code:typescript (interface ApiResponse {), code:typescript (interface NormalizedState {), code:typescript (function normalizeApiResponse(response: ApiResponse): Normal) (+20 more)
+Cohesion: 0.10
+Nodes (19): 3. Data Normalization, API Response to App State, API Response (What You Get), App State (What You Need), code:typescript (interface ApiResponse {), code:typescript (interface NormalizedState {), code:typescript (function normalizeApiResponse(response: ApiResponse): Normal), code:typescript (import { pipe } from 'fp-ts/function';) (+11 more)
 
 ### Community 4684 - "Community 4684"
-Cohesion: 0.25
-Nodes (8): 5. Customer Proactive Update — Loss, Body, code:block10 (PO {{po_number}} — Shipment Status and Immediate Action Plan), code:block11 ({{customer_contact}},), Subject Line, Tone Guidance, What NOT to Say, When to Use
+Cohesion: 0.36
+Nodes (10): computeImpactLabel(), cwvIssue(), formatCwvIssue(), formatInteger(), joinEnglish(), parseSigNumber(), round1(), round2() (+2 more)
 
 ### Community 4685 - "Community 4685"
 Cohesion: 0.22
@@ -29357,8 +29349,8 @@ Cohesion: 0.17
 Nodes (10): code:block1 (Is the operation async?), code:typescript (// Core), code:typescript (// Option), Common Imports, fp-ts Quick Reference, Limitations, One-Line Patterns, Pattern Match (+2 more)
 
 ### Community 4687 - "Community 4687"
-Cohesion: 0.18
-Nodes (11): Advanced Patterns, code:python (# conftest.py), code:python (# test_properties.py), code:python (# test_async.py), code:python (# test_environment.py), code:python (# test_file_operations.py), Pattern 10: Property-Based Testing, Pattern 6: Testing Async Code (+3 more)
+Cohesion: 0.22
+Nodes (11): code:typescript (async function safeRetrieve(queryEmbedding: number[], option), Connection Pooling, Error Handling, Monitoring and Logging, Production Patterns, code:typescript (// Singleton pattern for shared adapter), code:typescript (// Performance monitoring), Connection Pooling (+3 more)
 
 ### Community 4688 - "Community 4688"
 Cohesion: 0.20
@@ -29452,10 +29444,6 @@ Nodes (13): Card Styles, Component Variants, CSS Structures, Feature Grid (3 col
 Cohesion: 0.14
 Nodes (13): Core Statements, Elevator Pitches, Framework Structure, Message Architecture, Message by Audience, Message Testing, Messaging Framework, Mission Statement (+5 more)
 
-### Community 4711 - "Community 4711"
-Cohesion: 0.18
-Nodes (10): code:go (func SaveSession(context playwright.BrowserContext, filepath), code:go (import (), Code Examples, Human-Like Typing & Interaction, Interceptor Labels, Observability, OpenTelemetry Integration, Playwright Go Automation - Implementation Playbook (+2 more)
-
 ### Community 4712 - "Community 4712"
 Cohesion: 0.24
 Nodes (12): Report, ProgressDisplay, load_fixture(), main(), output_result(), Search X via xAI (runs in thread).      Returns:         Tuple of (x_items, r, Run the research pipeline.      Returns:         Tuple of (reddit_items, x_it, Output the result based on emit mode. (+4 more)
@@ -29518,7 +29506,7 @@ Nodes (10): addBackground(), addElements(), { chromium }, extractSlideData(), ge
 
 ### Community 4727 - "Community 4727"
 Cohesion: 0.04
-Nodes (46): code:block10 (Sales Orders / Forecast), code:block4 (Utilisation = Σ(Setup Time + Run Time for all scheduled jobs), code:block5 (Buffer Duration = Planned Lead Time from release to constrai), code:block6 (Takt Time = Available Production Time per Shift / Customer D), code:block7 (Takt Time = 450 / 240 = 1.875 minutes per unit), code:block8 (Balance Efficiency = Σ(Task Times) / (Number of Stations × T), code:block9 (Change Cost = Changeover Cost Delta + Material Restaging Cos), 10.1 When to Authorise Overtime (+38 more)
+Nodes (47): code:block1 (CR = (Due Date − Current Date) / Remaining Total Processing ), code:block10 (Sales Orders / Forecast), code:block2 (Priority Score = (Customer Tier Weight × Days Until Due / Re), code:block4 (Utilisation = Σ(Setup Time + Run Time for all scheduled jobs), code:block5 (Buffer Duration = Planned Lead Time from release to constrai), code:block9 (Change Cost = Changeover Cost Delta + Material Restaging Cos), 10.1 When to Authorise Overtime, 10.2 Shift Pattern Comparison for Scheduling (+39 more)
 
 ### Community 4728 - "Community 4728"
 Cohesion: 0.17
@@ -29537,8 +29525,8 @@ Cohesion: 0.14
 Nodes (13): Card Styles, Component Variants, CSS Structures, Feature Grid (3 columns), Layout Decision Flow, Layout Patterns, Layout Selection by Use Case, Metric Styles (+5 more)
 
 ### Community 4732 - "Community 4732"
-Cohesion: 0.11
-Nodes (22): code:python (import timeit), code:python (import multiprocessing as mp), code:python (import tracemalloc), code:python (import weakref), code:python (import sys), Optimization Patterns, Advanced Optimization, Memory Optimization (+14 more)
+Cohesion: 0.05
+Nodes (42): 11. Performance Optimizations, code:python (# Before: O(n²)), code:python (from functools import lru_cache), 11. Performance Optimizations, Best Practices, code:python (import timeit), code:python (import multiprocessing as mp), code:python (import sqlite3) (+34 more)
 
 ### Community 4733 - "Community 4733"
 Cohesion: 0.14
@@ -29570,23 +29558,23 @@ Nodes (10): code:bash (BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main), code
 
 ### Community 4740 - "Community 4740"
 Cohesion: 0.06
-Nodes (35): Key Edge Cases, Decision Frameworks, Disposition Routing by Category and Condition, Fraud Scoring Model, Return Policy Exception Logic, Vendor Recovery ROI, Decision Frameworks, Forecast Method Selection by Demand Pattern (+27 more)
+Nodes (34): Key Edge Cases, Decision Frameworks, Disposition Routing by Category and Condition, Fraud Scoring Model, Return Policy Exception Logic, Vendor Recovery ROI, Decision Frameworks, Forecast Method Selection by Demand Pattern (+26 more)
 
 ### Community 4741 - "Community 4741"
 Cohesion: 0.17
 Nodes (10): code:bash (mkdir -p ~/.claude/skills), code:bash (mkdir -p ~/.copilot/skills), Features, For Claude Code, For GitHub Copilot CLI, Global Installation (Recommended), Installation, Local Repository Installation (+2 more)
 
 ### Community 4742 - "Community 4742"
-Cohesion: 0.04
-Nodes (48): Aircrack-ng Suite, Best Practices, code:bash (# Host discovery), code:bash (# Start Kismet), code:bash (# Install Prowler), code:bash (# Install ScoutSuite), code:bash (# Run audit), code:bash (# List available profiles) (+40 more)
+Cohesion: 0.07
+Nodes (30): Aircrack-ng Suite, code:bash (# Host discovery), code:bash (# Start Kismet), code:bash (# Install Prowler), code:bash (# Install ScoutSuite), code:bash (# Run audit), code:bash (# List available profiles), code:bash (# Nmap XML to HTML) (+22 more)
 
 ### Community 4743 - "Community 4743"
 Cohesion: 0.11
 Nodes (16): Animating Layout-Triggering Properties, Animations stutter during scroll, Capabilities, Expertise, Limitations, Missing will-change Optimization, No Reduced Motion Support, Patterns (+8 more)
 
 ### Community 4744 - "Community 4744"
-Cohesion: 0.05
-Nodes (40): AWS Secrets Manager, AWS Secrets Manager, Azure Key Vault, Best Practices, CI/CD Secret Scanning, code:bash (# Start Vault dev server), code:yaml (secret-scan:), code:yaml (name: Deploy with Vault Secrets) (+32 more)
+Cohesion: 0.06
+Nodes (36): AWS Secrets Manager, AWS Secrets Manager, Azure Key Vault, Best Practices, code:bash (# Start Vault dev server), code:yaml (name: Deploy with Vault Secrets), code:bash (aws secretsmanager create-secret \), code:yaml (- name: Configure AWS credentials) (+28 more)
 
 ### Community 4745 - "Community 4745"
 Cohesion: 0.17
@@ -29617,8 +29605,8 @@ Cohesion: 0.29
 Nodes (7): code:block2 (会话已保存至 [实际解析的会话文件路径]), 步骤 1：收集上下文, 步骤 2：如果不存在则创建会话文件夹, 步骤 3：写入会话文件, 步骤 4：用以下所有部分填充文件, 步骤 5：向用户展示文件, 流程
 
 ### Community 4752 - "Community 4752"
-Cohesion: 0.07
-Nodes (27): code:perl (use v5.36;), Error Handling, eval/die Pattern, Native try/catch (5.40+), Try::Tiny (Reliable Exception Handling), code:perl (# 1. Two-arg open with user data (command injection)), code:perl (use v5.36;), code:perl (use v5.36;) (+19 more)
+Cohesion: 0.08
+Nodes (24): code:perl (use v5.36;), Error Handling, eval/die Pattern, Native try/catch (5.40+), Try::Tiny (Reliable Exception Handling), code:perl (# 1. Two-arg open with user data (command injection)), code:perl (use v5.36;), code:perl (use v5.36;) (+16 more)
 
 ### Community 4753 - "Community 4753"
 Cohesion: 0.17
@@ -29646,7 +29634,7 @@ Nodes (10): Anti-Patterns to Avoid, Architecture and Design, Best Practices, Cod
 
 ### Community 4759 - "Community 4759"
 Cohesion: 0.17
-Nodes (10): Evidence Artifacts, Inputs / Prerequisites, Legal Prerequisites, Outputs / Deliverables, Primary Outputs, Purpose, Required Access, SQL Injection Testing (+2 more)
+Nodes (10): Constraints and Guardrails, Evidence Artifacts, Legal and Ethical Requirements, Operational Boundaries, Outputs / Deliverables, Primary Outputs, Purpose, SQL Injection Testing (+2 more)
 
 ### Community 4760 - "Community 4760"
 Cohesion: 0.12
@@ -29673,16 +29661,16 @@ Cohesion: 0.22
 Nodes (9): code:swift (@MainActor), Core architecture, Design choices to keep, Dynamic tabs pattern, Example: custom binding with side effects, Example: direct binding without side effects, Intent, Pitfalls (+1 more)
 
 ### Community 4766 - "Community 4766"
-Cohesion: 0.08
-Nodes (24): Best Practices, code:typescript (// Green Phase: Props only), code:python (# Green Phase: Simple function), code:javascript (// Green Phase: Inline logic), code:typescript (// Types define contract), code:typescript (// Define contract), code:python (# Test passes with this), Do not use this skill when (+16 more)
+Cohesion: 0.05
+Nodes (40): Best Practices, code:block17 (Complexity Low     | High), code:block18 (Score = (Lines of Code) + (Cyclomatic Complexity × 2) + (Dep), code:typescript (// Option A: Direct implementation (Score: 45)), code:block20 (❌ Avoid:), code:typescript (// Add performance test AFTER functional tests pass), code:typescript (// Green Phase: Props only), code:python (# Green Phase: Simple function) (+32 more)
 
 ### Community 4767 - "Community 4767"
 Cohesion: 0.09
 Nodes (22): code:typescript (// Using async/await), code:typescript (import { vi } from 'vitest';), Common Patterns, Test Organization, code:typescript (describe('UserService', () => {), code:python (class Product(models.Model):), code:typescript (describe('UserProfile', () => {), code:typescript (interface UserProfileProps {) (+14 more)
 
 ### Community 4768 - "Community 4768"
-Cohesion: 0.04
-Nodes (52): Bundle Size, Capabilities, code:javascript (app.post('/api/action', (req, res) => {), code:jsx (// Use correct manifest), code:jsx (// Show QR for desktop), code:jsx (// Lazy load heavy components), code:jsx (function App() {), code:javascript (// vite.config.js) (+44 more)
+Cohesion: 0.06
+Nodes (30): Bundle Size, Capabilities, code:jsx (// Lazy load heavy components), code:jsx (function App() {), code:javascript (// vite.config.js), code:block22 (1. Design game mechanics), code:block23 (1. Design DeFi feature (swap, stake, etc.)), Collaboration (+22 more)
 
 ### Community 4769 - "Community 4769"
 Cohesion: 0.17
@@ -29701,8 +29689,8 @@ Cohesion: 0.22
 Nodes (11): Creating a coordinated pull request workflow:, Managing repository synchronization:, Setting up automated issue tracking:, Usage Examples, code:bash (/github pr-manager "Review and merge feature/new-integration), code:bash (/github sync-coordinator "Synchronize claude-code-flow and r), code:bash (/github issue-tracker "Create and manage integration issues ), Creating a coordinated pull request workflow: (+3 more)
 
 ### Community 4773 - "Community 4773"
-Cohesion: 0.25
-Nodes (9): code:python (image = coll.generate_image(), generate_image Parameters, Generative Media Guide, Image Generation, Tips, generate_image Parameters, Generative Media Guide, Image Generation (+1 more)
+Cohesion: 0.23
+Nodes (10): code:python (image = coll.generate_image(), generate_image Parameters, Generative Media Guide, Image Generation, Tips, generate_image Parameters, Generative Media Guide, Image Generation (+2 more)
 
 ### Community 4774 - "Community 4774"
 Cohesion: 0.20
@@ -29825,8 +29813,8 @@ Cohesion: 0.22
 Nodes (11): 1. Synchronize Package Dependencies, 2. Documentation Synchronization, 3. Cross-Package Feature Integration, code:javascript (// Initialize sync coordination swarm), Usage Patterns, 1. Synchronize Package Dependencies, 2. Documentation Synchronization, 3. Cross-Package Feature Integration (+3 more)
 
 ### Community 4804 - "Community 4804"
-Cohesion: 0.10
-Nodes (21): Auto-Generated Selector, By frame name:, By selector:, Collaboration, CSS Class Selector Used, Custom Sleep Function, Delegation Triggers, Get frame by name or selector: (+13 more)
+Cohesion: 0.18
+Nodes (11): Auto-Generated Selector, CSS Class Selector Used, Custom Sleep Function, navigator.webdriver Not Hidden, nth-child CSS Selector, Puppeteer Without Stealth Plugin, Scraping Loop Without Error Handling, Using setTimeout in Test Code (+3 more)
 
 ### Community 4805 - "Community 4805"
 Cohesion: 0.48
@@ -29834,7 +29822,7 @@ Nodes (7): Async Without Await, code:javascript (// Bug), Common Bug Patterns, N
 
 ### Community 4806 - "Community 4806"
 Cohesion: 0.18
-Nodes (11): code:yaml (# .github/workflows/test.yml), code:bash (# Project structure), code:dockerfile (# Dockerfile), code:dockerfile (# Multi-stage Dockerfile), code:bash (# Create lockfile (uv.lock)), Advanced Workflows, CI/CD Integration, Pattern 12: Monorepo Support (+3 more)
+Nodes (11): Caddy, CLI Quick Reference, code:bash (uc image push myapp:latest                    # Push local i), code:bash (uc volume ls                  # All volumes), code:bash (uc caddy config    # Show current generated Caddyfile (read-), code:bash (uc dns show        # Show reserved *.uncld.dev domain), DNS & Context, Images (+3 more)
 
 ### Community 4807 - "Community 4807"
 Cohesion: 0.18
@@ -29861,8 +29849,8 @@ Cohesion: 0.17
 Nodes (10): Affaan / ECC Defaults, Brand Voice, Collection Workflow, Downstream Use, Hard Bans, Output Contract, Persistence Rules, Source Priority (+2 more)
 
 ### Community 4813 - "Community 4813"
-Cohesion: 0.10
-Nodes (19): Architecture, Best Practices, Commit Conventions, Commit Style: Conventional Commits, Configuration Files, Coverage, Do, Don't (+11 more)
+Cohesion: 0.20
+Nodes (8): code:javascript (// 錯誤：變異), code:typescript (try {), 不可變性（關鍵）, 檔案組織, 程式碼品質檢查清單, 程式碼風格, 輸入驗證, 錯誤處理
 
 ### Community 4814 - "Community 4814"
 Cohesion: 0.17
@@ -29893,20 +29881,20 @@ Cohesion: 0.22
 Nodes (6): Atualizar Codemaps, Dicas, Passo 1: Escanear Estrutura do Projeto, Passo 3: Detecção de Diff, Passo 5: Salvar Relatório de Análise, 更新程式碼地圖
 
 ### Community 4821 - "Community 4821"
-Cohesion: 0.14
-Nodes (12): 1. Define (Before Coding), 2. Implement, 4. Report, Best Practices, Eval Harness Skill, Eval Storage, Eval Workflow, Metrics (+4 more)
+Cohesion: 0.20
+Nodes (9): Approval Criteria, Best Practices (LOW), Confidence-Based Filtering, Node.js/Backend Patterns (HIGH), Performance (MEDIUM), Project-Specific Guidelines, Review Checklist, Review Process (+1 more)
 
 ### Community 4822 - "Community 4822"
-Cohesion: 0.33
-Nodes (7): code:block1 (<use_mcp_tool>), code:block2 (<access_mcp_resource>), Custom Instructions, Available Tools, Custom Instructions, ♾️ MCP Integration, Role Definition
+Cohesion: 0.29
+Nodes (7): Available Tools, code:block1 (<use_mcp_tool>), code:block2 (<access_mcp_resource>), Custom Instructions, ♾️ MCP Integration, Role Definition, Custom Instructions
 
 ### Community 4823 - "Community 4823"
 Cohesion: 0.07
-Nodes (36): 3. Evaluate, code:markdown (## EVAL DEFINITION: feature-xyz), 1. Define (Before Coding), 2. Implement, 3. Evaluate, 4. Report, code:bash (# Run capability evals), Eval Workflow (+28 more)
+Nodes (39): 1. Define (Before Coding), 2. Implement, 3. Evaluate, 4. Report, code:markdown (## EVAL DEFINITION: feature-xyz), Eval Workflow, 1. Define (Before Coding), 2. Implement (+31 more)
 
 ### Community 4824 - "Community 4824"
-Cohesion: 0.25
-Nodes (7): 3. Network Security, Cloud & Infrastructure Security Skill, Cloud Security Checklist, Pre-Deployment Cloud Security Checklist, Resources, Verification Steps, When to Activate
+Cohesion: 0.22
+Nodes (8): Best Practices, code:python (# tests/conftest.py), Common Pitfalls, Resources, Testing, When to Use This Skill, FastAPI Project Templates, FastAPI Project Templates Implementation Playbook
 
 ### Community 4825 - "Community 4825"
 Cohesion: 0.22
@@ -29937,8 +29925,8 @@ Cohesion: 0.12
 Nodes (19): 2. Bundle Size Optimization (CRITICAL), code:ts (// INCORRECT), code:tsx (if (user.role === "admin") {), Conditional module loading, Defer third-party scripts, Direct imports, not barrels, Dynamic imports for heavy components, Preload on hover/focus (+11 more)
 
 ### Community 4832 - "Community 4832"
-Cohesion: 0.18
-Nodes (11): Advanced Usage, Basic Skill Creation, code:bash (# GitHub Copilot CLI), code:block4 ([████████████░░░░░░] 60% - Step 3/5: File Generation), code:bash ("Create a code skill that generates React components from de), code:bash ("Build a skill that writes API documentation from code"), code:bash ("Create a skill for Copilot only that analyzes TypeScript er), Create Code Generation Skill (+3 more)
+Cohesion: 0.22
+Nodes (11): code:bash (# Interactive plugin wizard), Create Learning Plugin, Initialize AgentDB, Quick Start with CLI, Start MCP Server for Claude Code, code:bash (# Initialize vector database), code:bash (# Start MCP server (integrates with Claude Code)), Create Learning Plugin (+3 more)
 
 ### Community 4833 - "Community 4833"
 Cohesion: 0.22
@@ -29949,8 +29937,8 @@ Cohesion: 0.22
 Nodes (11): Adaptive Agents, Advanced Usage, code:typescript (// Learn about learning), code:typescript (// Apply knowledge from one domain to another), Meta-Learning, Transfer Learning, Adaptive Agents, Advanced Usage (+3 more)
 
 ### Community 4835 - "Community 4835"
-Cohesion: 0.07
-Nodes (33): code:json ({), Plugin-Installation, code:bash (cd ECC), Documentation, Feature Parity, Hook Support via Plugins, Maintained Slash Entries, OpenCode Support (+25 more)
+Cohesion: 0.06
+Nodes (38): code:bash (# OpenCode installieren), code:json ({), Dokumentation, Feature-Parität, Gepflegte Slash-Einträge, Hook-Unterstützung über Plugins, OpenCode-Unterstützung, Plugin-Installation (+30 more)
 
 ### Community 4836 - "Community 4836"
 Cohesion: 0.18
@@ -29977,16 +29965,16 @@ Cohesion: 0.18
 Nodes (10): 1. Data Flow, 2. Running Tests, 3. Benchmarking, 4. Debugging, code:bash (npm run test:unit src/__tests__/unit/dashboardMetrics.test.t), code:bash (npm run test:unit src/__tests__/unit/dashboardMetricsBench.t), 🛠️ How to Work, 🤝 Key Contacts (+2 more)
 
 ### Community 4842 - "Community 4842"
-Cohesion: 0.18
-Nodes (11): code:python (# test_calculator.py), code:python (# test_database.py), code:python (# test_validation.py), code:python (# test_api_client.py), code:python (# test_exceptions.py), Fundamental Patterns, Pattern 1: Basic pytest Tests, Pattern 2: Fixtures for Setup and Teardown (+3 more)
+Cohesion: 0.22
+Nodes (11): code:bash (npx claude-flow skill run github-multi-repo diagnose-connect), Connectivity Issues, Memory Synchronization, Performance Bottlenecks, Troubleshooting, code:bash (npx claude-flow skill run github-multi-repo debug-memory \), code:bash (npx claude-flow skill run github-multi-repo perf-analysis \), Connectivity Issues (+3 more)
 
 ### Community 4843 - "Community 4843"
-Cohesion: 0.25
-Nodes (8): Best Practices, Directory Structure, Key Packages, Navigation Patterns, React Native App Template, Setup Steps, State Management, Tech Stack
+Cohesion: 0.10
+Nodes (19): Astro Static Site Template, Best Practices, Deployment, Directory Structure, Key Concepts, Setup Steps, Tech Stack, Directory Structure (+11 more)
 
 ### Community 4844 - "Community 4844"
-Cohesion: 0.25
-Nodes (8): Authentication Issues, code:block2 (Error: Not authenticated. Please run auth setup first.), code:bash (# Check status), code:bash (# Clear old authentication), code:bash (python scripts/run.py auth_manager.py setup), Authentication expires frequently, Google blocks automated login, Not authenticated error
+Cohesion: 0.20
+Nodes (10): Android, code:bash (cargo makepad android run -p your-app --release), code:bash (# Install iOS toolchain), code:bash (cargo makepad apple ios \), code:bash (cd ./target/makepad-apple-app/aarch64-apple-ios/release), code:bash (cargo install --force --git https://github.com/makepad/makep), code:bash (# Install Android toolchain), Install cargo-makepad (+2 more)
 
 ### Community 4845 - "Community 4845"
 Cohesion: 0.22
@@ -30005,8 +29993,8 @@ Cohesion: 0.18
 Nodes (11): 1. Field Necessity & Efficiency (0–30), 2. Value–Effort Balance (0–20), 3. Cognitive Load & Clarity (0–20), 4. Error Handling & Recovery (0–15), 5. Trust & Friction Reduction (0–10), 6. Mobile Usability (0–5), Category Definitions, 🔢 Form Health & Friction Index (+3 more)
 
 ### Community 4849 - "Community 4849"
-Cohesion: 0.09
-Nodes (28): 5. Async Operations (TaskEither), 6. Converting Between Patterns, After: Clean TaskEither Pipeline, Back to Promise (Escape Hatch), Before: Promise Chain with Error Handling, code:typescript (import * as TE from 'fp-ts/TaskEither'), code:typescript (// Wrap at the boundary), Fallback to Alternative (+20 more)
+Cohesion: 0.10
+Nodes (26): Retry with Exponential Backoff, 5. Async Operations (TaskEither), 6. Converting Between Patterns, After: Clean TaskEither Pipeline, Back to Promise (Escape Hatch), Before: Promise Chain with Error Handling, code:typescript (import * as TE from 'fp-ts/TaskEither'), code:typescript (// Wrap at the boundary) (+18 more)
 
 ### Community 4850 - "Community 4850"
 Cohesion: 0.22
@@ -30033,8 +30021,8 @@ Cohesion: 0.33
 Nodes (5): /learn - Extract Reusable Patterns, Notes, Process, Trigger, What to Extract
 
 ### Community 4856 - "Community 4856"
-Cohesion: 0.31
-Nodes (9): checkPlaywrightInstalled(), cleanupOldTempFiles(), { execSync }, fs, getCodeToExecute(), installPlaywright(), main(), path (+1 more)
+Cohesion: 0.20
+Nodes (10): Actions, Block Pattern with ContentOnly (WP 7.0), code:block10 (Use @frontend-developer to create custom Gutenberg blocks), code:json ({), code:php (// template-parts/header-overlay.php), Copy-Paste Prompts, Navigation Overlay Template Part, Phase 5: Block Editor Support (+2 more)
 
 ### Community 4857 - "Community 4857"
 Cohesion: 0.18
@@ -30053,8 +30041,8 @@ Cohesion: 0.25
 Nodes (8): コアワークフロー, フェーズ 0: プロンプト強化(オプション), フェーズ 1: 調査, フェーズ 2: アイデア創出, フェーズ 3: 計画, フェーズ 4: 実装, フェーズ 5: 最適化, フェーズ 6: 品質レビュー
 
 ### Community 4861 - "Community 4861"
-Cohesion: 0.03
-Nodes (59): AgentShield — セキュリティ監査ツール, code:bash (# このリポジトリをマーケットプレイスとして追加), code:bash (# リポジトリをクローン), code:markdown (# TDD ワークフロー), code:block18 (rules/), code:bash (# すべてのテストを実行), code:bash (# パッケージをインストール), code:bash (# OpenCode をインストール) (+51 more)
+Cohesion: 0.04
+Nodes (49): AgentShield — セキュリティ監査ツール, code:bash (# このリポジトリをマーケットプレイスとして追加), code:bash (# リポジトリをクローン), code:bash (# すべてのテストを実行), code:bash (# パッケージをインストール), code:bash (# OpenCode をインストール), code:bash (# 環境変数経由), code:bash (/skill-create                    # 現在のリポジトリを分析) (+41 more)
 
 ### Community 4862 - "Community 4862"
 Cohesion: 0.25
@@ -30073,18 +30061,8 @@ Cohesion: 0.18
 Nodes (11): Basic System Information, code:bash (# Hostname and system role), code:bash (# Current user context), code:bash (# Network interfaces), code:bash (# All running processes), code:bash (# Full environment), Environment Variables, Network Information (+3 more)
 
 ### Community 4866 - "Community 4866"
-Cohesion: 0.36
-Nodes (8): {
-  createInstallTargetAdapter,
-  createRemappedOperation,
-  isForeignPlatformPath,
-  normalizeRelativePath,
-}, getClaudeManagedDestinationPath(), path, planOperations(), {
-  createInstallTargetAdapter,
-  createRemappedOperation,
-  isForeignPlatformPath,
-  normalizeRelativePath,
-}, getClaudeManagedDestinationPath(), path, planOperations()
+Cohesion: 0.22
+Nodes (11): Automated Rollback Configuration, code:bash (# Monitor release health post-deployment), code:bash (# Configure intelligent auto-rollback), Real-Time Release Monitoring, Release Analytics & Insights, Release Monitoring & Analytics, Automated Rollback Configuration, code:bash (# Analyze release performance and adoption) (+3 more)
 
 ### Community 4867 - "Community 4867"
 Cohesion: 0.20
@@ -30111,12 +30089,12 @@ Cohesion: 0.20
 Nodes (10): Event-Driven, Validation, Async İşlemler, En İyi Uygulamalar, Loglama, Mimari, Quarkus'a Özgü, Test (+2 more)
 
 ### Community 4873 - "Community 4873"
-Cohesion: 0.24
-Nodes (10): 1. Always Validate Input Data, 1. Multi-Source Data Aggregation, 2. Filtering with Regex, 3. Data Transformation & Enrichment, 4. Top N Filtering & Ranking, 5. Aggregation & Reporting, code:javascript (const allItems = $input.all();), code:javascript (const pattern = /\b([A-Z]{2,5})\b/g;) (+2 more)
+Cohesion: 0.12
+Nodes (19): 1. Always Validate Input Data, 1. Multi-Source Data Aggregation, 2. Filtering with Regex, 3. Data Transformation & Enrichment, 3. Prefer Array Methods Over Loops, 4. Filter Early, Process Late, 4. Top N Filtering & Ranking, 5. Aggregation & Reporting (+11 more)
 
 ### Community 4874 - "Community 4874"
-Cohesion: 0.06
-Nodes (37): 3. 設計提案, code:markdown (# ADR-001: セマンティック検索のベクトル保存にRedisを使用), 技術設計, 1. モジュール性と関心の分離, 1. 現状分析, 2. スケーラビリティ, 2. 要件収集, 3. 保守性 (+29 more)
+Cohesion: 0.07
+Nodes (28): 3. 設計提案, code:markdown (# ADR-001: セマンティック検索のベクトル保存にRedisを使用), 技術設計, 1. モジュール性と関心の分離, 1. 現状分析, 2. スケーラビリティ, 2. 要件収集, 3. 保守性 (+20 more)
 
 ### Community 4875 - "Community 4875"
 Cohesion: 0.50
@@ -30125,6 +30103,10 @@ Nodes (4): code:yaml (# Instincts Export), Output Format, Çıktı Formatı, 输
 ### Community 4876 - "Community 4876"
 Cohesion: 0.20
 Nodes (10): App breaks when hitting API rate limits, code:javascript (// Alert on anomalies), code:javascript (// Kill switch), code:javascript (// Per-user limits), code:block9 (OpenAI: Set usage limits in dashboard), Controlling AI Costs, Cost Monitoring, Emergency Shutoff (+2 more)
+
+### Community 4877 - "Community 4877"
+Cohesion: 0.22
+Nodes (8): Announcement Placeholder Check, Clean-Checkout Claude Plugin Smoke, ECC v2.0.0-rc.1 Publication Evidence — 2026-05-12, npm Dry Run, Plugin And Harness Evidence, Registry And Release State, Remaining Blockers, Source Commit
 
 ### Community 4878 - "Community 4878"
 Cohesion: 0.29
@@ -30199,8 +30181,8 @@ Cohesion: 0.18
 Nodes (11): Advanced FastMCP Features, code:python (from mcp.server.fastmcp import FastMCP, Context), code:python (@mcp.resource("file://documents/{name}")), code:python (from typing import TypedDict), code:python (from contextlib import asynccontextmanager), code:python (# stdio transport (for local tools) - default), Context Parameter Injection, Lifespan Management (+3 more)
 
 ### Community 4896 - "Community 4896"
-Cohesion: 0.17
-Nodes (12): code:bash (# Check spooler service), code:powershell (# PowerShell), code:powershell (Rubeus.exe monitor /interval:1), code:powershell (Get-DomainComputer -TrustedToAuth | select -exp msds-Allowed), code:powershell (# S4U2 attack), code:bash (getST.py -spn HOST/target.domain.local 'domain/user:password), code:powershell (# Create machine account), Constrained Delegation (+4 more)
+Cohesion: 0.03
+Nodes (64): Abuse with pyGPOAbuse (Linux), Abuse with SharpGPOAbuse, AD Certificate Services (ADCS), ADFS Golden SAML, Advanced Active Directory Attacks Reference, CCACHE Ticket Reuse, Child to Parent Domain (SID History), code:bash (./pygpoabuse.py DOMAIN/user -hashes lm:nt -gpo-id "12345677-) (+56 more)
 
 ### Community 4897 - "Community 4897"
 Cohesion: 0.18
@@ -30211,8 +30193,8 @@ Cohesion: 0.18
 Nodes (11): code:bash (# List repositories), code:bash (# List clusters), code:bash (# List EKS clusters), code:bash (# Authenticate Docker to ECR), code:bash (# List Kubernetes secrets), Container Backdooring, Container Security (ECS/EKS/ECR), ECR Enumeration (+3 more)
 
 ### Community 4899 - "Community 4899"
-Cohesion: 0.32
-Nodes (7): formatBytes(), full, metadata, scan(), shouldSkip(), SKIP_EXTENSIONS, SKIP_PATH_PREFIXES
+Cohesion: 0.06
+Nodes (41): gates, MAX_CODE_CANDIDATES, extractSpecifiers(), HEAVY_PATTERNS, isEdgeRuntimeFile(), isMiddleware(), metadata, scan() (+33 more)
 
 ### Community 4900 - "Community 4900"
 Cohesion: 0.18
@@ -30271,8 +30253,8 @@ Cohesion: 0.18
 Nodes (11): 1. 改善趋势分析, 2. 疼痛时序分析, 3. 依从性计算, 4. 目标达成预测, 5. 阶段转换准备度评估, code:block10 (7日移动平均疼痛 = sum(近7天疼痛) / 7), code:block11 (总体依从性 = (实际训练天数 / 计划训练天数) × 100%), code:block12 (预测时间 = 当前日期 + ((目标值 - 当前值) / 改善速率)) (+3 more)
 
 ### Community 4914 - "Community 4914"
-Cohesion: 0.04
-Nodes (53): Add to Existing Feature When:, api/ Directory, API Services, Available Aliases, code:block1 (features/), code:typescript (import type { Post } from '~types/post';), code:typescript (import { SuspenseLoader } from '~components/SuspenseLoader';), code:typescript (import { postApi } from '~features/posts/api/postApi';) (+45 more)
+Cohesion: 0.05
+Nodes (39): Add to Existing Feature When:, API Services, Available Aliases, code:block1 (features/), code:typescript (import type { Post } from '~types/post';), code:typescript (import { SuspenseLoader } from '~components/SuspenseLoader';), code:typescript (import { postApi } from '~features/posts/api/postApi';), code:block13 (MyComponent.tsx) (+31 more)
 
 ### Community 4915 - "Community 4915"
 Cohesion: 0.05
@@ -30303,8 +30285,8 @@ Cohesion: 0.15
 Nodes (13): code:typescript (// BAD: 第3引数として '' を渡すと、サーバーのシークレットを含む全ての環境変数が読み込まれ、), code:typescript (build: {), code:typescript (// BAD: passing '' as the third arg loads ALL env vars — inc), `.gitignore` Checklist, `.gitignore` チェックリスト, `loadEnv('')` の落とし穴, Security, Source Maps in Production (+5 more)
 
 ### Community 4922 - "Community 4922"
-Cohesion: 0.36
-Nodes (8): code:block3 (Error: Plan file not found or invalid.), Phase 1 — LOAD, code:bash (cat "$ARGUMENTS"), code:block3 (错误：计划文件未找到或无效。), フェーズ 1 — 読み込み, 阶段 1 — 加载, Phase 1 — LOAD, Phase 1 — LOAD
+Cohesion: 0.22
+Nodes (8): Blockers Still Requiring Approval Or External Action, ECC v2.0.0-rc.1 Publication Evidence - 2026-05-13 Post-Hardening, External Advisory Mapping, Hardening Landed Since Previous Evidence, Queue And Release State, Required Command Evidence, Source Commit, Supply-Chain Evidence
 
 ### Community 4923 - "Community 4923"
 Cohesion: 0.22
@@ -30335,16 +30317,16 @@ Cohesion: 0.18
 Nodes (11): Duplicate Webhook Registration, Hardcoded Shopify API Key, Hardcoded Shopify API Secret, In-Memory Session Storage, Missing HMAC Verification, Missing Rate Limit Handling, Missing Session Validation, Missing Webhook Response (+3 more)
 
 ### Community 4930 - "Community 4930"
-Cohesion: 0.20
-Nodes (8): code:block2 (web_search_exa(query: "2026年最新人工智能发展", numResults: 5)), web\_search\_exa, Exa 搜索, MCP 要求, 何时激活, 提示, 核心工具, 相关技能
+Cohesion: 0.22
+Nodes (11): 1. Trajectory Tracking, 2. Verdict Judgment, 3. Memory Distillation, code:typescript (// Record trajectory (sequence of actions)), code:typescript (// Get all experiences in domain), Core ReasoningBank Concepts, 1. Trajectory Tracking, 2. Verdict Judgment (+3 more)
 
 ### Community 4931 - "Community 4931"
 Cohesion: 0.26
 Nodes (12): Connection, best_times(), _connect(), growth_trend(), main(), overall_summary(), Análise inteligente de dados do Instagram (SQL puro, sem dependências externas)., Analisa tendência de crescimento. (+4 more)
 
 ### Community 4932 - "Community 4932"
-Cohesion: 0.10
-Nodes (20): Table of Contents, Variable Reference, 12. Post-Resolution Summary, 9. Claims Filing Cover Letter, Body, Body, code:block18 (Formal Freight Claim — PRO {{pro_number}} | Claim Amount: ${), code:block19 ({{current_date}}) (+12 more)
+Cohesion: 0.25
+Nodes (8): 12. Post-Resolution Summary, Body, code:block24 ([CLOSED] Exception Summary — {{customer_name}} / PRO {{pro_n), code:block25 (EXCEPTION POST-RESOLUTION SUMMARY), Subject Line, Tone Guidance, What NOT to Say, When to Use
 
 ### Community 4933 - "Community 4933"
 Cohesion: 0.25
@@ -30375,16 +30357,16 @@ Cohesion: 0.06
 Nodes (35): Cameras, code:javascript (const mesh = new THREE.Mesh(geometry, material);), code:javascript (const scene = new THREE.Scene();), code:javascript (// PerspectiveCamera(fov, aspect, near, far)), code:javascript (// OrthographicCamera(left, right, top, bottom, near, far)), code:javascript (const cameras = [];), code:javascript (const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256), code:javascript (const renderer = new THREE.WebGLRenderer({) (+27 more)
 
 ### Community 4940 - "Community 4940"
-Cohesion: 0.18
-Nodes (11): Anonymous Authorization Level in Production, Blocking .Result Call, Blocking .Wait() Call, Hardcoded API Key in Code, Hardcoded Connection String, HttpClient in Using Statement, In-Process FunctionName Attribute, Missing Function Attribute (+3 more)
+Cohesion: 0.22
+Nodes (11): Advanced Features, code:typescript (// Handle agent failures), code:typescript (// Track swarm metrics), Fault Tolerance, Load Balancing, Performance Monitoring, Advanced Features, code:typescript (// Automatic work distribution) (+3 more)
 
 ### Community 4941 - "Community 4941"
 Cohesion: 0.22
 Nodes (9): Dependency Issues, Bundler-Independent Runtime Failures, code:bash (npm ls react                       # check for duplicates), Common Failure Patterns, Dependency Issues, Hydration Mismatches, JSX / TSX Compile, Tailwind / PostCSS (+1 more)
 
 ### Community 4942 - "Community 4942"
-Cohesion: 0.18
-Nodes (11): Changelog, v1.0 (2025-11), v1.1 (2025-12-21), v1.2 (2025-12-21), v1.3 (2025-12-21), v1.4 (2025-12-23), v1.5 (2025-12-28), v1.6 (2025-12-31) (+3 more)
+Cohesion: 0.22
+Nodes (11): Advanced Workflows, code:bash (# Watch directory for changes), code:bash (# Export to Prometheus), code:bash (# Install pre-commit hook), Continuous Verification, Monitoring Integration, Pre-commit Hooks, Advanced Workflows (+3 more)
 
 ### Community 4943 - "Community 4943"
 Cohesion: 0.29
@@ -30407,8 +30389,8 @@ Cohesion: 0.18
 Nodes (11): Class instance in trigger payload, Date object in trigger payload, Task without concurrency limit, Task without error handling, Task without explicit ID, Task without logging, Trigger.dev API key hardcoded, Using raw Anthropic SDK instead of integration (+3 more)
 
 ### Community 4949 - "Community 4949"
-Cohesion: 0.15
-Nodes (12): code:bash (shadcn mcp        # start the MCP server (stdio)), Configuring Registries, Setup, `shadcn:get_add_command_for_items`, `shadcn:get_audit_checklist`, `shadcn:get_item_examples_from_registries`, `shadcn:get_project_registries`, `shadcn:list_items_in_registries` (+4 more)
+Cohesion: 0.25
+Nodes (8): `shadcn:get_add_command_for_items`, `shadcn:get_audit_checklist`, `shadcn:get_item_examples_from_registries`, `shadcn:get_project_registries`, `shadcn:list_items_in_registries`, `shadcn:search_items_in_registries`, `shadcn:view_items_in_registries`, Tools
 
 ### Community 4950 - "Community 4950"
 Cohesion: 0.04
@@ -30459,16 +30441,16 @@ Cohesion: 0.10
 Nodes (21): Ambiguity Gate, Complexity Assessment, Feature Understanding, Phase 1 — PARSE, User Story, code:block1 (As a [type of user],), User Story, Ambiguity Gate (+13 more)
 
 ### Community 4962 - "Community 4962"
-Cohesion: 0.13
-Nodes (24): Available Hooks, code:bash (npx claude-flow hook post-search --query <query> --results <), code:bash (npx claude-flow hook session-start --session-id <id>), code:bash (npx claude-flow hook session-end [options]), code:bash (npx claude-flow hook pre-bash --command <cmd>), code:bash (npx claude-flow hook post-bash --command <cmd>), Memory Coordination Hooks, Post-Operation Hooks (+16 more)
+Cohesion: 0.11
+Nodes (30): Available Hooks, code:bash (npx claude-flow hook post-search --query <query> --results <), code:bash (npx claude-flow hook mcp-initialized --swarm-id <id>), code:bash (npx claude-flow hook task-orchestrated --task-id <id>), code:bash (npx claude-flow hook session-start --session-id <id>), code:bash (npx claude-flow hook session-end [options]), code:bash (npx claude-flow hook pre-bash --command <cmd>), code:bash (npx claude-flow hook post-bash --command <cmd>) (+22 more)
 
 ### Community 4963 - "Community 4963"
 Cohesion: 0.18
 Nodes (11): 1. **Educational Video Documentation**, 2. **Technical Tutorial Analysis**, 3. **Conference Talk Reference**, 4. **Language Learning Content**, 5. **Research and Investigation**, code:bash (copilot> summarize this video: https://www.youtube.com/watch), code:bash (copilot> summarize youtube video https://youtu.be/xyz789), code:bash (copilot> extract youtube transcript https://youtube.com/watc) (+3 more)
 
 ### Community 4964 - "Community 4964"
-Cohesion: 0.03
-Nodes (74): POST(), AIService, cleanupOldFiles(), ensureDirectories(), GET(), POST(), REPORTS_DIR, UPLOADS_DIR (+66 more)
+Cohesion: 0.05
+Nodes (48): AIService, DEPARTMENTS, INSTITUTIONS, departments, POST(), ensureDirectories(), POST(), UPLOADS_DIR (+40 more)
 
 ### Community 4965 - "Community 4965"
 Cohesion: 0.43
@@ -30484,10 +30466,10 @@ Nodes (10): Code Blocks, code:`markdown, code:block30, code:markdown (- Item 1),
 
 ### Community 4968 - "Community 4968"
 Cohesion: 0.18
-Nodes (11): code:bash (# Query a dataset), code:block10 (hf://datasets/{dataset_id}@{revision}/{config}/{split}/*.par), code:sql (-- String functions), code:sql (-- Basic select), code:python (from sql_manager import HFDatasetSQL), HF Path Format, Python API Usage, Quick Start (+3 more)
+Nodes (11): code:json ({), code:json ({), Configuration, Default Configuration, Threshold Configuration, code:json ({), code:bash (# Strict mode (99% accuracy required)), code:json ({) (+3 more)
 
 ### Community 4969 - "Community 4969"
-Cohesion: 0.17
+Cohesion: 0.18
 Nodes (11): Current Publication Blockers, ECC v2.0.0-rc.1 Publication Evidence - 2026-05-19, May 20 Hosted Observability And AgentShield Adapter Sync, May 20 Marketplace Pro Release-Gate Sync, Merge Batch, Post-Queue-Zero Sync - 2026-05-19 Late Pass, Product And Positioning Evidence, Queue And Discussion State (+3 more)
 
 ### Community 4970 - "Community 4970"
@@ -30543,8 +30525,8 @@ Cohesion: 0.31
 Nodes (9): classify_pattern(), generate_plan(), get_skill_role(), load_registry(), main(), Generate an execution plan based on the pattern., Load registry as name->skill dict., Determine if a skill is primarily a producer, consumer, or hybrid.      Uses w (+1 more)
 
 ### Community 4983 - "Community 4983"
-Cohesion: 0.05
-Nodes (36): 1. Change Detection (CRITICAL), 2. Async Operations & Waterfalls (CRITICAL), 6. Template Optimization (MEDIUM), 7. State Management (MEDIUM), 8. Memory Management (LOW-MEDIUM), Angular Best Practices, Avoid Client-Side Waterfalls in SSR, Avoid Complex Template Expressions (+28 more)
+Cohesion: 0.06
+Nodes (31): 1. Change Detection (CRITICAL), 2. Async Operations & Waterfalls (CRITICAL), 7. State Management (MEDIUM), 8. Memory Management (LOW-MEDIUM), Angular Best Practices, Avoid Client-Side Waterfalls in SSR, code:typescript (// CORRECT - OnPush with Signals), code:typescript (// CORRECT - Selective subscription) (+23 more)
 
 ### Community 4984 - "Community 4984"
 Cohesion: 0.20
@@ -30564,7 +30546,7 @@ Nodes (7): B2B / Team Plans, B2C / Self-Serve SaaS, Cancel Flow by Business Type
 
 ### Community 4988 - "Community 4988"
 Cohesion: 0.22
-Nodes (9): 3. Bundle Optimization (CRITICAL), Avoid Barrel File Re-exports, code:typescript (// CORRECT - Lazy load feature routes), code:html (<!-- CORRECT - Heavy component loads on demand -->), code:typescript (// WRONG - Imports entire barrel, breaks tree-shaking), code:typescript (// CORRECT - Load heavy library on demand), Dynamic Import Third-Party Libraries, Lazy Load Routes (+1 more)
+Nodes (9): code:bash (pytest --cov=src --cov-report=term-missing), code:bash (pytest --cov=src --cov-report=html), code:ini (# pytest.ini or pyproject.toml), code:bash (pytest --cov=src --cov-branch), Basic Coverage, Branch Coverage, Coverage Analysis, Coverage Configuration (+1 more)
 
 ### Community 4989 - "Community 4989"
 Cohesion: 0.29
@@ -30611,16 +30593,16 @@ Cohesion: 0.25
 Nodes (8): Best Practices, Common Commands, Directory Structure, Key Concepts, Setup Steps, Tech Stack, Turbo Pipeline, Turborepo Monorepo Template
 
 ### Community 5000 - "Community 5000"
-Cohesion: 0.29
-Nodes (7): First Demo Script, Scene 1: Opening & Recap (5 min), Scene 2: Workflow 1 — Primary Pain Point (10 min), Scene 3: Workflow 2 — Secondary Pain Point (8 min), Scene 4: Workflow 3 — Differentiator (7 min), Scene 5: Proof Point (3 min), Scene 6: Close (5 min)
+Cohesion: 0.15
+Nodes (12): Demo Script Templates, First Demo Script, How to Handle "Can You Show Me X?", Interaction Point Guidance, Questions NOT to Ask During Demos, Scene 1: Opening & Recap (5 min), Scene 2: Workflow 1 — Primary Pain Point (10 min), Scene 3: Workflow 2 — Secondary Pain Point (8 min) (+4 more)
 
 ### Community 5001 - "Community 5001"
-Cohesion: 0.36
-Nodes (10): computeImpactLabel(), cwvIssue(), formatCwvIssue(), formatInteger(), joinEnglish(), parseSigNumber(), round1(), round2() (+2 more)
+Cohesion: 0.18
+Nodes (11): 1. Always Use .get() for Dictionary Access, 2. Handle None/Null Values Explicitly, 3. Use List Comprehensions for Filtering, 4. Return Consistent Structure, 5. Debug with print() Statements, Best Practices, code:python (# ✅ SAFE: Won't crash if field missing), code:python (# ✅ GOOD: Default to 0 if None) (+3 more)
 
 ### Community 5002 - "Community 5002"
 Cohesion: 0.25
-Nodes (7): Astro Static Site Template, Best Practices, Deployment, Directory Structure, Key Concepts, Setup Steps, Tech Stack
+Nodes (11): Agent Communication Protocol, Blocker, code:json ({), Heartbeat (every 60s), review-business, review-code, review-security, Review Swarm (3 Agents) (+3 more)
 
 ### Community 5003 - "Community 5003"
 Cohesion: 0.14
@@ -30656,11 +30638,11 @@ Nodes (12): Git, エディタ統合, コア哲学, コードスタイル, テス
 
 ### Community 5011 - "Community 5011"
 Cohesion: 0.03
-Nodes (72): 1.1 Installation, 1.2 Why Bun?, 1. Getting Started, 2.1 Create New Project, 2.2 package.json, 2.3 tsconfig.json (Bun-optimized), 2. Project Setup, 3.1 Installing Packages (+64 more)
+Nodes (64): 1.1 Installation, 1.2 Why Bun?, 1. Getting Started, 2.1 Create New Project, 2.2 package.json, 2.3 tsconfig.json (Bun-optimized), 2. Project Setup, 3.1 Installing Packages (+56 more)
 
 ### Community 5012 - "Community 5012"
-Cohesion: 0.29
-Nodes (5): Burp Suite Web Application Testing, Outputs / Deliverables, Primary Outputs, Purpose, When to Use
+Cohesion: 0.18
+Nodes (9): Burp Suite Web Application Testing, Example 1: Business Logic Testing, Example 2: Authentication Bypass, Example 3: Information Disclosure, Examples, Outputs / Deliverables, Primary Outputs, Purpose (+1 more)
 
 ### Community 5013 - "Community 5013"
 Cohesion: 0.13
@@ -30699,18 +30681,8 @@ Cohesion: 0.20
 Nodes (9): code:markdown (# Arquivo Consolidado — 2026), code:block2 (maintain), Consolidação de Arquivo, Detecção de Drift, Fluxo de Auto-Manutenção, Manutenção do ACTIVE_CONTEXT.md, O que Manter no Arquivo, Quando Arquivar (+1 more)
 
 ### Community 5022 - "Community 5022"
-Cohesion: 0.20
-Nodes (7): assert, {
-  detectProjectType,
-  LANGUAGE_RULES,
-  FRAMEWORK_RULES,
-  getPackageJsonDeps,
-  getPythonDeps,
-  getGoDeps,
-  getRustDeps,
-  getComposerDeps,
-  getElixirDeps
-}, fs, os, path, runTests(), test()
+Cohesion: 0.18
+Nodes (11): code:typescript (// Exclude specific properties), code:typescript (// Make all properties required), code:typescript (// Type-safe object/map), code:typescript (// Make all properties optional), code:typescript (// Select specific properties), Omit<T, K>, Partial<T>, Pick<T, K> (+3 more)
 
 ### Community 5023 - "Community 5023"
 Cohesion: 0.18
@@ -30753,8 +30725,8 @@ Cohesion: 0.18
 Nodes (9): Context, Debug and Trace Configuration, Do not use this skill when, Instructions, Limitations, Requirements, Resources, Safety (+1 more)
 
 ### Community 5033 - "Community 5033"
-Cohesion: 0.18
-Nodes (12): web_search_exa, web_search_exa, get_code_context_exa, web_search_exa, code:block3 (get_code_context_exa(query: "Python asyncio patterns", token), get\_code\_context\_exa, code:block2 (web_search_exa(query: "latest AI developments 2026", numResu), Core Tools (+4 more)
+Cohesion: 0.15
+Nodes (11): web_search_exa, web_search_exa, code:block2 (web_search_exa(query: "latest AI developments 2026", numResu), Core Tools, Exa Search, get_code_context_exa, Related Skills, Tips (+3 more)
 
 ### Community 5034 - "Community 5034"
 Cohesion: 0.29
@@ -30781,12 +30753,12 @@ Cohesion: 0.18
 Nodes (11): code:yaml (task_constraints:), code:block21 (confidence >= 0.95  -->  Auto-approve with audit log), code:block22 (1. Agent generates output), code:yaml (principles:), code:block24 (Main agent (focused) --> Sub-agent (file search)), Confidence-Based Routing, Context Engineering, Deterministic Outer Loops (+3 more)
 
 ### Community 5040 - "Community 5040"
-Cohesion: 0.22
-Nodes (11): code:typescript (// Reduce learning rate), Issue: Overfitting, Issue: Slow training, Issue: Training not converging, Troubleshooting, code:typescript (// Use validation split), code:bash (# Enable quantization for faster inference), Issue: Overfitting (+3 more)
+Cohesion: 0.18
+Nodes (9): assert, content, fs, jobsIndex, path, publishIndex, releaseIndex, repoRoot (+1 more)
 
 ### Community 5041 - "Community 5041"
-Cohesion: 0.22
-Nodes (10): Analysis Workflow, Architecture, Pattern 4: Analysis Swarm, Purpose, Analysis Workflow, Architecture, code:javascript (// Initialize analysis swarm), code:javascript (// Parallel analysis execution) (+2 more)
+Cohesion: 0.38
+Nodes (9): displayQuickAnswer(), downloadResults(), main(), parseCliArgs(), pollUntilComplete(), printHelp(), reportSummary(), sleep() (+1 more)
 
 ### Community 5042 - "Community 5042"
 Cohesion: 0.07
@@ -30817,8 +30789,8 @@ Cohesion: 0.22
 Nodes (11): 1. Microservices Coordination, 2. Library Updates, 3. Organization-Wide Changes, code:bash (npx claude-flow skill run github-multi-repo org-policy \), Use Cases, 1. Microservices Coordination, 2. Library Updates, 3. Organization-Wide Changes (+3 more)
 
 ### Community 5049 - "Community 5049"
-Cohesion: 0.10
-Nodes (19): code:` (User: /e2e マーケット検索と表示フローをテスト), code:block1 (Kullanıcı: /e2e Piyasa arama ve görüntüleme akışını test et), code:` (用户：/e2e 测试市场搜索和查看流程), code:`, Bu Komut Ne Yapar, E2E Komutu, E2E コマンド, E2E 命令 (+11 more)
+Cohesion: 0.17
+Nodes (10): code:` (User: /e2e マーケット検索と表示フローをテスト), Bu Komut Ne Yapar, E2E Komutu, E2E コマンド, Nasıl Çalışır, Ne Zaman Kullanılır, いつ使用しますするか, このコマンドの機能 (+2 more)
 
 ### Community 5050 - "Community 5050"
 Cohesion: 0.51
@@ -30829,8 +30801,8 @@ Cohesion: 0.25
 Nodes (8): code:block10 (epic landscape, mountain range at sunset,), code:block8 ((masterpiece:1.4), (beautiful:1.2), landscape), code:block9 (cyberpunk city, art nouveau architecture, neon lights,), Descricao Progressiva, Mood Words, Peso de Palavras, Prompt Mixing, Tecnicas Avancadas
 
 ### Community 5052 - "Community 5052"
-Cohesion: 0.18
-Nodes (9): code:json ({), Output Format, Best Practices Applied, Instinct Format (for continuous-learning-v2), Learn Command, Mistakes to Avoid, Patterns Discovered, Suggested Skill Updates (+1 more)
+Cohesion: 0.17
+Nodes (9): code:json ({), Instinct Format (for continuous-learning-v2), Learn Command, Your Task, /learn - Extract Reusable Patterns, Notes, Process, Trigger (+1 more)
 
 ### Community 5053 - "Community 5053"
 Cohesion: 0.21
@@ -30889,12 +30861,12 @@ Cohesion: 0.33
 Nodes (6): code:python (# 悪い例: N+1クエリ), Python の規約, コードスタイル, データベース, 認証, 重要なルール
 
 ### Community 5067 - "Community 5067"
-Cohesion: 0.08
-Nodes (26): code:perl (# Good: モダンなプリアンブル), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (# 1. 2引数open（セキュリティリスク）), code:perl (use v5.36;), Fixtures and Setup/Teardown, Shared Test Helpers, Subtest Isolation (+18 more)
+Cohesion: 0.07
+Nodes (31): code:perl (# Good: モダンなプリアンブル), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (# 1. 2引数open（セキュリティリスク）), code:perl (use v5.36;), code:perl (use v5.36;), code:perl (use v5.36;), Fixtures and Setup/Teardown (+23 more)
 
 ### Community 5068 - "Community 5068"
-Cohesion: 0.22
-Nodes (11): CLI Operations, code:bash (# Export vectors to file), code:bash (# Run performance benchmarks), Import/Export Data, Performance Benchmarks, Query Database, CLI Operations, code:bash (# Query with vector embedding) (+3 more)
+Cohesion: 0.27
+Nodes (8): cmd, { readStdin, hookEnabled }, segments, { splitShellSegments }, hasBlockedDev, input, { readStdin, hookEnabled }, { splitShellSegments }
 
 ### Community 5069 - "Community 5069"
 Cohesion: 0.25
@@ -30913,8 +30885,8 @@ Cohesion: 0.18
 Nodes (9): code:block1 (User: /plan 마켓이 해결될 때 실시간 알림을 추가해야 합니다), Plan 커맨드, 관련 에이전트, 다른 커맨드와의 연계, 사용 시점, 사용 예시, 이 커맨드가 하는 일, 작동 방식 (+1 more)
 
 ### Community 5073 - "Community 5073"
-Cohesion: 0.25
-Nodes (8): code:bash (bun run --env-file=.env dev), code:bash (# 依存関係をインストール（bun.lockまたはbun.lockbを作成/更新）), スクリプトとenv, テスト, 例, 実行とインストール, 脚本和环境变量, Scripts and env
+Cohesion: 0.21
+Nodes (12): code:typescript (// test/example.test.ts), Testing, code:bash (# 依存関係をインストール（bun.lockまたはbun.lockbを作成/更新）), Examples, Scripts and env, Testing, スクリプトとenv, テスト (+4 more)
 
 ### Community 5074 - "Community 5074"
 Cohesion: 0.28
@@ -30942,7 +30914,7 @@ Nodes (7): code:block1 (docs/CODEMAPS/ARCHITECTURE.md), code:block2 (docs/CODEMA
 
 ### Community 5080 - "Community 5080"
 Cohesion: 0.22
-Nodes (11): code:bash (# Initialize with default dimensions (1536 for OpenAI ada-00), Import/Export Vectors, Initialize Vector Database, Query Vector Database, Quick Start with CLI, code:bash (# Basic similarity search), code:bash (# Export vectors to JSON), Import/Export Vectors (+3 more)
+Nodes (10): Meeting Methods, Meeting Object, Meeting Properties, Meeting Methods, Meeting Object, Meeting Properties, code:python (meeting = coll.record_meeting(), Meetingオブジェクト (+2 more)
 
 ### Community 5081 - "Community 5081"
 Cohesion: 0.29
@@ -30957,16 +30929,16 @@ Cohesion: 0.18
 Nodes (8): Cobertura de Testes, Passo 1: Detectar Framework de Teste, Passo 2: Analisar Relatório de Cobertura, Passo 3: Gerar Testes Faltantes, Passo 4: Verificar, Regras para Geração de Testes, Áreas de Foco, テストカバレッジ
 
 ### Community 5084 - "Community 5084"
-Cohesion: 0.22
-Nodes (11): Automated PR Fixes, 🔧 CI/CD Integration, code:yaml (# .github/workflows/build-and-review.yml), code:bash (# Post swarm progress to PR using gh CLI), Integration with Build Pipeline, Progress Updates to PR, Automated PR Fixes, 🔧 CI/CD Integration (+3 more)
+Cohesion: 0.20
+Nodes (10): By frame name:, By selector:, Collaboration, Delegation Triggers, Get frame by name or selector:, Limitations, Nested iframes:, Related Skills (+2 more)
 
 ### Community 5085 - "Community 5085"
 Cohesion: 0.39
 Nodes (8): Path, check_page(), find_pages(), is_page_file(), main(), Check if this file is likely a public-facing page., Find page files to check., Check a single page for SEO issues.
 
 ### Community 5086 - "Community 5086"
-Cohesion: 0.07
-Nodes (27): code:rust (// İyi: Ownership'e ihtiyacınız olmadığında referansları geç), code:rust (// İyi: Deklaratif, lazy, birleştirilebilir), code:rust (// Farklı tiplere collect et), code:rust (// Kabul edilebilir: Belgelenmiş değişmezlerle FFI sınırı (R), code:rust (// Kötü: Borrow checker'ı atlamak için unsafe kullanma), code:bash (# Build ve kontrol), code:rust (// Kötü: Production kodunda .unwrap()), code:rust (// İyi: İmkansız durumlar temsil edilemez) (+19 more)
+Cohesion: 0.06
+Nodes (34): code:rust (// İyi: Ownership'e ihtiyacınız olmadığında referansları geç), code:rust (// İyi: Deklaratif, lazy, birleştirilebilir), code:rust (// Farklı tiplere collect et), code:rust (// Kabul edilebilir: Belgelenmiş değişmezlerle FFI sınırı (R), code:rust (// Kötü: Borrow checker'ı atlamak için unsafe kullanma), code:bash (# Build ve kontrol), code:rust (// Kötü: Production kodunda .unwrap()), code:rust (// İyi: Hataları context ile yayın) (+26 more)
 
 ### Community 5087 - "Community 5087"
 Cohesion: 0.33
@@ -31001,16 +30973,16 @@ Cohesion: 0.29
 Nodes (7): code:yaml (# .github/workflows/e2e.yml), CI/CD Entegrasyonu, CI/CD Integration, CI/CD 統合, CI/CD 集成, CI/CD 통합, Integração CI/CD
 
 ### Community 5095 - "Community 5095"
-Cohesion: 0.22
-Nodes (11): Automated Rollback Configuration, code:bash (# Monitor release health post-deployment), code:bash (# Configure intelligent auto-rollback), Real-Time Release Monitoring, Release Analytics & Insights, Release Monitoring & Analytics, Automated Rollback Configuration, code:bash (# Analyze release performance and adoption) (+3 more)
+Cohesion: 0.31
+Nodes (8): check_account(), main(), Configuração e verificação de conta Instagram.  Uso:     python scripts/accou, Verifica se todos os pré-requisitos estão OK., Detecta tipo de conta e status., Mostra guia de setup/migração., show_guide(), verify_setup()
 
 ### Community 5096 - "Community 5096"
 Cohesion: 0.20
 Nodes (9): code:block1 (覆盖率报告), 步骤 1：检测测试框架, 步骤 2：分析覆盖率报告, 步骤 3：生成缺失的测试, 步骤 4：验证, 步骤 5：报告, 测试生成规则, 测试覆盖率 (+1 more)
 
 ### Community 5097 - "Community 5097"
-Cohesion: 0.18
-Nodes (12): 8. Advanced Patterns (LOW), code:tsx (const handlerRef = useRef(handler);), code:tsx (function useLatest<T>(value: T) {), Event handler refs, Init once per app load, `useEffectEvent` deps, `useLatest` for stable callback refs, 8. Advanced Patterns (LOW) (+4 more)
+Cohesion: 0.25
+Nodes (5): Current Status, ECC Operator Readiness Dashboard, Next Work Order, Prompt-To-Artifact Checklist, Top Actions
 
 ### Community 5098 - "Community 5098"
 Cohesion: 0.07
@@ -31037,15 +31009,15 @@ Cohesion: 0.28
 Nodes (7): appendLine(), fs, MODE_CONFIG, os, path, run(), sanitizeCommand()
 
 ### Community 5104 - "Community 5104"
-Cohesion: 0.22
-Nodes (11): Adaptive Execution, code:typescript (// Sequential pipeline with dependencies), Parallel Execution, Pipeline Execution, Task Orchestration, Adaptive Execution, code:typescript (// Execute tasks concurrently), code:typescript (// Let swarm decide execution strategy) (+3 more)
+Cohesion: 0.25
+Nodes (7): Current Publication Blockers, ECC v2.0.0-rc.1 Publication Evidence - 2026-05-16, Merge And Triage Batch, Queue And Discussion State, Release Gate Commands, Result, Source Commit
 
 ### Community 5105 - "Community 5105"
 Cohesion: 0.13
 Nodes (18): code:rust (// İyi: Dahili paylaşım için pub(crate)), code:rust (// Good: pub(crate) for internal sharing), code:text (my_app/), Module System and Crate Structure, Organize by Domain, Not by Type, Visibility — Expose Minimally, Module System and Crate Structure, Organize by Domain, Not by Type (+10 more)
 
 ### Community 5106 - "Community 5106"
-Cohesion: 0.22
+Cohesion: 0.25
 Nodes (7): code:block1 (// 疑似コード), エラーハンドリング, コーディングスタイル, コード品質チェックリスト, ファイル構成, 不変性（重要）, 入力検証
 
 ### Community 5107 - "Community 5107"
@@ -31129,8 +31101,8 @@ Cohesion: 0.16
 Nodes (12): candidates, dir, { execFileSync }, fs, input, path, relPath, { execFileSync } (+4 more)
 
 ### Community 5126 - "Community 5126"
-Cohesion: 0.20
-Nodes (12): code:block4 (Doctor opens encounter for Patient #4521), Example 1: Patient Encounter Flow, Example 2: Medication Safety Workflow, Example 3: Locked Encounter + Addendum, Examples, code:block5 (Doctor prescribes Warfarin for Patient #4521), code:block6 (Encounter #E-2024-0891 signed by Dr. Shah at 14:30), Example 1: Patient Encounter Flow (+4 more)
+Cohesion: 0.11
+Nodes (16): code:block4 (Doctor opens encounter for Patient #4521), Example 1: Patient Encounter Flow, Example 2: Medication Safety Workflow, Example 3: Locked Encounter + Addendum, Examples, Healthcare EMR Development Patterns, When to Use, code:block5 (Doctor prescribes Warfarin for Patient #4521) (+8 more)
 
 ### Community 5127 - "Community 5127"
 Cohesion: 0.14
@@ -31185,8 +31157,8 @@ Cohesion: 0.20
 Nodes (9): code:block1 (底线规则 = 前世职业道德 + 角色化语言表达 + 2-4条可执行规则), code:markdown (## 底线规则), code:markdown (## 雷区), Step 3：推导底线规则, 各方向的底线规则参考, 推导公式, 设计原则, 输出格式 (+1 more)
 
 ### Community 5140 - "Community 5140"
-Cohesion: 0.22
-Nodes (9): code:bash (# 1. Check GPU utilization during a job), code:bash (# 1. Increase ComfyUI's model cache), code:bash (# 1. Check current queue state), code:bash (# 1. Send a warm-up job immediately after starting ComfyUI), 3. Slow Generation, 3a. GPU Not Being Utilized, 3b. Model Loading on Every Job, 3c. Queue Depth / Concurrency (+1 more)
+Cohesion: 0.10
+Nodes (20): code:bash (# 1. Check GPU utilization during a job), code:bash (# 1. Increase ComfyUI's model cache), code:bash (# 1. Check current queue state), code:bash (# 1. Send a warm-up job immediately after starting ComfyUI), code:bash (# 1. Check if Redis is running), code:bash (# 1. Include the password in the URL), code:bash (# 1. Set REDIS_URL in .env), 3. Slow Generation (+12 more)
 
 ### Community 5141 - "Community 5141"
 Cohesion: 0.29
@@ -31205,12 +31177,12 @@ Cohesion: 0.25
 Nodes (8): How It Works, `/jira comment <TICKET-KEY>`, `/jira get <TICKET-KEY>`, `/jira search <JQL>`, `/jira transition <TICKET-KEY>`, code:block2 (Ticket: PROJ-1234), `/jira get <TICKET-KEY>`, `/jira get <TICKET-KEY>`
 
 ### Community 5145 - "Community 5145"
-Cohesion: 0.15
-Nodes (13): Diagnostic Commands Run, Kotlin Build and Fix, What This Command Does, When to Use, Kotlin 构建与修复, 何时使用, 此命令的作用, 运行的诊断命令 (+5 more)
+Cohesion: 0.20
+Nodes (10): Diagnostic Commands Run, Kotlin Build and Fix, What This Command Does, When to Use, Kotlin 构建与修复, 何时使用, 此命令的作用, 运行的诊断命令 (+2 more)
 
 ### Community 5146 - "Community 5146"
-Cohesion: 0.18
-Nodes (11): 1. Always Use .get() for Dictionary Access, 2. Handle None/Null Values Explicitly, 3. Use List Comprehensions for Filtering, 4. Return Consistent Structure, 5. Debug with print() Statements, Best Practices, code:python (# ✅ SAFE: Won't crash if field missing), code:python (# ✅ GOOD: Default to 0 if None) (+3 more)
+Cohesion: 0.25
+Nodes (7): Current Publication Blockers, ECC v2.0.0-rc.1 Publication Evidence - 2026-05-17, Merge And Triage Batch, Queue And Discussion State, Release Gate Commands, Result, Source Commit
 
 ### Community 5147 - "Community 5147"
 Cohesion: 0.21
@@ -31227,10 +31199,6 @@ Nodes (25): code:python (import videodb), code:python (rtstream = coll.get_rtstr
 ### Community 5150 - "Community 5150"
 Cohesion: 0.08
 Nodes (27): grade(), Grade a trace against a compliance spec using LLM classification., Detector, _mock_compliant_classification(), _mock_noncompliant_classification(), Tests for grader module — compliance scoring with LLM classification., Simulate LLM correctly classifying a compliant trace., Simulate LLM classifying a noncompliant trace (impl before test). (+19 more)
-
-### Community 5151 - "Community 5151"
-Cohesion: 0.20
-Nodes (8): Status Pages (Error Handling), code:kotlin (// plugins/StatusPages.kt), Ktor Server Patterns, Quick Reference: Ktor Patterns, Status Pages (Error Handling), When to Activate, StatusPages（エラーハンドリング）, 状态页（错误处理）
 
 ### Community 5152 - "Community 5152"
 Cohesion: 0.28
@@ -31257,8 +31225,8 @@ Cohesion: 0.22
 Nodes (8): assert, { execFileSync }, fs, os, path, runTests(), SCRIPT, test()
 
 ### Community 5158 - "Community 5158"
-Cohesion: 0.22
-Nodes (9): Advanced Configuration, Automatic Testing, Basic Configuration, code:json ({), code:json ({), code:json ({), code:json ({), Configuration (+1 more)
+Cohesion: 0.07
+Nodes (30): Agent Coordination Workflow, Agent Workflow Example, code:bash (# Agent 1: Backend Developer), Advanced Configuration, Agent Coordination Workflow, Agent Workflow Example, Automatic Testing, Basic Configuration (+22 more)
 
 ### Community 5159 - "Community 5159"
 Cohesion: 0.22
@@ -31333,8 +31301,8 @@ Cohesion: 0.18
 Nodes (9): Banned Output Patterns, Baseline, code:block1 ([PAUSED — X of Y complete. Send "continue" to resume from: n), Execution Process, Full-Output Enforcement, Handling Long Outputs, Limitations, Quick Check (+1 more)
 
 ### Community 5177 - "Community 5177"
-Cohesion: 0.25
-Nodes (6): Android Clean Architecture, Anti-Patterns to Avoid, Error Handling, References, Result/Try Pattern, When to Activate
+Cohesion: 0.21
+Nodes (10): code:kotlin (// build-logic/src/main/kotlin/kmp-library.gradle.kts), Convention Plugins (Gradle), コンベンションプラグイン（Gradle）, 约定插件 (Gradle), Android Clean Architecture, Anti-Patterns to Avoid, code:kotlin (// domain/build.gradle.kts), Convention Plugins (Gradle) (+2 more)
 
 ### Community 5178 - "Community 5178"
 Cohesion: 0.18
@@ -31369,8 +31337,8 @@ Cohesion: 0.20
 Nodes (9): [Best practices](https://developer.apple.com/design/human-interface-guidelines/boxes#Best-practices), Boxes, [Content](https://developer.apple.com/design/human-interface-guidelines/boxes#Content), [Developer documentation](https://developer.apple.com/design/human-interface-guidelines/boxes#Developer-documentation), [iOS, iPadOS](https://developer.apple.com/design/human-interface-guidelines/boxes#iOS-iPadOS), [macOS](https://developer.apple.com/design/human-interface-guidelines/boxes#macOS), [Platform considerations](https://developer.apple.com/design/human-interface-guidelines/boxes#Platform-considerations), [Related](https://developer.apple.com/design/human-interface-guidelines/boxes#Related) (+1 more)
 
 ### Community 5186 - "Community 5186"
-Cohesion: 0.25
-Nodes (11): Agent Communication Protocol, Blocker, code:json ({), Heartbeat (every 60s), review-business, review-code, review-security, Review Swarm (3 Agents) (+3 more)
+Cohesion: 0.20
+Nodes (10): code:yaml (name: CI/CD Pipeline), code:yaml (name: Release), code:yaml (name: Dependency Updates), code:yaml (name: Security Scan), Complete Pipeline Patterns, Pattern 1: Build → Test → Push → Deploy, Pattern 2: Automated Release with Changelog, Pattern 3: Dependency Auto-Update with PR (+2 more)
 
 ### Community 5187 - "Community 5187"
 Cohesion: 0.06
@@ -31405,16 +31373,16 @@ Cohesion: 0.20
 Nodes (9): Apple HIG: Platform Design, Decision Framework, Key Principles, Limitations, Output Format, Questions to Ask, Reference Index, Related Skills (+1 more)
 
 ### Community 5195 - "Community 5195"
-Cohesion: 0.17
-Nodes (14): 1. Dataset Lifecycle Management, 2. SQL-Based Dataset Querying (NEW), 3. Multi-Format Dataset Support, 4. Quality Assurance Features, Core Capabilities, Dependencies, Integration with HF MCP Server, Overview (+6 more)
+Cohesion: 0.04
+Nodes (52): 1. Dataset Lifecycle Management, 2. SQL-Based Dataset Querying (NEW), 3. Multi-Format Dataset Support, 4. Quality Assurance Features, Advanced System Prompt Template, code:bash (# Query a dataset), code:block10 (hf://datasets/{dataset_id}@{revision}/{config}/{split}/*.par), code:sql (-- String functions) (+44 more)
 
 ### Community 5196 - "Community 5196"
 Cohesion: 0.29
 Nodes (7): Execution Workflow, Phase 1: Research & Analysis, Phase 2: Solution Ideation, Phase 3: Detailed Planning, Phase 4: Implementation, Phase 5: Code Optimization, Phase 6: Quality Review
 
 ### Community 5197 - "Community 5197"
-Cohesion: 0.29
-Nodes (7): Best Practices, Chrome Extension Template, Development Tips, Manifest V3 Concepts, Permissions, Setup Steps, Tech Stack
+Cohesion: 0.20
+Nodes (10): 3. Nikto Commands, Burp Suite, code:block5 (# Proxy configuration), code:bash (# Start ZAP), code:bash (# Docker-based scanning), code:bash (# Basic scan), Nikto, OWASP ZAP (+2 more)
 
 ### Community 5198 - "Community 5198"
 Cohesion: 0.33
@@ -31697,8 +31665,8 @@ Cohesion: 0.17
 Nodes (15): code:json ({"ts": "2026-03-02T10:15:30.123Z", "unix_ts": 1772446530.123), code:python (import json), Event Persistence, JSONL Format, Reading Events, Event Persistence, JSONL Format, Reading Events (+7 more)
 
 ### Community 5268 - "Community 5268"
-Cohesion: 0.40
-Nodes (5): 11. Regulatory Agency Response (FDA Form 483), Template, Tone Guidance, What NOT to Say, When to Use
+Cohesion: 0.31
+Nodes (9): checkPlaywrightInstalled(), cleanupOldTempFiles(), { execSync }, fs, getCodeToExecute(), installPlaywright(), main(), path (+1 more)
 
 ### Community 5269 - "Community 5269"
 Cohesion: 0.29
@@ -31721,16 +31689,16 @@ Cohesion: 0.33
 Nodes (6): code:markdown (# [区域] 代码地图), 1. 分析仓库, 2. 分析模块, 3. 生成代码映射, 4. 代码映射格式, 代码地图工作流
 
 ### Community 5274 - "Community 5274"
-Cohesion: 0.40
-Nodes (5): Cross-Phase Test Alignment, 🎯 SPARC-Specific Refinement Optimizations, code:typescript (// Coordinate tests with specification requirements), Cross-Phase Test Alignment, 🎯 SPARC-Specific Refinement Optimizations
+Cohesion: 0.54
+Nodes (8): code:block4, Example Session, code:`text (User: /rust-build), code:block3, セッション例, 示例会话, Example Session, Example Session
 
 ### Community 5275 - "Community 5275"
-Cohesion: 0.18
-Nodes (11): code:javascript (const classifier = await pipeline('image-classification');), code:javascript (const detector = await pipeline('object-detection');), code:javascript (const segmenter = await pipeline('image-segmentation');), code:javascript (const depthEstimator = await pipeline('depth-estimation');), code:javascript (const classifier = await pipeline('zero-shot-image-classific), Computer Vision, Depth Estimation, Image Classification (+3 more)
+Cohesion: 0.22
+Nodes (7): code:kotlin (// Validate request data in routes), Request Validation, Request Validation, Ktor 服务器模式, 何时启用, 快速参考：Ktor 模式, 请求验证
 
 ### Community 5276 - "Community 5276"
-Cohesion: 0.20
-Nodes (9): After, Before, code:typescript (// Complex/problematic), code:typescript (// Clean/improved), Impact, Pattern Name, Recognition Signs, The Pattern (+1 more)
+Cohesion: 0.25
+Nodes (7): 3. 网络安全, 云与基础设施安全技能, 云安全检查清单, 何时激活, 资源, 部署前云安全检查清单, 验证步骤
 
 ### Community 5277 - "Community 5277"
 Cohesion: 0.25
@@ -31753,8 +31721,8 @@ Cohesion: 0.20
 Nodes (9): CLI Examples, code:bash (python3 tools/edgar.py AAPL), Data Normalization Patterns, EDGAR Guide for Claude Code Usage, Endpoints Used, Error Handling Philosophy, Practical Notes, Public Functions (+1 more)
 
 ### Community 5282 - "Community 5282"
-Cohesion: 0.06
-Nodes (35): Acknowledgments, code:bash (# English), code:block10 (❌ No transcript available for this video), code:block11 (❌ Invalid YouTube URL format), code:block12 (❌ Unable to access video), code:bash (⚠️  youtube-transcript-api not installed), code:markdown (# [Video Title]), code:bash (pip install youtube-transcript-api) (+27 more)
+Cohesion: 0.05
+Nodes (38): Legacy Command Shims, Automation Commands, Available Commands, Acknowledgments, code:bash (# English), code:block10 (❌ No transcript available for this video), code:block11 (❌ Invalid YouTube URL format), code:block12 (❌ Unable to access video) (+30 more)
 
 ### Community 5283 - "Community 5283"
 Cohesion: 0.25
@@ -31885,7 +31853,7 @@ Cohesion: 0.33
 Nodes (6): Blog CTAs & Content Upgrades, Exit-Intent & Popups, Paid Promotion, Partner Co-Promotion, Promotion & Distribution, Social Media
 
 ### Community 5315 - "Community 5315"
-Cohesion: 0.08
+Cohesion: 0.07
 Nodes (24): code:typescript (export function useDebounce<T>(value: T, delay: number): T {), code:typescript (interface Repository<T> {), Custom Hooks Pattern, Repository Pattern, code:typescript (interface ApiResponse<T> {), Custom Hooks Pattern, Repository Pattern, API 回應格式 (+16 more)
 
 ### Community 5316 - "Community 5316"
@@ -31913,8 +31881,8 @@ Cohesion: 0.29
 Nodes (6): 开源打包工具, 您的职责, 示例, 示例：打包 FastAPI 服务, 规则, 输出格式
 
 ### Community 5322 - "Community 5322"
-Cohesion: 0.05
-Nodes (52): code:bash (# Das Repo klonen), code:powershell (# Windows PowerShell), code:block46 (Cursor stdin JSON → adapter.js → transforms → scripts/hooks/), Cursor-IDE-Unterstützung, Hinweise zum Laden in Cursor, Hook-Architektur (DRY-Adapter-Muster), Hooks installieren, MCPs konfigurieren (+44 more)
+Cohesion: 0.04
+Nodes (63): code:json ({), code:bash (# Dieses Repo als Marketplace hinzufügen), code:bash (# Das Repo klonen), code:powershell (# Windows PowerShell), code:block46 (Cursor stdin JSON → adapter.js → transforms → scripts/hooks/), Cursor-IDE-Unterstützung, Hinweise zum Laden in Cursor, Hook-Architektur (DRY-Adapter-Muster) (+55 more)
 
 ### Community 5323 - "Community 5323"
 Cohesion: 0.29
@@ -31934,7 +31902,7 @@ Nodes (9): 1. Privacy by Design, 2. Permission Minimalism, 3. Data Classificatio
 
 ### Community 5327 - "Community 5327"
 Cohesion: 0.22
-Nodes (9): AD Certificate Services (ADCS), code:bash (# Find vulnerable templates), code:python (# Check for WriteProperty), code:bash (# Start relay), code:bash (# Add Key Credential (pyWhisker)), ESC1 - Misconfigured Templates, ESC4 - ACL Vulnerabilities, ESC8 - NTLM Relay to Web Enrollment (+1 more)
+Nodes (9): 1. Render is a Pure Function of Props and State, 2. Side Effects Outside Render, 3. Composition Over Inheritance, code:tsx (// Good: derive during render), Core Principles, 1. Render is a Pure Function of Props and State, 2. Side Effects Outside Render, 3. Composition Over Inheritance (+1 more)
 
 ### Community 5328 - "Community 5328"
 Cohesion: 0.25
@@ -31965,8 +31933,8 @@ Cohesion: 0.17
 Nodes (7): AgentResponse, Process audio chunk and generate transcription, Process transcription and generate response, Generate streaming response from LLM, Start the worker's processing loop, Main processing loop - runs forever until terminated, Transcription
 
 ### Community 5335 - "Community 5335"
-Cohesion: 0.13
-Nodes (17): code:typescript (// PASS: CORRECT: Use cloud secrets manager), code:bash (# Set up automatic rotation for database credentials), 2. Secrets Management, 2. 密钥管理, 2. 시크릿 관리, 3. 网络安全, Cloud Secrets Managers, Secrets Rotation (+9 more)
+Cohesion: 0.16
+Nodes (14): code:typescript (// PASS: CORRECT: Use cloud secrets manager), code:bash (# Set up automatic rotation for database credentials), 2. Secrets Management, 2. 密钥管理, 2. 시크릿 관리, Cloud Secrets Managers, Secrets Rotation, Verification Steps (+6 more)
 
 ### Community 5336 - "Community 5336"
 Cohesion: 0.22
@@ -32029,8 +31997,8 @@ Cohesion: 0.15
 Nodes (12): code:block2 (在 ~/.claude/session-data/ 中未找到会话文件。), code:block3 (会话已加载：[文件的实际解析路径]), 何时使用, 恢复会话命令, 步骤 1：查找会话文件, 步骤 2：读取整个会话文件, 步骤 3：确认理解, 步骤 4：等待用户 (+4 more)
 
 ### Community 5351 - "Community 5351"
-Cohesion: 0.02
-Nodes (83): Current Status, ECC Operator Readiness Dashboard, Next Work Order, Prompt-To-Artifact Checklist, Top Actions, Current Status, ECC Operator Readiness Dashboard, Next Work Order (+75 more)
+Cohesion: 0.20
+Nodes (9): Codex Marketplace Evidence, Current Publication Blockers, ECC v2.0.0-rc.1 Publication Evidence - 2026-05-15, Linear Roadmap State, Preview Pack State, Queue And Discussion State, Result, Source Commit (+1 more)
 
 ### Community 5352 - "Community 5352"
 Cohesion: 0.22
@@ -32065,8 +32033,8 @@ Cohesion: 0.33
 Nodes (8): Client, collect(), _collect_assets(), main(), map_bq_type(), BigQuery — Metadata Collection (collect only) =================================, Connect to BigQuery, collect table metadata, and write a JSON manifest.      R, Collect table metadata from BigQuery and return as a list of dicts.
 
 ### Community 5361 - "Community 5361"
-Cohesion: 0.28
-Nodes (9): Finding #3: [CRITICAL] null pointer crashes (Qwen 3.6), Problem, Proof / Evidence, Suggested Fix, code:typescript (let sessionCookie; try { sessionCookie = await adminAuth.cre), Finding #3: [CRITICAL] error_handling (Qwen 3.6), Problem, Proof / Evidence (+1 more)
+Cohesion: 0.22
+Nodes (9): Analysis Commands, Core Responsibilities, Performance Optimizer, Red Flags - Act Immediately, Success Metrics, When to Run, 分析命令, Analysis Commands (+1 more)
 
 ### Community 5362 - "Community 5362"
 Cohesion: 0.08
@@ -32105,8 +32073,8 @@ Cohesion: 0.20
 Nodes (10): Branch Storage Accumulation, Cold Start Latency After Scale-to-Zero, Connection Pool Exhaustion in Serverless, Deleting Parent Branch Affects Children, HTTP Driver Doesn't Support Transactions, PgBouncer Feature Limitations, Reserved Connections Reduce Available Pool, Schema Drift Between Branches (+2 more)
 
 ### Community 5371 - "Community 5371"
-Cohesion: 0.15
-Nodes (13): 4. Error Recovery Patterns, code:typescript (// Try primary API, fall back to cache), code:typescript (// Only recover from specific errors), code:typescript (type ApiError =), code:typescript (// Get value or use default (removes the error channel)), Conditional Recovery, Default Values, Fallback to Alternative (+5 more)
+Cohesion: 0.22
+Nodes (9): 4. Error Recovery Patterns, code:typescript (// Try primary API, fall back to cache), code:typescript (// Only recover from specific errors), code:typescript (type ApiError =), code:typescript (// Get value or use default (removes the error channel)), Conditional Recovery, Default Values, Fallback to Alternative (+1 more)
 
 ### Community 5372 - "Community 5372"
 Cohesion: 0.20
@@ -32297,8 +32265,8 @@ Cohesion: 0.20
 Nodes (8): Best Practices, Common Pitfalls, Limitations, Overview, Related Skills, Security & Safety Notes, tmux — Terminal Multiplexer, When to Use This Skill
 
 ### Community 5419 - "Community 5419"
-Cohesion: 0.20
-Nodes (10): Be Specific, code:markdown (You might want to consider possibly checking if the user has), code:markdown (Check if the user is authenticated before proceeding.), code:markdown (The file should be created...), code:markdown (Create the file...), code:markdown (Set up the database properly.), code:markdown (1. Create a PostgreSQL database), Use Action Verbs (+2 more)
+Cohesion: 0.22
+Nodes (9): 3. Bundle Optimization (CRITICAL), Avoid Barrel File Re-exports, code:typescript (// CORRECT - Lazy load feature routes), code:html (<!-- CORRECT - Heavy component loads on demand -->), code:typescript (// WRONG - Imports entire barrel, breaks tree-shaking), code:typescript (// CORRECT - Load heavy library on demand), Dynamic Import Third-Party Libraries, Lazy Load Routes (+1 more)
 
 ### Community 5420 - "Community 5420"
 Cohesion: 0.29
@@ -32313,8 +32281,8 @@ Cohesion: 0.17
 Nodes (12): 3. Component Implementation Verification, 9. Database Schema Verification, API Client Layer, API Routes, Backend Components, code:sql (CREATE TABLE IF NOT EXISTS todos (), Components, Database Layer (+4 more)
 
 ### Community 5423 - "Community 5423"
-Cohesion: 0.06
-Nodes (32): Audio Classification, Audio Processing, Automatic Speech Recognition, code:javascript (const generator = await pipeline('text-generation', 'onnx-co), code:javascript (const translator = await pipeline('translation', 'Xenova/nll), code:javascript (const summarizer = await pipeline('summarization');), code:javascript (const classifier = await pipeline('zero-shot-classification'), code:javascript (const transcriber = await pipeline('automatic-speech-recogni) (+24 more)
+Cohesion: 0.07
+Nodes (28): Audio Classification, Audio Processing, Automatic Speech Recognition, code:javascript (const classifier = await pipeline('image-classification');), code:javascript (const detector = await pipeline('object-detection');), code:javascript (const segmenter = await pipeline('image-segmentation');), code:javascript (const depthEstimator = await pipeline('depth-estimation');), code:javascript (const classifier = await pipeline('zero-shot-image-classific) (+20 more)
 
 ### Community 5424 - "Community 5424"
 Cohesion: 0.33
@@ -32357,8 +32325,8 @@ Cohesion: 0.29
 Nodes (5): Purpose, Research Swarm Strategy, Purpose, Research Workflow Coordination, What Claude Code Actually Does
 
 ### Community 5434 - "Community 5434"
-Cohesion: 0.25
-Nodes (8): 13. Carrier Performance Warning, Body, code:block26 (Carrier Performance Notice — {{carrier_name}} (MC-{{carrier_), code:block27 ({{carrier_contact_name}},), Subject Line, Tone Guidance, What NOT to Say, When to Use
+Cohesion: 0.28
+Nodes (9): Finding #3: [CRITICAL] null pointer crashes (Qwen 3.6), Problem, Proof / Evidence, Suggested Fix, code:typescript (let sessionCookie; try { sessionCookie = await adminAuth.cre), Finding #3: [CRITICAL] error_handling (Qwen 3.6), Problem, Proof / Evidence (+1 more)
 
 ### Community 5435 - "Community 5435"
 Cohesion: 0.33
@@ -32369,8 +32337,8 @@ Cohesion: 0.29
 Nodes (7): code:block6 (Phase 1: Foundation), code:block7 (Phase 1: Reproduction), code:block8 (Phase 1: Preparation), Bug Fix Track Pattern, Common Track Patterns, Feature Track Pattern, Refactor Track Pattern
 
 ### Community 5437 - "Community 5437"
-Cohesion: 0.22
-Nodes (8): code:bash (# Small PR (< 100 lines): ring topology), Integration with Claude Code, Label-Based Topology, Overview, PR Label Integration, Security Considerations, Swarm PR - Managing Swarms through Pull Requests, Label-Based Topology
+Cohesion: 0.14
+Nodes (13): code:javascript (// webhook-handler.js), Integration with Claude Code, Overview, Security Considerations, Setup Webhook Handler, Swarm PR - Managing Swarms through Pull Requests, Webhook Integration, Integration with Claude Code (+5 more)
 
 ### Community 5438 - "Community 5438"
 Cohesion: 0.22
@@ -32389,8 +32357,8 @@ Cohesion: 0.20
 Nodes (8): Accessibility Audit and Testing, Context, Do not use this skill when, Instructions, Limitations, Requirements, Resources, Use this skill when
 
 ### Community 5442 - "Community 5442"
-Cohesion: 0.50
-Nodes (4): Phase 6: Django Management Commands, code:bash (# Check for model issues), Phase 6: Django Management Commands, 阶段 6: Django 管理命令
+Cohesion: 0.25
+Nodes (8): Animated Components (`src/tw/animated.tsx`), code:tsx (import {), code:tsx (import { useCssElement } from "react-native-css";), code:tsx (import * as TW from "./index";), CSS Component Wrappers, Image Component (`src/tw/image.tsx`), Main Components (`src/tw/index.tsx`), Checkout Extension Example
 
 ### Community 5443 - "Community 5443"
 Cohesion: 0.33
@@ -32445,8 +32413,8 @@ Cohesion: 0.22
 Nodes (8): code:bash (bin/rails test), Commands, Coverage, Fixtures And Factories, Framework, Reference, Ruby Testing, Test Pyramid
 
 ### Community 5456 - "Community 5456"
-Cohesion: 0.29
-Nodes (7): Best Practices, Directory Structure, Environment Variables, Key Concepts, Next.js Full-Stack Template, Setup Steps, Tech Stack
+Cohesion: 0.22
+Nodes (8): code:typescript (import { CopilotClient, defineTool } from "@github/copilot-s), code:python (from copilot.tools import define_tool), code:go (type WeatherParams struct {), Custom Tools, Go, .NET, Node.js, Python
 
 ### Community 5457 - "Community 5457"
 Cohesion: 0.07
@@ -32478,10 +32446,10 @@ Nodes (7): assert, fs, path, README, RULES_README, runTests(), test()
 
 ### Community 5464 - "Community 5464"
 Cohesion: 0.14
-Nodes (16): code:php (use App\Models\Project;), Feature Test Example (HTTP Layer), Coverage Targets, Database Testing, Examples, Feature Test Example (HTTP Layer), Feature Test Pest Example (HTTP Layer), HTTP and External Services (+8 more)
+Nodes (16): code:php (use App\Models\User;), Inertia Feature Tests, Coverage Targets, Database Testing, Examples, Feature Test Pest Example (HTTP Layer), HTTP and External Services, Inertia Feature Tests (+8 more)
 
 ### Community 5465 - "Community 5465"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (8): Architecture Layers, Best Practices, code:block1 (project_name/), Directory Structure, Flutter App Template, Key Packages, Setup Steps, Tech Stack
 
 ### Community 5466 - "Community 5466"
@@ -32489,8 +32457,8 @@ Cohesion: 0.33
 Nodes (6): code:yaml (# PASS: 正解：安全なGitHub Actionsワークフロー), code:json (// package.json - ロックファイルと整合性チェックを使用), 5. CI/CDパイプラインセキュリティ, サプライチェーンセキュリティ, 安全なパイプライン設定, 検証ステップ
 
 ### Community 5467 - "Community 5467"
-Cohesion: 0.29
-Nodes (7): API Structure, Best Practices, Directory Structure, FastAPI API Template, Key Concepts, Setup Steps, Tech Stack
+Cohesion: 0.25
+Nodes (9): addBrowserFindings(), addVisualContrastFindings(), addVisualContrastResult(), clearOverlays(), detachOverlay(), disconnectLazyVisualContrastObserver(), scheduleLazyVisualContrast(), shouldRunVisualContrast() (+1 more)
 
 ### Community 5468 - "Community 5468"
 Cohesion: 0.43
@@ -32501,8 +32469,8 @@ Cohesion: 0.20
 Nodes (8): ❌ Anti-Patterns, Avalonia Layout with Zafiro.Avalonia, ✅ Checklist for Clean Layouts, 📑 Content Map, Limitations, 🔗 Related Project (Exemplary Implementation), 🎯 Selective Reading Rule, When to Use
 
 ### Community 5470 - "Community 5470"
-Cohesion: 0.22
-Nodes (9): code:javascript (// .claude/hooks/custom-quality-check.js), code:json ({), Custom Hook Creation, Custom Hook Template, Register Custom Hook, code:json ({), Custom Hook Creation, Custom Hook Template (+1 more)
+Cohesion: 0.29
+Nodes (7): assert, path, runScript(), runTests(), script, { spawnSync }, test()
 
 ### Community 5471 - "Community 5471"
 Cohesion: 0.17
@@ -32522,15 +32490,15 @@ Nodes (32): Appendix A — Quick-Reference Decision Cards, code:block10 (IF all 
 
 ### Community 5475 - "Community 5475"
 Cohesion: 0.22
-Nodes (8): assert, { failed }, { formatDuration, buildContextBar, readCurrentTask }, fs, os, path, runTests(), test()
+Nodes (9): 7. Common Patterns Reference, code:typescript (// Transform success value), code:typescript (// Fail if condition not met), code:typescript (// Log on success, keep the value unchanged), code:typescript (// From Either), Converting From Other Types, Filtering, Quick Transformations (+1 more)
 
 ### Community 5476 - "Community 5476"
 Cohesion: 0.22
 Nodes (8): Based on category count, Based on data range, code:javascript (function selectColourScheme(data) {), code:javascript (function selectCategoricalScheme(categories) {), Common colour mistakes to avoid, D3.js Colour Schemes and Palette Recommendations, Dynamic colour selection, Quick reference guide
 
 ### Community 5477 - "Community 5477"
-Cohesion: 0.29
-Nodes (7): Band scale, code:javascript (const bandScale = d3.scaleBand()), code:javascript (const pointScale = d3.scalePoint()), code:javascript (const colourScale = d3.scaleOrdinal(d3.schemeCategory10);), Ordinal colour scale, Ordinal scales, Point scale
+Cohesion: 0.22
+Nodes (8): Band scale, code:javascript (const bandScale = d3.scaleBand()), code:javascript (const pointScale = d3.scalePoint()), code:javascript (const colourScale = d3.scaleOrdinal(d3.schemeCategory10);), D3.js Scale Reference, Ordinal colour scale, Ordinal scales, Point scale
 
 ### Community 5478 - "Community 5478"
 Cohesion: 0.20
@@ -32558,7 +32526,7 @@ Nodes (6): [CarPlay dimensions](https://developer.apple.com/design/human-interfa
 
 ### Community 5484 - "Community 5484"
 Cohesion: 0.22
-Nodes (9): code:bash (# 1. Reduce resolution in your job request), code:bash (# Reduce steps in the job inputs), code:bash (# In ComfyUI, use fp8 or quantized checkpoints), code:block9 (Enable VAE tiling in your ComfyUI workflow by adding a "VAED), 2. OOM (Out of Memory) Errors, 2a. Resolution or Batch Size Too Large, 2b. Too Many Steps, 2c. Model Quantization (+1 more)
+Nodes (9): 7. When to Use What, code:typescript (// Native is fine here), code:typescript (// fp-ts shines here), code:typescript (// Custom utility pays off when used repeatedly), code:typescript (// If performance matters (and you've measured!)), Performance Considerations, Use Custom Utilities When:, Use fp-ts When: (+1 more)
 
 ### Community 5485 - "Community 5485"
 Cohesion: 0.40
@@ -32705,8 +32673,8 @@ Cohesion: 0.22
 Nodes (8): code:block1 ([CRITICAL] ハードコードされたAPIキー), コード品質（高）, セキュリティチェック（クリティカル）, パフォーマンス（中）, プロジェクト固有のガイドライン（例）, ベストプラクティス（中）, レビュー出力形式, 承認基準
 
 ### Community 5521 - "Community 5521"
-Cohesion: 0.20
-Nodes (9): assert, buildCompleteScript, input, path, prCreatedScript, result, runScript(), { spawnSync } (+1 more)
+Cohesion: 0.22
+Nodes (9): code:javascript (// Get all items from previous node), code:javascript (// Get first item only), code:javascript (// Current item in loop (Each Item mode only)), code:javascript (// Get output from specific node), Data Access Patterns, Pattern 1: $input.all() - Most Common, Pattern 2: $input.first() - Very Common, Pattern 3: $input.item - Each Item Mode Only (+1 more)
 
 ### Community 5522 - "Community 5522"
 Cohesion: 0.47
@@ -32749,8 +32717,8 @@ Cohesion: 0.33
 Nodes (9): extract_strings_from_file(), find_case_variants(), get_relative_path(), iter_source_files(), main(), Path, find_case_duplicates.py Scans the MediaHive web (src/) and mobile (mediahive_mo, Group words by their lowercase form and report groups with >1 distinct     case (+1 more)
 
 ### Community 5532 - "Community 5532"
-Cohesion: 0.12
-Nodes (17): code:python (import stripe), Custom Tokenization (Advanced), Tokenization, Using Payment Processor Tokens, code:python (subprocess.run(['ping', '-c', '4', user_input])  # Array arg), code:python (import secrets), code:python (# Parameterized queries), code:javascript (// Use textContent for plain text) (+9 more)
+Cohesion: 0.25
+Nodes (8): Advanced Features (where applicable), Code Quality, Implementation Quality, Project Configuration, Quality Checklist, Strategic Design, Testing and Build, TypeScript Quality
 
 ### Community 5533 - "Community 5533"
 Cohesion: 0.29
@@ -32793,16 +32761,16 @@ Cohesion: 0.20
 Nodes (8): AI 生成コードのレビューフォーカス, エージェニックエンジニアリング, コスト規律, セッション戦略, タスク分解, モデルルーティング, 動作原則, 評価ファーストループ
 
 ### Community 5543 - "Community 5543"
-Cohesion: 0.33
-Nodes (4): serverRedirect(), UsersMeRedirect(), ChatPage(), UsersRedirect()
+Cohesion: 0.25
+Nodes (8): 9. Claims Filing Cover Letter, Body, code:block18 (Formal Freight Claim — PRO {{pro_number}} | Claim Amount: ${), code:block19 ({{current_date}}), Subject Line, Tone Guidance, What NOT to Say, When to Use
 
 ### Community 5544 - "Community 5544"
 Cohesion: 0.06
 Nodes (34): code:block1 (# リソースは名詞、複数形、小文字、ケバブケース), code:block12 (# シンプルな等価性), code:block13 (# 単一フィールド (降順用に - を頭に付ける)), code:block14 (# 検索クエリ パラメーター), code:block15 (# 指定されたフィールドのみを返す（ペイロード削減）), code:block16 (# Authorization ヘッダー内のベアラー トークン), code:typescript (// リソース レベル: 所有権を確認), code:block2 (# よい) (+26 more)
 
 ### Community 5545 - "Community 5545"
-Cohesion: 0.10
-Nodes (18): code:bash (# Build and check), Anti-Patterns to Avoid, Essential Commands, How It Works, Quick Reference: Rust Idioms, Rust Development Patterns, Tooling Integration, When to Use (+10 more)
+Cohesion: 0.08
+Nodes (22): code:bash (# Build and check), Anti-Patterns to Avoid, Essential Commands, How It Works, Quick Reference: Rust Idioms, Rust Development Patterns, Tooling Integration, When to Use (+14 more)
 
 ### Community 5546 - "Community 5546"
 Cohesion: 0.20
@@ -32850,11 +32818,11 @@ Nodes (5): Step 2: Classify, Step 3: Execute, Step 4: Draft Replies, Step 5: Pos
 
 ### Community 5557 - "Community 5557"
 Cohesion: 0.22
-Nodes (9): code:python (# Good: Resource-oriented endpoints), code:python (from typing import List, Optional), code:python (from fastapi import HTTPException, status), code:python (class UserResponse(BaseModel):), Pattern 1: Resource Collection Design, Pattern 2: Pagination and Filtering, Pattern 3: Error Handling and Status Codes, Pattern 4: HATEOAS (Hypermedia as the Engine of Application State) (+1 more)
+Nodes (9): 1. Always Use {{}}, 2. Use Quotes for Spaces, 3. Match Exact Node Names, 4. No Nested {{}}, code:javascript (❌ $json.field), code:javascript (❌ {{$json.field name}}), code:javascript (❌ {{$node["http request"].json}}  // lowercase), code:javascript (❌ {{{$json.field}}}) (+1 more)
 
 ### Community 5558 - "Community 5558"
-Cohesion: 0.22
-Nodes (9): 6. Advanced Target Options, code:bash (# Feed log file with multiple requests), code:bash (# Create file with URLs, one per line:), code:bash (# Automatically find and test vulnerable sites (LEGAL TARGET), code:bash (# Save Burp Suite request to file, then:), Target from HTTP Request File, Target from Log File, Target Multiple URLs (Bulk File) (+1 more)
+Cohesion: 0.36
+Nodes (7): apply(), collectText(), matchConcurrency(), matchProviders(), metadata, PROVIDER_LIMITS, PROVIDER_RE
 
 ### Community 5559 - "Community 5559"
 Cohesion: 0.20
@@ -32873,8 +32841,8 @@ Cohesion: 0.47
 Nodes (4): Approval Criteria, Diagnostic Commands, Prompt Defense Baseline, 批准标准
 
 ### Community 5563 - "Community 5563"
-Cohesion: 0.04
-Nodes (68): Argument Capture, Basic Mocking, BehaviorSpec (BDD Style), code:kotlin (class CalculatorTest : StringSpec({), Coroutine Mocking, DescribeSpec (RSpec Style), FunSpec (JUnit-like), Kotest Spec Styles (+60 more)
+Cohesion: 0.05
+Nodes (54): Argument Capture, Basic Mocking, BehaviorSpec (BDD Style), code:kotlin (class CalculatorTest : StringSpec({), Coroutine Mocking, DescribeSpec (RSpec Style), FunSpec (JUnit-like), Kotest Spec Styles (+46 more)
 
 ### Community 5564 - "Community 5564"
 Cohesion: 0.28
@@ -32886,11 +32854,11 @@ Nodes (31): code:python (from typing import Optional, List, Dict, Any), code:pyt
 
 ### Community 5566 - "Community 5566"
 Cohesion: 0.22
-Nodes (7): Commit Analysis, Create Pull Request, Edge Cases, File Analysis, Phase 2 — DISCOVER, PR Template, PRP Artifacts
+Nodes (9): biz-finance, biz-hr, biz-investor, biz-legal, biz-marketing, biz-partnerships, biz-sales, biz-support (+1 more)
 
 ### Community 5567 - "Community 5567"
-Cohesion: 0.11
-Nodes (28): code:python (@pytest.mark.parametrize("a,b,expected", [), code:python (@pytest.mark.parametrize("input,expected", [), Basic Parametrization, Multiple Parameters, Parametrization, Parametrize with IDs, Parametrized Fixtures, Basic Parametrization (+20 more)
+Cohesion: 0.10
+Nodes (29): code:python (@pytest.mark.parametrize("a,b,expected", [), code:python (@pytest.mark.parametrize("input,expected", [), Parametrize with IDs, Basic Parametrization, Multiple Parameters, Parametrization, Parametrize with IDs, Parametrized Fixtures (+21 more)
 
 ### Community 5568 - "Community 5568"
 Cohesion: 0.20
@@ -33042,23 +33010,23 @@ Nodes (6): ステップ1: コンテキストの収集, ステップ2: プロジ�
 
 ### Community 5606 - "Community 5606"
 Cohesion: 0.25
-Nodes (8): code:markdown (<!-- Evolution: 2024-01-15 | source: my-app | author: @zhang), code:bash (# Create branch for your contribution), code:block4 (Widget/Component Pattern     → robius-widget-patterns/_base/), Evolution Process, Step 1: Identify Knowledge Worth Capturing, Step 2: Classify the Knowledge, Step 4: Mark Evolution (NOT Version), Step 5: Submit via Git
+Nodes (8): code:graphql (query GetProducts($first: Int!, $query: String) {), code:graphql (query GetOrders($first: Int!) {), code:graphql (mutation SetMetafields($metafields: [MetafieldsSetInput!]!) ), code:json ({), GraphQL Patterns (Validated against API 2026-01), Query Orders, Query Products, Set Metafields
 
 ### Community 5607 - "Community 5607"
 Cohesion: 0.22
-Nodes (7): Arguments, Argümanlar, Canonical Surface, Delegation, Eval Command (Legacy Shim), Eval Komutu, Kullanım
+Nodes (9): eng-api, eng-backend, eng-database, eng-frontend, eng-infra, eng-mobile, eng-perf, eng-qa (+1 more)
 
 ### Community 5608 - "Community 5608"
 Cohesion: 0.20
 Nodes (8): AI 生成代码的审查重点, 任务分解, 会话策略, 成本纪律, 操作原则, 智能体工程, 模型路由, 评估优先循环
 
 ### Community 5609 - "Community 5609"
-Cohesion: 0.29
-Nodes (7): assert, path, { pathToFileURL }, repoRoot, runTests(), storePath, test()
+Cohesion: 0.22
+Nodes (9): 1.1 Scoring Methodology, 1.2 Full Severity Matrix, 1.3 Elevation Modifiers, 1.4 Severity-to-Action Mapping, 1. Exception Severity Matrix, Dimension A — Financial Impact, Dimension B — Customer Impact, Dimension C — Time Sensitivity (+1 more)
 
 ### Community 5610 - "Community 5610"
 Cohesion: 0.05
-Nodes (36): code:block3 (# 成功), code:block4 (# 悪い: すべてに 200), code:block1 (# 资源使用名词、复数、小写、短横线连接), code:block12 (# 简单相等), code:block13 (# 单字段排序（前缀 - 表示降序）), code:block14 (# 搜索查询参数), code:block15 (# 仅返回指定字段（减少负载）), code:block2 (# 良好) (+28 more)
+Nodes (35): code:block3 (# 成功), code:block4 (# 悪い: すべてに 200), code:block1 (# 资源使用名词、复数、小写、短横线连接), code:block12 (# 简单相等), code:block13 (# 单字段排序（前缀 - 表示降序）), code:block14 (# 搜索查询参数), code:block15 (# 仅返回指定字段（减少负载）), code:block2 (# 良好) (+27 more)
 
 ### Community 5611 - "Community 5611"
 Cohesion: 0.20
@@ -33081,16 +33049,16 @@ Cohesion: 0.20
 Nodes (10): code:dart (// BAD — boolean flag soup allows impossible states), 4. 状态管理（与库无关）, State shape design:, 不可变性与值相等性（适用于不可变状态解决方案：BLoC、Riverpod、Redux）：, 响应式纪律（适用于响应式突变解决方案：MobX、GetX、Signals）：, 本地状态与全局状态：, 架构：, 状态形状设计： (+2 more)
 
 ### Community 5616 - "Community 5616"
-Cohesion: 0.13
-Nodes (20): code:bash (# Update feature branch with latest main (before PR)), Merge (Preserves History), Merge vs Rebase, Rebase (Linear History), Rebase Workflow, When NOT to Rebase, code:block10 (# 切勿变基以下分支：), code:block10 (# NEVER rebase branches that:) (+12 more)
+Cohesion: 0.06
+Nodes (41): Branch Cleanup, Branch Management, code:bash (# Update feature branch with latest main (before PR)), Merge (Preserves History), Merge vs Rebase, Naming Conventions, Rebase (Linear History), Rebase Workflow (+33 more)
 
 ### Community 5617 - "Community 5617"
 Cohesion: 0.22
 Nodes (9): code:python (from anthropic import AsyncAnthropic), code:python (from anthropic.lib.tools.mcp import mcp_message), code:python (from anthropic.lib.tools.mcp import mcp_resource_to_content), code:python (from anthropic.lib.tools.mcp import mcp_resource_to_file), MCP Prompts, MCP Resources as Content, MCP Tool Conversion Helpers, MCP Tools with Tool Runner (+1 more)
 
 ### Community 5618 - "Community 5618"
-Cohesion: 0.22
-Nodes (9): Appendix A — Quick-Reference Decision Cards, code:block11 (IF severity ≥ 3           → YES, to manager), code:block12 (IF value < $250 and portal available → FILE (automated, low ), code:block13 (IF customer impact ≥ Level 4 → YES, authorize now, sort out ), code:block14 (1. ACTIVATE triage mode), Card 1: "Should I escalate this?", Card 2: "Should I file this claim?", Card 3: "Should I expedite a replacement?" (+1 more)
+Cohesion: 0.36
+Nodes (9): merge_ready_worktrees(), merge_ready_worktrees_one_pass(), merge_session_worktree(), process_merge_queue(), rebase_session_worktree(), WorktreeBulkMergeOutcome, WorktreeMergeFailure, WorktreeMergeOutcome (+1 more)
 
 ### Community 5619 - "Community 5619"
 Cohesion: 0.20
@@ -33105,12 +33073,12 @@ Cohesion: 0.14
 Nodes (19): code:kotlin (// Good: Immutable data), code:kotlin (// Good: Expression body), 1. Null Safety, 2. Immutability by Default, 3. Expression Bodies and Single-Expression Functions, 4. Data Classes for Value Objects, Core Principles, 1. Null Safety (+11 more)
 
 ### Community 5622 - "Community 5622"
-Cohesion: 0.25
-Nodes (8): code:go (// İyi: Hataları bağlamla sarmalayın), code:go (// Domain'e özgü hataları tanımlayın), code:go (// Kötü: Boş tanımlayıcı ile hatayı göz ardı etmek), Bağlam ile Hata Sarmalama, errors.Is ve errors.As ile Hata Kontrolü, Hata İşleme Desenleri, Hataları Asla Göz Ardı Etmeyin, Özel Hata Tipleri
+Cohesion: 0.22
+Nodes (9): 6. Advanced Target Options, code:bash (# Feed log file with multiple requests), code:bash (# Create file with URLs, one per line:), code:bash (# Automatically find and test vulnerable sites (LEGAL TARGET), code:bash (# Save Burp Suite request to file, then:), Target from HTTP Request File, Target from Log File, Target Multiple URLs (Bulk File) (+1 more)
 
 ### Community 5623 - "Community 5623"
-Cohesion: 0.05
-Nodes (39): 1. Dockerfile Optimization & Multi-Stage Builds, 2. Container Security Hardening, 4. Image Size Optimization, 5. Development Workflow Integration, 6. Performance & Resource Management, Advanced Problem-Solving Patterns, Build Cache Optimization, Build Performance Issues (+31 more)
+Cohesion: 0.06
+Nodes (29): Advanced Problem-Solving Patterns, Build Cache Optimization, Build Performance Issues, Code Review Checklist, code:bash (# Docker environment detection), code:dockerfile (# Mount build cache for package managers), code:dockerfile (# Build-time secrets (BuildKit)), code:dockerfile (# Sophisticated health monitoring) (+21 more)
 
 ### Community 5624 - "Community 5624"
 Cohesion: 0.22
@@ -33137,8 +33105,8 @@ Cohesion: 0.07
 Nodes (22): code:bash (# Full run), Advanced (optional), Key Concept: Prompt Independence, Report Contents, skill-comply: Automated Compliance Measurement, skill-comply：自动化合规性测量, skill-comply：自動化された遵守測定, Supported Targets (+14 more)
 
 ### Community 5630 - "Community 5630"
-Cohesion: 0.33
-Nodes (6): code:php (use Laravel\Sanctum\Sanctum;), Auth Testing (Sanctum), Auth Testing (Sanctum), Auth Testi (Sanctum), 認証テスト（Sanctum）, 身份验证测试（Sanctum）
+Cohesion: 0.25
+Nodes (3): CardErrorBoundary, Props, State
 
 ### Community 5631 - "Community 5631"
 Cohesion: 0.48
@@ -33149,16 +33117,16 @@ Cohesion: 0.14
 Nodes (14): code:csharp (// Service registration by lifetime), code:csharp (// ✅ CORRECT: Async all the way down), code:csharp (// Configuration classes), code:csharp (// Generic Result type), Core Concepts, 1. Project Structure, code:block1 (src/), Core Concepts (+6 more)
 
 ### Community 5633 - "Community 5633"
-Cohesion: 0.29
-Nodes (8): Batch Insert (500x Faster), Batch Operations, Batch Retrieval, code:typescript (// ❌ SLOW: Individual inserts), code:typescript (// Retrieve multiple queries efficiently), Batch Insert (500x Faster), Batch Operations, Batch Retrieval
+Cohesion: 0.25
+Nodes (8): code:jsx (// Use correct manifest), code:jsx (// Show QR for desktop), Common Problems, Fallback, Fixes, Mini App feels slow and janky, Testing, TON Connect Mobile Issues
 
 ### Community 5634 - "Community 5634"
 Cohesion: 0.22
 Nodes (8): code:bash (git status --short --branch), Current Surface Evidence, Do Not Proceed, ECC v2.0.0-rc.1 Release Name And Plugin Publication Checklist, External Distribution Sources, Fixed rc.1 Decision, Publication Order, Required Gate
 
 ### Community 5635 - "Community 5635"
-Cohesion: 0.04
-Nodes (53): code:typescript (// PASS: 良好：描述性名稱), code:typescript (// PASS: 良好：清晰的條件渲染), code:block11 (GET    /api/markets              # 列出所有市場), code:typescript (// PASS: 良好：一致的回應結構), code:block15 (components/Button.tsx          # 元件用 PascalCase), code:typescript (// PASS: 良好：解釋「為什麼」而非「什麼」), code:typescript (// PASS: 良好：動詞-名詞模式), code:typescript (// PASS: 良好：描述性測試名稱) (+45 more)
+Cohesion: 0.03
+Nodes (57): code:typescript (// FAIL: 不良：N+1 查詢問題), code:typescript (// PASS: 良好：描述性名稱), code:typescript (// PASS: 良好：清晰的條件渲染), code:block15 (components/Button.tsx          # 元件用 PascalCase), code:typescript (// PASS: 良好：解釋「為什麼」而非「什麼」), code:typescript (// PASS: 良好：動詞-名詞模式), code:typescript (// PASS: 良好：只選擇需要的欄位), code:typescript (// PASS: 良好：描述性測試名稱) (+49 more)
 
 ### Community 5636 - "Community 5636"
 Cohesion: 0.17
@@ -33177,20 +33145,20 @@ Cohesion: 0.22
 Nodes (8): 1. RED — Write the failing test, 2. GREEN — Minimal implementation, 3. IMPROVE — Refactor, Anti-patterns to Avoid, Cycle, Quality Gates, TDD Workflow, Test Layer Checklist
 
 ### Community 5640 - "Community 5640"
-Cohesion: 0.25
-Nodes (8): code:powershell (# PowerShell + DSInternals), code:bash (# Linux with bloodyAD), code:bash (# Find in SYSVOL), code:powershell (# Dump DSRM hash), Credential Sources, DSRM Credentials, GMSA Password, Group Policy Preferences (GPP)
+Cohesion: 0.22
+Nodes (9): code:bash (# Syntax: ssh -L <local_port>:<remote_host>:<remote_port> us), code:bash (# Syntax: ssh -R <remote_port>:<local_host>:<local_port> use), code:bash (# Create SOCKS proxy on local port 1080), code:bash (# Jump through intermediate host), Dynamic Port Forwarding (SOCKS Proxy), Local Port Forwarding, Phase 7: SSH Tunneling and Port Forwarding, ProxyJump (Jump Hosts) (+1 more)
 
 ### Community 5641 - "Community 5641"
 Cohesion: 0.40
 Nodes (5): Example Result, Example Result, code:text (Harness Audit (repo, repo): 71/80), Example Result, Example Result
 
 ### Community 5642 - "Community 5642"
-Cohesion: 0.22
-Nodes (9): code:typescript (// middleware/rate-limit.middleware.ts), code:typescript (// middleware/logger.middleware.ts), code:typescript (// middleware/auth.middleware.ts), code:typescript (// middleware/validation.middleware.ts), Authentication Middleware, Middleware Patterns, Rate Limiting Middleware, Request Logging Middleware (+1 more)
+Cohesion: 0.25
+Nodes (8): code:javascript (// In your bot), code:jsx (// Referral system), Gamification for Retention, Mini App Monetization, Mini App UX Patterns, Revenue Streams, Telegram Stars (New!), Viral Mechanics
 
 ### Community 5643 - "Community 5643"
-Cohesion: 0.22
-Nodes (9): code:block17 (Complexity Low     | High), code:block18 (Score = (Lines of Code) + (Cyclomatic Complexity × 2) + (Dep), code:typescript (// Option A: Direct implementation (Score: 45)), code:block20 (❌ Avoid:), code:typescript (// Add performance test AFTER functional tests pass), Decision Frameworks, Framework 1: Fake vs. Real Implementation, Framework 2: Complexity Trade-off Analysis (+1 more)
+Cohesion: 0.36
+Nodes (8): code:block3 (Error: Plan file not found or invalid.), Phase 1 — LOAD, code:bash (cat "$ARGUMENTS"), code:block3 (错误：计划文件未找到或无效。), フェーズ 1 — 読み込み, 阶段 1 — 加载, Phase 1 — LOAD, Phase 1 — LOAD
 
 ### Community 5644 - "Community 5644"
 Cohesion: 0.33
@@ -33202,11 +33170,11 @@ Nodes (8): Plan Command, Dependencies, Estimated Complexity, Implementation Phas
 
 ### Community 5646 - "Community 5646"
 Cohesion: 0.20
-Nodes (10): Gradle & Build (LOW), code:kotlin (// BAD — swallows cancellation), Android Specific (MEDIUM), Architecture (CRITICAL), Coroutines & Flows (HIGH), Kotlin Idioms (MEDIUM), Review Checklist, Security (CRITICAL) (+2 more)
+Nodes (10): Compose (HIGH), Gradle & Build (LOW), Android Specific (MEDIUM), Architecture (CRITICAL), Compose（高）, Kotlin Idioms (MEDIUM), Review Checklist, Security (CRITICAL) (+2 more)
 
 ### Community 5647 - "Community 5647"
-Cohesion: 0.40
-Nodes (5): code:text ([FIXED] src/main/kotlin/com/example/service/UserService.kt:4), Output Format, Çıktı Formatı, 出力フォーマット, Output Format
+Cohesion: 0.25
+Nodes (7): Code Style, Critical Rules, Database, Git Workflow, Go Conventions, Go Microservice — Project CLAUDE.md, Project Overview
 
 ### Community 5648 - "Community 5648"
 Cohesion: 0.25
@@ -33262,7 +33230,7 @@ Nodes (14): Applying Guards, code:ts (export const authGuard: CanActivateFn = (r
 
 ### Community 5661 - "Community 5661"
 Cohesion: 0.21
-Nodes (13): C++ Build and Fix, code:block3, Diagnostic Commands Run, Example Session, What This Command Does, When to Use, code:`text (# C++ 构建问题解决), code:` (+5 more)
+Nodes (13): code:block3, Example Session, code:`text (# C++ 构建问题解决), code:`, 示例会话, C++ Build and Fix, Diagnostic Commands Run, Example Session (+5 more)
 
 ### Community 5662 - "Community 5662"
 Cohesion: 0.33
@@ -33281,8 +33249,8 @@ Cohesion: 0.11
 Nodes (21): Anti-Patterns, Class Hierarchy, Classes & Class Hierarchies (C.*), code:cpp (// C.20: Let the compiler generate special members), code:cpp (// C.21: If you must manage a resource, define all five), Key Rules, Rule of Five, Rule of Zero (+13 more)
 
 ### Community 5666 - "Community 5666"
-Cohesion: 0.22
-Nodes (9): code:typescript (// Add new (fails if exists)), code:typescript (// Get single setting), code:typescript (await client.deleteConfigurationSetting({), code:typescript (// Lock), Create/Update Settings, CRUD Operations, Delete Settings, Lock/Unlock (Read-Only) (+1 more)
+Cohesion: 0.29
+Nodes (6): Current Status, ECC Operator Readiness Dashboard, Growth Baseline, Next Work Order, Prompt-To-Artifact Checklist, Top Actions
 
 ### Community 5667 - "Community 5667"
 Cohesion: 0.29
@@ -33293,12 +33261,12 @@ Cohesion: 0.22
 Nodes (11): Caching Strategy, code:bash (npx claude-flow skill run github-multi-repo cache-strategy \), code:bash (npx claude-flow skill run github-multi-repo resource-pool \), Parallel Execution, Performance Optimization, Resource Pooling, Caching Strategy, code:bash (npx claude-flow skill run github-multi-repo parallel-optimiz) (+3 more)
 
 ### Community 5669 - "Community 5669"
-Cohesion: 0.25
-Nodes (8): code:block1 (CR = (Due Date − Current Date) / Remaining Total Processing ), code:block2 (Priority Score = (Customer Tier Weight × Days Until Due / Re), 1.1 Dispatching Rules — When to Use Each, 1.2 Multi-Rule Hybrid Approaches, 1.3 Critical Ratio in Detail, 1.4 Weighted Scheduling for Customer Tiers, 1. Job Scheduling Algorithms, Algorithm Selection Decision Tree
+Cohesion: 0.29
+Nodes (8): code:ini (# .perlcriticrc — security-focused configuration), code:bash (# Check a file), perlcritic Security Policies, perlcritic 安全策略, Running perlcritic, Security Tooling, 安全工具, 运行 perlcritic
 
 ### Community 5670 - "Community 5670"
 Cohesion: 0.10
-Nodes (15): Anti-Patterns to Avoid, Go Development Patterns, Quick Reference: Go Idioms, When to Activate, Anti-Patterns to Avoid, code:go (// Bad: Naked returns in long functions), Go Development Patterns, Quick Reference: Go Idioms (+7 more)
+Nodes (15): Anti-Patterns to Avoid, Anti-Patterns to Avoid, code:go (// Bad: Naked returns in long functions), Go Development Patterns, Quick Reference: Go Idioms, When to Activate, Go 开发模式, Go 개발 패턴 (+7 more)
 
 ### Community 5671 - "Community 5671"
 Cohesion: 0.20
@@ -33342,7 +33310,7 @@ Nodes (8): Advice Boundary, Data Quality, Output Contract, Prediction Market Ris
 
 ### Community 5681 - "Community 5681"
 Cohesion: 0.25
-Nodes (9): code:markdown (---), code:markdown (# Brainstorming Ideas Into Designs), code:markdown (## The Process), `license` *(optional)*, `license_source` *(optional)*, Optional Fields, Part 1: Frontmatter, 🔍 Real-World Example Analysis (+1 more)
+Nodes (8): Template, Tone Guidance, 6. Safety Stock Adjustment Request, Approval Requested By, Calculation, Financial Impact, Reason for Adjustment, When to Use
 
 ### Community 5682 - "Community 5682"
 Cohesion: 0.33
@@ -33358,7 +33326,7 @@ Nodes (8): Complexity Tiers, Merge Queue Rules, Outputs, Pipeline Stages, Qualit
 
 ### Community 5685 - "Community 5685"
 Cohesion: 0.12
-Nodes (14): 4. Client-Side Data Fetching (MEDIUM-HIGH), 7. JavaScript Performance (LOW-MEDIUM), Attribution, Automated Tools, code:tsx (// INCORRECT — every component adds its own), Deduplicate global event listeners, Lighthouse / Web Vitals Mapping, localStorage: version + minimize (+6 more)
+Nodes (14): 7. JavaScript Performance (LOW-MEDIUM), 8. Advanced Patterns (LOW), Attribution, Automated Tools, code:tsx (const handlerRef = useRef(handler);), Event handler refs, Init once per app load, Lighthouse / Web Vitals Mapping (+6 more)
 
 ### Community 5686 - "Community 5686"
 Cohesion: 0.20
@@ -33369,12 +33337,12 @@ Cohesion: 0.25
 Nodes (8): 4. Customer Proactive Update — Damage, Body, code:block8 (PO {{po_number}} — Delivery Update and Resolution Plan), code:block9 ({{customer_contact}},), Subject Line, Tone Guidance, What NOT to Say, When to Use
 
 ### Community 5688 - "Community 5688"
-Cohesion: 0.22
-Nodes (9): 7. Common Patterns Reference, code:typescript (// Transform success value), code:typescript (// Fail if condition not met), code:typescript (// Log on success, keep the value unchanged), code:typescript (// From Either), Converting From Other Types, Filtering, Quick Transformations (+1 more)
+Cohesion: 0.29
+Nodes (6): Current Status, ECC Operator Readiness Dashboard, Growth Baseline, Next Work Order, Prompt-To-Artifact Checklist, Top Actions
 
 ### Community 5689 - "Community 5689"
-Cohesion: 0.29
-Nodes (7): code:bash (# Detect clock skew), code:bash (# Start BloodHound), code:powershell (# Get domain info), Core Workflow, Step 1: Kerberos Clock Sync, Step 2: AD Reconnaissance with BloodHound, Step 3: PowerView Enumeration
+Cohesion: 0.25
+Nodes (8): code:block1 (extension/), code:json ({), code:block3 (Popup ←→ Background (Service Worker) ←→ Content Script), Communication Pattern, Content Scripts, Extension Architecture, Manifest V3 Template, Project Structure
 
 ### Community 5690 - "Community 5690"
 Cohesion: 0.33
@@ -33385,12 +33353,12 @@ Cohesion: 0.20
 Nodes (10): code:bash (hasdata google-serp --q '"Jane Doe" linkedin' --num 5 --raw ), code:json ({), code:bash (# Disambiguate by company), code:bash (hasdata web-scraping --url "https://www.linkedin.com/in/jane), code:bash (# 1. Has Google already indexed the email anywhere?), Email lookup, Person enrichment, Step 1 — SERP for role, employer, LinkedIn URL (+2 more)
 
 ### Community 5692 - "Community 5692"
-Cohesion: 0.22
-Nodes (9): code:javascript ({{$json.fieldName}}), code:javascript ({{$node["Node Name"].json.fieldName}}), code:javascript ({{$now}}), code:javascript ({{$env.API_KEY}}), Core Variables, $env - Environment Variables, $json - Current Node Output, $node - Reference Other Nodes (+1 more)
+Cohesion: 0.25
+Nodes (8): Analysis Steps, GitHub App Integration, Related Commands, /skill-create - Local Skill Generation, Step 1: Gather Git Data, Step 2: Detect Patterns, Step 3: Generate SKILL.md, What It Does
 
 ### Community 5693 - "Community 5693"
-Cohesion: 0.40
-Nodes (5): code:block3 (src/), Estrutura de Arquivos, File Structure, ファイル構成, 文件结构
+Cohesion: 0.29
+Nodes (6): Blockers Still Requiring Approval Or External Action, ECC v2.0.0-rc.1 Publication Evidence - 2026-05-13, Queue And Release State, Required Command Evidence, Security Gate Evidence, Source Commit
 
 ### Community 5694 - "Community 5694"
 Cohesion: 0.33
@@ -33398,7 +33366,7 @@ Nodes (6): 1. Platform & Format, 2. Product & Offer, 3. Audience & Intent, 4. Pe
 
 ### Community 5695 - "Community 5695"
 Cohesion: 0.29
-Nodes (7): code:bash (# Check vulnerability), code:bash (# Check for vulnerability), code:bash (# Automated exploitation), Critical CVEs, PrintNightmare (CVE-2021-1675), samAccountName Spoofing (CVE-2021-42278/42287), ZeroLogon (CVE-2020-1472)
+Nodes (8): code:bash (# Ping sweep), code:bash (# TCP SYN scan (stealth)), code:bash (# Specific service scripts), Phase 3: Scanning, 1. Nmap Commands, code:bash (# Service versions), code:bash (# Vulnerability scan), code:bash (# Xmas scan)
 
 ### Community 5696 - "Community 5696"
 Cohesion: 0.40
@@ -33445,12 +33413,12 @@ Cohesion: 0.22
 Nodes (9): code:json (// FAIL: インストールされているがインポートされていないパッケージ), code:typescript (// FAIL: 未使用のインポートを削除), code:typescript (// FAIL: 到達不可能なコードを削除), code:typescript (// FAIL: 複数の類似コンポーネント), 1. 未使用のインポート, 2. デッドコードブランチ, 3. 重複コンポーネント, 4. 未使用の依存関係 (+1 more)
 
 ### Community 5706 - "Community 5706"
-Cohesion: 0.22
-Nodes (9): biz-finance, biz-hr, biz-investor, biz-legal, biz-marketing, biz-partnerships, biz-sales, biz-support (+1 more)
+Cohesion: 0.25
+Nodes (8): 1. Event Store Architecture, 2. Event Store Requirements, code:block1 (┌─────────────────────────────────────────────────────┐), Core Concepts, The Referral Loop, 1. Three Pillars of Observability, 2. Golden Signals for Mesh, Core Concepts
 
 ### Community 5707 - "Community 5707"
-Cohesion: 0.20
-Nodes (8): File Path Traversal Testing, Outputs and Deliverables, Prerequisites, Purpose, Required Knowledge, Required Tools, Troubleshooting, When to Use
+Cohesion: 0.14
+Nodes (12): Common Payloads, Encoding Variants, File Path Traversal Testing, Outputs and Deliverables, Prerequisites, Purpose, Quick Reference, Required Knowledge (+4 more)
 
 ### Community 5708 - "Community 5708"
 Cohesion: 0.20
@@ -33473,8 +33441,8 @@ Cohesion: 0.22
 Nodes (9): code:block2 (a) 検出ツールを並列で実行), code:block3 (削除する各アイテムについて:), code:block4 (a) SAFEアイテムのみから開始), code:block5 (a) 重複するコンポーネント/ユーティリティを見つける), 1. 分析フェーズ, 2. リスク評価, 3. 安全な削除プロセス, 4. 重複の統合 (+1 more)
 
 ### Community 5713 - "Community 5713"
-Cohesion: 0.25
-Nodes (8): Bicep Output → Environment Variable, code:json (// infra/main.parameters.json), code:bash (# Set for current environment), code:bicep (// In main.bicep - outputs auto-populate .azure/<env>/.env), Environment Variables Flow, Parameter Injection Pattern, Setting Environment Variables, Three-Level Configuration
+Cohesion: 0.29
+Nodes (7): code:markdown (# セキュリティレビューレポート), code:markdown (# 安全性審查報告), code:block15, code:block16, code:block17, セキュリティレビューレポート形式, 安全性審查報告格式
 
 ### Community 5714 - "Community 5714"
 Cohesion: 0.40
@@ -33521,8 +33489,8 @@ Cohesion: 0.22
 Nodes (8): Apple HIG: Menus and Buttons, Key Principles, Limitations, Output Format, Questions to Ask, Reference Index, Related Skills, When to Use
 
 ### Community 5725 - "Community 5725"
-Cohesion: 0.05
-Nodes (22): DateTime, HashMap, OutputLine, OutputStream, Self, Utc, approval_queue_line(), contains_path_like_token() (+14 more)
+Cohesion: 0.06
+Nodes (15): ContextGraphEntity, OutputLine, OutputStream, Self, contains_path_like_token(), GraphDisplayLine, GraphEntityFilter, looks_like_file_change() (+7 more)
 
 ### Community 5726 - "Community 5726"
 Cohesion: 0.33
@@ -33569,8 +33537,8 @@ Cohesion: 0.32
 Nodes (6): code:block1 (User: "help me with AI"), Purpose, Step 1: Analyze Intent, Step 2: Ask Clarifying Questions (Conditional), When to Use, Workflow
 
 ### Community 5737 - "Community 5737"
-Cohesion: 0.22
-Nodes (9): eng-api, eng-backend, eng-database, eng-frontend, eng-infra, eng-mobile, eng-perf, eng-qa (+1 more)
+Cohesion: 0.25
+Nodes (7): 1. Dependency Rule and boundaries, 2. SOLID in context, 3. Smells, 4. Design patterns, 5. Tests and professionalism, Suggested output format for review, Uncle Bob Craft — Code Review Checklist
 
 ### Community 5738 - "Community 5738"
 Cohesion: 0.32
@@ -33589,8 +33557,8 @@ Cohesion: 0.36
 Nodes (8): Approach, Do not use this skill when, Focus Areas, Instructions, Key Regulations, Limitations, Output, Use this skill when
 
 ### Community 5742 - "Community 5742"
-Cohesion: 0.31
-Nodes (8): adminWelcomeMessages, getRandomMessage(), getTimeBasedGreeting(), getWelcomeData(), memberWelcomeMessages, resolveName(), teamWelcomeMessages, WelcomeMessage
+Cohesion: 0.25
+Nodes (8): Claude Code (CLI), code:bash (git clone https://github.com/asklokesh/loki-mode.git ~/.clau), code:bash (# Navigate to your project directory first), code:bash (# Navigate to skills directory), code:bash (# Create directory structure), Option A: Git Clone (Recommended), Option B: Download from Releases, Option C: Minimal Install (curl)
 
 ### Community 5743 - "Community 5743"
 Cohesion: 0.20
@@ -33634,7 +33602,7 @@ Nodes (24): Canonical example — workflow vs no-workflow, code:text (NO TRANSFO
 
 ### Community 5753 - "Community 5753"
 Cohesion: 0.06
-Nodes (29): 10. Decision Checklist, 2. Runtime Considerations (2025), 4. Error Handling Principles, 5. Async Patterns Principles, 7. Security Principles, 9. Anti-Patterns to Avoid, Avoiding Event Loop Blocking, Centralized Error Handling (+21 more)
+Nodes (33): 10. Decision Checklist, 2. Runtime Considerations (2025), 5. Async Patterns Principles, 6. Validation Principles, 7. Security Principles, 8. Testing Principles, 9. Anti-Patterns to Avoid, Avoiding Event Loop Blocking (+25 more)
 
 ### Community 5754 - "Community 5754"
 Cohesion: 0.25
@@ -33662,35 +33630,35 @@ Nodes (5): 4. Document Summarization, code:block17 (Title: [Document Main Topic]
 
 ### Community 5760 - "Community 5760"
 Cohesion: 0.05
-Nodes (54): Regional Specialties, Core Knowledge, Demand Charge Management, Load Profiling, Market Structures, Pricing Structures and Utility Bill Anatomy, Procurement Strategies, Renewable Energy Procurement (+46 more)
+Nodes (52): Incoterms 2020, Core Knowledge, Demand Charge Management, Load Profiling, Market Structures, Pricing Structures and Utility Bill Anatomy, Procurement Strategies, Renewable Energy Procurement (+44 more)
 
 ### Community 5761 - "Community 5761"
 Cohesion: 0.20
 Nodes (8): code:block10 (User Query -> Embedding -> Vector Search -> Retrieved Docs -), Limitations, Overview, Quality Gates, RAG Architecture, RAG Implementation Workflow, Related Workflow Bundles, When to Use This Workflow
 
 ### Community 5762 - "Community 5762"
-Cohesion: 0.03
-Nodes (56): 1. Program Type, 2. Current State, 3. Product Fit, 4. Resources, A/B Tests to Run, Affiliate Enablement, Affiliate Program Design, Affiliate Program Tools (+48 more)
+Cohesion: 0.10
+Nodes (19): A/B Tests to Run, Affiliate Program Tools, Choosing a Tool, Cohort Analysis, Common Problems & Fixes, Common Referral Fraud, Dashboard Metrics, Fraud Prevention (+11 more)
 
 ### Community 5763 - "Community 5763"
 Cohesion: 0.05
-Nodes (39): Table of Contents, Tone Guidance, Variable Reference, What NOT to Say, 2. RMA Denial Notification, 3. Fraud Investigation Hold Notice, 4. Vendor RTV Claim Submission, 5. Customer Refund Confirmation (+31 more)
+Nodes (38): Table of Contents, Tone Guidance, Variable Reference, What NOT to Say, 2. RMA Denial Notification, 4. Vendor RTV Claim Submission, 5. Customer Refund Confirmation, 6. Restocking Fee Explanation (+30 more)
 
 ### Community 5764 - "Community 5764"
-Cohesion: 0.07
-Nodes (21): Immutability, code:python (from dataclasses import dataclass), Immutability, Design Principles, Formatting, Go Coding Style, Reference, Formatlama (+13 more)
+Cohesion: 0.09
+Nodes (17): Immutability, code:python (from dataclasses import dataclass), Immutability, Formatlama, Formatting, Python Coding Style, Python Kodlama Stili, Python コーディングスタイル (+9 more)
 
 ### Community 5765 - "Community 5765"
-Cohesion: 0.12
-Nodes (13): code:go (if err != nil {), Error Handling, Formatlama, Go Kodlama Stili, Go 编码风格, Hata Yönetimi, Referans, Tasarım İlkeleri (+5 more)
+Cohesion: 0.09
+Nodes (17): code:go (if err != nil {), Design Principles, Error Handling, Formatlama, Formatting, Go Coding Style, Go Kodlama Stili, Go 编码风格 (+9 more)
 
 ### Community 5766 - "Community 5766"
 Cohesion: 0.20
 Nodes (8): Best Practices, Examples, How It Works, Limitations, Overview, Satori, Security & Safety Notes, When to Use This Skill
 
 ### Community 5767 - "Community 5767"
-Cohesion: 0.43
-Nodes (8): 6. Modern Code Quality Practices (2024-2025), code:yaml (# .github/workflows/ai-review.yml), code:python (# pyproject.toml), code:javascript (// .eslintrc.json), code:yaml (# sonar-project.properties), code:python (# Use Semgrep for security-aware refactoring), 6. Modern Code Quality Practices (2024-2025), code:python (# Use Sourcery for automatic refactoring suggestions)
+Cohesion: 0.25
+Nodes (8): code:block1 (START), code:block2 (Bootstrap -> Discovery -> Architecture -> Infrastructure), Critical First Steps (Every Turn), Decision Tree: What To Do Next?, Essential Patterns, Key Files (Priority Order), Quick Reference, SDLC Phase Flow
 
 ### Community 5768 - "Community 5768"
 Cohesion: 0.22
@@ -33893,8 +33861,8 @@ Cohesion: 0.22
 Nodes (9): Agent Tool Builder, Capabilities, Frameworks, Patterns, Principles, Scope, Standards, Tool Schema Design (+1 more)
 
 ### Community 5818 - "Community 5818"
-Cohesion: 0.25
-Nodes (8): code:block1 (extension/), code:json ({), code:block3 (Popup ←→ Background (Service Worker) ←→ Content Script), Communication Pattern, Content Scripts, Extension Architecture, Manifest V3 Template, Project Structure
+Cohesion: 0.29
+Nodes (5): code:block2 (セッションアクティビティ), Continuous Learning v2 - インスティンクトベースアーキテクチャ, v2の新機能, インスティンクトモデル, 仕組み
 
 ### Community 5819 - "Community 5819"
 Cohesion: 0.40
@@ -33949,12 +33917,12 @@ Cohesion: 0.22
 Nodes (9): AI Feature Development, code:block12 (1. AI architecture (ai-product)), code:block13 (1. RAG design (ai-product)), Collaboration, Delegation Triggers, Fine-tuning requirements:, Limitations, RAG Implementation (+1 more)
 
 ### Community 5832 - "Community 5832"
-Cohesion: 0.25
-Nodes (6): Rust 開発パターン, クイックリファレンス：Rustのイディオム, ツール統合, 使用場面, 動作原理, 基本コマンド
+Cohesion: 0.29
+Nodes (8): Batch Insert (500x Faster), Batch Operations, Batch Retrieval, code:typescript (// ❌ SLOW: Individual inserts), code:typescript (// Retrieve multiple queries efficiently), Batch Insert (500x Faster), Batch Operations, Batch Retrieval
 
 ### Community 5833 - "Community 5833"
-Cohesion: 0.25
-Nodes (8): code:go (// 良好：包裝錯誤並加上上下文), code:go (// 定義領域特定錯誤), code:go (// 不良：用空白識別符忽略錯誤), 使用 errors.Is 和 errors.As 檢查錯誤, 帶上下文的錯誤包裝, 絕不忽略錯誤, 自訂錯誤類型, 錯誤處理模式
+Cohesion: 0.29
+Nodes (8): code:bash (# Get PR context with gh CLI), Complete Review Workflow, 🎯 Quick Start, Simple Review, code:bash (# Initialize review swarm for PR), Complete Review Workflow, 🎯 Quick Start, Simple Review
 
 ### Community 5834 - "Community 5834"
 Cohesion: 0.22
@@ -33977,8 +33945,8 @@ Cohesion: 0.22
 Nodes (9): code:bash (# Copy skill folder to project), code:bash (# Copy skill folder to user-level skills), code:bash (# Check if skill folder exists), For Claude Apps (Browser), For Claude Code (Desktop/CLI), Installation, Project-Level Installation, User-Level Installation (Available in All Projects) (+1 more)
 
 ### Community 5839 - "Community 5839"
-Cohesion: 0.04
-Nodes (48): A/B Test Plan, ab_test_planner.py, Analytics & Tracking, App Store Optimization (ASO) Skill, ASO Health Score, ASO Score Calculation, aso_scorer.py, Best Practices (+40 more)
+Cohesion: 0.03
+Nodes (56): A/B Test Plan, ab_test_planner.py, Analytics & Tracking, Analyze Competitor Strategy, App Store Optimization (ASO) Skill, ASO Health Score, aso_scorer.py, Best Practices (+48 more)
 
 ### Community 5840 - "Community 5840"
 Cohesion: 0.18
@@ -33990,7 +33958,7 @@ Nodes (5): 1. Restate the capability, 2. Resolve capability constraints, 3. Defi
 
 ### Community 5842 - "Community 5842"
 Cohesion: 0.15
-Nodes (16): code:kotlin (@Composable), Composable Design, Modifier Ordering, Slot-Based APIs, Material 3 动态主题, Modifier順序, コンポーザブル設計, スロットベースのAPI (+8 more)
+Nodes (16): code:kotlin (@Composable), Composable Design, Material 3 Dynamic Theming, Modifier Ordering, Slot-Based APIs, Theming, Modifier順序, コンポーザブル設計 (+8 more)
 
 ### Community 5843 - "Community 5843"
 Cohesion: 0.22
@@ -34021,20 +33989,8 @@ Cohesion: 0.25
 Nodes (8): Common failure modes, Dataset format errors, Hub push failures (401), Job timeout, KeyError: 'test' (missing test split), OOM (CUDA out of memory), Poor detection performance (mAP < 0.15), Single-class dataset: "iteration over a 0-d tensor"
 
 ### Community 5850 - "Community 5850"
-Cohesion: 0.39
-Nodes (6): log(), {
-  resolveProjectContext,
-  removeSessionLease,
-  listSessionLeases,
-  stopObserverForContext,
-  resolveSessionId
-}, run(), log(), {
-  resolveProjectContext,
-  removeSessionLease,
-  listSessionLeases,
-  stopObserverForContext,
-  resolveSessionId
-}, run()
+Cohesion: 0.29
+Nodes (8): Deep CLI Hooks Integration, Enhanced Hooks Integration, Learning Integration, code:typescript (// src/cli/hooks/cli-hooks-manager.ts), code:typescript (// src/cli/hooks/learning-hooks-integration.ts), Deep CLI Hooks Integration, Enhanced Hooks Integration, Learning Integration
 
 ### Community 5851 - "Community 5851"
 Cohesion: 0.67
@@ -34045,8 +34001,8 @@ Cohesion: 0.33
 Nodes (6): code:block1 (src/), Estrutura de Arquivos, File Structure, ファイル構成, 文件结构, 파일 구조
 
 ### Community 5853 - "Community 5853"
-Cohesion: 0.22
-Nodes (3): AuthErrorBoundary, Props, State
+Cohesion: 0.29
+Nodes (8): code:typescript (class UnifiedMemoryService implements IMemoryBackend {), HNSW Vector Search, Implementation Architecture, Unified Memory Service, code:typescript (class HNSWIndexer {), HNSW Vector Search, Implementation Architecture, Unified Memory Service
 
 ### Community 5854 - "Community 5854"
 Cohesion: 0.40
@@ -34145,8 +34101,8 @@ Cohesion: 0.22
 Nodes (7): Best Practices, Commands, Examples, How It Works, Next.js and Turbopack, Usage, When to Use
 
 ### Community 5876 - "Community 5876"
-Cohesion: 0.11
-Nodes (16): Activation, Agent Roles, Agent Spawning with MCP, code:javascript (// Spawn testing agents), Purpose, Testing Swarm Strategy, Using CLI (Fallback), Using MCP Tools (+8 more)
+Cohesion: 0.15
+Nodes (11): Activation, Using CLI (Fallback), Using MCP Tools, Activation, Agent Roles, Agent Spawning with MCP, code:javascript (// Initialize testing swarm), Purpose (+3 more)
 
 ### Community 5877 - "Community 5877"
 Cohesion: 0.40
@@ -34190,7 +34146,7 @@ Nodes (7): Laravel TDD ワークフロー, RED-GREEN-REFACTOR サイクル, テ�
 
 ### Community 5887 - "Community 5887"
 Cohesion: 0.25
-Nodes (8): Template, Tone Guidance, 6. Safety Stock Adjustment Request, Approval Requested By, Calculation, Financial Impact, Reason for Adjustment, When to Use
+Nodes (7): Available Tools, ♾️ MCP Integration, Role Definition, code:bash (shadcn mcp        # start the MCP server (stdio)), Configuring Registries, Setup, shadcn MCP Server
 
 ### Community 5888 - "Community 5888"
 Cohesion: 0.09
@@ -34210,7 +34166,7 @@ Nodes (7): code:markdown (# Session: YYYY-MM-DD), Notes, Save Session Command, S
 
 ### Community 5892 - "Community 5892"
 Cohesion: 0.25
-Nodes (8): code:block14 (WOS = On-Hand Inventory (units) / Average Weekly Demand (uni), code:block15 (Annual Turns = Annual COGS / Average Inventory at Cost), 9.1 Weeks of Supply Analysis, 9.2 Inventory Turns and GMROI, 9.3 Dead Stock and Obsolescence Identification, 9.4 Allocation Logic for Multi-Location Retailers, 9. Inventory Health Diagnostics, code:block16 (GMROI = Gross Margin $ / Average Inventory at Cost)
+Nodes (8): 5. Customer Proactive Update — Loss, Body, code:block10 (PO {{po_number}} — Shipment Status and Immediate Action Plan), code:block11 ({{customer_contact}},), Subject Line, Tone Guidance, What NOT to Say, When to Use
 
 ### Community 5893 - "Community 5893"
 Cohesion: 0.23
@@ -34229,8 +34185,8 @@ Cohesion: 0.40
 Nodes (5): code:text ([FIXED] src/handler/user.rs:42), Output Format, Çıktı Formatı, 出力フォーマット, Output Format
 
 ### Community 5897 - "Community 5897"
-Cohesion: 0.17
-Nodes (11): Billing, code:bash (/tdd                    # Unit + integration tests for new f), Aplicação SaaS — CLAUDE.md de Projeto, Autenticação, Banco de Dados, Estilo de Código, Estratégia de Teste, Fluxo Git (+3 more)
+Cohesion: 0.22
+Nodes (8): Billing, Aplicação SaaS — CLAUDE.md de Projeto, Autenticação, Banco de Dados, Estilo de Código, Fluxo Git, Regras Críticas, Visão Geral do Projeto
 
 ### Community 5898 - "Community 5898"
 Cohesion: 0.40
@@ -34242,11 +34198,11 @@ Nodes (9): 1. Null Safety, code:kotlin (// İyi: Varsayılan olarak non-nullable
 
 ### Community 5900 - "Community 5900"
 Cohesion: 0.12
-Nodes (14): Passive listeners for scroll, 4. Client-Side Data Fetching (MEDIUM-HIGH), 7. JavaScript Performance (LOW-MEDIUM), Attribution, Automated Tools, code:ts (window.addEventListener("scroll", handler, { passive: true }), Lighthouse / Web Vitals Mapping, localStorage: version + minimize (+6 more)
+Nodes (14): code:tsx (function useLatest<T>(value: T) {), `useLatest` for stable callback refs, 7. JavaScript Performance (LOW-MEDIUM), 8. Advanced Patterns (LOW), Attribution, Automated Tools, Init once per app load, Lighthouse / Web Vitals Mapping (+6 more)
 
 ### Community 5901 - "Community 5901"
-Cohesion: 0.02
-Nodes (136): code:block1 (RED     → まず失敗するテストを書く), code:toml (# Cargo.toml), code:rust (// benches/benchmark.rs), code:bash (cargo test                        # Run all tests), code:rust (use rstest::{rstest, fixture};), code:rust (/// İki sayıyı toplar.), code:bash (# Kurulum: cargo install cargo-llvm-cov (veya CI'da taiki-e/), code:bash (cargo test                        # Tüm testleri çalıştır) (+128 more)
+Cohesion: 0.15
+Nodes (13): Coverage Targets, Running Coverage, Test Coverage, code:bash (# Install: cargo install cargo-llvm-cov (or use taiki-e/inst), Coverage Targets, Running Coverage, Test Coverage, カバレッジの実行 (+5 more)
 
 ### Community 5902 - "Community 5902"
 Cohesion: 0.22
@@ -34285,8 +34241,8 @@ Cohesion: 0.22
 Nodes (9): code:block12 (Skills: postgresql, postgres-best-practices, neon-postgres, ), code:block13 (Skills: nosql-expert, azure-cosmos-db-py), code:block14 (Skills: bullmq-specialist, upstash-qstash), code:block15 (Skills: clickhouse-io, dbt-transformation-patterns), Data Warehousing, Database Technology Workflows, MongoDB, PostgreSQL (+1 more)
 
 ### Community 5911 - "Community 5911"
-Cohesion: 0.18
-Nodes (14): code:block2 (app → presentation, domain, data, core), Dependency Rules, Module Structure, Recommended Layout, モジュール構造, 依存関係ルール, 依赖规则, 推奨レイアウト (+6 more)
+Cohesion: 0.16
+Nodes (15): code:block2 (app → presentation, domain, data, core), Dependency Rules, Module Structure, Recommended Layout, モジュール構造, 依存関係ルール, 依赖规则, 推奨レイアウト (+7 more)
 
 ### Community 5912 - "Community 5912"
 Cohesion: 0.22
@@ -34361,8 +34317,8 @@ Cohesion: 0.40
 Nodes (5): Copywriting, Email Sequences, Integration with Marketing Skills, Programmatic SEO, Site Architecture
 
 ### Community 5930 - "Community 5930"
-Cohesion: 0.05
-Nodes (44): Access Snapshot, Authentication, @azure/storage-file-share (TypeScript/JavaScript), Best Practices, Clear Range, Client Hierarchy, code:bash (npm install @azure/storage-file-share @azure/identity), code:typescript (await shareClient.delete();) (+36 more)
+Cohesion: 0.04
+Nodes (51): Access Snapshot, Authentication, @azure/storage-file-share (TypeScript/JavaScript), Best Practices, Check if Directory Exists, Clear Range, Client Hierarchy, code:bash (npm install @azure/storage-file-share @azure/identity) (+43 more)
 
 ### Community 5931 - "Community 5931"
 Cohesion: 0.40
@@ -34446,7 +34402,7 @@ Nodes (8): Complexity Tracking, Constitution Check, Documentation (this feature)
 
 ### Community 5952 - "Community 5952"
 Cohesion: 0.29
-Nodes (8): code:typescript (const { resources } = await container.items), code:typescript (import { SqlQuerySpec } from "@azure/cosmos";), code:typescript (const queryIterator = container.items.query<Product>(querySp), Cross-Partition Query, Parameterized Query (Recommended), Queries, Query with Pagination, Simple Query
+Nodes (7): code:sql (-- 일간 활성 사용자), code:sql (-- 전환 퍼널), code:sql (-- 가입 월별 사용자 코호트), 시계열 분석, 일반적인 분석 쿼리, 코호트 분석, 퍼널 분석
 
 ### Community 5953 - "Community 5953"
 Cohesion: 0.40
@@ -34501,12 +34457,12 @@ Cohesion: 0.22
 Nodes (9): 7.1 Destructuring, 7.2 Spread & Rest, 7.3 Modules, 7.4 Optional Chaining & Nullish Coalescing, 7. Modern JavaScript (ES6+), code:javascript (// Array destructuring), code:javascript (// Spread: expand iterable), code:javascript (// Named exports) (+1 more)
 
 ### Community 5967 - "Community 5967"
-Cohesion: 0.18
-Nodes (10): Billing, Authentication, Code Style, Critical E2E Flows, Critical Rules, Database, Git Workflow, Project Overview (+2 more)
+Cohesion: 0.22
+Nodes (8): Billing, Authentication, Code Style, Critical Rules, Database, Git Workflow, Project Overview, SaaS Application — Project CLAUDE.md
 
 ### Community 5968 - "Community 5968"
-Cohesion: 0.29
-Nodes (8): Check if Directory Exists, code:typescript (const directoryClient = shareClient.getDirectoryClient("my-d), code:typescript (await directoryClient.delete();), code:typescript (const exists = await directoryClient.exists();), Create Directory, Delete Directory, Directory Operations, List Directories and Files
+Cohesion: 0.25
+Nodes (8): Customer, Evangelist, Lead, MQL (Marketing Qualified Lead), Opportunity, SQL (Sales Qualified Lead), Stage Templates, Subscriber
 
 ### Community 5969 - "Community 5969"
 Cohesion: 0.20
@@ -34561,8 +34517,8 @@ Cohesion: 0.22
 Nodes (9): 1. Fitts' Law for Touch, Application Rules, code:block1 (DESKTOP (Mouse/Trackpad):), code:block2 (Touch acquisition time = a + b × log₂(1 + D/W)), code:block3 (┌─────────────────────────────────────┐), Fitts' Law Formula Adapted, Minimum Touch Target Sizes, The Fundamental Difference (+1 more)
 
 ### Community 5982 - "Community 5982"
-Cohesion: 0.25
-Nodes (8): Analysis Steps, GitHub App Integration, Related Commands, /skill-create - Local Skill Generation, Step 1: Gather Git Data, Step 2: Detect Patterns, Step 3: Generate SKILL.md, What It Does
+Cohesion: 0.29
+Nodes (6): assert, { execFileSync }, path, runTests(), SCRIPT, test()
 
 ### Community 5983 - "Community 5983"
 Cohesion: 0.33
@@ -34590,7 +34546,7 @@ Nodes (5): code:block2 (Homepage (/)), Content / Blog Site, Navigation, Page Hie
 
 ### Community 5989 - "Community 5989"
 Cohesion: 0.03
-Nodes (61): code:java (// JWT で保護されたリソース), code:java (@Path("/api/admin")), CORS Configuration, Dependency Security Scanning, JWT Authentication, Role-Based Access Control, Phase 1: Build, code:java (// JWT ile korunan resource) (+53 more)
+Nodes (66): Bean Validation, code:java (// JWT で保護されたリソース), code:java (@Path("/api/admin")), code:java (// 悪い例：検証なし), code:java (@Target({ElementType.FIELD, ElementType.PARAMETER})), CORS Configuration, Custom Validators, Input Validation (+58 more)
 
 ### Community 5990 - "Community 5990"
 Cohesion: 0.22
@@ -34609,8 +34565,8 @@ Cohesion: 0.29
 Nodes (9): enhance_prompt(), generate_batch(), generate_logo(), load_env(), main(), Enhance the logo prompt with style and industry modifiers, Generate a logo using Gemini models with image generation      Args:, Generate multiple logo variants with different styles (+1 more)
 
 ### Community 5994 - "Community 5994"
-Cohesion: 0.25
-Nodes (8): Claude Code (CLI), code:bash (git clone https://github.com/asklokesh/loki-mode.git ~/.clau), code:bash (# Navigate to your project directory first), code:bash (# Navigate to skills directory), code:bash (# Create directory structure), Option A: Git Clone (Recommended), Option B: Download from Releases, Option C: Minimal Install (curl)
+Cohesion: 0.33
+Nodes (3): SystemUpdatesView(), SystemUpdatesPage(), SystemUpdatesPage()
 
 ### Community 5995 - "Community 5995"
 Cohesion: 0.25
@@ -34689,12 +34645,12 @@ Cohesion: 0.40
 Nodes (5): Data Hygiene & Enrichment, Dedup Strategy, Enrichment Tools, Quarterly Audit Checklist, Required Fields Enforcement
 
 ### Community 6014 - "Community 6014"
-Cohesion: 0.25
-Nodes (8): code:block1 (START), code:block2 (Bootstrap -> Discovery -> Architecture -> Infrastructure), Critical First Steps (Every Turn), Decision Tree: What To Do Next?, Essential Patterns, Key Files (Priority Order), Quick Reference, SDLC Phase Flow
+Cohesion: 0.29
+Nodes (7): code:json (// nx.json), code:bash (# Run task for specific project), code:bash (# Create Nx monorepo), Configuration, Nx Monorepo, Running Tasks, Setup
 
 ### Community 6015 - "Community 6015"
 Cohesion: 0.29
-Nodes (5): Exa Search, MCP Requirement, Related Skills, Tips, When to Activate
+Nodes (7): code:bash (# 1. Check the configured path), code:bash (# 1. Verify credentials are set), code:bash (# 1. Verify MinIO is running), 6. Storage Errors, 6a. Local Disk Permission Denied, 6b. S3 Credentials Invalid, 6c. MinIO Configuration
 
 ### Community 6016 - "Community 6016"
 Cohesion: 0.40
@@ -34718,7 +34674,7 @@ Nodes (9): Common Structures, Duarte Sparkline Pattern, Matching Strategy to Con
 
 ### Community 6021 - "Community 6021"
 Cohesion: 0.29
-Nodes (8): Batch Comment Management, code:bash (# Manage review comments efficiently), Generate Contextual Review Comments, 💬 Intelligent Comment Generation, Batch Comment Management, code:bash (# Get PR diff with context), Generate Contextual Review Comments, 💬 Intelligent Comment Generation
+Nodes (7): Run and install, code:bash (# Install dependencies (creates/updates bun.lock or bun.lock), Run and install, 测试, 示例, 运行和安装, 运行时 API
 
 ### Community 6022 - "Community 6022"
 Cohesion: 0.22
@@ -34754,7 +34710,7 @@ Nodes (8): 4. Memory Leaks from Unclosed Streams, code:python (async def termina
 
 ### Community 6030 - "Community 6030"
 Cohesion: 0.29
-Nodes (8): Command Decomposition Strategy, Learning Commands Module, Swarm Commands Module, code:typescript (// src/cli/commands/swarm/swarm.command.ts), code:typescript (// src/cli/commands/learning/learning.command.ts), Command Decomposition Strategy, Learning Commands Module, Swarm Commands Module
+Nodes (6): code:markdown (# 良い例: 並列実行), Agent の即座の使用, Agent オーケストレーション, 並列タスク実行, 利用可能な Agent, 多角的分析
 
 ### Community 6031 - "Community 6031"
 Cohesion: 0.40
@@ -34802,7 +34758,7 @@ Nodes (9): code:tsx (interface ListItemProps {), code:tsx (function DataTable({ 
 
 ### Community 6042 - "Community 6042"
 Cohesion: 0.29
-Nodes (8): code:typescript (class UnifiedMemoryService implements IMemoryBackend {), HNSW Vector Search, Implementation Architecture, Unified Memory Service, code:typescript (class HNSWIndexer {), HNSW Vector Search, Implementation Architecture, Unified Memory Service
+Nodes (7): code:typescript (// services/counter.service.ts), code:typescript (// stores/user.store.ts), code:typescript (// stores/products.store.ts), Pattern 1: Simple Signal Service, Pattern 2: Feature Signal Store, Pattern 3: SignalStore (NgRx Signals), Quick Start: Signal-Based State
 
 ### Community 6043 - "Community 6043"
 Cohesion: 0.15
@@ -34833,8 +34789,8 @@ Cohesion: 0.22
 Nodes (9): code:block14 (错误信息: "未找到康复数据文件，请先使用 /rehab start 开始康复追踪"), code:block15 (错误信息: "数据不足，至少需要3次功能评估或10天训练记录才能生成分析报告"), code:block16 (错误信息: "数据文件结构异常，请检查数据完整性"), code:block17 (错误信息: "数据分析过程中出现异常，请稍后重试"), code:block18 (错误信息: "报告生成失败，请尝试简化查询条件或联系技术支持"), 分析过程错误, 数据读取错误, 输出生成错误 (+1 more)
 
 ### Community 6050 - "Community 6050"
-Cohesion: 0.05
-Nodes (44): Basic Usage, Code Style Standards, code:typescript (import type { SxProps, Theme } from '@mui/material';), code:typescript (<Grid container spacing={2}>), code:typescript (// ❌ AVOID - Old Material-UI v4 pattern), code:typescript (// ❌ AVOID - styled-components pattern), code:typescript (// ✅ PREFERRED), code:typescript (const styles: Record<string, SxProps<Theme>> = {) (+36 more)
+Cohesion: 0.06
+Nodes (37): Code Style Standards, code:typescript (import type { SxProps, Theme } from '@mui/material';), code:typescript (<Grid container spacing={2}>), code:typescript (// ❌ AVOID - Old Material-UI v4 pattern), code:typescript (// ❌ AVOID - styled-components pattern), code:typescript (// ✅ PREFERRED), code:typescript (const styles: Record<string, SxProps<Theme>> = {), code:typescript (// ✅ CORRECT) (+29 more)
 
 ### Community 6051 - "Community 6051"
 Cohesion: 0.10
@@ -34893,20 +34849,20 @@ Cohesion: 0.29
 Nodes (7): 工作原理, 步骤1：建模用例边界, 步骤2：首先定义出站端口, 步骤3：使用纯编排实现用例, 步骤4：在边缘构建适配器, 步骤5：在组合根中连接所有组件, 步骤6：按边界测试
 
 ### Community 6065 - "Community 6065"
-Cohesion: 0.25
-Nodes (7): 1. Issue Templates, 2. Label Strategy, 3. Comment Etiquette, Best Practices, Overview, Security & Permissions, Swarm Issue - Issue-Based Swarm Coordination
+Cohesion: 0.29
+Nodes (7): code:go (func BenchmarkCalculation(b *testing.B) {), code:go (func BenchmarkEncoding(b *testing.B) {), code:go (// 実行: go test -bench=. -benchmem), サブベンチマーク, ベンチマーク, ベンチマーク比較, 基本的なベンチマーク
 
 ### Community 6066 - "Community 6066"
 Cohesion: 0.29
-Nodes (7): Abuse with pyGPOAbuse (Linux), Abuse with SharpGPOAbuse, code:bash (./pygpoabuse.py DOMAIN/user -hashes lm:nt -gpo-id "12345677-), code:powershell (Get-DomainObjectAcl -Identity "SuperSecureGPO" -ResolveGUIDs), code:powershell (# Add local admin), Find Vulnerable GPOs, Group Policy Object Abuse
+Nodes (7): code:go (func TestBasicAssertions(t *testing.T) {), code:go (// ヘルパーとしてマーク（スタックトレースに表示されない）), code:go (import "reflect"), アサーションとヘルパー, カスタムヘルパー関数, ディープ等価性チェック, 基本的なアサーション
 
 ### Community 6067 - "Community 6067"
 Cohesion: 0.22
 Nodes (9): code:block25 (⚠️  Unable to detect GitHub Copilot CLI or Claude Code), code:block26 (❌ Error: Template not found at resources/templates/), code:block27 (⚠️  Validation Issues Found:), code:block28 (⚠️  Skill already installed at ~/.copilot/skills/your-skill-), Error Handling, Installation Conflicts, Platform Detection Issues, Template Not Found (+1 more)
 
 ### Community 6068 - "Community 6068"
-Cohesion: 0.25
-Nodes (8): Customer, Evangelist, Lead, MQL (Marketing Qualified Lead), Opportunity, SQL (Sales Qualified Lead), Stage Templates, Subscriber
+Cohesion: 0.29
+Nodes (7): code:go (// İyi: Açık ve doğrudan), code:go (// İyi: Sıfır değer kullanışlıdır), code:go (// İyi: Interface kabul eder, somut tip döndürür), 1. Basitlik ve Açıklık, 2. Sıfır Değeri Kullanışlı Yapın, 3. Interface Kabul Et, Struct Döndür, Temel Prensipler
 
 ### Community 6069 - "Community 6069"
 Cohesion: 0.18
@@ -34950,15 +34906,15 @@ Nodes (10): 步骤 1：确定审查范围, Reviewer A: Claude Agent (always runs
 
 ### Community 6079 - "Community 6079"
 Cohesion: 0.29
-Nodes (7): CCACHE Ticket Reuse, code:bash (# Find tickets), code:bash (# List keys), code:bash (# Database location), Extract from Keytab, Extract from SSSD, Linux AD Integration
+Nodes (7): code:rust (// İyi: Farklı tipler argümanları karıştırmayı önler), code:rust (// İyi: Generic girdi, somut çıktı), code:rust (// Heterojen koleksiyonlara veya plugin sistemlerine ihtiyac), Dinamik Dispatch için Trait Object'leri, Generic Girişleri Kabul Et, Somut Türleri Döndür, Tip Güvenliği için Newtype Deseni, Trait'ler ve Generic'ler
 
 ### Community 6080 - "Community 6080"
 Cohesion: 0.67
 Nodes (4): Async Validation, Async Validation, code:ts (import {resource} from '@angular/core';), code:ts (// WRONG - params must be a function)
 
 ### Community 6081 - "Community 6081"
-Cohesion: 0.14
-Nodes (21): code:bash (# Primary build check), code:block4, Diagnostic Commands Run, Example Session, Rust Build and Fix, What This Command Does, When to Use, code:`text (User: /rust-build) (+13 more)
+Cohesion: 0.15
+Nodes (13): code:bash (# Primary build check), Diagnostic Commands Run, Rust Build and Fix, What This Command Does, When to Use, Rust 构建与修复, 使用时机, 此命令的作用 (+5 more)
 
 ### Community 6082 - "Community 6082"
 Cohesion: 0.29
@@ -34970,7 +34926,7 @@ Nodes (12): 2. TypeScript Compilation Verification, Backend Compilation: FOUND I
 
 ### Community 6084 - "Community 6084"
 Cohesion: 0.29
-Nodes (7): code:bash (# Locate SCCM server), code:powershell (# Find SCCM blob), code:bash (# Using SharpWSUS), SCCM Attack with MalSCCM, SCCM Network Access Accounts, SCCM/WSUS Deployment, WSUS Deployment Attack
+Nodes (7): code:bash (/tdd                    # Unit + integration tests for new f), Critical E2E Flows, Estratégia de Teste, Fluxos E2E Críticos, Testing Strategy, 关键的端到端测试流程, 测试策略
 
 ### Community 6085 - "Community 6085"
 Cohesion: 0.22
@@ -35045,8 +35001,8 @@ Cohesion: 0.25
 Nodes (8): Actions, code:php (// AI-powered fraud detection), code:block6 (Use @stripe-integration to integrate Stripe payments), code:block7 (Use @paypal-integration to integrate PayPal), Copy-Paste Prompts, Phase 3: Payment Integration, Skills to Invoke, WordPress 7.0 AI for Payments
 
 ### Community 6103 - "Community 6103"
-Cohesion: 0.33
-Nodes (3): SystemUpdatesView(), SystemUpdatesPage(), SystemUpdatesPage()
+Cohesion: 0.29
+Nodes (7): code:bash (go test -cover ./...), code:bash (go test -coverprofile=coverage.out ./...), code:bash (# Fail if coverage below 80%), Basic Coverage, Coverage Analysis, Coverage Thresholds, Detailed Coverage Report
 
 ### Community 6104 - "Community 6104"
 Cohesion: 0.14
@@ -35138,7 +35094,7 @@ Nodes (11): code:go (apiKey := os.Getenv("OPENAI_API_KEY")), Context & Timeouts,
 
 ### Community 6126 - "Community 6126"
 Cohesion: 0.29
-Nodes (6): code:markdown (# 良い例: 並列実行), Agent の即座の使用, Agent オーケストレーション, 並列タスク実行, 利用可能な Agent, 多角的分析
+Nodes (7): code:js (// metro.config.js), code:js (// postcss.config.mjs), code:css (@import "tailwindcss/theme.css" layer(theme);), Configuration Files, Global CSS, Metro Config, PostCSS Config
 
 ### Community 6127 - "Community 6127"
 Cohesion: 0.17
@@ -35281,8 +35237,8 @@ Cohesion: 0.39
 Nodes (7): Approach, Do not use this skill when, Focus Areas, Instructions, Limitations, Output, Use this skill when
 
 ### Community 6163 - "Community 6163"
-Cohesion: 0.22
-Nodes (9): 1. Render is a Pure Function of Props and State, 2. Side Effects Outside Render, 3. Composition Over Inheritance, code:tsx (// Good: derive during render), Core Principles, 1. Render is a Pure Function of Props and State, 2. Side Effects Outside Render, 3. Composition Over Inheritance (+1 more)
+Cohesion: 0.29
+Nodes (7): code:block12 (Question: "Would you like to optimize the installed files fo), If optimizing rules:, If optimizing skills:, Step 5: Optimize Installed Files (Optional), If optimizing rules:, If optimizing skills:, Step 5: Optimize Installed Files (Optional)
 
 ### Community 6164 - "Community 6164"
 Cohesion: 0.40
@@ -35389,8 +35345,8 @@ Cohesion: 0.29
 Nodes (7): Good next reads, How this repo fits in, Skills vs MCP Tools, The easiest mental model, What a skill does, What an MCP tool does, Which one should you start with?
 
 ### Community 6190 - "Community 6190"
-Cohesion: 0.15
-Nodes (11): 1. Tuyên bố từ chối trách nhiệm "Chỉ dành cho mục đích sử dụng đã được phê duyệt", 2. Yêu cầu Xác nhận từ Người dùng, 3. Thiết kế để An toàn, 🛡️ Chính sách Bảo mật & Rào chắn An toàn (Guardrails), 🔵 Chính sách đối với Skill Phòng thủ, 🔴 Chính sách đối với Skill Tấn công (Vạch kẻ đỏ), ⚖️ Tuyên bố Pháp lý, Báo cáo Lỗ hổng (+3 more)
+Cohesion: 0.29
+Nodes (7): 1. Tuyên bố từ chối trách nhiệm "Chỉ dành cho mục đích sử dụng đã được phê duyệt", 2. Yêu cầu Xác nhận từ Người dùng, 3. Thiết kế để An toàn, 🛡️ Chính sách Bảo mật & Rào chắn An toàn (Guardrails), 🔵 Chính sách đối với Skill Phòng thủ, 🔴 Chính sách đối với Skill Tấn công (Vạch kẻ đỏ), ⚖️ Tuyên bố Pháp lý
 
 ### Community 6191 - "Community 6191"
 Cohesion: 0.04
@@ -35401,8 +35357,8 @@ Cohesion: 0.22
 Nodes (7): Do not use this skill when, E2E Testing Patterns, Instructions, Limitations, Resources, Safety, Use this skill when
 
 ### Community 6193 - "Community 6193"
-Cohesion: 0.22
-Nodes (8): Automatic Agent Assignment, code:json ({), Automatic Agent Assignment, Integration with Claude Code, Overview, PR Label Integration, Security Considerations, Swarm PR - Managing Swarms through Pull Requests
+Cohesion: 0.29
+Nodes (8): Automatic Agent Assignment, code:json ({), code:bash (# Small PR (< 100 lines): ring topology), Label-Based Topology, PR Label Integration, Automatic Agent Assignment, Label-Based Topology, PR Label Integration
 
 ### Community 6194 - "Community 6194"
 Cohesion: 0.40
@@ -35449,8 +35405,8 @@ Cohesion: 0.50
 Nodes (4): Delivery Methods, Landing Page & Delivery, Landing Page Structure, Thank You Page Optimization
 
 ### Community 6205 - "Community 6205"
-Cohesion: 0.15
-Nodes (14): Review Output Format, Summary Format, code:block7 ([CRITICAL] Hardcoded API key in source), Approval Criteria, code:block8 (## Review Summary), Confidence-Based Filtering, Project-Specific Guidelines, Review Output Format (+6 more)
+Cohesion: 0.28
+Nodes (9): Review Output Format, Summary Format, code:block7 ([CRITICAL] Hardcoded API key in source), code:block8 (## Review Summary), Review Output Format, Summary Format, İnceleme Çıktı Formatı, Özet Formatı (+1 more)
 
 ### Community 6206 - "Community 6206"
 Cohesion: 0.67
@@ -35458,7 +35414,7 @@ Nodes (3): Example Prompts, Use Cases, web-design-guidelines (`web-design-guidel
 
 ### Community 6207 - "Community 6207"
 Cohesion: 0.29
-Nodes (7): code:rust (// İyi: Farklı tipler argümanları karıştırmayı önler), code:rust (// İyi: Generic girdi, somut çıktı), code:rust (// Heterojen koleksiyonlara veya plugin sistemlerine ihtiyac), Dinamik Dispatch için Trait Object'leri, Generic Girişleri Kabul Et, Somut Türleri Döndür, Tip Güvenliği için Newtype Deseni, Trait'ler ve Generic'ler
+Nodes (7): Creative and Support Modes, `debugger`, `designer`, `documenter`, `innovator`, `memory-manager`, `tester`
 
 ### Community 6208 - "Community 6208"
 Cohesion: 0.22
@@ -35473,8 +35429,8 @@ Cohesion: 0.15
 Nodes (12): code:bash (go test -race ./...), Coverage, Framework, Go Testing, Race Detection, Reference, code:bash (go test -cover ./...), Coverage (+4 more)
 
 ### Community 6211 - "Community 6211"
-Cohesion: 0.10
-Nodes (22): code:python (from dataclasses import dataclass, field), code:python (from typing import Dict, List, Set), code:python (class SecurityUserStoryGenerator:), Templates, code:python (from dataclasses import dataclass), code:python (from typing import List, Dict, Optional), Templates, code:python (class ControlLibrary:) (+14 more)
+Cohesion: 0.05
+Nodes (44): code:python (from dataclasses import dataclass, field), Best Practices, code:block1 (Business Requirements → Security Requirements → Technical Co), code:python (from typing import Dict, List, Set), code:python (class SecurityUserStoryGenerator:), Core Concepts, Do's, Don'ts (+36 more)
 
 ### Community 6212 - "Community 6212"
 Cohesion: 0.22
@@ -35502,7 +35458,7 @@ Nodes (7): code:bash (npm run harness:adapters -- --check), Compliance States, D
 
 ### Community 6218 - "Community 6218"
 Cohesion: 0.29
-Nodes (7): code:sql (-- 每日活躍使用者), code:sql (-- 轉換漏斗), code:sql (-- 按註冊月份的使用者世代), 漏斗分析, 世代分析, 常見分析查詢, 時間序列分析
+Nodes (7): 1. For Large PDFs, 2. For Text Extraction, 3. For Image Extraction, 4. For Form Filling, 5. Memory Management, code:python (# Process PDFs in chunks), Performance Optimization Tips
 
 ### Community 6219 - "Community 6219"
 Cohesion: 0.25
@@ -35565,8 +35521,8 @@ Cohesion: 0.29
 Nodes (7): 1. Session Tracking, 2. File Markers, 3. Environment Variables, code:typescript (// @skip-validation), code:bash (export SKIP_SKILL_GUARDRAILS=true  # Disables ALL PreToolUse), code:bash (export SKIP_DB_VERIFICATION=true), Skip Conditions & User Control
 
 ### Community 6235 - "Community 6235"
-Cohesion: 0.33
-Nodes (4): Exa Search, Related Skills, Tips, When to Activate
+Cohesion: 0.29
+Nodes (7): code:block6 (Takt Time = Available Production Time per Shift / Customer D), code:block7 (Takt Time = 450 / 240 = 1.875 minutes per unit), code:block8 (Balance Efficiency = Σ(Task Times) / (Number of Stations × T), 7.1 Takt Time Calculation, 7.2 Workstation Balancing, 7.3 Mixed-Model Sequencing (Heijunka), 7. Line Balancing for Mixed-Model Production
 
 ### Community 6236 - "Community 6236"
 Cohesion: 0.40
@@ -35574,7 +35530,7 @@ Nodes (5): code:block1 (1. gan-harness/spec.mdを読む), code:block2 (1. gan-ha
 
 ### Community 6237 - "Community 6237"
 Cohesion: 0.09
-Nodes (18): code:python (import pytest), code:bash (pytest --cov=src --cov-report=term-missing), Coverage, Framework, Python Testing, Python テスト, Python 测试, Reference (+10 more)
+Nodes (18): code:python (import pytest), Coverage, Framework, Python Testing, code:bash (pytest --cov=src --cov-report=term-missing), Python テスト, Python 测试, Referans (+10 more)
 
 ### Community 6239 - "Community 6239"
 Cohesion: 0.29
@@ -35582,7 +35538,7 @@ Nodes (6): code:bash (# Mevcut paket yöneticisini tespit et), Environment Varia
 
 ### Community 6240 - "Community 6240"
 Cohesion: 0.29
-Nodes (7): code:rust (// İyi: Hataları context ile yayın), code:rust (// Kütüphane kodu: yapılandırılmış, tiplendirilmiş hatalar), code:rust (// İyi: Combinator zinciri), Hata İşleme, İç İçe Eşleştirme Yerine `Option` Combinator'ları, Kütüphane Hataları için `thiserror`, Uygulama Hataları için `anyhow`, `Result` ve `?` Kullanın — Production'da Asla `unwrap()` Kullanmayın
+Nodes (7): AI Product Architecture, Basic Implementation, code:block1 (User Input), code:javascript (import Anthropic from '@anthropic-ai/sdk';), Model Selection, Prompt Engineering for Products, The Wrapper Stack
 
 ### Community 6241 - "Community 6241"
 Cohesion: 0.25
@@ -35609,16 +35565,16 @@ Cohesion: 0.60
 Nodes (5): code:bash (find ~/.claude/skills -maxdepth 2 -name SKILL.md 2>/dev/null), code:bash (grep -RilE "keyword|synonym" ~/.claude/skills ~/.claude/plug), Step 2 - Search Local Sources, Step 2 - Search Local Sources, ステップ2 - ローカルソースを検索する
 
 ### Community 6247 - "Community 6247"
-Cohesion: 0.40
-Nodes (5): code:block15 (In FastAPI:), code:block16 (Include:), 8. Error Handling Principles, Error Response Philosophy, Exception Strategy
+Cohesion: 0.29
+Nodes (7): 1. Architecture Diagram Generator, 2. Project Architect, 3. Dependency Analyzer, code:bash (python scripts/architecture_diagram_generator.py <project-pa), code:bash (python scripts/project_architect.py <target-path> [--verbose), code:bash (python scripts/dependency_analyzer.py [arguments] [options]), Core Capabilities
 
 ### Community 6248 - "Community 6248"
 Cohesion: 0.09
 Nodes (25): code:bash (# 脆弱な拡張機能をチェック), Common Security Checks, Dependency Vulnerabilities (Maven), OWASP ZAP (API Security Testing), Phase 4: Security Scanning, Quarkus Security Audit, code:bash (mvn org.owasp:dependency-check-maven:check), code:bash (# Güvenlik açığı olan extension'ları kontrol et) (+17 more)
 
 ### Community 6249 - "Community 6249"
-Cohesion: 0.04
-Nodes (44): code:typescript (const apiKey = "sk-proj-xxxxx"  // ハードコードされたシークレット), code:typescript (// FAIL: 誤り：機密データをログに記録), code:typescript (// FAIL: 誤り：内部詳細を露出), code:bash (# 脆弱性をチェック), code:bash (# 常にロックファイルをコミット), code:typescript (// 認証をテスト), code:typescript (// 危険 - SQLインジェクションの脆弱性), code:typescript (// 安全 - パラメータ化されたクエリ) (+36 more)
+Cohesion: 0.05
+Nodes (38): code:typescript (const apiKey = "sk-proj-xxxxx"  // ハードコードされたシークレット), code:typescript (// FAIL: 誤り：機密データをログに記録), code:typescript (// FAIL: 誤り：内部詳細を露出), code:bash (# 脆弱性をチェック), code:bash (# 常にロックファイルをコミット), code:typescript (// 認証をテスト), code:typescript (// 危険 - SQLインジェクションの脆弱性), code:typescript (// 安全 - パラメータ化されたクエリ) (+30 more)
 
 ### Community 6250 - "Community 6250"
 Cohesion: 0.16
@@ -35661,8 +35617,8 @@ Cohesion: 0.29
 Nodes (7): code:sql (-- PASS: 良好：先使用索引欄位), code:sql (-- PASS: 良好：使用 ClickHouse 特定聚合函式), code:sql (-- 計算累計總和), 聚合, 查詢優化模式, 視窗函式, 高效過濾
 
 ### Community 6260 - "Community 6260"
-Cohesion: 0.33
-Nodes (6): Git, Captura de Conhecimento, Estilo de Código, Preferências Pessoais, Privacidade, Testes
+Cohesion: 0.38
+Nodes (7): Authentication, code:typescript (import { BlobServiceClient, StorageSharedKeyCredential } fro), code:typescript (import { BlobServiceClient } from "@azure/storage-blob";), Connection String, DefaultAzureCredential (Recommended), SAS Token, StorageSharedKeyCredential (Node.js only)
 
 ### Community 6261 - "Community 6261"
 Cohesion: 0.29
@@ -35718,7 +35674,7 @@ Nodes (3): difference, now, timeAgo
 
 ### Community 6274 - "Community 6274"
 Cohesion: 0.29
-Nodes (7): code:typescript (// packages/ui/src/button.tsx), code:typescript (// packages/utils/src/string.ts), code:typescript (// packages/types/src/user.ts), Code Sharing Patterns, Pattern 1: Shared UI Components, Pattern 2: Shared Utilities, Pattern 3: Shared Types
+Nodes (6): contextDirPath, projects, resolved, CONTEXTS_DIR, writeJson(), writeProjects()
 
 ### Community 6275 - "Community 6275"
 Cohesion: 0.50
@@ -35742,11 +35698,11 @@ Nodes (7): 1. Write Test First (RED), 2. Run Test -- Verify it FAILS, 3. Write M
 
 ### Community 6281 - "Community 6281"
 Cohesion: 0.05
-Nodes (35): 7. Rate Limiting, API Rate Limiting, code:typescript (// Aramalar için agresif rate limiting), code:typescript (// FAIL: YANLIŞ: Hassas veri loglama), code:typescript (// FAIL: YANLIŞ: İç detayları açığa çıkarma), code:bash (# Güvenlik açıklarını kontrol et), code:bash (# HER ZAMAN lock dosyalarını commit et), code:typescript (// Kimlik doğrulama testi) (+27 more)
+Nodes (38): 7. Rate Limiting, API Rate Limiting, code:typescript (// Aramalar için agresif rate limiting), code:typescript (// FAIL: YANLIŞ: Hassas veri loglama), code:typescript (// FAIL: YANLIŞ: İç detayları açığa çıkarma), code:bash (# Güvenlik açıklarını kontrol et), code:bash (# HER ZAMAN lock dosyalarını commit et), code:typescript (// Kimlik doğrulama testi) (+30 more)
 
 ### Community 6283 - "Community 6283"
 Cohesion: 0.29
-Nodes (7): code:typescript (// Original implementation (tests green)), code:python (def process_order(order):), code:javascript (class PaymentService {), Pattern 1: Test Anchor Points, Pattern 2: Parallel Implementation, Pattern 3: Feature Flags for Refactoring, Refactoring Resistance Patterns
+Nodes (7): 1. Fullstack Scaffolder, 2. Project Scaffolder, 3. Code Quality Analyzer, code:bash (python scripts/fullstack_scaffolder.py <project-path> [optio), code:bash (python scripts/project_scaffolder.py <target-path> [--verbos), code:bash (python scripts/code_quality_analyzer.py [arguments] [options), Core Capabilities
 
 ### Community 6284 - "Community 6284"
 Cohesion: 0.50
@@ -35773,8 +35729,8 @@ Cohesion: 0.50
 Nodes (4): Basic Usage, code:python (import trackio), Core API, Key Functions
 
 ### Community 6291 - "Community 6291"
-Cohesion: 0.25
-Nodes (7): 1. Dependency Rule and boundaries, 2. SOLID in context, 3. Smells, 4. Design patterns, 5. Tests and professionalism, Suggested output format for review, Uncle Bob Craft — Code Review Checklist
+Cohesion: 0.33
+Nodes (5): Current Status, ECC Operator Readiness Dashboard, Next Work Order, Prompt-To-Artifact Checklist, Top Actions
 
 ### Community 6292 - "Community 6292"
 Cohesion: 0.10
@@ -35786,7 +35742,7 @@ Nodes (7): Database Strategy, How It Works, Laravel TDD Workflow, Red-Green-Refa
 
 ### Community 6294 - "Community 6294"
 Cohesion: 0.33
-Nodes (6): code:block31 ({"text": "Let me check that for you.", "interim": true}), code:json ({ "text": "How can I help you?" }), Response fields, Simple response, Streaming response (recommended), Webhook response format
+Nodes (5): Current Status, ECC Operator Readiness Dashboard, Next Work Order, Prompt-To-Artifact Checklist, Top Actions
 
 ### Community 6295 - "Community 6295"
 Cohesion: 0.29
@@ -35802,11 +35758,11 @@ Nodes (4): Approval Workflow Tiers, Deal Desk Processes, Non-Standard Terms Hand
 
 ### Community 6298 - "Community 6298"
 Cohesion: 0.33
-Nodes (6): Durdurma Koşulları, Düzeltilen Yaygın Hatalar, Düzeltme Stratejisi, İlgili, İlgili Komutlar, Sorun yok
+Nodes (6): Announcement Order, Do Not Publish If, ECC v2.0.0-rc.1 Publication Readiness, Publication Gates, Release Identity Matrix, Required Command Evidence
 
 ### Community 6299 - "Community 6299"
 Cohesion: 0.29
-Nodes (6): Best Practices, code:typescript (// Analyze refinement improvement trends), 📊 Continuous Improvement Metrics, SPARC Refinement Agent, SPARC Refinement Phase, Track Refinement Progress Over Time
+Nodes (6): Best Practices, Cross-Phase Test Alignment, SPARC Refinement Agent, SPARC Refinement Phase, 🎯 SPARC-Specific Refinement Optimizations, code:typescript (// Coordinate tests with specification requirements)
 
 ### Community 6300 - "Community 6300"
 Cohesion: 0.08
@@ -35854,35 +35810,35 @@ Nodes (3): dotenv, envConfig, fs
 
 ### Community 6311 - "Community 6311"
 Cohesion: 0.29
-Nodes (7): İnceleme Öncelikleri, KRİTİK -- Güvenlik, KRİTİK -- Hata İşleme, ORTA -- En İyi Uygulamalar, ORTA -- Performans, YÜKSEK -- Eşzamanlılık, YÜKSEK -- Kod Kalitesi
+Nodes (6): enriched, entries, projects, table, renderListTable(), today()
 
 ### Community 6312 - "Community 6312"
-Cohesion: 0.08
-Nodes (27): code:text (-i=4        # 4スペースインデント), code:ini (severity = 3), code:bash (cpanm App::cpanminus Carton   # ツールをインストール), code:text (-i=4        # 4 空格缩进), code:text (-i=4        # 4-space indent), Dependency Management (cpanfile + carton), perlcritic Configuration (.perlcriticrc), perltidy Configuration (.perltidyrc) (+19 more)
+Cohesion: 0.11
+Nodes (23): code:text (-i=4        # 4スペースインデント), code:ini (severity = 3), code:bash (cpanm App::cpanminus Carton   # ツールをインストール), code:text (-i=4        # 4 空格缩进), code:text (-i=4        # 4-space indent), Dependency Management (cpanfile + carton), perlcritic Configuration (.perlcriticrc), perltidy Configuration (.perltidyrc) (+15 more)
 
 ### Community 6313 - "Community 6313"
-Cohesion: 0.20
-Nodes (9): Create Checkpoint, code:bash (echo "$(date +%Y-%m-%d-%H:%M) | $CHECKPOINT_NAME | $(git rev), Checkpoint Oluştur, Create Checkpoint, Arguments, Checkpoint Command, Create Checkpoint, List Checkpoints (+1 more)
+Cohesion: 0.33
+Nodes (5): Arguments, Checkpoint Command, Create Checkpoint, List Checkpoints, Usage
 
 ### Community 6314 - "Community 6314"
-Cohesion: 0.50
-Nodes (3): Available Tools, ♾️ MCP Integration, Role Definition
+Cohesion: 0.29
+Nodes (7): PRPアーティファクト, PRテンプレート, エッジケース, コミット分析, フェーズ 1 — VALIDATE, フェーズ 2 — DISCOVER, プルリクエストの作成
 
 ### Community 6315 - "Community 6315"
 Cohesion: 0.25
 Nodes (8): 2. Technology Stack & Key Dependencies, code:block2 (d:\MediaHive App\), Core Features, 4. Key Directory Structure, 6. Changelog, code:block2 (MediaHive Windows app/), MediaHive Master Blueprint, 1. Project Overview
 
 ### Community 6317 - "Community 6317"
-Cohesion: 0.22
-Nodes (9): 4. 个性化建议, 5. 目标管理, 核心功能, 治疗建议, 生活方式建议, 目标设定, 进度追踪, 障碍识别 (+1 more)
+Cohesion: 0.29
+Nodes (7): checkLayout(), checkPageLayout(), isCardLike(), isCardLikeDOM(), isCardLikeFromProps(), parseRadiusToPx(), resolveBorderRadiusPx()
 
 ### Community 6318 - "Community 6318"
 Cohesion: 0.33
 Nodes (6): Eager Loading to Avoid N+1, code:php ($orders = Order::query()), Eager Loading to Avoid N+1, Eager Loading to Avoid N+1, N+1'i Önlemek için Eager Loading, 预加载以避免 N+1 问题
 
 ### Community 6319 - "Community 6319"
-Cohesion: 0.04
-Nodes (46): 7. 速率限制, code:typescript (const apiKey = "sk-proj-xxxxx"  // 寫死的密鑰), code:typescript (// 搜尋的積極速率限制), code:typescript (// FAIL: 錯誤：記錄敏感資料), code:typescript (// FAIL: 錯誤：暴露內部細節), code:bash (# 檢查漏洞), code:bash (# 總是 commit lock 檔案), code:typescript (// 測試認證) (+38 more)
+Cohesion: 0.05
+Nodes (36): 7. 速率限制, API 速率限制, code:typescript (const apiKey = "sk-proj-xxxxx"  // 寫死的密鑰), code:typescript (// 搜尋的積極速率限制), code:typescript (// FAIL: 錯誤：記錄敏感資料), code:typescript (// FAIL: 錯誤：暴露內部細節), code:bash (# 檢查漏洞), code:bash (# 總是 commit lock 檔案) (+28 more)
 
 ### Community 6320 - "Community 6320"
 Cohesion: 0.40
@@ -35893,8 +35849,8 @@ Cohesion: 0.10
 Nodes (19): Agent Instructions, Codebase Navigation (Graphify), File Organization, Coding Standards, Core Workflow, Delivery Standards, ECC Areas To Reuse, ECC for Gemini CLI (+11 more)
 
 ### Community 6322 - "Community 6322"
-Cohesion: 0.38
-Nodes (7): Authentication, code:typescript (import { BlobServiceClient, StorageSharedKeyCredential } fro), code:typescript (import { BlobServiceClient } from "@azure/storage-blob";), Connection String, DefaultAzureCredential (Recommended), SAS Token, StorageSharedKeyCredential (Node.js only)
+Cohesion: 0.33
+Nodes (5): Approval-Gated URLs, code:bash (git status --short --branch), ECC v2.0.0-rc.1 Release URL Ledger, Live Now, Pre-Post Check
 
 ### Community 6323 - "Community 6323"
 Cohesion: 0.10
@@ -35965,8 +35921,8 @@ Cohesion: 0.25
 Nodes (7): Agent Format, Commit Style, Hook Format, Must Always, Must Never, Rules, Skill Format
 
 ### Community 6341 - "Community 6341"
-Cohesion: 0.67
-Nodes (3): code:sql (SHOW FULL PROCESSLIST;), code:sql (SET GLOBAL slow_query_log = 'ON';), Diagnostics
+Cohesion: 0.29
+Nodes (7): Acknowledge immediately, process later, code:javascript (const { EmbedBuilder, Colors } = require('discord.js');), code:javascript (// Discord.js - Defer for slow operations), code:python (# Pycord), code:javascript (// Discord.js), Embed Builder Pattern, Step 2: Request in code
 
 ### Community 6343 - "Community 6343"
 Cohesion: 0.50
@@ -35985,8 +35941,8 @@ Cohesion: 0.50
 Nodes (4): Pipeline Metrics, Pipeline Stage Management, Pipeline Stages, Stage Hygiene
 
 ### Community 6347 - "Community 6347"
-Cohesion: 0.50
-Nodes (4): Phase 1: Environment Check, code:bash (# Verify Python version), Phase 1: Environment Check, 阶段 1: 环境检查
+Cohesion: 0.29
+Nodes (7): code:python (# main.py), code:python (# cogs/general.py), Pycord Bot Foundation, code:dockerfile (FROM python:3.11-slim), Concurrency_guidelines, Pub/Sub Integration Pattern, Python Concurrency with Gunicorn
 
 ### Community 6348 - "Community 6348"
 Cohesion: 0.33
@@ -36038,7 +35994,7 @@ Nodes (5): code:bash (npx shadcn@latest init), code:tsx (import { Theme, Button,
 
 ### Community 6360 - "Community 6360"
 Cohesion: 0.29
-Nodes (7): `description`, `name`, Required Fields, `risk`, `source`, `source_repo`, `source_type`
+Nodes (7): 1. Installation, 2. Create GitRepository, 3. Create Kustomization, code:bash (# Install Flux CLI), code:yaml (apiVersion: source.toolkit.fluxcd.io/v1), code:yaml (apiVersion: kustomize.toolkit.fluxcd.io/v1), Flux CD Setup
 
 ### Community 6361 - "Community 6361"
 Cohesion: 0.50
@@ -36061,8 +36017,8 @@ Cohesion: 0.15
 Nodes (18): code:sql (-- migrations/20240115_add_email_index/migration.sql), Prisma (TypeScript/Node.js), code:prisma (model User {), code:bash (# Create empty migration, then edit the SQL manually), Custom SQL Migration, Prisma (TypeScript/Node.js), Schema Example, Workflow (+10 more)
 
 ### Community 6366 - "Community 6366"
-Cohesion: 0.33
-Nodes (6): code:block12 (User follows skill advice → Code fails to compile/run → Clau), code:markdown (<!-- Correction: YYYY-MM-DD | was: [old advice] | reason: [w), Correction Flow, Correction Marker Format, Self-Correction, Trigger Conditions
+Cohesion: 0.29
+Nodes (7): Calculating Referral Program ROI, code:block4 (K = Invitations × Conversion Rate), code:block5 (Referral Rate = (Customers who refer) / (Total customers)), code:block6 (How many successful referrals does each referring customer g), code:block7 (Referral Program ROI = (Revenue from referred customers - Pr), Key Metrics, Viral Coefficient & Modeling
 
 ### Community 6367 - "Community 6367"
 Cohesion: 0.12
@@ -36138,15 +36094,15 @@ Nodes (7): code:tsx (const Tabs = ({ children }) => {), code:tsx (function useDe
 
 ### Community 6385 - "Community 6385"
 Cohesion: 0.29
-Nodes (7): code:bash (faf auto), code:yaml (# Auto-generated project.faf), code:block5 (✅ Generated: project.faf), Step 1: Detection (10 seconds), Step 2: Generation (30 seconds), Step 3: Scoring & Report (20 seconds), The 60-Second Workflow
+Nodes (7): code:block2 (Max Referral Reward = (Customer LTV × Gross Margin) - Target), Incentive Sizing Framework, Incentive Types, Referral Program Design, Step 1: Identify Trigger Moments, Step 2: Design the Share Mechanism, Step 3: Choose Incentive Structure
 
 ### Community 6386 - "Community 6386"
 Cohesion: 0.25
 Nodes (6): Agent Eval 技能, 何时使用, 安装, 最佳实践, 链接, code:bash (# pinned to v0.1.0 — latest stable commit)
 
 ### Community 6387 - "Community 6387"
-Cohesion: 0.33
-Nodes (6): assert, { failed }, fs, runTests(), { sanitizeSessionId, getBridgePath, readBridge, writeBridgeAtomic, resolveSessionId, MAX_SESSION_ID_LENGTH }, test()
+Cohesion: 0.38
+Nodes (7): Basic Usage, code:typescript (<Box sx={{ p: 2, mb: 3, display: 'flex' }}>), code:typescript (<Box), Pseudo-Selectors, Responsive Styles, sx Prop Patterns, With Theme Access
 
 ### Community 6388 - "Community 6388"
 Cohesion: 0.67
@@ -36161,8 +36117,8 @@ Cohesion: 0.23
 Nodes (13): Code-Based (deterministic), Judge Types, Model-Based (LLM-as-judge), Pattern-Based, コードベース（決定論的）, ジャッジタイプ, パターンベース, モデルベース（LLM-as-judge） (+5 more)
 
 ### Community 6391 - "Community 6391"
-Cohesion: 0.29
-Nodes (6): assert, { execFileSync }, path, runTests(), SCRIPT, test()
+Cohesion: 0.38
+Nodes (6): fs, { inspectSessionTarget }, main(), parseArgs(), path, usage()
 
 ### Community 6392 - "Community 6392"
 Cohesion: 0.50
@@ -36285,8 +36241,8 @@ Cohesion: 0.22
 Nodes (8): 🤖 Agent Types, 🐝 Claude-Flow Swarm Coordination, ⚙️ Common Options, 🔄 Coordination Modes, 💾 Memory Integration, 🎯 Swarm Strategies, code:bash (# Store swarm objectives), 💾 Memory Integration
 
 ### Community 6422 - "Community 6422"
-Cohesion: 0.21
-Nodes (14): applyEditing(), buildLocatorForLeaf(), copyEditContainerContext(), copyEditLeafContext(), documentRefForElement(), extractContext(), forbiddenManualTextChars(), mixedTextWrapRestoreHint() (+6 more)
+Cohesion: 0.09
+Nodes (33): addManualContextText(), applyEditing(), buildLocatorForLeaf(), canRestoreManualEditElement(), collectManualContextPieces(), contextElementForManualEdit(), copyEditContainerContext(), copyEditLeafContext() (+25 more)
 
 ### Community 6423 - "Community 6423"
 Cohesion: 0.67
@@ -36370,7 +36326,7 @@ Nodes (4): 4. Attack Surface Mapping, code:block2 (Risk = Likelihood × Impact),
 
 ### Community 6443 - "Community 6443"
 Cohesion: 0.29
-Nodes (7): Built-in Functions & Helpers, code:javascript (const response = await $helpers.httpRequest({), code:javascript (// Current time), code:javascript (const data = $input.first().json;), DateTime (Luxon), $helpers.httpRequest(), $jmespath()
+Nodes (7): code:js (// next.config.js), code:tsx (// Conditional classes with cn()), code:tsx (// Props with children), Common Next.js Config, Quick Reference, Tailwind CSS Utilities, TypeScript Patterns
 
 ### Community 6444 - "Community 6444"
 Cohesion: 0.50
@@ -36390,7 +36346,7 @@ Nodes (7): 10. Navigation Checklist, 1. Navigation Selection Decision Tree, Befo
 
 ### Community 6449 - "Community 6449"
 Cohesion: 0.09
-Nodes (21): Best Practices, code:json (// nx.json), code:bash (# Run task for specific project), code:yaml (# .github/workflows/ci.yml), code:yaml (# Deploy only changed apps), code:bash (# Create Nx monorepo), Common Pitfalls, Core Concepts (+13 more)
+Nodes (21): Best Practices, code:typescript (// packages/ui/src/button.tsx), code:typescript (// packages/utils/src/string.ts), code:typescript (// packages/types/src/user.ts), code:yaml (# .github/workflows/ci.yml), code:yaml (# Deploy only changed apps), Common Pitfalls, Core Concepts (+13 more)
 
 ### Community 6450 - "Community 6450"
 Cohesion: 0.15
@@ -36413,24 +36369,24 @@ Cohesion: 0.50
 Nodes (4): Django, FastAPI/Flask, フレームワーク固有のチェック, 非同期（FastAPI/aiohttp）
 
 ### Community 6455 - "Community 6455"
-Cohesion: 0.33
-Nodes (4): Exa検索, アクティベートするタイミング, ヒント, 関連スキル
+Cohesion: 0.20
+Nodes (8): get_code_context_exa, web_search_exa, code:block3 (get_code_context_exa(query: "Python asyncio patterns", token), Exa検索, アクティベートするタイミング, コアツール, ヒント, 関連スキル
 
 ### Community 6456 - "Community 6456"
 Cohesion: 0.29
 Nodes (7): Fallbacks, Meta Variables, Obsidian Web Clipper Variables, Preset Variables, Prompt Variables (AI), Schema.org Variables, Selector Variables
 
 ### Community 6457 - "Community 6457"
-Cohesion: 0.40
-Nodes (5): code:bash (# Start Responder (disable SMB/HTTP for relay)), code:bash (crackmapexec smb 10.10.10.0/24 --gen-relay-list targets.txt), NTLM Relay Attacks, Responder + ntlmrelayx, SMB Signing Check
+Cohesion: 0.29
+Nodes (7): Basic Message Publishing, Callback for Delivery Status, Message Deduplication, Patterns, Scheduled Cron Jobs, Signature Verification, URL Groups (Fan-out)
 
 ### Community 6458 - "Community 6458"
-Cohesion: 0.40
-Nodes (5): code:bash (# 1. Find service accounts with SPNs), code:bash (# 1. Start relay targeting LDAP), Example 1: Domain Compromise via Kerberoasting, Example 2: NTLM Relay to LDAP, Examples
+Cohesion: 0.33
+Nodes (4): Exa Search, Related Skills, Tips, When to Activate
 
 ### Community 6459 - "Community 6459"
-Cohesion: 0.06
-Nodes (36): 1. For Large PDFs, 2. For Text Extraction, 3. For Image Extraction, 4. For Form Filling, 5. Memory Management, Advanced Merge and Split Operations, Advanced Python Techniques, Advanced Table Extraction with Custom Settings (+28 more)
+Cohesion: 0.15
+Nodes (14): Advanced PDF Cropping, Batch PDF Processing with Error Handling, code:python (import pypdfium2 as pdfium), code:bash (# Extract all images with original quality), code:python (import os), code:python (from pypdf import PdfWriter, PdfReader), Complex Workflows, Extract Figures/Images from PDF (+6 more)
 
 ### Community 6460 - "Community 6460"
 Cohesion: 0.39
@@ -36449,8 +36405,8 @@ Cohesion: 0.08
 Nodes (23): Additional Resources, Article Illustrations — Grav Hand-Drawn Style, Best Practices, Character: Grav, code:block1 (Analyze this article and create a shot list of 5 illustratio), code:block2 (Generate 4 Grav-style illustrations for this article.), code:block3 (Generate one 16:9 illustration for this concept:), code:block4 (This illustration is on the right track, but Grav feels like) (+15 more)
 
 ### Community 6464 - "Community 6464"
-Cohesion: 0.33
-Nodes (6): code:block1 (Preventive ────► Stop attacks before they occur), code:block2 (┌──────────────────────┐), Core Concepts, 1. Control Categories, 2. Control Layers, 3. Defense in Depth
+Cohesion: 0.08
+Nodes (24): code:dockerfile (# 1. Belirli tag'ler kullanın (:latest asla)), code:yaml (# İYİ: Ortam değişkenleri kullanın (runtime'da enjekte edili), code:bash (# Logları görüntüle), code:bash (# Konteyner içinde DNS çözümlemesini kontrol et), code:block16 (# KÖTÜ: Üretimde orkestrasyon olmadan docker compose kullanm), code:dockerfile (# Aşama: bağımlılıklar), code:yaml (# docker-compose.override.yml (otomatik yüklenir, sadece dev), code:bash (# Geliştirme (override'ı otomatik yükler)) (+16 more)
 
 ### Community 6465 - "Community 6465"
 Cohesion: 0.67
@@ -36705,8 +36661,8 @@ Cohesion: 0.40
 Nodes (3): { runPostBash }, result, { runPostBash }
 
 ### Community 6529 - "Community 6529"
-Cohesion: 0.29
-Nodes (7): code:bash (# Find large route files), code:typescript (// Before: Route with logic), code:typescript (// Controller stays thin), code:typescript (// Service calls repository), Identify Routes Needing Refactoring, Refactoring Guide, Refactoring Process
+Cohesion: 0.33
+Nodes (6): 4. 安全性, 1. 模块化与关注点分离, 2. 可扩展性, 3. 可维护性, 5. 性能, 架构原则
 
 ### Community 6530 - "Community 6530"
 Cohesion: 0.67
@@ -36717,16 +36673,16 @@ Cohesion: 0.67
 Nodes (3): 6. Exceptional Conditions (A10 - New), Fail-Open vs Fail-Closed, What to Check
 
 ### Community 6532 - "Community 6532"
-Cohesion: 0.67
-Nodes (4): Accessing State, code:ts (// Access the field by calling it), code:ts (form().invalid()), Accessing State
+Cohesion: 0.33
+Nodes (6): Model Configuration, code:php (final class Project extends Model), Model Configuration, Model Configuration, Model Yapılandırması, 模型配置
 
 ### Community 6533 - "Community 6533"
 Cohesion: 0.67
 Nodes (3): cloud-architect (`cloud-architect`), Example Prompts, Use Cases
 
 ### Community 6534 - "Community 6534"
-Cohesion: 0.48
-Nodes (6): detectBuildCacheDisabled(), lineOfMatch(), metadata, safeScripts(), scan(), truncate()
+Cohesion: 0.33
+Nodes (6): code:php (use Laravel\Sanctum\Sanctum;), Auth Testing (Sanctum), Auth Testing (Sanctum), Auth Testi (Sanctum), 認証テスト（Sanctum）, 身份验证测试（Sanctum）
 
 ### Community 6535 - "Community 6535"
 Cohesion: 0.40
@@ -36753,16 +36709,20 @@ Cohesion: 0.25
 Nodes (8): Array Access, code:c (struct Example {), code:asm (; Accessing struct fields), code:asm (; while (node != NULL)), code:asm (; array[i] - 4-byte elements), Data Structure Patterns, Linked List Traversal, Structure Access
 
 ### Community 6541 - "Community 6541"
-Cohesion: 0.22
-Nodes (9): Basic Content Script, code:javascript (// content.js - Runs on every matched page), code:javascript (// Create floating UI on page), Content Scripts, Injecting UI, Permissions for Content Scripts, Storage and State, code:json ({) (+1 more)
+Cohesion: 0.25
+Nodes (8): Basic Content Script, code:javascript (// content.js - Runs on every matched page), code:javascript (// Create floating UI on page), Content Scripts, Injecting UI, Permissions for Content Scripts, Storage and State, code:json ({)
+
+### Community 6542 - "Community 6542"
+Cohesion: 0.33
+Nodes (6): Git, Captura de Conhecimento, Estilo de Código, Preferências Pessoais, Privacidade, Testes
 
 ### Community 6543 - "Community 6543"
 Cohesion: 0.67
 Nodes (3): Example Prompts, nestjs-expert (`nestjs-expert`), Use Cases
 
 ### Community 6544 - "Community 6544"
-Cohesion: 0.67
-Nodes (3): 6. Performance Optimization, 6. Performance Optimization, code:python (def optimize_review_process(review_context):)
+Cohesion: 0.33
+Nodes (6): code:block6 (TimeoutError: Waiting for selector failed), code:bash (# Kill hanging processes), code:bash (# Install Chromium via run.py (automatic)), Browser crashes or hangs, Browser Issues, Browser not found error
 
 ### Community 6545 - "Community 6545"
 Cohesion: 0.50
@@ -36798,15 +36758,15 @@ Nodes (3): Example Prompts, security-compliance-compliance-check (`security-comp
 
 ### Community 6556 - "Community 6556"
 Cohesion: 0.33
-Nodes (6): assert, fs, main(), path, runTest(), { spawnSync }
+Nodes (6): code:block2 (async def is better when:), code:block3 (I/O-bound → async (waiting for external)), 2. Async vs Sync Decision, Async Library Selection, The Golden Rule, When to Use Async
 
 ### Community 6560 - "Community 6560"
 Cohesion: 0.50
 Nodes (3): content, fs, lines
 
 ### Community 6561 - "Community 6561"
-Cohesion: 0.09
-Nodes (23): code:bash (# Daily development), code:block3 (pass@k: At least ONE of k attempts succeeds), Context and Memory Management, Continuous Learning / Memory, IMPORTANT STUFF, Token Optimization, Verification Loops and Evals, code:bash (claude --system-prompt "$(cat memory.md)") (+15 more)
+Cohesion: 0.13
+Nodes (16): code:bash (# Daily development), code:block3 (pass@k: At least ONE of k attempts succeeds), Context and Memory Management, Continuous Learning / Memory, IMPORTANT STUFF, Token Optimization, Verification Loops and Evals, code:bash (claude --system-prompt "$(cat memory.md)") (+8 more)
 
 ### Community 6563 - "Community 6563"
 Cohesion: 0.50
@@ -36829,8 +36789,8 @@ Cohesion: 0.25
 Nodes (6): code:kotlin (// CPU 集約型作業), 参考, Kotlin コルーチン & Flow, アクティベートするタイミング, ディスパッチャー, 避けるべきアンチパターン
 
 ### Community 6571 - "Community 6571"
-Cohesion: 0.50
-Nodes (4): 7. Navigation with GoRouter, code:dart (final router = GoRouter(), 7. Navigation with GoRouter, 7. 使用 GoRouter 的导航
+Cohesion: 0.47
+Nodes (5): Path, is_slack_ready(), Quick check if GIF is ready for Slack.      Args:         gif_path: Path to G, Validate GIF for Slack (dimensions, size, frame count).      Args:         gi, validate_gif()
 
 ### Community 6573 - "Community 6573"
 Cohesion: 0.22
@@ -36845,8 +36805,8 @@ Cohesion: 0.50
 Nodes (4): 4. Test the Hypothesis, code:javascript (console.log('Before API call:', userData);), code:javascript (debugger; // Execution pauses here), code:javascript (// Comment out code to narrow down)
 
 ### Community 6577 - "Community 6577"
-Cohesion: 0.32
-Nodes (8): code:typescript (// test/example.test.ts), Testing, Testing, code:bash (bun test), Examples, Run and install, Runtime API, Testing
+Cohesion: 0.33
+Nodes (6): Durdurma Koşulları, Düzeltilen Yaygın Hatalar, Düzeltme Stratejisi, İlgili, İlgili Komutlar, Sorun yok
 
 ### Community 6578 - "Community 6578"
 Cohesion: 0.50
@@ -36854,7 +36814,7 @@ Nodes (4): code:kotlin (// build.gradle.kts - Common compiler options), Kotlin C
 
 ### Community 6579 - "Community 6579"
 Cohesion: 0.33
-Nodes (5): Best Practices, 📊 Continuous Improvement Metrics, SPARC Refinement Agent, SPARC Refinement Phase, Track Refinement Progress Over Time
+Nodes (5): Best Practices, Cross-Phase Test Alignment, SPARC Refinement Agent, SPARC Refinement Phase, 🎯 SPARC-Specific Refinement Optimizations
 
 ### Community 6580 - "Community 6580"
 Cohesion: 0.50
@@ -36865,8 +36825,8 @@ Cohesion: 0.50
 Nodes (4): [2.21.0] - 2026-01-05, Added - Published HumanEval Benchmark Results, Changed, Fixed
 
 ### Community 6582 - "Community 6582"
-Cohesion: 0.29
-Nodes (8): code:block2 (Question: "ECC コンポーネントをどこにインストールしますか？"), code:bash (mkdir -p $TARGET/skills $TARGET/rules), code:block2 (问题："ECC组件应安装在哪里？"), code:block2 (Question: "Where should ECC components be installed?"), Step 1: Choose Installation Level, ステップ 1: インストールレベルの選択, 步骤 1：选择安装级别, Step 1: Choose Installation Level
+Cohesion: 0.40
+Nodes (6): checkRepeatedSectionKickers(), checkRepeatedSectionKickersDOM(), checkRepeatedSectionKickersFromDoc(), cleanInlineText(), collectRepeatedSectionKickerCandidates(), isRepeatedKickerCandidate()
 
 ### Community 6583 - "Community 6583"
 Cohesion: 0.25
@@ -36881,20 +36841,20 @@ Cohesion: 0.29
 Nodes (7): Actions, code:block1 (Use @app-builder to scaffold a new React + Node.js full-stac), code:block2 (Use @senior-fullstack to set up a Next.js 14 project with Ap), code:block3 (Use @environment-setup-guide to configure my development env), Copy-Paste Prompts, Phase 1: Project Setup and Scaffolding, Skills to Invoke
 
 ### Community 6586 - "Community 6586"
-Cohesion: 0.50
-Nodes (4): [2.27.0] - 2026-01-06, Added - 2025 Research-Backed Enhancements, Changed, Research Impact Summary
+Cohesion: 0.33
+Nodes (6): code:block14 (opus -> sonnet -> haiku (if rate limited or unavailable)), code:block15 (Full workflow fails -> Simplified workflow -> Decompose to s), Human Escalation Triggers, Model-Level Fallbacks, Multi-Tiered Fallback System, Workflow-Level Fallbacks
 
 ### Community 6588 - "Community 6588"
 Cohesion: 0.11
 Nodes (17): code:text (skills/frontend-patterns | skill | DAILY | 84 个 .tsx 文件，存在 n), code:text (栈), 1. 读取仓库, 2. 构建证据表, 3. 决定 DAILY 还是 LIBRARY, 4. 构建安装计划, 5. 创建可选的路由器, 6. 验证结果 (+9 more)
 
 ### Community 6589 - "Community 6589"
-Cohesion: 0.25
-Nodes (7): code:bash (# Planning), ECC Workflow, ECC 工作流, Git Workflow, Go Microservice — Project CLAUDE.md, Project Overview, Workflow ECC
+Cohesion: 0.33
+Nodes (6): 3. Fraud Investigation Hold Notice, Internal Companion Note (Not Sent to Customer), Template, Tone Guidance, What NOT to Say, When to Use
 
 ### Community 6590 - "Community 6590"
-Cohesion: 0.29
-Nodes (7): Basic Message Publishing, Callback for Delivery Status, Message Deduplication, Patterns, Scheduled Cron Jobs, Signature Verification, URL Groups (Fan-out)
+Cohesion: 0.33
+Nodes (6): code:bash (# List all notebooks), code:bash (# Check active notebook), Access denied to notebook, Notebook Access Issues, Notebook not found, Wrong notebook being used
 
 ### Community 6592 - "Community 6592"
 Cohesion: 0.25
@@ -36905,8 +36865,8 @@ Cohesion: 0.25
 Nodes (8): code:bash (# Add to .gitignore), code:bash (# .env file (not committed)), code:javascript (// Hardcoded secret (never do this!)), Never Commit Secrets, Rotate Secrets Regularly, Secrets Management, Use Environment Variables, Use Secret Management Services
 
 ### Community 6596 - "Community 6596"
-Cohesion: 0.40
-Nodes (5): After Completing a Feature, After Creating a Widget, After Debugging, After Solving a Problem, Auto-Evolution Prompts
+Cohesion: 0.33
+Nodes (6): Affiliate Enablement, Affiliate Program Design, Affiliate Recruitment, code:block3 (Subject: Partnership opportunity — [Your Product]), Commission Structures, Cookie Duration
 
 ### Community 6597 - "Community 6597"
 Cohesion: 0.50
@@ -36949,7 +36909,7 @@ Cohesion: 0.53
 Nodes (6): code:typescript (// BAD: Rendering raw user HTML without sanitization), Security (CRITICAL), Security (CRITICAL), 安全性 (CRITICAL), code:typescript (// BAD: SQL injection via string concatenation), Security (CRITICAL)
 
 ### Community 6607 - "Community 6607"
-Cohesion: 0.15
+Cohesion: 0.14
 Nodes (12): code:bash (# 計画ファイルを実行), 使用方法, code:bash (# Plan dosyasını çalıştır), Ana Kurallar, Ana Protokoller, /ccg:plan ile İlişki, /ccg:planとの関係, Execute - Multi-Model İşbirlikçi Execution (+4 more)
 
 ### Community 6608 - "Community 6608"
@@ -36957,8 +36917,8 @@ Cohesion: 0.25
 Nodes (7): code:go (page, err := stealth.Page(browser)), code:go (// If you need to create the page yourself (e.g., with speci), code:go (page := stealth.MustPage(browser)), How Stealth Works, Stealth & Anti-Bot Detection (go-rod/stealth), Usage, Verifying Stealth
 
 ### Community 6609 - "Community 6609"
-Cohesion: 0.40
-Nodes (5): code:block3 (User: "我想从零开发一个 Makepad 应用"), Context Detection, Example, Skill Dependencies, Skill Routing and Bundling
+Cohesion: 0.33
+Nodes (6): code:block8 (Subject: You can now earn [reward] for sharing [Product]), code:block9 (Subject: Your friends are loving [Product]), Email Sequences for Referral Programs, Re-engagement for Past Referrers, Referral Nurture Sequence, Referral Program Launch
 
 ### Community 6610 - "Community 6610"
 Cohesion: 0.50
@@ -37001,8 +36961,8 @@ Cohesion: 0.25
 Nodes (8): code:bash (# Find SUID binary calling external command), code:bash (# On target - look for no_root_squash option), code:bash (# LinPEAS: download first, inspect the script, then execute ), code:bash (# On attacker machine), Core Workflow, Phase 2: Automated Enumeration, Phase 8: PATH Hijacking, Phase 9: NFS Exploitation
 
 ### Community 6620 - "Community 6620"
-Cohesion: 0.11
-Nodes (17): code:rust (struct ServerConfig {), Builder Pattern for Complex Construction, Structs and Data Modeling, Builder Pattern for Complex Construction, Structs and Data Modeling, Karmaşık Yapılandırma için Builder Deseni, Rust 开发模式, Struct'lar ve Veri Modelleme (+9 more)
+Cohesion: 0.18
+Nodes (11): code:rust (struct ServerConfig {), Builder Pattern for Complex Construction, Structs and Data Modeling, Builder Pattern for Complex Construction, Structs and Data Modeling, Karmaşık Yapılandırma için Builder Deseni, Struct'lar ve Veri Modelleme, 使用构建器模式进行复杂构造 (+3 more)
 
 ### Community 6621 - "Community 6621"
 Cohesion: 0.29
@@ -37025,8 +36985,8 @@ Cohesion: 0.20
 Nodes (10): code:text ([严重级别] 问题标题), 审查输出格式, 批准标准, 诊断命令, Approval Criteria, code:bash (dotnet build                                          # Comp), Diagnostic Commands, Framework Checks (+2 more)
 
 ### Community 6626 - "Community 6626"
-Cohesion: 0.15
-Nodes (13): A. 第一印象（30秒）, code:block1 (阅读 gan-harness/eval-rubric.md 了解项目特定标准), code:block3 (1. 导航到该功能), code:block4 (1. 检查所有页面的颜色一致性), code:block5 (1. 测试所有可点击元素), code:markdown (# 评估 — 迭代 NNN), B. 功能遍历, C. 设计审计 (+5 more)
+Cohesion: 0.14
+Nodes (14): A. 第一印象（30秒）, code:block1 (阅读 gan-harness/eval-rubric.md 了解项目特定标准), code:block3 (1. 导航到该功能), code:block4 (1. 检查所有页面的颜色一致性), code:block5 (1. 测试所有可点击元素), code:markdown (# 评估 — 迭代 NNN), B. 功能遍历, C. 设计审计 (+6 more)
 
 ### Community 6627 - "Community 6627"
 Cohesion: 0.25
@@ -37122,7 +37082,7 @@ Nodes (8): Before Sharing, code:javascript (// Never in code), code:javascript (
 
 ### Community 6650 - "Community 6650"
 Cohesion: 0.33
-Nodes (6): code:sql (-- 重複がある可能性のあるデータ（複数のソースからなど）用), code:sql (-- 集計メトリクスの維持用), AggregatingMergeTree（事前集計）, MergeTreeエンジン（最も一般的）, ReplacingMergeTree（重複排除）, テーブル設計パターン
+Nodes (6): Architecture, code:tsx (import {fade} from '@remotion/transitions/fade';), code:tsx (import {slide} from '@remotion/transitions/slide';), Text Overlays, Transition Effects, Video Composition Strategy
 
 ### Community 6651 - "Community 6651"
 Cohesion: 0.50
@@ -37133,8 +37093,8 @@ Cohesion: 0.25
 Nodes (8): code:bash (# Start Responder), code:bash (responder -I eth1 -v), code:powershell (vssadmin create shadow /for=C:), Core Techniques, Credential Harvesting, Dumping with VSS, LLMNR Poisoning, NTLM Relay
 
 ### Community 6653 - "Community 6653"
-Cohesion: 0.83
-Nodes (3): captureVisualContrastCandidate(), compareScreenshotContrast(), sanitizeScreenshotClip()
+Cohesion: 0.33
+Nodes (6): All tests passed, Common Errors Fixed, Fix Strategy, Related, Related Commands, Stop Conditions
 
 ### Community 6654 - "Community 6654"
 Cohesion: 0.18
@@ -37174,7 +37134,7 @@ Nodes (4): Test EnvConfig dataclass., Test EnvConfig default values., Test EnvCo
 
 ### Community 6663 - "Community 6663"
 Cohesion: 0.33
-Nodes (6): Model Configuration, code:php (final class Project extends Model), Model Configuration, Model Configuration, Model Yapılandırması, 模型配置
+Nodes (6): 4. Error Handling Principles, Centralized Error Handling, code:block5 (Pattern:), code:block6 (Client gets:), Error Response Philosophy, Status Code Selection
 
 ### Community 6665 - "Community 6665"
 Cohesion: 0.40
@@ -37190,15 +37150,15 @@ Nodes (8): 2. Initial Exception Notification to Carrier (Urgent), Body, code:blo
 
 ### Community 6668 - "Community 6668"
 Cohesion: 0.40
-Nodes (5): code:markdown (# @dev - ソフトウェアエンジニア), code:block4 (ユーザー: 「ランディングページを作ってローンチブログ記事を書いて」), エージェント定義フォーマット, スペシャリストエージェント, マルチエージェント連携パターン
+Nodes (6): code:typescript (async createUser(req: Request, res: Response): Promise<void>), code:typescript (async getUser(req: Request, res: Response): Promise<void> {), Controller Error Handling, Custom Error Status Codes, Error Handling, Validation Errors
 
 ### Community 6669 - "Community 6669"
 Cohesion: 0.29
 Nodes (7): assert, path, runScript(), runTests(), script, { spawnSync }, test()
 
 ### Community 6670 - "Community 6670"
-Cohesion: 0.33
-Nodes (4): Coverage, Framework, Python Testing, Referans
+Cohesion: 0.40
+Nodes (5): Phase 1 — VALIDATE, code:bash (git branch --show-current), 阶段 1 — 验证, Phase 1 — VALIDATE, Phase 1 — VALIDATE
 
 ### Community 6671 - "Community 6671"
 Cohesion: 0.40
@@ -37265,8 +37225,8 @@ Cohesion: 0.25
 Nodes (8): code:bash (pip install openai-whisper), code:python (import whisper), Cons, Installation, Pros, Usage Example, When to Use Whisper vs. Faster-Whisper, Whisper (Original)
 
 ### Community 6689 - "Community 6689"
-Cohesion: 0.33
-Nodes (6): 4. 安全性, 1. 模組化與關注點分離, 2. 可擴展性, 3. 可維護性, 5. 效能, 架構原則
+Cohesion: 0.40
+Nodes (5): code:markdown (# @dev - ソフトウェアエンジニア), code:block4 (ユーザー: 「ランディングページを作ってローンチブログ記事を書いて」), エージェント定義フォーマット, スペシャリストエージェント, マルチエージェント連携パターン
 
 ### Community 6690 - "Community 6690"
 Cohesion: 0.25
@@ -37320,10 +37280,6 @@ Nodes (8): 6.1 ED风险评分, 6.2 STD风险评分, 6. 风险评估, 8.1 定期�
 Cohesion: 0.22
 Nodes (9): code:block14 (1. Insert ' → Check for error), code:sql (-- MySQL/MSSQL table enumeration), code:sql (-- MySQL), Common Payloads Quick List, Database Fingerprinting, Detection Test Sequence, Information Schema Queries, Quick Reference (+1 more)
 
-### Community 6705 - "Community 6705"
-Cohesion: 0.25
-Nodes (3): AppErrorBoundary, Props, State
-
 ### Community 6706 - "Community 6706"
 Cohesion: 0.25
 Nodes (6): Implementation Targets, Related V3 Skills, Success Metrics, Swarm Coordination, V3 Swarm Coordination, What This Skill Does
@@ -37353,8 +37309,8 @@ Cohesion: 0.25
 Nodes (8): 1. Code Structure Philosophy, 2. Naming Conventions, code:block1 (environments/        # Environment-specific configurations), code:hcl (# Good: Descriptive, contextual), code:hcl (resource "aws_vpc" "this" {}           # Module creates one ), code:hcl (resource "aws_subnet" "this" {}  # If creating multiple subn), code:hcl (# Prefix with context when needed), Core Principles
 
 ### Community 6716 - "Community 6716"
-Cohesion: 0.29
-Nodes (6): contextDirPath, projects, resolved, CONTEXTS_DIR, writeJson(), writeProjects()
+Cohesion: 0.40
+Nodes (5): code:cpp (// tests/add_test.cpp), TDD Workflow, TDD ワークフロー, TDD 工作流, TDD Workflow
 
 ### Community 6717 - "Community 6717"
 Cohesion: 0.33
@@ -37362,11 +37318,11 @@ Nodes (6): code:block18 (JSON decode error when listing notebooks), code:bash (#
 
 ### Community 6718 - "Community 6718"
 Cohesion: 0.05
-Nodes (43): code:python (def process(text: str, config: Config, tracker: CostTracker)), code:python (MODEL_SONNET = "claude-sonnet-4-6"), code:python (from anthropic import (), code:python (from dataclasses import dataclass), code:python (messages = [), 2. キャッシュエントリの凍結データクラス, 1. Model Routing by Task Complexity, 1. タスクの複雑さによるモデルルーティング (+35 more)
+Nodes (42): code:python (def process(text: str, config: Config, tracker: CostTracker)), code:python (MODEL_SONNET = "claude-sonnet-4-6"), code:python (from anthropic import (), code:python (from dataclasses import dataclass), code:python (messages = [), 1. Model Routing by Task Complexity, 1. タスクの複雑さによるモデルルーティング, 1. 根据任务复杂度进行模型路由 (+34 more)
 
 ### Community 6719 - "Community 6719"
-Cohesion: 0.29
-Nodes (6): enriched, entries, projects, table, renderListTable(), today()
+Cohesion: 0.40
+Nodes (5): 2. 需求收集, 3. 設計提案, 1. 現狀分析, 4. 權衡分析, 架構審查流程
 
 ### Community 6720 - "Community 6720"
 Cohesion: 0.25
@@ -37381,12 +37337,12 @@ Cohesion: 0.25
 Nodes (8): 8. Internal Escalation to VP Supply Chain, Body, code:block16 ([ACTION REQUIRED] Exception — {{customer_name}} PO {{po_numb), code:block17 ({{vp_name}},), Subject Line, Tone Guidance, What NOT to Say, When to Use
 
 ### Community 6723 - "Community 6723"
-Cohesion: 0.33
-Nodes (6): code:block2 (async def is better when:), code:block3 (I/O-bound → async (waiting for external)), 2. Async vs Sync Decision, Async Library Selection, The Golden Rule, When to Use Async
+Cohesion: 0.40
+Nodes (5): 1. Current State Analysis, 2. Requirements Gathering, 3. Design Proposal, 4. Trade-Off Analysis, Architecture Review Process
 
 ### Community 6724 - "Community 6724"
-Cohesion: 0.47
-Nodes (5): Path, is_slack_ready(), Quick check if GIF is ready for Slack.      Args:         gif_path: Path to G, Validate GIF for Slack (dimensions, size, frame count).      Args:         gi, validate_gif()
+Cohesion: 0.40
+Nodes (5): Functional Requirements, Non-Functional Requirements, Operations, System Design Checklist, Technical Design
 
 ### Community 6725 - "Community 6725"
 Cohesion: 0.25
@@ -37397,16 +37353,16 @@ Cohesion: 0.25
 Nodes (8): Capabilities, Expertise, OpenAI Realtime API, Patterns, Prerequisites, Scope, Vapi Voice Agent, Voice AI Development
 
 ### Community 6728 - "Community 6728"
-Cohesion: 0.33
-Nodes (6): Adım 1: Bağlam Toplayın, Adım 2: Proje Yapısını Anlayın, Adım 2b: Güvenlik İncelemesi, Adım 3: Okuyun ve İnceleyin, Adım 4: Bulguları Bildirin, İş Akışı
+Cohesion: 0.40
+Nodes (5): Output Format, Best Practices Applied, Mistakes to Avoid, Patterns Discovered, Suggested Skill Updates
 
 ### Community 6729 - "Community 6729"
 Cohesion: 0.25
 Nodes (8): Actions, code:javascript (import { DataViews } from '@wordpress/dataviews';), code:block6 (Use @frontend-developer to create WordPress admin interface), Copy-Paste Prompts, DataViews Example, Phase 4: Admin Interface, Skills to Invoke, WordPress 7.0 Admin Considerations
 
 ### Community 6730 - "Community 6730"
-Cohesion: 0.33
-Nodes (6): code:bash (# Set up team-wide MCP server), code:bash (# One command, done forever), For Any GitHub Repository, For Teams, For Your Current Project, Getting Started
+Cohesion: 0.40
+Nodes (5): code:cmake (option(ENABLE_ASAN "Enable AddressSanitizer" OFF)), Sanitizers, サニタイザー, 消毒剂, Sanitizers
 
 ### Community 6731 - "Community 6731"
 Cohesion: 0.25
@@ -37425,8 +37381,8 @@ Cohesion: 0.33
 Nodes (6): [2.18.0] - 2026-01-04, Added, Changed, Impact, Inspired By, Migration Notes
 
 ### Community 6735 - "Community 6735"
-Cohesion: 0.33
-Nodes (6): code:block14 (opus -> sonnet -> haiku (if rate limited or unavailable)), code:block15 (Full workflow fails -> Simplified workflow -> Decompose to s), Human Escalation Triggers, Model-Level Fallbacks, Multi-Tiered Fallback System, Workflow-Level Fallbacks
+Cohesion: 0.40
+Nodes (3): Leiloeiro, JucepaScraper, Scraper JUCEPA — Junta Comercial do Estado do Pará URL: https://www.jucepa.pa.g
 
 ### Community 6736 - "Community 6736"
 Cohesion: 0.17
@@ -37445,8 +37401,8 @@ Cohesion: 0.29
 Nodes (6): Content, Demo Asset Suggestions, ECC v2.0.0-rc.1 Launch Checklist, Messaging, Release Surface, Repo
 
 ### Community 6740 - "Community 6740"
-Cohesion: 0.53
-Nodes (6): code:bash (npx claude-flow hook mcp-initialized --swarm-id <id>), code:bash (npx claude-flow hook task-orchestrated --task-id <id>), MCP Integration Hooks, code:bash (npx claude-flow hook agent-spawned --agent-id <id> --type <t), code:bash (npx claude-flow hook neural-trained --pattern <name>), MCP Integration Hooks
+Cohesion: 0.40
+Nodes (5): 기능 요구사항, 기술 설계, 비기능 요구사항, 시스템 설계 체크리스트, 운영
 
 ### Community 6741 - "Community 6741"
 Cohesion: 0.50
@@ -37454,11 +37410,11 @@ Nodes (4): Building a Scoring Model, Common Scoring Mistakes, Lead Scoring, Scor
 
 ### Community 6742 - "Community 6742"
 Cohesion: 0.40
-Nodes (6): Automatic Rollback, code:bash (# Rollback only failed files (preserve good changes)), Rollback Failed Changes, Automatic Rollback, code:bash (# Rollback to last known good state), Rollback Failed Changes
+Nodes (5): 6. Template Optimization (MEDIUM), Avoid Complex Template Expressions, code:html (<!-- CORRECT - New control flow (faster, smaller bundle) -->), code:typescript (// CORRECT - Precompute in component), Use New Control Flow Syntax
 
 ### Community 6743 - "Community 6743"
 Cohesion: 0.40
-Nodes (6): code:bash (# Last 24 hours), Generate Reports, Verification Reports, code:bash (# JSON report), Generate Reports, Verification Reports
+Nodes (3): Go開発パターン, いつ有効化するか, クイックリファレンス：Goイディオム
 
 ### Community 6744 - "Community 6744"
 Cohesion: 0.29
@@ -37486,7 +37442,7 @@ Nodes (6): Liquid Glass 设计系统 (iOS 26), 何时启用, 使用场景, 关�
 
 ### Community 6750 - "Community 6750"
 Cohesion: 0.40
-Nodes (5): code:markdown (# @dev - Software Engineer), code:block4 (User: "Build a landing page and write the launch blog post"), Agent Definition Format, Multi-Agent Collaboration Pattern, Specialist Agents
+Nodes (5): code:bash (npm run observability:ready), ECC 2.0 Observability Readiness, Operator Workflow, Reference Pressure, Signal Model
 
 ### Community 6751 - "Community 6751"
 Cohesion: 0.50
@@ -37506,11 +37462,11 @@ Nodes (8): code:block4 (添加一个用于用户资料更新的REST API端点，
 
 ### Community 6755 - "Community 6755"
 Cohesion: 0.20
-Nodes (8): code:python (# Good: Complete checkpoint with all training state), Checkpointing Patterns, PyTorch 开发模式, Save and Load Checkpoints, 何时使用, 保存和加载检查点, 快速参考：PyTorch 惯用法, 检查点模式
+Nodes (8): code:python (# Bad: Forgetting model.eval() during validation), Anti-Patterns to Avoid, PyTorch 开发模式, 何时使用, 保存和加载检查点, 应避免的反模式, 快速参考：PyTorch 惯用法, 检查点模式
 
 ### Community 6756 - "Community 6756"
 Cohesion: 0.40
-Nodes (5): Phase 4: Security and Dependency Checks, code:bash (composer audit), Phase 4: Security and Dependency Checks, Faz 4: Güvenlik ve Bağımlılık Kontrolleri, 第四阶段：安全和依赖项检查
+Nodes (5): code:block3 (src/), Estrutura de Arquivos, File Structure, ファイル構成, 文件结构
 
 ### Community 6757 - "Community 6757"
 Cohesion: 0.29
@@ -37525,8 +37481,8 @@ Cohesion: 0.50
 Nodes (4): Core Pattern — Availability Check, code:swift (struct GenerativeView: View {), Core Pattern — Availability Check, 核心模式 — 可用性检查
 
 ### Community 6760 - "Community 6760"
-Cohesion: 0.50
-Nodes (4): code:bash (# Dependency vulnerabilities), Phase 5: Security Scan, Phase 5: Security Scan, 阶段 5: 安全扫描
+Cohesion: 0.40
+Nodes (5): code:markdown (# @dev - Software Engineer), code:block4 (User: "Build a landing page and write the launch blog post"), Agent Definition Format, Multi-Agent Collaboration Pattern, Specialist Agents
 
 ### Community 6761 - "Community 6761"
 Cohesion: 0.13
@@ -37617,8 +37573,8 @@ Cohesion: 0.29
 Nodes (6): API Patterns, Architecture Patterns Reference, Data Access Patterns, Distributed System Patterns, Domain Logic Patterns, Simplicity Principle
 
 ### Community 6783 - "Community 6783"
-Cohesion: 0.50
-Nodes (4): Phase 3: Migrations, code:bash (# Check for unapplied migrations), Phase 3: Migrations, 阶段 3: 数据库迁移
+Cohesion: 0.40
+Nodes (3): MockSynthesisResult, Generate mock audio chunks, Get partial message up to specified seconds
 
 ### Community 6784 - "Community 6784"
 Cohesion: 0.50
@@ -37649,12 +37605,12 @@ Cohesion: 0.15
 Nodes (11): Advanced AWS Penetration Testing Reference, AWS API Calls That Return Credentials, code:bash (# List tables), DynamoDB Exploitation, Identity and Access Management, Logging, Monitoring, Networking (+3 more)
 
 ### Community 6791 - "Community 6791"
-Cohesion: 0.33
-Nodes (5): /learn - Extract Reusable Patterns, Notes, Process, Trigger, What to Extract
+Cohesion: 0.40
+Nodes (5): Fast Tool Registry, O(1) Tool Lookup Implementation, code:typescript (// src/core/mcp/fast-tool-registry.ts), Fast Tool Registry, O(1) Tool Lookup Implementation
 
 ### Community 6792 - "Community 6792"
-Cohesion: 0.40
-Nodes (5): Usage, code:block3 (/instinct-import team-instincts.yaml), 使用方法, 用法, Usage
+Cohesion: 0.22
+Nodes (9): Usage, code:block3 (/instinct-import team-instincts.yaml), 使用方法, 用法, Flags, Instinct Import Command, Merge Behavior, Usage (+1 more)
 
 ### Community 6794 - "Community 6794"
 Cohesion: 0.25
@@ -37678,11 +37634,11 @@ Nodes (7): code:markdown (When reviewing significant changes:), code:typescript 
 
 ### Community 6799 - "Community 6799"
 Cohesion: 0.40
-Nodes (5): code:bash (# プライマリビルドチェック), Kotlinビルドと修正, このコマンドの動作, 使用するタイミング, 実行される診断コマンド
+Nodes (5): Phase 6: Build and Deployment Readiness, code:bash (php artisan optimize:clear), Phase 6: Build and Deployment Readiness, Faz 6: Build ve Deployment Hazırlığı, 第六阶段：构建和部署就绪
 
 ### Community 6800 - "Community 6800"
 Cohesion: 0.40
-Nodes (5): What NOT to Say, 3. Corrective Action Request (CAR) to Supplier, Template, Tone Guidance, When to Use
+Nodes (5): code:block15 (In FastAPI:), code:block16 (Include:), 8. Error Handling Principles, Error Response Philosophy, Exception Strategy
 
 ### Community 6801 - "Community 6801"
 Cohesion: 0.50
@@ -37697,8 +37653,8 @@ Cohesion: 0.25
 Nodes (6): CLI & Installation Rules, code:bash (npx skills add composiohq/skills), Composio Skill, Core Features, How to use, When to use this skill
 
 ### Community 6804 - "Community 6804"
-Cohesion: 0.67
-Nodes (3): code:typescript (export const processAll = task({), For very large datasets, use subtasks:, Using raw SDK instead of Trigger.dev integrations
+Cohesion: 0.40
+Nodes (5): Measure and budget latency for each component:, Measure continuously:, Optimization strategies:, Response Time Variance Disrupts Rhythm, Target latencies:
 
 ### Community 6805 - "Community 6805"
 Cohesion: 0.67
@@ -37822,11 +37778,11 @@ Nodes (10): code:block12 ($HOME/opensource-staging/), Anti-Patterns, Best Practi
 
 ### Community 6839 - "Community 6839"
 Cohesion: 0.40
-Nodes (3): Go開発パターン, いつ有効化するか, クイックリファレンス：Goイディオム
+Nodes (5): Template, Tone Guidance, What NOT to Say, When to Use, 1. RMA Approval Notification
 
 ### Community 6840 - "Community 6840"
-Cohesion: 0.05
-Nodes (51): code:python (import ast), code:block10, code:yaml (openapi: 3.0.0), code:markdown (## User Service), code:block6, code:block8, code:block9, Example 1: Code Analysis for Documentation (+43 more)
+Cohesion: 0.50
+Nodes (4): code:bash (# Test logging output), Phase 10: Logging Configuration, Phase 10: Logging Configuration, 阶段 10: 日志配置
 
 ### Community 6841 - "Community 6841"
 Cohesion: 0.29
@@ -37957,8 +37913,8 @@ Cohesion: 0.20
 Nodes (9): code:markdown (# Sanitization Report: {project-name}), Output Format, Example: Scan a sanitized Node.js project, Examples, Open-Source Sanitizer, Output Format, Prompt Defense Baseline, Rules (+1 more)
 
 ### Community 6877 - "Community 6877"
-Cohesion: 0.40
-Nodes (5): 2. 需求收集, 1. 当前状态分析, 3. 设计提案, 4. 权衡分析, 架构审查流程
+Cohesion: 0.50
+Nodes (4): code:bash (# Generate schema), Phase 11: API Documentation (if DRF), Phase 11: API Documentation (if DRF), 阶段 11: API 文档（如果使用 DRF）
 
 ### Community 6882 - "Community 6882"
 Cohesion: 0.25
@@ -37978,19 +37934,19 @@ Nodes (6): Anti-Patterns, Design Direction, Frontend Design Direction, Implement
 
 ### Community 6888 - "Community 6888"
 Cohesion: 0.40
-Nodes (5): 功能需求, 非功能需求, 技术设计, 系统设计清单, 运维
+Nodes (5): Cloud Run Functions Pattern, code:javascript (// HTTP Function), code:javascript (// Pub/Sub Function), code:javascript (// Cloud Storage Function), code:bash (# Deploy HTTP function)
 
 ### Community 6889 - "Community 6889"
 Cohesion: 0.40
 Nodes (5): code:python (# Step 1: Define target parameters), Signal Search Approach, Stage 1: Signal Scoring, 信号搜索方法, 阶段 1：信号评分
 
 ### Community 6890 - "Community 6890"
-Cohesion: 0.40
-Nodes (3): Leiloeiro, JucepScraper, Scraper JUCEP — Junta Comercial do Estado da Paraíba URL: https://jucep.pb.gov.
+Cohesion: 0.50
+Nodes (4): 1. Training Configuration, 2. Job Configuration, code:python (from transformers import TrainingArguments), Required Configuration
 
 ### Community 6891 - "Community 6891"
 Cohesion: 0.40
-Nodes (3): Leiloeiro, JuceparScraper, Scraper JUCEPAR — Junta Comercial do Paraná URL: https://www.juntacomercial.pr.
+Nodes (5): [2.18.5] - 2026-01-04, Added, Changed, Impact, Why This Matters
 
 ### Community 6892 - "Community 6892"
 Cohesion: 0.25
@@ -38001,12 +37957,12 @@ Cohesion: 0.25
 Nodes (8): Critical Review Areas, Data Contract and Leakage, Evaluation and Promotion, Metrics, Thresholds, and Error Analysis, Monitoring and Incident Response, Problem Framing and Decision Quality, Serving and Deployment, Training Reproducibility
 
 ### Community 6895 - "Community 6895"
-Cohesion: 0.11
-Nodes (24): code:go (var bufferPool = sync.Pool{), Avoid String Concatenation in Loops, Memory and Performance, Preallocate Slices When Size is Known, Use sync.Pool for Frequent Allocations, Avoid String Concatenation in Loops, code:go (// Bad: Grows slice multiple times), code:go (// Bad: Creates many string allocations) (+16 more)
+Cohesion: 0.09
+Nodes (29): code:go (// 不良：多次擴展 slice), code:go (var bufferPool = sync.Pool{), code:go (// 不良：產生多次字串分配), Avoid String Concatenation in Loops, Memory and Performance, Preallocate Slices When Size is Known, Use sync.Pool for Frequent Allocations, Avoid String Concatenation in Loops (+21 more)
 
 ### Community 6899 - "Community 6899"
-Cohesion: 0.09
-Nodes (16): Common Rationalizations, Iron Law, Red Flags - STOP, Rule Name, The Rule, Valid Exceptions, Violations, code:bash (example command) (+8 more)
+Cohesion: 0.06
+Nodes (25): Common Rationalizations, Iron Law, Red Flags - STOP, Rule Name, The Rule, Valid Exceptions, Violations, After (+17 more)
 
 ### Community 6900 - "Community 6900"
 Cohesion: 0.29
@@ -38026,7 +37982,7 @@ Nodes (8): code:bash (# Preferred: install via a package manager (provides integ
 
 ### Community 6904 - "Community 6904"
 Cohesion: 0.40
-Nodes (5): Template, Tone Guidance, What NOT to Say, When to Use, 1. RMA Approval Notification
+Nodes (5): code:block12 (OUTCOME REWARD:  +1.0 (success) | 0.0 (partial) | -1.0 (fail), Dynamic Agent Selection by Complexity, Efficiency Metrics (Track Every Task), Reward Signals (Learn From Outcomes), Tool Orchestration & Efficiency
 
 ### Community 6905 - "Community 6905"
 Cohesion: 0.29
@@ -38045,8 +38001,8 @@ Cohesion: 0.29
 Nodes (6): Colors, Components, Do's and Don'ts, Elevation, Overview, Typography
 
 ### Community 6909 - "Community 6909"
-Cohesion: 0.29
-Nodes (7): code:typescript (// vite.config.ts — Docker/コンテナ設定), code:typescript (// vite.config.ts — モノレポのファイルアクセス), Dockerとコンテナ, デプロイ後の古いチャンク, デベロップメントとビルドが一致しない, モノレポのファイルアクセス, 一般的な落とし穴
+Cohesion: 0.40
+Nodes (5): code:typescript (// Analyze refinement improvement trends), 📊 Continuous Improvement Metrics, Track Refinement Progress Over Time, 📊 Continuous Improvement Metrics, Track Refinement Progress Over Time
 
 ### Community 6910 - "Community 6910"
 Cohesion: 0.29
@@ -38070,7 +38026,7 @@ Nodes (5): 1. Capacitor Absolute Path Resolution, 2. Token Refresh during Sync, 
 
 ### Community 6915 - "Community 6915"
 Cohesion: 0.50
-Nodes (4): code:bash (# Install makepad-skills with hooks enabled), code:json ({), Hooks-Based Auto-Triggering, What Hooks Do
+Nodes (4): [2.14.0] - 2026-01-02, Added, Best Practices, Changed
 
 ### Community 6916 - "Community 6916"
 Cohesion: 0.40
@@ -38082,19 +38038,19 @@ Nodes (16): Cannot open socket, Connection Issues, Troubleshooting, Cannot open 
 
 ### Community 6918 - "Community 6918"
 Cohesion: 0.14
-Nodes (12): code:ts (async function bootstrap() {), Bootstrap and Global Validation, code:ts (@Module({), Modules, Controllers, and Providers, Bootstrap and Global Validation, Modules, Controllers, and Providers, NestJS 开发模式, 何时启用 (+4 more)
+Nodes (12): code:ts (async function bootstrap() {), code:ts (export class CreateUserDto {), Bootstrap and Global Validation, DTOs and Validation, Bootstrap and Global Validation, DTOs and Validation, DTO 与验证, NestJS 开发模式 (+4 more)
 
 ### Community 6919 - "Community 6919"
 Cohesion: 0.50
-Nodes (4): code:markdown (## Validation Report), Self-Validation, Validation Checklist, Validation Prompt
+Nodes (4): [2.15.0] - 2026-01-02, Added, Changed, Fixed
 
 ### Community 6920 - "Community 6920"
 Cohesion: 0.25
 Nodes (8): code:bash (# Install to current project), Shell Script (Legacy), code:bash (# Install globally to ~/.trae-cn/), code:bash (# If already in project directory with .trae folder), Option 1: Local Installation (Current Project Only), Option 2: Global Installation (All Projects), Option 3: Quick Install to Current Directory, Quick Start
 
 ### Community 6921 - "Community 6921"
-Cohesion: 0.29
-Nodes (7): code:bash (go test -cover ./...), code:bash (go test -coverprofile=coverage.out ./...), code:bash (# Fail if coverage below 80%), Basic Coverage, Coverage Analysis, Coverage Thresholds, Detailed Coverage Report
+Cohesion: 0.50
+Nodes (4): [2.18.3] - 2026-01-04, Changed, Impact, Why This Matters
 
 ### Community 6922 - "Community 6922"
 Cohesion: 0.22
@@ -38122,7 +38078,7 @@ Nodes (16): Best Practices, code:block1 (https://2slides.com/api/v1), code:block
 
 ### Community 6928 - "Community 6928"
 Cohesion: 0.40
-Nodes (5): 1. 요구사항 분석, 2. 아키텍처 검토, 3. 단계 분해, 4. 구현 순서, 계획 프로세스
+Nodes (5): 1. Program Type, 2. Current State, 3. Product Fit, 4. Resources, Before Starting
 
 ### Community 6929 - "Community 6929"
 Cohesion: 0.50
@@ -38137,8 +38093,8 @@ Cohesion: 0.25
 Nodes (8): Core Workflow, Phase 0: Prompt Enhancement (Optional), Phase 1: Research, Phase 2: Ideation, Phase 3: Planning, Phase 4: Implementation, Phase 5: Optimization, Phase 6: Quality Review
 
 ### Community 6932 - "Community 6932"
-Cohesion: 0.13
-Nodes (14): code:bash (# バンドル分析), code:bash (# 完全なlighthouse監査を実行), code:typescript (// Core Web Vitalsの追跡), Lighthouse監査, Web Vitalsモニタリング, コア責務, パフォーマンスオプティマイザー, パフォーマンステスト (+6 more)
+Cohesion: 0.33
+Nodes (6): code:bash (# 完全なlighthouse監査を実行), code:typescript (// Core Web Vitalsの追跡), Lighthouse監査, Web Vitalsモニタリング, パフォーマンステスト, パフォーマンスバジェット
 
 ### Community 6933 - "Community 6933"
 Cohesion: 0.40
@@ -38150,7 +38106,7 @@ Nodes (6): ACTION_DEFINITIONS, buildControlPaneAction(), commandLineFor(), norma
 
 ### Community 6935 - "Community 6935"
 Cohesion: 0.40
-Nodes (5): code:bash (# Impacket keylistattack), code:powershell (Rubeus.exe golden /rodcNumber:25078 /aes256:RODC_AES256_KEY ), RODC Attacks, RODC Golden Ticket, RODC Key List Attack
+Nodes (5): Dropbox (Classic), Morning Brew, Notion, Referral Program Examples, Uber/Lyft
 
 ### Community 6936 - "Community 6936"
 Cohesion: 0.33
@@ -38162,7 +38118,7 @@ Nodes (5): Calibration Cadence, Calibration Steps, Setting the Initial Threshold
 
 ### Community 6938 - "Community 6938"
 Cohesion: 0.50
-Nodes (5): borderWidthsFromStyle(), checkElementGptBorderShadow(), checkElementGptBorderShadowDOM(), checkGptThinBorderWideShadow(), shadowMaxBlurPx()
+Nodes (5): buildPlaceholderResizeHandles(), cursorForPlaceholderEdge(), positionAnnotOverlay(), showAnnotOverlay(), syncPlaceholderResizeHandles()
 
 ### Community 6939 - "Community 6939"
 Cohesion: 0.50
@@ -38181,8 +38137,8 @@ Cohesion: 0.33
 Nodes (6): assert, fs, path, run(), test(), WORKFLOW_PATH
 
 ### Community 6943 - "Community 6943"
-Cohesion: 0.40
-Nodes (5): 8. State Management Patterns, code:typescript (import { Injectable, signal, computed } from "@angular/core"), code:typescript (import { Injectable, signal, computed, inject } from "@angul), Component Store Pattern with Signals, Signal-Based State Service
+Cohesion: 0.50
+Nodes (4): Create Checkpoint, code:bash (echo "$(date +%Y-%m-%d-%H:%M) | $CHECKPOINT_NAME | $(git rev), Checkpoint Oluştur, Create Checkpoint
 
 ### Community 6944 - "Community 6944"
 Cohesion: 0.39
@@ -38190,7 +38146,7 @@ Nodes (7): AuthFailure, CacheFailure, Failure, message, NetworkFailure, ServerFa
 
 ### Community 6945 - "Community 6945"
 Cohesion: 0.50
-Nodes (4): code:toml (makepad-widgets = { git = "...", branch = "dev" }), Supported Versions, Version Adaptation, Version Detection
+Nodes (4): code:bash (# Check dependency tree for conflicts), Cargo.toml Troubleshooting, Cargo.toml 故障排除, Cargo.toml Troubleshooting
 
 ### Community 6946 - "Community 6946"
 Cohesion: 0.50
@@ -38218,7 +38174,7 @@ Nodes (6): code:markdown (# İYİ: Paralel yürütme), Agent Orkestrasyonu, Anl�
 
 ### Community 6952 - "Community 6952"
 Cohesion: 0.50
-Nodes (4): [2.12.0] - 2026-01-02, Added, Changed, Philosophy
+Nodes (4): 5. 目标管理, 目标设定, 进度追踪, 障碍识别
 
 ### Community 6953 - "Community 6953"
 Cohesion: 0.29
@@ -38233,8 +38189,8 @@ Cohesion: 0.40
 Nodes (5): code:bash (python3 --version || python --version), code:bash (brew install python3), code:bash (sudo apt update && sudo apt install python3), code:powershell (winget install Python.Python.3.12), Prerequisites
 
 ### Community 6956 - "Community 6956"
-Cohesion: 0.40
-Nodes (5): 9. Forms with Signals (Coming in v22+), code:typescript (import { Component, inject } from "@angular/core";), code:typescript (// Future Signal Forms API (experimental)), Current Reactive Forms, Signal-Aware Form Patterns (Preview)
+Cohesion: 0.50
+Nodes (4): Blocked by Dependency, Checkpoint Rejection, Error Recovery, Failed Tests After GREEN
 
 ### Community 6957 - "Community 6957"
 Cohesion: 0.40
@@ -38245,8 +38201,8 @@ Cohesion: 0.15
 Nodes (13): OpenClaw がすることはすべて攻撃面なしでできる, OpenClaw のパターンが理にかなう理由（ビジネス的観点から）, アーキテクチャの議論：複数のアクセスポイントは脆弱性だ, スキルはサニタイズされるべきだ。追加分はレビューされるべきだ。, 利便性のコスト, 技術者向け：1 つのアクセスポイント、サンドボックス化、ヘッドレス動作, code:block1 (Mac Mini (headless, 24/7)), OpenClaw 所做的一切都可以在没有攻击面的情况下完成 (+5 more)
 
 ### Community 6959 - "Community 6959"
-Cohesion: 0.29
-Nodes (7): code:js (// next.config.js), code:tsx (// Conditional classes with cn()), code:tsx (// Props with children), Common Next.js Config, Quick Reference, Tailwind CSS Utilities, TypeScript Patterns
+Cohesion: 0.50
+Nodes (4): Inputs / Prerequisites, Legal Prerequisites, Required Access, Technical Requirements
 
 ### Community 6960 - "Community 6960"
 Cohesion: 0.33
@@ -38254,7 +38210,7 @@ Nodes (6): code:bash (cmake -B build -S . -DCMAKE_VERBOSE_MAKEFILE=ON), CMake So
 
 ### Community 6961 - "Community 6961"
 Cohesion: 0.06
-Nodes (34): code:go (// İyi: Açık ve doğrudan), code:go (// İyi: Tek metodlu interface'ler), code:go (// Sağlayıcı pakette değil, tüketici pakette), code:go (// İyi: Kısa, küçük harf, alt çizgi yok), code:go (// Kötü: Global değişken state), code:go (// İyi: Sıfır değer kullanışlıdır), code:go (// Kötü: Slice'ı birden çok kez büyütür), code:go (// Kötü: Birçok string tahsisi oluşturur) (+26 more)
+Nodes (31): code:go (// İyi: Tek metodlu interface'ler), code:go (// Sağlayıcı pakette değil, tüketici pakette), code:go (// İyi: Kısa, küçük harf, alt çizgi yok), code:go (// Kötü: Global değişken state), code:go (// Kötü: Slice'ı birden çok kez büyütür), code:go (// Kötü: Birçok string tahsisi oluşturur), code:go (// Kötü: Uzun fonksiyonlarda naked return'ler), code:go (// İyi: Hataları bağlamla sarmalayın) (+23 more)
 
 ### Community 6962 - "Community 6962"
 Cohesion: 0.29
@@ -38273,16 +38229,16 @@ Cohesion: 0.50
 Nodes (4): 代码质量, 前端, 后端（如果需要）, 技术指南
 
 ### Community 6966 - "Community 6966"
-Cohesion: 0.40
-Nodes (5): Completeness, Content Quality, ✅ Quality Checklist, Structure, Usability
+Cohesion: 0.50
+Nodes (4): 6. State Management: Riverpod, code:dart (// Auto-dispose async provider), 6. State Management: Riverpod, 6. 状态管理：Riverpod
 
 ### Community 6967 - "Community 6967"
 Cohesion: 0.40
 Nodes (4): Notes, Purpose, Santa Loop, Usage
 
 ### Community 6968 - "Community 6968"
-Cohesion: 0.40
-Nodes (5): Before/After: Legacy E-commerce Platform, Before/After: Modern React App, code:block1 (Before: "This 50k-line PHP codebase from 2015..."), code:block2 (Before: Every AI session starts with context explanation), Real Success Stories
+Cohesion: 0.50
+Nodes (4): Phase 6: Django Management Commands, code:bash (# Check for model issues), Phase 6: Django Management Commands, 阶段 6: Django 管理命令
 
 ### Community 6969 - "Community 6969"
 Cohesion: 0.29
@@ -38290,7 +38246,7 @@ Nodes (8): After: Self-learning architecture (v3.0.0-alpha.1), Before: Typical a
 
 ### Community 6970 - "Community 6970"
 Cohesion: 0.11
-Nodes (24): code:python (@dataclass), code:python (from dataclasses import dataclass, field), Data Classes, Data Classes and Named Tuples, Data Classes with Validation, Named Tuples, code:python (from typing import NamedTuple), Data Classes (+16 more)
+Nodes (25): code:python (@dataclass), code:python (from dataclasses import dataclass, field), Data Classes, Data Classes and Named Tuples, Data Classes with Validation, Named Tuples, code:python (from typing import NamedTuple), Data Classes (+17 more)
 
 ### Community 6971 - "Community 6971"
 Cohesion: 0.18
@@ -38301,8 +38257,8 @@ Cohesion: 0.29
 Nodes (8): code:typescript (// Domain-specific algorithm learning), Cross-Phase Coordination, Learn Algorithm Patterns by Domain, 🎯 SPARC-Specific Algorithm Optimizations, code:typescript (// Coordinate with specification and architecture phases), Cross-Phase Coordination, Learn Algorithm Patterns by Domain, 🎯 SPARC-Specific Algorithm Optimizations
 
 ### Community 6973 - "Community 6973"
-Cohesion: 0.40
-Nodes (5): [2.18.5] - 2026-01-04, Added, Changed, Impact, Why This Matters
+Cohesion: 0.67
+Nodes (3): code:bash (# Pattern-based (SSN, email)), Redact Sensitive Information, 编辑敏感信息
 
 ### Community 6974 - "Community 6974"
 Cohesion: 0.29
@@ -38333,8 +38289,8 @@ Cohesion: 0.29
 Nodes (8): code:typescript (// RED: Write failing test), code:typescript (// Use Flash Attention for processing large test suites), Performance Optimization with Flash Attention, Red-Green-Refactor with Pattern Memory, 🧪 Test-Driven Refinement with Learning, Performance Optimization with Flash Attention, Red-Green-Refactor with Pattern Memory, 🧪 Test-Driven Refinement with Learning
 
 ### Community 6981 - "Community 6981"
-Cohesion: 0.40
-Nodes (5): code:block12 (OUTCOME REWARD:  +1.0 (success) | 0.0 (partial) | -1.0 (fail), Dynamic Agent Selection by Complexity, Efficiency Metrics (Track Every Task), Reward Signals (Learn From Outcomes), Tool Orchestration & Efficiency
+Cohesion: 0.67
+Nodes (3): 3. Typography, Hierarchy, Named Rules
 
 ### Community 6982 - "Community 6982"
 Cohesion: 0.18
@@ -38362,7 +38318,7 @@ Nodes (3): Output Format, code:block2 ([SEVERITY] short title), Output Format
 
 ### Community 6988 - "Community 6988"
 Cohesion: 0.67
-Nodes (3): DO Add, DON'T Add, Quality Guidelines
+Nodes (3): code:typescript (import { ReasoningBank } from 'agentic-flow/reasoningbank';), Quick Start, Quick Start
 
 ### Community 6989 - "Community 6989"
 Cohesion: 0.29
@@ -38385,8 +38341,8 @@ Cohesion: 0.29
 Nodes (8): Decision Making Framework, Escalation Protocols, Task Assignment Algorithm, code:python (def assign_task(task, available_agents):), code:yaml (Performance Issues:), Decision Making Framework, Escalation Protocols, Task Assignment Algorithm
 
 ### Community 6995 - "Community 6995"
-Cohesion: 0.40
-Nodes (5): code:javascript (// webhook-handler.js), Setup Webhook Handler, Webhook Integration, Setup Webhook Handler, Webhook Integration
+Cohesion: 0.67
+Nodes (4): code:bash (cat package.json | grep -E '"motion"|"framer-motion"'), code:ts (// Correct (modern)), Version, Version
 
 ### Community 6996 - "Community 6996"
 Cohesion: 0.40
@@ -38509,8 +38465,8 @@ Cohesion: 0.10
 Nodes (27): code:go (func BenchmarkSort(b *testing.B) {), Basic Benchmarks, Benchmark with Different Sizes, Benchmarks, code:go (func BenchmarkStringConcat(b *testing.B) {), Memory Allocation Benchmarks, Basic Benchmarks, Benchmark with Different Sizes (+19 more)
 
 ### Community 7028 - "Community 7028"
-Cohesion: 0.02
-Nodes (123): code:kotlin (// entities/UserEntity.kt), code:kotlin (// 良い例: コルーチンサポートのために newSuspendedTransaction を使用), code:kotlin (// JSONB のカスタムカラム型), DAO 操作, Kover Coverage, code:kotlin (// Good: Use newSuspendedTransaction for coroutine support), code:kotlin (// Custom column type for JSONB), code:kotlin (class UserRepositoryTest : FunSpec({) (+115 more)
+Cohesion: 0.03
+Nodes (75): code:kotlin (// entities/UserEntity.kt), code:kotlin (// JSONB のカスタムカラム型), DAO 操作, Kover Coverage, code:kotlin (// Custom column type for JSONB), code:kotlin (class UserRepositoryTest : FunSpec({), code:kotlin (// build.gradle.kts), DAO 操作 (+67 more)
 
 ### Community 7029 - "Community 7029"
 Cohesion: 0.40
@@ -38537,12 +38493,12 @@ Cohesion: 0.67
 Nodes (4): code:ts (import {required, email, min, max, minLength, maxLength, pat), code:ts (userForm = form(this.userModel, (schemaPath) => {), Validation, Validation
 
 ### Community 7035 - "Community 7035"
-Cohesion: 0.50
-Nodes (4): Config and Environment Validation, code:ts (ConfigModule.forRoot({), Config and Environment Validation, 配置与环境验证
+Cohesion: 0.67
+Nodes (3): code:typescript (// If customer is logged in, can access their data), Duplicate Webhook Definitions Cause Conflicts, Use customer account API for direct access
 
 ### Community 7036 - "Community 7036"
-Cohesion: 0.40
-Nodes (5): 6. Validation Principles, code:block8 (Where to validate:), Validate at Boundaries, Validation Library Selection, Validation Philosophy
+Cohesion: 0.50
+Nodes (4): Config and Environment Validation, code:ts (ConfigModule.forRoot({), Config and Environment Validation, 配置与环境验证
 
 ### Community 7037 - "Community 7037"
 Cohesion: 0.25
@@ -38565,24 +38521,24 @@ Cohesion: 0.25
 Nodes (7): 1. UX Mental Model Enforcement, 2. Information Hierarchy & Language, 3. Conflict List Semantics, 4. Conflict Detail UX, 5. Phase 9 UX Danger Map (Boundary Policing), 6. UX Sign-off for Phase 9 Completion, Phase 9: Conflict Resolution Center - UX Contract & Validation
 
 ### Community 7042 - "Community 7042"
-Cohesion: 0.40
-Nodes (5): 8. Testing Principles, Built-in Test Runner (Node.js 22+), code:block10 (node --test src/**/*.test.ts), Test Strategy Selection, What to Test (Priorities)
+Cohesion: 0.67
+Nodes (3): error-diagnostics-error-analysis (`error-diagnostics-error-analysis`), Example Prompts, Use Cases
 
 ### Community 7043 - "Community 7043"
-Cohesion: 0.33
-Nodes (6): Architecture, code:tsx (import {fade} from '@remotion/transitions/fade';), code:tsx (import {slide} from '@remotion/transitions/slide';), Text Overlays, Transition Effects, Video Composition Strategy
+Cohesion: 0.67
+Nodes (3): Example Prompts, gdpr-data-handling (`gdpr-data-handling`), Use Cases
 
 ### Community 7044 - "Community 7044"
 Cohesion: 0.50
-Nodes (4): Common Payloads, Encoding Variants, Quick Reference, Target Files
+Nodes (4): Avoiding Render Cascades, Lists, Performance, When `React.memo` Actually Helps
 
 ### Community 7045 - "Community 7045"
 Cohesion: 0.33
 Nodes (5): References (Knowledge Base), Routing, Slides, Subcommands, When to Use
 
 ### Community 7046 - "Community 7046"
-Cohesion: 0.06
-Nodes (39): code:python (def test_with_tmpdir(tmpdir):), code:python (# Yavaş testleri işaretle), code:bash (# Sadece hızlı testleri çalıştır), code:python (# Eşitlik), code:python (import tempfile), code:python (def test_with_tmp_path(tmp_path):), Testing File Operations, Testing Side Effects (+31 more)
+Cohesion: 0.12
+Nodes (23): code:python (def test_with_tmpdir(tmpdir):), code:python (import tempfile), code:python (def test_with_tmp_path(tmp_path):), Testing File Operations, Testing Side Effects, Testing with pytest's tmp_path Fixture, Testing with tmpdir Fixture, Testing File Operations (+15 more)
 
 ### Community 7047 - "Community 7047"
 Cohesion: 0.25
@@ -38613,8 +38569,8 @@ Cohesion: 0.25
 Nodes (8): Core Workflow, Phase 0: Prompt Enhancement (Optional), Phase 1: Research, Phase 2: Ideation, Phase 3: Planning, Phase 4: Implementation, Phase 5: Optimization, Phase 6: Quality Review
 
 ### Community 7054 - "Community 7054"
-Cohesion: 0.40
-Nodes (5): 9. Return Policy Exception Approval, Customer-Facing Template, Internal Approval Record, Tone Guidance, When to Use
+Cohesion: 0.50
+Nodes (4): Bot Missing applications.commands Scope, code:bash (# .env (never commit)), code:javascript (// Load with dotenv), Use environment variables properly
 
 ### Community 7055 - "Community 7055"
 Cohesion: 0.47
@@ -38641,36 +38597,32 @@ Cohesion: 0.29
 Nodes (5): Agent Eval Skill, Best Practices, Installation, Links, When to Activate
 
 ### Community 7062 - "Community 7062"
-Cohesion: 0.07
-Nodes (26): code:typescript (// PASS: 基於資源的 URL), code:typescript (// 抽象資料存取邏輯), code:typescript (// 業務邏輯與資料存取分離), code:typescript (// 請求/回應處理流水線), code:typescript (// FAIL: 不良：N+1 查詢問題), 速率限制, code:typescript (// PASS: 良好：只選擇需要的欄位), API 設計模式 (+18 more)
-
-### Community 7063 - "Community 7063"
-Cohesion: 0.50
-Nodes (4): Example 1: Business Logic Testing, Example 2: Authentication Bypass, Example 3: Information Disclosure, Examples
+Cohesion: 0.05
+Nodes (37): Memoization, Memoization, 2. KISS (Keep It Simple, Stupid), 3. DRY (Don't Repeat Yourself), 4. YAGNI (You Aren't Gonna Need It), code:block15 (components/Button.tsx          # コンポーネントは PascalCase), code:typescript (import { useMemo, useCallback } from 'react'), code:typescript (// PASS: İYİ: Sadece gerekli sütunları seç) (+29 more)
 
 ### Community 7064 - "Community 7064"
 Cohesion: 0.06
-Nodes (33): code:go (// 良好：清晰直接), code:go (// 良好：單一方法介面), code:go (// 在消費者套件中，而非提供者), code:go (// 良好：簡短、小寫、無底線), code:go (// 不良：全域可變狀態), code:go (// 良好：零值有用), code:go (// 不良：多次擴展 slice), code:go (// 不良：產生多次字串分配) (+25 more)
+Nodes (30): code:go (// 良好：清晰直接), code:go (// 良好：單一方法介面), code:go (// 在消費者套件中，而非提供者), code:go (// 良好：零值有用), code:bash (# 建置和執行), code:go (// 不良：長函式中的裸返回), code:go (// 良好：接受介面，回傳具體類型), code:go (// 良好：包裝錯誤並加上上下文) (+22 more)
 
 ### Community 7065 - "Community 7065"
 Cohesion: 0.50
 Nodes (3): Behavior, Execution, Update Coding Agent Context
 
-### Community 7066 - "Community 7066"
-Cohesion: 0.40
-Nodes (5): 1. Current State Analysis, 2. Requirements Gathering, 3. Design Proposal, 4. Trade-Off Analysis, Architecture Review Process
-
 ### Community 7067 - "Community 7067"
-Cohesion: 0.67
-Nodes (3): Example Prompts, form-cro (`form-cro`), Use Cases
+Cohesion: 0.50
+Nodes (4): 5. Increase Memory (More CPU), code:bash (# Higher memory = more CPU during startup), Concurrency Configuration Pattern, Optimization_impact
 
 ### Community 7068 - "Community 7068"
 Cohesion: 0.50
 Nodes (4): 7. 预警系统, 定期检查提醒, 趋势预警, 问题预警
 
+### Community 7069 - "Community 7069"
+Cohesion: 0.50
+Nodes (4): code:yaml (# Use Cloud SQL connector which handles reconnection), code:python (from google.cloud.sql.connector import Connector), Container Startup Timeout (4 minutes max), Use Cloud SQL Proxy sidecar
+
 ### Community 7070 - "Community 7070"
-Cohesion: 0.40
-Nodes (5): Advanced: Distinguish interruption types:, Basic barge-in:, Generating Text-Length Responses for Voice, Implement barge-in detection:, Response time target:
+Cohesion: 0.50
+Nodes (4): [2.16.0] - 2026-01-02, Added, Changed, Performance Impact
 
 ### Community 7071 - "Community 7071"
 Cohesion: 0.07
@@ -38701,8 +38653,8 @@ Cohesion: 0.60
 Nodes (5): code:bash (xcodebuild -list 2>&1), Diagnostic Commands, 診断コマンド, code:bash (swift build 2>&1), Diagnostic Commands
 
 ### Community 7078 - "Community 7078"
-Cohesion: 0.05
-Nodes (50): 1. Long Functions, 2. Deep Nesting, 3. Magic Numbers, Code Smell Detection, 1. Long Functions, 2. Deep Nesting, 3. Magic Numbers, Code Smell Detection (+42 more)
+Cohesion: 0.07
+Nodes (39): 1. Long Functions, 2. Deep Nesting, 3. Magic Numbers, Code Smell Detection, 1. Long Functions, 2. Deep Nesting, 3. Magic Numbers, Code Smell Detection (+31 more)
 
 ### Community 7079 - "Community 7079"
 Cohesion: 0.50
@@ -38740,10 +38692,6 @@ Nodes (6): Code Quality, Development Mode, Focus Areas, Invocation, Testing, Wor
 Cohesion: 0.25
 Nodes (10): code:bash (python3 "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2), Implementation, Evolve Command, Behavior Notes, Supported Args (v2.1), Your Task, 实现方式, Implementation (+2 more)
 
-### Community 7089 - "Community 7089"
-Cohesion: 0.67
-Nodes (3): Example Prompts, internal-comms (`internal-comms-anthropic`), Use Cases
-
 ### Community 7090 - "Community 7090"
 Cohesion: 0.25
 Nodes (6): C++ Coding Style, Formatting, Modern C++ (C++17/20/23), Naming Conventions, Reference, Resource Management
@@ -38768,10 +38716,6 @@ Nodes (4): code:bash (mkdir -p TARGET_DIR), Step 2: Create Staging Copy, 步骤 
 Cohesion: 0.50
 Nodes (4): Analysis Tools, Measurement Tools, Monitoring Tools, Performance Tools
 
-### Community 7097 - "Community 7097"
-Cohesion: 1.00
-Nodes (3): gitLogSince(), gitSummary(), runGit()
-
 ### Community 7098 - "Community 7098"
 Cohesion: 0.29
 Nodes (6): distDir, { execFileSync }, fs, opencodeDir, path, rootDir
@@ -38790,7 +38734,7 @@ Nodes (5): Common Rules for Professional UI, Icons & Visual Elements, Layout & S
 
 ### Community 7102 - "Community 7102"
 Cohesion: 0.50
-Nodes (4): code:bash (# Planning a feature), ECC Workflow, ECC 工作流, Workflow ECC
+Nodes (4): [2.18.2] - 2026-01-04, Added, Changed, Impact
 
 ### Community 7103 - "Community 7103"
 Cohesion: 0.15
@@ -38880,10 +38824,6 @@ Nodes (6): Baseline Controls, Deployment Integrations, Enterprise Agent Ops, Inc
 Cohesion: 0.25
 Nodes (6): Anti-Patterns, Design Direction, Frontend Design Direction, Implementation Guidance, Review Checklist, When to Use
 
-### Community 7131 - "Community 7131"
-Cohesion: 0.67
-Nodes (3): code:bash (# Test without slash), REST API Required Migration to GraphQL (April 2025), Test both formats
-
 ### Community 7134 - "Community 7134"
 Cohesion: 0.33
 Nodes (6): code:block4 (Question: "どのスキルカテゴリをインストールしますか？"), code:bash (# コアスキルは .agents/skills/ 配下にあります), 2a: スキルカテゴリの選択, 2b: 個別スキルの確認, 2c: インストールの実行, ステップ 2: スキルの選択とインストール
@@ -38893,8 +38833,8 @@ Cohesion: 0.53
 Nodes (6): code:bash (ctest --test-dir build --output-on-failure), Running Tests, テストの実行, 运行测试, code:bash (./build/example_tests --gtest_filter=ClampTest.*), Running Tests
 
 ### Community 7136 - "Community 7136"
-Cohesion: 0.12
-Nodes (23): code:text (myproject/), Avoid Package-Level State, code:go (// Good: Short, lowercase, no underscores), code:go (// Bad: Global mutable state), Package Naming, Package Organization, Standard Project Layout, Avoid Package-Level State (+15 more)
+Cohesion: 0.09
+Nodes (29): code:text (myproject/), code:go (// 良好：簡短、小寫、無底線), code:go (// 不良：全域可變狀態), Avoid Package-Level State, code:go (// Good: Short, lowercase, no underscores), code:go (// Bad: Global mutable state), Package Naming, Package Organization (+21 more)
 
 ### Community 7138 - "Community 7138"
 Cohesion: 0.20
@@ -38952,17 +38892,25 @@ Nodes (6): code:text (Prediction-market signals are informational inputs, not in
 Cohesion: 0.67
 Nodes (3): 3. Supply Chain Security (A03), Attack Surface, Defense Principles
 
-### Community 7152 - "Community 7152"
-Cohesion: 0.50
-Nodes (4): code:block3 (Agent(), Step 3: Run Forker Agent, ステップ3: フォーカーエージェントを実行する, 步骤 3：运行分叉代理
-
 ### Community 7153 - "Community 7153"
 Cohesion: 0.14
 Nodes (17): code:bash (gget <module> [arguments] [options]), code:bash (gget info ENSG00000012048 -o brca1-info.json), code:python (import gget), code:markdown (| Date | gget version | Module | Query | Species/assembly | ), code:bash (gget search -s human brca1 dna repair -o brca1-search.json), code:bash (gget seq ENSG00000012048 -o brca1-seq.fa), code:bash (gget blast "MEEPQSDPSVEPPLSQETFSDLWKLLPEN" -l 10 -o blast-re), gget (+9 more)
 
+### Community 7154 - "Community 7154"
+Cohesion: 0.50
+Nodes (4): [2.27.0] - 2026-01-06, Added - 2025 Research-Backed Enhancements, Changed, Research Impact Summary
+
 ### Community 7155 - "Community 7155"
 Cohesion: 0.50
 Nodes (4): 10. Testing Quick Reference, code:dart (// Unit test — use case), 10. Testing Quick Reference, 10. 测试快速参考
+
+### Community 7156 - "Community 7156"
+Cohesion: 0.50
+Nodes (4): Adaptation Effectiveness, Learning Progress, Performance Metrics & KPIs, System Efficiency
+
+### Community 7157 - "Community 7157"
+Cohesion: 0.50
+Nodes (4): 1. 趋势分析, 卫生习惯改善, 牙周健康变化, 龋齿发展趋势
 
 ### Community 7158 - "Community 7158"
 Cohesion: 0.40
@@ -38970,7 +38918,7 @@ Nodes (5): ステップ1 - 意図の把握, ステップ4 - 外部マッチを�
 
 ### Community 7159 - "Community 7159"
 Cohesion: 0.50
-Nodes (4): Avoiding Render Cascades, Lists, Performance, When `React.memo` Actually Helps
+Nodes (4): Affiliate Programs, Customer Referral Programs, Hybrid Approach, Referral vs. Affiliate: When to Use Each
 
 ### Community 7160 - "Community 7160"
 Cohesion: 0.60
@@ -38978,7 +38926,11 @@ Nodes (5): code:text ("claude code skill" keyword), code:bash (gh search repos "
 
 ### Community 7161 - "Community 7161"
 Cohesion: 0.04
-Nodes (62): code:python (# Mark slow tests), pyproject.toml, pytest.ini, base_page.py, conftest.py, login_page.py, pytest.ini, code:toml ([tool.pytest.ini_options]) (+54 more)
+Nodes (65): code:python (# Mark slow tests), pyproject.toml, pytest.ini, base_page.py, conftest.py, login_page.py, pytest.ini, code:toml ([tool.pytest.ini_options]) (+57 more)
+
+### Community 7162 - "Community 7162"
+Cohesion: 0.50
+Nodes (4): Before Launch, Launch, Launch Checklist, Post-Launch (First 30 Days)
 
 ### Community 7163 - "Community 7163"
 Cohesion: 0.67
@@ -39008,13 +38960,21 @@ Nodes (5): code:bash (# Phase 2: Rehearse), code:javascript ('use strict';), Scr
 Cohesion: 0.12
 Nodes (23): `Arc<Mutex<T>>` for Shared Mutable State, Async with Tokio, Channels for Message Passing, code:rust (use tokio::time::Duration;), Concurrency, `Arc<Mutex<T>>` for Shared Mutable State, Async with Tokio, Channels for Message Passing (+15 more)
 
+### Community 7172 - "Community 7172"
+Cohesion: 0.50
+Nodes (4): code:typescript (await qstash.publishJSON({), Sending large payloads instead of references, Use callbacks for critical operations:, Use failure callbacks for dead letter handling:
+
 ### Community 7173 - "Community 7173"
 Cohesion: 0.50
-Nodes (4): [2.16.0] - 2026-01-02, Added, Changed, Performance Impact
+Nodes (4): Implementation:, Reduce jitter sources:, Target jitter metrics:, Using Silence Duration for Turn Detection
 
 ### Community 7174 - "Community 7174"
 Cohesion: 0.24
 Nodes (10): count_obs(), date_ago(), extract_field(), scan_dir_to_json(), count_obs(), date_ago(), extract_field(), scan_dir_to_json() (+2 more)
+
+### Community 7175 - "Community 7175"
+Cohesion: 0.50
+Nodes (4): Post-processing:, Prompt for spoken format:, SSML for precise control:, VAD/STT Fails in Noisy Environments
 
 ### Community 7176 - "Community 7176"
 Cohesion: 0.12
@@ -39025,8 +38985,8 @@ Cohesion: 0.50
 Nodes (4): code:json ({), Option A: MCP Server (Recommended), Option B: Direct REST API, Prerequisites
 
 ### Community 7178 - "Community 7178"
-Cohesion: 0.50
-Nodes (4): 1. 趋势分析, 卫生习惯改善, 牙周健康变化, 龋齿发展趋势
+Cohesion: 0.22
+Nodes (9): 2. 风险评估, 4. 个性化建议, 口腔癌风险评估, 核心功能, 治疗建议, 牙周病风险评估, 生活方式建议, 预防建议 (+1 more)
 
 ### Community 7179 - "Community 7179"
 Cohesion: 0.50
@@ -39041,36 +39001,40 @@ Cohesion: 0.50
 Nodes (4): Must Use, Recommended, Skip, When to Apply
 
 ### Community 7183 - "Community 7183"
-Cohesion: 0.50
-Nodes (4): Implementation:, Reduce jitter sources:, Target jitter metrics:, Using Silence Duration for Turn Detection
+Cohesion: 0.67
+Nodes (3): code:bash (bun run --env-file=.env dev), 脚本和环境变量, Scripts and env
 
 ### Community 7184 - "Community 7184"
-Cohesion: 0.50
-Nodes (4): Post-processing:, Prompt for spoken format:, SSML for precise control:, VAD/STT Fails in Noisy Environments
+Cohesion: 1.00
+Nodes (3): gitLogSince(), gitSummary(), runGit()
 
 ### Community 7185 - "Community 7185"
 Cohesion: 0.50
 Nodes (4): code:bash (npx ecc-agentshield init), Initialize Secure Config, 初始化安全配置, 安全な設定の初期化
 
 ### Community 7186 - "Community 7186"
-Cohesion: 0.50
-Nodes (4): 주요 설계 결정, 프로젝트별 아키텍처 (예시), 현재 아키텍처, 확장성 계획
+Cohesion: 0.67
+Nodes (3): code:javascript (// deploy-commands.js - Run manually, not on bot start), code:python (# Pycord - Don't sync on every startup), Use a separate deploy script (not on startup)
 
 ### Community 7187 - "Community 7187"
 Cohesion: 0.27
 Nodes (7): install.sh script, install.sh script, install.sh script, copy_managed_file(), do_install(), ensure_manifest_entry(), manifest_has_entry()
 
 ### Community 7189 - "Community 7189"
-Cohesion: 0.12
-Nodes (16): code:javascript (// Node.js heap snapshot comparison), Debugging Workflow, Interactive Debugging, Memory and Performance Debugging, Production Debugging, code:python (# Python profiling with cProfile), Debugging Workflow, Error Aggregation and Pattern Recognition (+8 more)
+Cohesion: 0.05
+Nodes (42): code:block1 (Error: Database connection timeout after 30s), code:block2 (NullPointerException), code:javascript (// Node.js heap snapshot comparison), Common Stack Trace Patterns, Debugging Workflow, Distributed Systems Debugging, Error Aggregation and Pattern Recognition, Error Analysis and Resolution Implementation Playbook (+34 more)
 
 ### Community 7192 - "Community 7192"
-Cohesion: 0.50
-Nodes (4): Borrow Checker Troubleshooting, 借用检查器故障排除, Borrow Checker Troubleshooting, code:rust (// Problem: Cannot borrow as mutable because also borrowed a)
+Cohesion: 0.67
+Nodes (3): code:javascript (// CORRECT - modal is first response), code:javascript (// WRONG - deferred first), Show modal immediately
+
+### Community 7193 - "Community 7193"
+Cohesion: 0.67
+Nodes (3): 5. Conflict Resolution Mechanism, 5. Conflict Resolution Mechanism, code:python (def resolve_conflicts(agent_insights):)
 
 ### Community 7194 - "Community 7194"
-Cohesion: 0.20
-Nodes (10): code:terraform (# PASS: CORRECT: Automated RDS backups), 7. Backup & Disaster Recovery, 7. 备份与灾难恢复, 7. 백업 및 재해 복구, Automated Backups, Verification Steps, 自动化备份, 验证步骤 (+2 more)
+Cohesion: 0.25
+Nodes (8): code:terraform (# PASS: CORRECT: Automated RDS backups), 7. 备份与灾难恢复, 7. 백업 및 재해 복구, Automated Backups, 自动化备份, 验证步骤, 자동 백업, 확인 단계
 
 ### Community 7195 - "Community 7195"
 Cohesion: 0.25
@@ -39085,12 +39049,12 @@ Cohesion: 0.25
 Nodes (6): Do not use this skill when, FastAPI Project Templates, Instructions, Limitations, Resources, Use this skill when
 
 ### Community 7198 - "Community 7198"
-Cohesion: 0.05
-Nodes (51): 1. Stop Throwing Everywhere, 2. The Result Pattern (Either), 3. Chaining Operations That Might Fail, 4. Collecting Multiple Errors, After: Clean Chain with Either, After: Validation with Error Accumulation, Before: Collecting Errors Manually, Before: Nested Try/Catch Hell (+43 more)
+Cohesion: 0.04
+Nodes (57): 1. Stop Throwing Everywhere, 2. The Result Pattern (Either), 3. Chaining Operations That Might Fail, 4. Collecting Multiple Errors, After: Clean Chain with Either, After: Validation with Error Accumulation, Before: Collecting Errors Manually, Before: Nested Try/Catch Hell (+49 more)
 
 ### Community 7201 - "Community 7201"
 Cohesion: 0.18
-Nodes (9): Free Tool Strategy (Engineering as Marketing), Initial Assessment, Launch, Limitations, Ongoing, Promotion Strategy, Questions to Ask, Related Skills (+1 more)
+Nodes (9): Free Tool Strategy (Engineering as Marketing), Ideation Framework, Initial Assessment, Limitations, Questions to Ask, Related Skills, Start with Pain Points, Validate the Idea (+1 more)
 
 ### Community 7202 - "Community 7202"
 Cohesion: 0.25
@@ -39121,8 +39085,8 @@ Cohesion: 0.29
 Nodes (6): [Best practices](https://developer.apple.com/design/human-interface-guidelines/combo-boxes#Best-practices), Combo boxes, [Developer documentation](https://developer.apple.com/design/human-interface-guidelines/combo-boxes#Developer-documentation), [Platform considerations](https://developer.apple.com/design/human-interface-guidelines/combo-boxes#Platform-considerations), [Related](https://developer.apple.com/design/human-interface-guidelines/combo-boxes#Related), [Resources](https://developer.apple.com/design/human-interface-guidelines/combo-boxes#Resources)
 
 ### Community 7209 - "Community 7209"
-Cohesion: 0.50
-Nodes (4): Clarity Test, Completeness Test, Skill Effectiveness Metrics, Usefulness Test
+Cohesion: 0.67
+Nodes (3): Launch, Ongoing, Promotion Strategy
 
 ### Community 7210 - "Community 7210"
 Cohesion: 0.25
@@ -39169,8 +39133,8 @@ Cohesion: 0.29
 Nodes (6): [Best practices](https://developer.apple.com/design/human-interface-guidelines/photo-editing#Best-practices), [Developer documentation](https://developer.apple.com/design/human-interface-guidelines/photo-editing#Developer-documentation), Photo editing, [Platform considerations](https://developer.apple.com/design/human-interface-guidelines/photo-editing#Platform-considerations), [Resources](https://developer.apple.com/design/human-interface-guidelines/photo-editing#Resources), [Videos](https://developer.apple.com/design/human-interface-guidelines/photo-editing#Videos)
 
 ### Community 7221 - "Community 7221"
-Cohesion: 0.50
-Nodes (4): [2.18.4] - 2026-01-04, Added, Changed, Impact
+Cohesion: 0.67
+Nodes (3): code:bash (# Create topic), code:javascript (// Handle Pub/Sub push messages), Push Subscription to Cloud Run
 
 ### Community 7222 - "Community 7222"
 Cohesion: 0.15
@@ -39181,12 +39145,12 @@ Cohesion: 0.22
 Nodes (11): Authentication Methods, Method 1: Automatic Token (Recommended), Method 2: Explicit Token, Method 3: Environment Variable, Authentication Methods, code:python ("secrets": {"HF_TOKEN": "$HF_TOKEN"}), code:python ("secrets": {"HF_TOKEN": "hf_abc123..."}), code:python ("env": {"HF_TOKEN": "hf_abc123..."}) (+3 more)
 
 ### Community 7224 - "Community 7224"
-Cohesion: 0.15
-Nodes (15): code:python (hf_jobs("uv", {), code:python (# production_train.py), Example: Full Production Setup, 1. Training Configuration, 2. Job Configuration, code:python (from transformers import TrainingArguments), code:python (# production_detector.py), code:python (# train_detector.py) (+7 more)
+Cohesion: 0.18
+Nodes (13): code:python (hf_jobs("uv", {), code:python (# production_train.py), code:python (# train.py), Complete Example, Example: Full Production Setup, code:python (# production_detector.py), code:python (# train_detector.py), Complete Example (+5 more)
 
 ### Community 7225 - "Community 7225"
-Cohesion: 0.13
-Nodes (14): code:block17 (CUDA not available), Getting Help, Checklist Before Submitting, Common Error Codes, Error: Cost Unexpectedly High, Error: GPU Not Available, Error: Job Status Unknown, Error: Logs Not Available (+6 more)
+Cohesion: 0.09
+Nodes (21): code:block13 (Error pushing to Hub), code:block14 (404 Client Error: Not Found), code:python (from huggingface_hub import HfApi), code:block17 (CUDA not available), Getting Help, Checklist Before Submitting, Common Error Codes, Error: Cost Unexpectedly High (+13 more)
 
 ### Community 7226 - "Community 7226"
 Cohesion: 0.10
@@ -39349,8 +39313,8 @@ Cohesion: 0.67
 Nodes (3): Coordination Effectiveness, Performance Metrics, Quality Metrics
 
 ### Community 7277 - "Community 7277"
-Cohesion: 0.05
-Nodes (42): Best Practices, code:bash (# Capture on specific interface), code:python (import struct), code:python (def hexdump(data: bytes, width: int = 16):), code:python (# Entropy analysis - high entropy suggests encryption/compre), code:bash (# Extract TLS metadata), code:bash (# Pre-master secret log (browser)), code:python (from boofuzz import *) (+34 more)
+Cohesion: 0.04
+Nodes (52): code:block15 (Answer customer questions about our product.), code:markdown (You are a senior customer support specialist for TechCorp wi), code:block17, Best Practices, code:bash (# Capture on specific interface), code:python (import struct), code:python (def hexdump(data: bytes, width: int = 16):), code:python (# Entropy analysis - high entropy suggests encryption/compre) (+44 more)
 
 ### Community 7278 - "Community 7278"
 Cohesion: 0.25
@@ -39669,8 +39633,8 @@ Cohesion: 0.15
 Nodes (26): BTreeMap, Option, PathBuf, Result, String, T, Vec, AgentProfileConfig (+18 more)
 
 ### Community 7434 - "Community 7434"
-Cohesion: 0.06
-Nodes (47): Go (net/http), Implementation Patterns, Python (Django REST Framework), TypeScript (Next.js API Route), code:go (func (h *UserHandler) CreateUser(w http.ResponseWriter, r *h), Go (net/http), Implementation Patterns, Python (Django REST Framework) (+39 more)
+Cohesion: 0.04
+Nodes (62): API Design Checklist, API Design Patterns, Go (net/http), Headers, Implementation Patterns, Python (Django REST Framework), Rate Limit Tiers, Rate Limiting (+54 more)
 
 ### Community 7443 - "Community 7443"
 Cohesion: 0.06
@@ -39725,8 +39689,8 @@ Cohesion: 0.12
 Nodes (23): code:go (// Good: Zero value is useful), code:go (// Good: Clear and direct), 1. Simplicity and Clarity, 2. Make the Zero Value Useful, 3. Accept Interfaces, Return Structs, code:go (// Good: Accepts interface, returns concrete type), Core Principles, 1. Simplicity and Clarity (+15 more)
 
 ### Community 7476 - "Community 7476"
-Cohesion: 0.50
-Nodes (4): 1. Topology Adaptation Engine, 2. Self-Organizing Coordination, 3. Machine Learning Integration, Core Intelligence Systems
+Cohesion: 0.67
+Nodes (3): code:python (import psutil), Concurrency=1 Causes Scaling Bottlenecks, Monitor memory usage
 
 ### Community 7477 - "Community 7477"
 Cohesion: 0.29
@@ -39753,16 +39717,16 @@ Cohesion: 0.29
 Nodes (5): API Connector Builder, Guardrails, Quality Checklist, Related Skills, When to Use
 
 ### Community 7486 - "Community 7486"
-Cohesion: 0.50
-Nodes (4): 2. 风险评估, 口腔癌风险评估, 牙周病风险评估, 龋齿风险评估
+Cohesion: 0.67
+Nodes (3): code:yaml (# Move heavy processing to separate service), Use Pub/Sub for async processing, VPC Connector 10-Minute Idle Timeout
 
 ### Community 7487 - "Community 7487"
 Cohesion: 0.67
-Nodes (4): code:json ({), Package Configuration, package.json, tsconfig.json
+Nodes (3): code:python (from sqlalchemy import create_engine), code:javascript (import mysql from 'mysql2/promise';), Connection Pools
 
 ### Community 7488 - "Community 7488"
-Cohesion: 0.50
-Nodes (4): Extend, Don't Replace, Regression Prevention, Test Migration, Working with Existing Tests
+Cohesion: 0.67
+Nodes (3): code:typescript (export const processAll = task({), For very large datasets, use subtasks:, Using raw SDK instead of Trigger.dev integrations
 
 ### Community 7503 - "Community 7503"
 Cohesion: 0.29
@@ -39845,12 +39809,12 @@ Cohesion: 0.29
 Nodes (7): code:markdown (---), code:markdown (- Use Content Security Policy (CSP) headers), code:markdown (- Use parameterized queries with SQLAlchemy), code:markdown (- Use html/template for HTML escaping), Language-Specific Security, Security Steering File, Steering File Security
 
 ### Community 7536 - "Community 7536"
-Cohesion: 0.50
-Nodes (4): Current Architecture, Key Design Decisions, Project-Specific Architecture (Example), Scalability Plan
+Cohesion: 0.67
+Nodes (3): code:typescript (// app/api/email-failed/route.ts), Cron schedules using wrong timezone, Failure callback for alerting:
 
 ### Community 7537 - "Community 7537"
-Cohesion: 0.50
-Nodes (4): Constraints and Guardrails, Legal and Ethical Requirements, Operational Boundaries, Technical Limitations
+Cohesion: 0.67
+Nodes (3): Example Prompts, firmware-analyst (`firmware-analyst`), Use Cases
 
 ### Community 7538 - "Community 7538"
 Cohesion: 0.29
@@ -39861,8 +39825,8 @@ Cohesion: 0.33
 Nodes (6): Actions, code:block3 (Use @api-documenter to generate API documentation), code:block4 (Use @openapi-spec-generation to create OpenAPI specs), Copy-Paste Prompts, Phase 2: API Documentation, Skills to Invoke
 
 ### Community 7540 - "Community 7540"
-Cohesion: 0.50
-Nodes (4): code:typescript (await qstash.publishJSON({), Sending large payloads instead of references, Use callbacks for critical operations:, Use failure callbacks for dead letter handling:
+Cohesion: 0.67
+Nodes (3): 11. Reporting Principles, Finding Structure, Severity Classification
 
 ### Community 7541 - "Community 7541"
 Cohesion: 0.29
@@ -39963,10 +39927,6 @@ Nodes (7): 1.1 Primitive Types, 1.2 Type Coercion, 1.3 Equality Operators, 1. Fu
 ### Community 7591 - "Community 7591"
 Cohesion: 0.29
 Nodes (7): 2.1 Scope Types, 2.2 Closures, 2.3 var vs let vs const, 2. Scope & Closures, code:javascript (// Global scope), code:javascript (function createCounter() {), code:javascript (// var - function scoped, hoisted, can redeclare)
-
-### Community 7592 - "Community 7592"
-Cohesion: 0.67
-Nodes (3): code:bash (# DOCX to PDF), Convert Documents, 转换文档
 
 ### Community 7593 - "Community 7593"
 Cohesion: 0.29
@@ -40316,14 +40276,6 @@ Nodes (7): 8. Audio Quality Issues, code:python (# ✅ Use LINEAR16 PCM at 16kHz
 Cohesion: 0.40
 Nodes (5): CI Integration Pattern, Config Tamper Guard, ECC v1.8 Additions, Health Metrics, Language Gate Table
 
-### Community 7721 - "Community 7721"
-Cohesion: 0.67
-Nodes (3): 4. Elevation, Named Rules, Shadow Vocabulary
-
-### Community 7722 - "Community 7722"
-Cohesion: 0.67
-Nodes (3): Ideation Framework, Start with Pain Points, Validate the Idea
-
 ### Community 7723 - "Community 7723"
 Cohesion: 0.29
 Nodes (7): Animation Utilities, code:tsx (import { cva, type VariantProps } from 'class-variance-autho), code:tsx (// Mobile-first responsive design), code:tsx (// Skeleton loading), Component Variants with CVA, Responsive Design, Tailwind CSS
@@ -40364,10 +40316,6 @@ Nodes (5): code:yaml (span_types:), code:block3 (.loki/traces/), Span Types (Age
 Cohesion: 0.29
 Nodes (7): code:python (async def execute_with_model_fallback(task, preferred_model)), code:python (async def execute_with_workflow_fallback(task):), code:block13 (Task Execution), Fallback Decision Tree, Model-Level Fallbacks, Multi-Tiered Fallback System, Workflow-Level Fallbacks
 
-### Community 7733 - "Community 7733"
-Cohesion: 0.67
-Nodes (3): Integration with AgentDB, code:typescript (// Persist ReasoningBank data), Integration with AgentDB
-
 ### Community 7734 - "Community 7734"
 Cohesion: 0.29
 Nodes (7): code:tsx (// Compound component pattern for a Select), code:tsx (interface MousePosition {), code:tsx (function withAuth<P extends object>(WrappedComponent: React.), Component Composition, Compound Components, Higher-Order Components (HOC), Render Props
@@ -40381,8 +40329,8 @@ Cohesion: 0.29
 Nodes (7): code:block12 (/api/v1/users), code:block13 (GET /api/users), code:block14 (GET /api/users?version=2), Header Versioning, Query Parameter, URL Versioning (Recommended), Versioning Strategies
 
 ### Community 7737 - "Community 7737"
-Cohesion: 0.22
-Nodes (8): code:javascript (const sequentialQuantileScale = d3.scaleSequentialQuantile(d), code:javascript (const colourScale = d3.scaleSequential(d3.interpolateBlues)), code:javascript (const divergingScale = d3.scaleDiverging(d3.interpolateRdBu)), D3.js Scale Reference, Diverging colour scale, Sequential colour scale, Sequential quantile scale, Sequential scales
+Cohesion: 0.29
+Nodes (7): code:javascript (const sequentialQuantileScale = d3.scaleSequentialQuantile(d), code:javascript (const colourScale = d3.scaleSequential(d3.interpolateBlues)), code:javascript (const divergingScale = d3.scaleDiverging(d3.interpolateRdBu)), Diverging colour scale, Sequential colour scale, Sequential quantile scale, Sequential scales
 
 ### Community 7738 - "Community 7738"
 Cohesion: 0.29
@@ -40400,29 +40348,17 @@ Nodes (3): Alternative: Track in database, code:typescript (const existing = awa
 Cohesion: 0.67
 Nodes (3): code:yaml (- run: npm install @trigger.dev/sdk@${{ env.TRIGGER_VERSION ), In CI/CD:, Task retries cause duplicate side effects
 
-### Community 7742 - "Community 7742"
-Cohesion: 0.67
-Nodes (3): code:typescript (// app/api/email-failed/route.ts), Cron schedules using wrong timezone, Failure callback for alerting:
-
-### Community 7743 - "Community 7743"
-Cohesion: 0.67
-Nodes (3): Example Prompts, firmware-analyst (`firmware-analyst`), Use Cases
-
 ### Community 7744 - "Community 7744"
 Cohesion: 0.67
 Nodes (3): Example Prompts, HTML Injection Testing (`html-injection-testing`), Use Cases
-
-### Community 7745 - "Community 7745"
-Cohesion: 0.67
-Nodes (3): 7. Scanning Methodology, code:block4 (1. RECONNAISSANCE), Phase-Based Approach
 
 ### Community 7747 - "Community 7747"
 Cohesion: 0.04
 Nodes (60): Advanced Query Patterns, API Client Configuration, API Service Layer Pattern, Basic Mutation Pattern, Basic Pattern, Cache Access Without Fetching, Cache-First Pattern Example, Cache-First Strategy (+52 more)
 
 ### Community 7748 - "Community 7748"
-Cohesion: 0.02
-Nodes (82): code:`python (class MockDocumentationGenerator:), code:block12, code:block21 (Write a Python function to process user data.), code:python (code_prompt = """), code:block23, code:block1 (Perceivable:  Can users perceive the content?), code:html (<!-- Bad -->), code:css (:focus {) (+74 more)
+Cohesion: 0.03
+Nodes (70): code:`python (class MockDocumentationGenerator:), code:block12, code:block1 (Perceivable:  Can users perceive the content?), code:html (<!-- Bad -->), code:css (:focus {), code:html (<html lang="en">), code:html (<p>The French word <span lang="fr">bonjour</span> means hell), code:html (<input aria-describedby="email-error" aria-invalid="true" />) (+62 more)
 
 ### Community 7749 - "Community 7749"
 Cohesion: 0.15
@@ -40485,8 +40421,8 @@ Cohesion: 0.07
 Nodes (27): Accessibility and Testing, Accessibility Checklist, Bundle Analysis, Bundle Score Interpretation, code:bash (python scripts/bundle_analyzer.py /path/to/project), code:block12 (Bundle Health Score: 75/100 (C)), code:bash (python scripts/bundle_analyzer.py . --verbose), code:tsx (// Server Component (default) - no 'use client') (+19 more)
 
 ### Community 7780 - "Community 7780"
-Cohesion: 0.05
-Nodes (42): 1. Setup and Configuration, 2. Basic Host Reconnaissance, 3. Search Queries, 5. On-Demand Scanning, 6. Statistics and Analysis, 7. Network Monitoring, 8. REST API Usage, Available Scan Protocols (+34 more)
+Cohesion: 0.04
+Nodes (55): 1. Setup and Configuration, 2. Basic Host Reconnaissance, 3. Search Queries, 4. Search Filters Reference, 5. On-Demand Scanning, 6. Statistics and Analysis, 7. Network Monitoring, 8. REST API Usage (+47 more)
 
 ### Community 7785 - "Community 7785"
 Cohesion: 0.29
@@ -40629,8 +40565,8 @@ Cohesion: 0.29
 Nodes (7): Actions, code:block12 (Use @web-performance-optimization to audit and improve WordP), Copy-Paste Prompts, Performance Checklist, Phase 5: Performance Optimization, Skills to Invoke, WordPress 7.0 Performance
 
 ### Community 7848 - "Community 7848"
-Cohesion: 0.05
-Nodes (42): Actions, Actions, Actions, Actions, Actions, Block Pattern with ContentOnly (WP 7.0), Breadcrumbs Block Support, code:css (/*) (+34 more)
+Cohesion: 0.06
+Nodes (32): Actions, Actions, Actions, Actions, Breadcrumbs Block Support, code:css (/*), code:php (// Add breadcrumb filters for custom post types), code:php (// Add custom icons for Icon block via pattern category) (+24 more)
 
 ### Community 7850 - "Community 7850"
 Cohesion: 0.29
@@ -40842,7 +40778,7 @@ Nodes (47): 9. Blockchain Security (Solana), Transaction Verification, Verificat
 
 ### Community 7944 - "Community 7944"
 Cohesion: 0.10
-Nodes (22): Commit Analysis, File Analysis, Phase 2 — DISCOVER, PR Template, PRP Artifacts, code:bash (git log origin/<base>..HEAD --format="%h %s" --reverse), code:bash (git diff origin/<base>..HEAD --stat), PR 模板 (+14 more)
+Nodes (23): Commit Analysis, File Analysis, Phase 2 — DISCOVER, PR Template, PRP Artifacts, code:bash (git log origin/<base>..HEAD --format="%h %s" --reverse), code:bash (git diff origin/<base>..HEAD --stat), PR 模板 (+15 more)
 
 ### Community 7945 - "Community 7945"
 Cohesion: 0.06
@@ -40906,15 +40842,15 @@ Nodes (5): code:dart (// シール状態 — 不可能な状態を防止), Dart/
 
 ### Community 7980 - "Community 7980"
 Cohesion: 0.03
-Nodes (66): code:go (// プロダクションコード - 時間を注入可能にする), code:go (type HTTPClient interface {), code:go (func TestHandler(t *testing.T) {), code:go (func TestAuthMiddleware(t *testing.T) {), code:go (func TestAPIIntegration(t *testing.T) {), code:go (func BenchmarkCalculation(b *testing.B) {), code:go (func BenchmarkEncoding(b *testing.B) {), code:go (// 実行: go test -bench=. -benchmem) (+58 more)
+Nodes (56): code:go (// プロダクションコード - 時間を注入可能にする), code:go (type HTTPClient interface {), code:go (func TestHandler(t *testing.T) {), code:go (func TestAuthMiddleware(t *testing.T) {), code:go (func TestAPIIntegration(t *testing.T) {), code:go (func TestUserRepository(t *testing.T) {), code:go (func FuzzParseInput(f *testing.F) {), code:text (mypackage/) (+48 more)
 
 ### Community 7981 - "Community 7981"
 Cohesion: 0.40
 Nodes (4): PRDコマンド, このコマンドのスコープ, 成功基準, 統合
 
 ### Community 7994 - "Community 7994"
-Cohesion: 0.20
-Nodes (8): Bun 运行时, 何时使用, 工作原理, 最佳实践, 测试, 示例, 运行和安装, 运行时 API
+Cohesion: 0.33
+Nodes (4): Bun 运行时, 何时使用, 工作原理, 最佳实践
 
 ### Community 7996 - "Community 7996"
 Cohesion: 0.33
@@ -41009,8 +40945,8 @@ Cohesion: 0.33
 Nodes (6): Buttons, Cards & Containers, Components, Footer, Inputs & Forms, Top Navigation
 
 ### Community 8074 - "Community 8074"
-Cohesion: 0.07
-Nodes (28): code:block1 (<tipo>: <descrição>), code:block1 (<type>: <description>), Commit Mesaj Formatı, Commit Message Format, Git İş Akışı, Git Workflow, Git ワークフロー, Git 工作流程 (+20 more)
+Cohesion: 0.06
+Nodes (32): code:block1 (<tipo>: <descrição>), code:block1 (<type>: <description>), Commit Mesaj Formatı, Commit Message Format, Git İş Akışı, Git Workflow, Git ワークフロー, Git 工作流程 (+24 more)
 
 ### Community 8075 - "Community 8075"
 Cohesion: 0.09
@@ -41029,8 +40965,8 @@ Cohesion: 0.17
 Nodes (13): Process, Step 1: Find the session file, Step 2: Read the entire session file, Step 3: Confirm understanding, Step 4: Wait for the user, code:block3 (SESSION LOADED: [actual resolved path to the file]), Process, Step 1: Find the session file (+5 more)
 
 ### Community 8080 - "Community 8080"
-Cohesion: 0.06
-Nodes (42): code:typescript (import DOMPurify from 'isomorphic-dompurify'), Content Security Policy, Sanitize HTML, 5. XSS Prevention, Content Security Policy, Sanitize HTML, Verification Steps, code:typescript (// next.config.js) (+34 more)
+Cohesion: 0.05
+Nodes (45): 5. XSS Prevention, code:typescript (import DOMPurify from 'isomorphic-dompurify'), Content Security Policy, Sanitize HTML, Security Checklist, Verification Steps, 5. XSS Prevention, Content Security Policy (+37 more)
 
 ### Community 8081 - "Community 8081"
 Cohesion: 0.40
@@ -41085,8 +41021,8 @@ Cohesion: 0.29
 Nodes (5): API 响应格式, 仓储模式, 常用模式, 设计模式, 骨架项目
 
 ### Community 8113 - "Community 8113"
-Cohesion: 0.11
-Nodes (15): コンテキストウィンドウ管理, パフォーマンス最適化, ビルドトラブルシューティング, モデル選択戦略, 拡張思考 + プランモード, Build Troubleshooting, Context Window Management, Extended Thinking (+7 more)
+Cohesion: 0.08
+Nodes (20): API Response Format, Common Patterns, Design Patterns, Repository Pattern, Skeleton Projects, コンテキストウィンドウ管理, パフォーマンス最適化, ビルドトラブルシューティング (+12 more)
 
 ### Community 8114 - "Community 8114"
 Cohesion: 0.33
@@ -41137,8 +41073,8 @@ Cohesion: 0.33
 Nodes (6): Circuit Breakers & Fault Tolerance, Enterprise Security, 🎯 Key Features, Real-Time Collaboration, Timeout-Free Execution, Work Stealing & Load Balancing
 
 ### Community 8142 - "Community 8142"
-Cohesion: 0.07
-Nodes (31): 10. Dependency Security, 5. XSS Prevention, 6. CSRF Protection, CSRF Tokens, Lock Files, Regular Updates, SameSite Cookies, Security Checklist (+23 more)
+Cohesion: 0.05
+Nodes (46): 6. CSRF Protection, CSRF Tokens, SameSite Cookies, Verification Steps, 6. CSRF Protection, CSRF Tokens, SameSite Cookies, Verification Steps (+38 more)
 
 ### Community 8143 - "Community 8143"
 Cohesion: 0.33
@@ -41226,11 +41162,11 @@ Nodes (27): Constraints, Mission, Output, Workflow, Constraints, Mission, Output
 
 ### Community 8173 - "Community 8173"
 Cohesion: 0.05
-Nodes (47): 1. Mesh (Peer-to-Peer), 2. Hierarchical (Queen-Worker), 3. Adaptive (Dynamic), Advanced Features, Best Practices, code:typescript (// Handle agent failures), code:typescript (// Track swarm metrics), code:bash (# Pre-task coordination) (+39 more)
+Nodes (47): 1. Mesh (Peer-to-Peer), 2. Hierarchical (Queen-Worker), 3. Adaptive (Dynamic), Adaptive Execution, Best Practices, code:bash (# Pre-task coordination), code:typescript (// Equal peers, distributed decision-making), code:typescript (// Sequential pipeline with dependencies) (+39 more)
 
 ### Community 8174 - "Community 8174"
 Cohesion: 0.13
-Nodes (14): Best Practices, code:python (import os), Error: 401 Unauthorized, Error: 403 Forbidden, Error: Repository not found, Key Takeaway, Troubleshooting, Verification Checklist (+6 more)
+Nodes (14): Automatic Creation, Best Practices, Error: 401 Unauthorized, Error: 403 Forbidden, Error: Repository not found, Key Takeaway, Manual Creation, Repository Naming (+6 more)
 
 ### Community 8175 - "Community 8175"
 Cohesion: 0.33
@@ -41589,8 +41525,8 @@ Cohesion: 0.33
 Nodes (6): code:block1 (Proxy > Intercept > Intercept is on/off toggle), Configure Interception, Intercept and Forward Requests, Launch Burp's Browser, Phase 1: Intercepting HTTP Traffic, View HTTP History
 
 ### Community 8308 - "Community 8308"
-Cohesion: 0.17
-Nodes (10): 1. Partitioning Strategy, 2. Ordering Key, 3. Data Types, 4. Avoid, 5. Monitoring, Best Practices, ClickHouse Analytics Patterns, Limitations (+2 more)
+Cohesion: 0.12
+Nodes (15): 1. Partitioning Strategy, 2. Ordering Key, 3. Data Types, 4. Avoid, 5. Monitoring, Aggregations, Best Practices, ClickHouse Analytics Patterns (+7 more)
 
 ### Community 8312 - "Community 8312"
 Cohesion: 0.40
@@ -41630,7 +41566,7 @@ Nodes (6): Four-Phase Loop, Phase 1: Failure Capture, Phase 2: Root-Cause Diagno
 
 ### Community 8335 - "Community 8335"
 Cohesion: 0.06
-Nodes (40): 7. Rate Limiting, API Rate Limiting, code:typescript (// Aggressive rate limiting for searches), Expensive Operations, Verification Steps, 7. Rate Limiting, API Rate Limiting, Expensive Operations (+32 more)
+Nodes (39): 7. Rate Limiting, API Rate Limiting, code:typescript (// Aggressive rate limiting for searches), Expensive Operations, Verification Steps, 7. Rate Limiting, API Rate Limiting, Expensive Operations (+31 more)
 
 ### Community 8343 - "Community 8343"
 Cohesion: 0.24
@@ -41642,7 +41578,7 @@ Nodes (21): code:bash (hasdata google-serp --q "QUERY" [--gl COUNTRY] [--hl LANG
 
 ### Community 8345 - "Community 8345"
 Cohesion: 0.04
-Nodes (71): BTreeMap, Color, DecisionLogEntry, FileActivityEntry, Option, Row, Session, SessionBoardMeta (+63 more)
+Nodes (74): Color, DateTime, DecisionLogEntry, FileActivityEntry, Option, Row, Session, SessionMessage (+66 more)
 
 ### Community 8346 - "Community 8346"
 Cohesion: 0.33
@@ -41661,12 +41597,8 @@ Cohesion: 0.40
 Nodes (5): Step 5：生成头像, 流程, code:markdown (**头像提示词**（可复制到以下平台手动生成）：), Step 5：生成头像, 流程
 
 ### Community 8365 - "Community 8365"
-Cohesion: 0.29
-Nodes (7): code:bash (cd ~/path/to/my-project), Scope, Targeting a specific project, Scope, Targeting a specific project, 范围, 针对特定项目
-
-### Community 8366 - "Community 8366"
-Cohesion: 0.29
-Nodes (7): code:block2 (スキャン中：), code:block4 (- [ ] 他のスキルとの内容の重複を確認済み), フェーズ 1 — インベントリ, フェーズ 2 — 品質評価, フェーズ 3 — サマリーテーブル, フェーズ 4 — 統合, 完全棚卸しフロー
+Cohesion: 0.22
+Nodes (9): code:bash (cd ~/path/to/my-project), Scope, Targeting a specific project, Scope, Targeting a specific project, スコープ, 特定のプロジェクトをターゲットにする, 范围 (+1 more)
 
 ### Community 8369 - "Community 8369"
 Cohesion: 0.29
@@ -42049,8 +41981,8 @@ Cohesion: 0.33
 Nodes (6): code:javascript (const financialColours = {), code:javascript (const temperatureScale = d3.scaleSequential(d3.interpolateRd), code:javascript (const statusColours = {), Context-specific palettes, Semantic colour associations, Universal colour meanings
 
 ### Community 8531 - "Community 8531"
-Cohesion: 0.04
-Nodes (44): code:block1 (SS = Z × σ_d × √(LT)), code:block10 (CV = σ_demand / μ_demand), code:block2 (SS = Z × √(LT_avg × σ_d² + d_avg² × σ_LT²)), code:block3 (SS = Z × σ_d × √(LT + R)), code:block4 (Optimal SL = 1 − (H / (H + S × D/Q))), 1.1 Primary Selection Algorithm, 1.2 Model Switching Rules, 1.3 Parameter Optimization Protocol (+36 more)
+Cohesion: 0.05
+Nodes (41): code:block10 (CV = σ_demand / μ_demand), code:block14 (WOS = On-Hand Inventory (units) / Average Weekly Demand (uni), code:block15 (Annual Turns = Annual COGS / Average Inventory at Cost), 1.1 Primary Selection Algorithm, 1.2 Model Switching Rules, 1.3 Parameter Optimization Protocol, 1. Forecast Method Selection Trees, 4.1 ABC Classification (Value) (+33 more)
 
 ### Community 8532 - "Community 8532"
 Cohesion: 0.22
@@ -42062,7 +41994,7 @@ Nodes (6): Context, Effort Estimate, Feature: [Name], Hypothesis, Next Steps, Pr
 
 ### Community 8536 - "Community 8536"
 Cohesion: 0.15
-Nodes (13): Automatic Creation, code:python (from huggingface_hub import HfApi), Manual Creation, Repository Naming, Repository Setup, Automatic Creation, Manual Creation, Repository Naming (+5 more)
+Nodes (13): code:python (from huggingface_hub import HfApi), code:python (import os), Automatic Creation, Manual Creation, Repository Naming, Repository Setup, Automatic Creation, Manual Creation (+5 more)
 
 ### Community 8544 - "Community 8544"
 Cohesion: 0.33
@@ -42533,8 +42465,8 @@ Cohesion: 0.40
 Nodes (4): Credits, Improvements, New Skills, v7.2.0 - Community PR Harvest & Cleanup (2026-03-08)
 
 ### Community 8729 - "Community 8729"
-Cohesion: 0.18
-Nodes (6): 🥘 Công thức 1: "Kiểm tra Code cũ (Legacy Code Audit)", 🥘 Công thức 2: "Ứng dụng Web hiện đại", 🥘 Công thức 3: "Kiến trúc sư Agent", 🧪 Ví dụ Thực tế ("Sổ tay Nấu ăn Antigravity"), Chính sách Giấy phép, 📜 Nguồn gốc & Ghi công
+Cohesion: 0.12
+Nodes (10): 🥘 Công thức 1: "Kiểm tra Code cũ (Legacy Code Audit)", 🥘 Công thức 2: "Ứng dụng Web hiện đại", 🥘 Công thức 3: "Kiến trúc sư Agent", 🧪 Ví dụ Thực tế ("Sổ tay Nấu ăn Antigravity"), Báo cáo Lỗ hổng, Chính sách Bảo mật (Security Policy), Chính sách Kỹ năng Tấn công (Offensive Skills Policy), Các Phiên bản được Hỗ trợ (+2 more)
 
 ### Community 8731 - "Community 8731"
 Cohesion: 0.40
@@ -42753,8 +42685,8 @@ Cohesion: 0.40
 Nodes (5): 1. **Atomic Synchronization**, 2. **Version Management**, 3. **Documentation Consistency**, 4. **Testing Integration**, Best Practices
 
 ### Community 8835 - "Community 8835"
-Cohesion: 0.20
-Nodes (8): code:bash (# Initialize MCP optimization analysis), Quick Start, Fast Tool Registry, O(1) Tool Lookup Implementation, Quick Start, Related V3 Skills, V3 MCP Optimization, What This Skill Does
+Cohesion: 0.40
+Nodes (3): Related V3 Skills, V3 MCP Optimization, What This Skill Does
 
 ### Community 8845 - "Community 8845"
 Cohesion: 0.11
@@ -42773,8 +42705,8 @@ Cohesion: 0.40
 Nodes (5): code:markdown (**Target:** Corporate web application (app.company.com)), code:bash (# Enable comprehensive logging), Example 1: Quick Scope Definition, Example 2: Monitoring Setup, Examples
 
 ### Community 8857 - "Community 8857"
-Cohesion: 0.11
-Nodes (20): code:bash (# Build and run), code:yaml (linters:), Essential Commands, Go Tooling Integration, Recommended Linter Configuration (.golangci.yml), Essential Commands, Go Tooling Integration, Recommended Linter Configuration (.golangci.yml) (+12 more)
+Cohesion: 0.09
+Nodes (24): code:bash (# Build and run), code:bash (# Build ve çalıştır), code:yaml (linters:), Essential Commands, Go Development Patterns, Go Tooling Integration, Quick Reference: Go Idioms, Recommended Linter Configuration (.golangci.yml) (+16 more)
 
 ### Community 8858 - "Community 8858"
 Cohesion: 0.40
@@ -42833,8 +42765,8 @@ Cohesion: 0.40
 Nodes (5): Copy & Messaging Experiments, Experiment Ideas, Form Design Experiments, Post-Submit Experiments, Trial & Commitment Experiments
 
 ### Community 8894 - "Community 8894"
-Cohesion: 0.04
-Nodes (48): Authentication and Authorization, Authorization Patterns, Headers, Rate Limit Tiers, Rate Limiting, Token-Based Auth, Authentication and Authorization, Authorization Patterns (+40 more)
+Cohesion: 0.08
+Nodes (29): Authentication and Authorization, Authorization Patterns, Token-Based Auth, Authentication and Authorization, Authorization Patterns, code:typescript (// Resource-level: check ownership), Token-Based Auth, API Design Checklist (+21 more)
 
 ### Community 8896 - "Community 8896"
 Cohesion: 0.40
@@ -42927,10 +42859,6 @@ Nodes (4): Lifecycle Contract, Memory Persistence Hooks, Operator Expectations, 
 ### Community 8974 - "Community 8974"
 Cohesion: 0.29
 Nodes (5): 医疗CDSS开发模式, 反模式, 工作原理, 警报严重程度与UI行为, 适用场景
-
-### Community 8977 - "Community 8977"
-Cohesion: 0.04
-Nodes (43): Database Queries, Lazy Loading, Memoization, Performance Best Practices, 1. Readability First, 2. KISS (Keep It Simple, Stupid), 3. DRY (Don't Repeat Yourself), 4. YAGNI (You Aren't Gonna Need It) (+35 more)
 
 ### Community 8978 - "Community 8978"
 Cohesion: 0.50
@@ -43061,8 +42989,8 @@ Cohesion: 0.50
 Nodes (4): code:block1 (Select a track to implement:), If argument provided:, If no argument:, Track Selection
 
 ### Community 9067 - "Community 9067"
-Cohesion: 0.18
-Nodes (14): code:rust (// Collect into different types), Iterators and Closures, Prefer Iterator Chains Over Manual Loops, Use `collect()` with Type Annotation, code:rust (// Good: Declarative, lazy, composable), Iterators and Closures, Prefer Iterator Chains Over Manual Loops, Use `collect()` with Type Annotation (+6 more)
+Cohesion: 0.09
+Nodes (22): code:rust (// Collect into different types), Iterators and Closures, Prefer Iterator Chains Over Manual Loops, Use `collect()` with Type Annotation, code:rust (// Good: Declarative, lazy, composable), How It Works, Iterators and Closures, Prefer Iterator Chains Over Manual Loops (+14 more)
 
 ### Community 9071 - "Community 9071"
 Cohesion: 0.50
@@ -43185,8 +43113,8 @@ Cohesion: 0.40
 Nodes (4): 9. Touch Psychology Checklist, Before Every Screen, Before Release, Touch Psychology Reference
 
 ### Community 9126 - "Community 9126"
-Cohesion: 0.07
-Nodes (27): code:bash (# Clear current auth), code:python (# Use multiple accounts), code:bash (# List all notebooks), code:bash (# Check active notebook), code:block14 (ModuleNotFoundError: No module named 'patchright'), code:bash (# ALWAYS use run.py - it handles venv automatically!), code:bash (# Check Python version (needs 3.8+)), code:bash (# Increase timeout) (+19 more)
+Cohesion: 0.09
+Nodes (23): Authentication Issues, code:bash (# Clear current auth), code:python (# Use multiple accounts), code:block14 (ModuleNotFoundError: No module named 'patchright'), code:bash (# ALWAYS use run.py - it handles venv automatically!), code:bash (# Check Python version (needs 3.8+)), code:bash (# Increase timeout), code:block2 (Error: Not authenticated. Please run auth setup first.) (+15 more)
 
 ### Community 9127 - "Community 9127"
 Cohesion: 0.50
@@ -44817,8 +44745,8 @@ Cohesion: 0.50
 Nodes (3): code:sql (-- identity is the SQL-standard approach), code:sql (-- Use IDENTITY for sequential IDs (SQL-standard, best for m), Select Optimal Primary Key Strategy
 
 ### Community 10027 - "Community 10027"
-Cohesion: 0.05
-Nodes (40): Table of Contents, Template, Template, Tone Guidance, Tone Guidance, Tone Guidance, Variable Reference, What NOT to Say (+32 more)
+Cohesion: 0.04
+Nodes (50): Table of Contents, Template, Template, Tone Guidance, Tone Guidance, Tone Guidance, Variable Reference, What NOT to Say (+42 more)
 
 ### Community 10056 - "Community 10056"
 Cohesion: 0.18
@@ -46481,8 +46409,8 @@ Cohesion: 0.67
 Nodes (3): Example Prompts, schema-markup (`schema-markup`), Use Cases
 
 ### Community 11397 - "Community 11397"
-Cohesion: 0.18
-Nodes (6): Cancel the current synthesis task, Transcription worker that detects interrupts          Key Features:     - Det, Process transcription and detect interrupts                  If the user start, Interrupt this event                  Returns:             True if the event, Broadcast interrupt to all in-flight events                  This is called wh, TranscriptionWorkerWithInterrupts
+Cohesion: 0.40
+Nodes (3): Transcription worker that detects interrupts          Key Features:     - Det, Process transcription and detect interrupts                  If the user start, TranscriptionWorkerWithInterrupts
 
 ### Community 11398 - "Community 11398"
 Cohesion: 0.67
@@ -46522,7 +46450,7 @@ Nodes (9): Automatic tracking of:, Capabilities, GitHub Issue Tracker, Integrati
 
 ### Community 11413 - "Community 11413"
 Cohesion: 0.20
-Nodes (8): code:typescript (import { ReasoningBank } from 'agentic-flow/reasoningbank';), Quick Start, Best Practices, Learn More, Prerequisites, Quick Start, ReasoningBank Intelligence, What This Skill Does
+Nodes (8): Integration with AgentDB, Best Practices, code:typescript (// Persist ReasoningBank data), Integration with AgentDB, Learn More, Prerequisites, ReasoningBank Intelligence, What This Skill Does
 
 ### Community 11414 - "Community 11414"
 Cohesion: 0.67
@@ -46682,7 +46610,7 @@ Nodes (4): code:javascript (exports.handler = async (event, context) => {), Impl
 
 ### Community 11811 - "Community 11811"
 Cohesion: 0.02
-Nodes (140): Path, Path, Path, Path, Path, format_output(), Format results for Claude consumption (token-optimized), format_output() (+132 more)
+Nodes (142): Path, Path, Path, Path, Path, format_output(), Format results for Claude consumption (token-optimized), format_output() (+134 more)
 
 ### Community 11826 - "Community 11826"
 Cohesion: 0.33
@@ -46733,8 +46661,8 @@ Cohesion: 0.27
 Nodes (5): NotificationUpdate, ServerEvent, useNotificationsRealtime(), useServerSync(), useServerSync()
 
 ### Community 12179 - "Community 12179"
-Cohesion: 0.04
-Nodes (59): Comprehensive Bug Audit Report, Finding #103: [LOW] Unnecessary Re-renders (Qwen 3.6), Finding #22: [HIGH] race_conditions (Qwen 3.6), Finding #23: [HIGH] duplicate_submissions (Qwen 3.6), Finding #32: [MEDIUM] incorrect_state_transitions (Qwen 3.6), Finding #97: [MEDIUM] unhandled edge cases (Qwen 3.6), Problem, Problem (+51 more)
+Cohesion: 0.05
+Nodes (44): Finding #18: [CRITICAL] unhandled_edge_cases (Qwen 3.6), Finding #23: [HIGH] duplicate_submissions (Qwen 3.6), Finding #32: [MEDIUM] incorrect_state_transitions (Qwen 3.6), Finding #97: [MEDIUM] unhandled edge cases (Qwen 3.6), Problem, Problem, Problem, Problem (+36 more)
 
 ### Community 12180 - "Community 12180"
 Cohesion: 0.11
@@ -46761,8 +46689,8 @@ Cohesion: 0.22
 Nodes (9): 5. Google Drive Integration, Bulk Linking Script, code:block3 (User taps "Add Photo" in mobile app), code:block4 (App reads drive_file_id from Supabase), code:bash (# From D:\MediaHive App\), Currently Linked Inventory Photos (Jun 2026), Display Flow (Any Client → Drive), Proxy API Route (+1 more)
 
 ### Community 12370 - "Community 12370"
-Cohesion: 0.18
-Nodes (13): Path, EnvConfig, EnvLoader, get_env_paths(), load_config(), load_env_file(), main(), Initialize ShopifyInitializer.          Args:             config: Environment (+5 more)
+Cohesion: 0.22
+Nodes (12): Path, EnvConfig, EnvLoader, get_env_paths(), load_config(), load_env_file(), main(), Environment configuration container. (+4 more)
 
 ### Community 12409 - "Community 12409"
 Cohesion: 0.29
@@ -46889,8 +46817,8 @@ Cohesion: 0.15
 Nodes (17): 1. Audit, 2. Report, 3. Tear down, code:bash (PORT=$(npx -y @accesslint/chrome@latest ensure | node -e 'pr), code:bash (git stash push -u -m "accesslint-diff-baseline"), code:bash (git diff --quiet && git diff --cached --quiet || git stash p), code:block4 (Accessibility diff — http://localhost:3000/ vs main (94 rule), code:bash (npx -y @accesslint/chrome@latest stop --all  # skip if ensur) (+9 more)
 
 ### Community 12498 - "Community 12498"
-Cohesion: 0.06
-Nodes (34): 3.1 docker run Hardening Flags, 3.2 Linux Capabilities — What to Drop and Keep, 3.3 Docker Compose Hardening, 3.4 Seccomp Profiles, 3.5 AppArmor Profile (Linux hosts), 4.1 Sign Images with Cosign (Sigstore — Keyless), 4.2 SBOM Generation & Attestation, 4.3 Use Trusted Registries & Enable Registry Scanning (+26 more)
+Cohesion: 0.07
+Nodes (25): 3.1 docker run Hardening Flags, 3.2 Linux Capabilities — What to Drop and Keep, 3.3 Docker Compose Hardening, 3.4 Seccomp Profiles, 3.5 AppArmor Profile (Linux hosts), code:bash (# Find Dockerfiles in the project), code:block2 (1. Image Build        → Minimal base, no secrets, non-root, ), code:bash (docker run \) (+17 more)
 
 ### Community 12501 - "Community 12501"
 Cohesion: 0.17
@@ -46913,8 +46841,8 @@ Cohesion: 0.17
 Nodes (12): Finding #52: [MEDIUM] stale_cache_bugs (Qwen 3.6), Problem, Proof / Evidence, Suggested Fix, code:typescript (setTimeout(() => setIsHiding(true), 300);), Finding #52: [MEDIUM] N+1 Queries (Qwen 3.6), Problem, Problem (+4 more)
 
 ### Community 12509 - "Community 12509"
-Cohesion: 0.20
-Nodes (11): About `.vercel/` Directory, Check project state first, code:bash (# Does the project have a git remote?), code:bash (vercel link --repo --scope <team-slug> -y), code:bash (vercel link --scope <team-slug> -y), code:bash (vercel link --project <project-name> --scope <team-slug> -y), code:bash (git clone <repo-url>), Deploying a Project (+3 more)
+Cohesion: 0.15
+Nodes (14): About `.vercel/` Directory, Check project state first, code:bash (vercel deploy -y --no-wait), code:bash (vercel deploy --prod --scope <team-slug> -y --no-wait), code:bash (# Does the project have a git remote?), code:bash (vercel link --repo --scope <team-slug> -y), code:bash (vercel link --scope <team-slug> -y), code:bash (vercel link --project <project-name> --scope <team-slug> -y) (+6 more)
 
 ### Community 12512 - "Community 12512"
 Cohesion: 0.17
@@ -46965,8 +46893,8 @@ Cohesion: 0.20
 Nodes (9): code:json ([ ... full JSON array ... ]), Detailed Issues, Issue 1: Download status text obscured by Floating Action Button (FAB) on Cloud screen, Issue 2: Two-Factor Auth setting item partially hidden under bottom dock on Profile screen, Issue 3: Duplicate items populated in the Recent Transfers list, Issue 4: File naming mismatch in repository screenshot resources, OpenTestAI Deep Scan Bug Report, Raw JSON (+1 more)
 
 ### Community 12532 - "Community 12532"
-Cohesion: 0.20
-Nodes (12): code:block3 (This project is connected to Vercel via git. I can commit an), code:bash (git add .), code:bash (vercel inspect <deployment-url>), code:bash (vercel deploy [path] --prod -y --no-wait), Linked (`.vercel/` exists) + has git remote → Git Push, Linked (`.vercel/` exists) + no git remote → `vercel deploy`, code:bash (vercel deploy -y --no-wait), code:bash (vercel deploy --scope <team-slug> -y --no-wait) (+4 more)
+Cohesion: 0.40
+Nodes (6): code:block3 (This project is connected to Vercel via git. I can commit an), code:bash (git add .), Linked (`.vercel/` exists) + has git remote → Git Push, code:bash (vercel deploy --scope <team-slug> -y --no-wait), code:bash (sleep 5), Deploy after linking
 
 ### Community 12533 - "Community 12533"
 Cohesion: 0.14
@@ -47432,10 +47360,6 @@ Nodes (5): code:block20 (/feedback <what worked well>), code:block21 (/feedback 
 Cohesion: 0.40
 Nodes (5): code:block5 (/generate-post <topic> [in <niche>] [tone: controversial|sto), code:block6 (/generate-post why most developers fail at time management i), code:block7 (/generate-post the real cost of technical debt in SaaS tone:), code:block8 (/generate-post 5 things I wish I knew before my first startu), `/generate-post` — Single LinkedIn Post
 
-### Community 12707 - "Community 12707"
-Cohesion: 0.17
-Nodes (12): Finding #41: [MEDIUM] broken_authorization (Qwen 3.6), Problem, Proof / Evidence, Suggested Fix, code:typescript (console.warn(`[API][TASKS][BULK] Unauthorized update attempt), Finding #41: [MEDIUM] incorrect_state_transitions (Qwen 3.6), Problem, Problem (+4 more)
-
 ### Community 12708 - "Community 12708"
 Cohesion: 0.17
 Nodes (12): Finding #101: [LOW] Unoptimized hydration (Qwen 3.6), Problem, Proof / Evidence, Suggested Fix, code:typescript (No direct evidence of unoptimized hydration in the provided ), Finding #101: [LOW] Expensive database calls (Qwen 3.6), Problem, Problem (+4 more)
@@ -47497,8 +47421,8 @@ Cohesion: 0.04
 Nodes (48): Finding #19: [CRITICAL] missing_fallbacks (Qwen 3.6), Finding #48: [MEDIUM] stale_cache_bugs (Qwen 3.6), Finding #4: [CRITICAL] null pointer crashes (Qwen 3.6), Finding #58: [MEDIUM] Unoptimized Hydration (Qwen 3.6), Finding #71: [MEDIUM] error_handling (Qwen 3.6), Problem, Problem, Problem (+40 more)
 
 ### Community 12773 - "Community 12773"
-Cohesion: 0.10
-Nodes (21): Finding #1: [CRITICAL] error handling (Qwen 3.6), Finding #66: [MEDIUM] Unnecessary Re-renders (Qwen 3.6), Problem, Problem, Proof / Evidence, Suggested Fix, Suggested Fix, code:typescript (try { let decodedToken; try { decodedToken = await adminAuth) (+13 more)
+Cohesion: 0.07
+Nodes (29): Finding #1: [CRITICAL] error handling (Qwen 3.6), Finding #33: [MEDIUM] duplicate_submissions (Qwen 3.6), Finding #66: [MEDIUM] Unnecessary Re-renders (Qwen 3.6), Problem, Problem, Problem, Proof / Evidence, Proof / Evidence (+21 more)
 
 ### Community 12792 - "Community 12792"
 Cohesion: 0.04
@@ -47513,8 +47437,8 @@ Cohesion: 0.07
 Nodes (30): Finding #106: [LOW] N+1 queries (Qwen 3.6), Finding #107: [LOW] N+1 queries (Qwen 3.6), Finding #87: [MEDIUM] broken_authorization (Qwen 3.6), Problem, Problem, Problem, Proof / Evidence, Proof / Evidence (+22 more)
 
 ### Community 12797 - "Community 12797"
-Cohesion: 0.06
-Nodes (34): Finding #16: [CRITICAL] missing_error_handling (Qwen 3.6), Finding #17: [CRITICAL] null_pointer_crashes (Qwen 3.6), Finding #59: [MEDIUM] N+1 Queries (Qwen 3.6), Problem, Problem, Problem, Proof / Evidence, Proof / Evidence (+26 more)
+Cohesion: 0.05
+Nodes (42): Finding #16: [CRITICAL] missing_error_handling (Qwen 3.6), Finding #17: [CRITICAL] null_pointer_crashes (Qwen 3.6), Finding #59: [MEDIUM] N+1 Queries (Qwen 3.6), Finding #65: [MEDIUM] Unnecessary Re-renders (Qwen 3.6), Problem, Problem, Problem, Problem (+34 more)
 
 ### Community 12799 - "Community 12799"
 Cohesion: 0.06
@@ -47629,8 +47553,8 @@ Cohesion: 0.27
 Nodes (10): Any, LineageAssetRef, LineageEvent, _event_from_dict(), main(), push(), Databricks — Lineage Push (push-only) =======================================, Reconstruct a LineageEvent from a manifest dict. (+2 more)
 
 ### Community 12898 - "Community 12898"
-Cohesion: 0.18
-Nodes (22): AuditTimeline(), AuditTimelineProps, logAuditEvent(), logAutomationRuleCreated(), logAutomationRuleUpdated(), logEventCreated(), logEventDeleted(), logEventUpdated() (+14 more)
+Cohesion: 0.15
+Nodes (25): AuditTimeline(), AuditTimelineProps, logFileDeleted(), DELETE(), GET(), logAuditEvent(), logAutomationRuleCreated(), logAutomationRuleUpdated() (+17 more)
 
 ### Community 12899 - "Community 12899"
 Cohesion: 0.67
@@ -47669,8 +47593,8 @@ Cohesion: 0.14
 Nodes (12): Araştırma Bağlamı, Araştırma Süreci, Behavior, Davranış, Output, Research Context, Research Process, Tercih edilecek araçlar (+4 more)
 
 ### Community 12916 - "Community 12916"
-Cohesion: 0.08
-Nodes (31): 1. Issue Management & Triage, Auto-Close Stale Issues with Swarm Analysis, Auto-Label Based on Content, Automated Progress Updates, Automated Triage System, Batch Issue Creation, Break Down Issues into Subtasks, code:bash (# Get current issue state) (+23 more)
+Cohesion: 0.09
+Nodes (29): 1. Issue Management & Triage, Auto-Close Stale Issues with Swarm Analysis, Auto-Label Based on Content, Automated Progress Updates, Automated Triage System, Batch Issue Creation, Break Down Issues into Subtasks, code:bash (# Get current issue state) (+21 more)
 
 ### Community 12918 - "Community 12918"
 Cohesion: 0.17
@@ -47686,7 +47610,7 @@ Nodes (29): 2. Project Board Automation, Auto-Assignment, Board Mapping Configur
 
 ### Community 12929 - "Community 12929"
 Cohesion: 0.04
-Nodes (78): Using Burp for OTP testing, 4.2 Arquitetura de Proxy Server-Side, code:block11 ([Cliente/Browser]), code:block12 (/opt/api-gateway/), Advanced Topics, Advanced usage, Answer a few questions, code:markdown (## Quick Start) (+70 more)
+Nodes (75): Advanced Topics, Advanced usage, Answer a few questions, code:markdown (## Quick Start), code:block49, code:block51, code:block54, Commands (+67 more)
 
 ### Community 12931 - "Community 12931"
 Cohesion: 0.07
@@ -47706,7 +47630,7 @@ Nodes (29): Available Tools, code:bash (# Store mode-specific context), Custom I
 
 ### Community 12938 - "Community 12938"
 Cohesion: 0.07
-Nodes (25): Adding New Helpers, Available Helpers, Claude Flow V3 Helpers, code:bash (# Usage examples:), Configuration Integration, 🔍 Configuration Validation, Development Guidelines, File Naming (+17 more)
+Nodes (25): Adding New Helpers, Available Helpers, Claude Flow V3 Helpers, code:bash (# Usage examples:), 🔍 Configuration Validation, Development Guidelines, 🚀 Quick Start, ⚡ Quick Status (+17 more)
 
 ### Community 12941 - "Community 12941"
 Cohesion: 0.09
@@ -47754,15 +47678,15 @@ Nodes (11): 1. Initialize Development Framework, 3. Coordinate Implementation, 4
 
 ### Community 12959 - "Community 12959"
 Cohesion: 0.04
-Nodes (52): code:typescript (const stats = await adapter.getStats();), Database Statistics, Performance Monitoring, Runtime Metrics, Advanced Features, Advanced Usage, AgentDB Vector Search, Batch Operations (+44 more)
+Nodes (58): code:typescript (const stats = await adapter.getStats();), Database Statistics, Performance Monitoring, Runtime Metrics, Advanced Features, Advanced Usage, AgentDB Vector Search, Batch Operations (+50 more)
 
 ### Community 12960 - "Community 12960"
-Cohesion: 0.10
-Nodes (26): 1. gh-coordinator, 2. pr-manager, 3. issue-tracker, 4. release-manager, 5. repo-architect, 6. code-reviewer, 7. ci-orchestrator, 8. security-guardian (+18 more)
+Cohesion: 0.06
+Nodes (42): 1. gh-coordinator, 2. pr-manager, 3. issue-tracker, 4. release-manager, 5. repo-architect, 6. code-reviewer, 7. ci-orchestrator, 8. security-guardian (+34 more)
 
 ### Community 12961 - "Community 12961"
-Cohesion: 0.06
-Nodes (42): 1. Intelligent CI with Swarms, 2. Multi-Language Detection, 3. Adaptive Security Scanning, 4. Self-Healing Pipeline, 5. Progressive Deployment, 6. Performance Regression Detection, 7. PR Validation Swarm, 8. Intelligent Release (+34 more)
+Cohesion: 0.10
+Nodes (26): 1. Intelligent CI with Swarms, 2. Multi-Language Detection, 3. Adaptive Security Scanning, 4. Self-Healing Pipeline, 5. Progressive Deployment, 6. Performance Regression Detection, 7. PR Validation Swarm, 8. Intelligent Release (+18 more)
 
 ### Community 12962 - "Community 12962"
 Cohesion: 0.10
@@ -47809,8 +47733,8 @@ Cohesion: 0.17
 Nodes (15): 1. Initialize Research Framework, 2. Define Research Perspectives, 3. Execute Coordinated Research, 4. Store Research Findings, code:block3 (Tool: mcp__claude-flow__agent_spawn), code:block4 (Tool: mcp__claude-flow__task_orchestrate), Step-by-Step Coordination, 1. Initialize Research Framework (+7 more)
 
 ### Community 12991 - "Community 12991"
-Cohesion: 0.11
-Nodes (23): 3. Sprint Planning & Tracking, Agile Development Board Setup, Board Analytics, code:bash (# Manage sprints with swarms), code:bash (# Setup agile board), code:bash (# Fetch project data), code:bash (# Track and visualize progress), Initialize Sprint with Swarm Coordination (+15 more)
+Cohesion: 0.10
+Nodes (25): 3. Sprint Planning & Tracking, Agile Development Board Setup, Board Analytics, code:bash (# Manage sprints with swarms), code:bash (# Setup agile board), code:bash (# Fetch project data), code:bash (# Track and visualize progress), Core Capabilities (+17 more)
 
 ### Community 12992 - "Community 12992"
 Cohesion: 0.10
@@ -47822,7 +47746,7 @@ Nodes (44): Agent Status Command, Basic Info, code:json ({), Configuration (when
 
 ### Community 12996 - "Community 12996"
 Cohesion: 0.03
-Nodes (75): 📖 Additional Resources, Auto-Review on PR Creation, 🤖 Automated Workflows, Best Practices, code:markdown (<!-- In PR comment -->), code:javascript (// webhook-handler.js), code:bash (# Get PR context with gh CLI), code:bash (# Set quality gate thresholds) (+67 more)
+Nodes (75): 📖 Additional Resources, Auto-Review on PR Creation, Automated PR Fixes, 🤖 Automated Workflows, Batch Comment Management, Best Practices, 🔧 CI/CD Integration, code:markdown (<!-- In PR comment -->) (+67 more)
 
 ### Community 13001 - "Community 13001"
 Cohesion: 0.06
@@ -47845,8 +47769,8 @@ Cohesion: 0.10
 Nodes (18): 1. Release Planning & Version Management, 2. Automated Testing & Validation, 3. Build & Deployment Orchestration, 4. Documentation & Communication, Appendix: Release Checklist Template, Core Capabilities, Documentation, Expected Performance (+10 more)
 
 ### Community 13008 - "Community 13008"
-Cohesion: 0.09
-Nodes (23): Best Practices, Code Practices, code:json ({), Command History, Command Shortcuts, Complete Guide, Configuration Issues, Keyboard Shortcuts (Configurable) (+15 more)
+Cohesion: 0.10
+Nodes (20): Best Practices, Code Practices, code:bash (# Refactoring template), code:json ({), Command History, Command Shortcuts, Complete Guide, Configuration Issues (+12 more)
 
 ### Community 13009 - "Community 13009"
 Cohesion: 0.09
@@ -47861,8 +47785,8 @@ Cohesion: 0.10
 Nodes (18): 1. Release Planning & Version Management, 2. Automated Testing & Validation, 3. Build & Deployment Orchestration, 4. Documentation & Communication, Appendix: Release Checklist Template, Core Capabilities, Documentation, Expected Performance (+10 more)
 
 ### Community 13018 - "Community 13018"
-Cohesion: 0.10
-Nodes (21): code:bash (# Refactoring template), code:bash (export CLAUDE_PAIR_MODE=driver), Environment Variables, Quick Start Templates, Session Templates, Best Practices, Code Practices, Command History (+13 more)
+Cohesion: 0.09
+Nodes (24): code:bash (export CLAUDE_PAIR_MODE=driver), Environment Variables, Session Control Commands, Session Management, Starting Sessions, Best Practices, Code Practices, code:bash (# Basic start) (+16 more)
 
 ### Community 13019 - "Community 13019"
 Cohesion: 0.28
@@ -47958,7 +47882,7 @@ Nodes (13): 1. Changelog Requirements, 1. Comprehensive CI/CD Pipeline, 1. Regul
 
 ### Community 13057 - "Community 13057"
 Cohesion: 0.09
-Nodes (28): Analysis and Research Modes, `analyzer`, `architect`, Available Modes, `batch-executor`, code:javascript (mcp__claude-flow__sparc_mode {), `coder`, Core Orchestration Modes (+20 more)
+Nodes (31): Analysis and Research Modes, `analyzer`, `architect`, Available Modes, `batch-executor`, code:javascript (mcp__claude-flow__sparc_mode {), `coder`, Core Orchestration Modes (+23 more)
 
 ### Community 13061 - "Community 13061"
 Cohesion: 0.10
@@ -47989,8 +47913,8 @@ Cohesion: 0.15
 Nodes (13): 1. Changelog Requirements, 1. Comprehensive CI/CD Pipeline, 1. Regular Release Cadence, 2. Feature Freeze Strategy, 2. Progressive Deployment, 2. Release Notes Content, 3. API Documentation, 3. Monitoring & Observability (+5 more)
 
 ### Community 13081 - "Community 13081"
-Cohesion: 0.12
-Nodes (17): Analysis and Research Modes, `analyzer`, Available Modes, `batch-executor`, Core Orchestration Modes, Creative and Support Modes, `debugger`, `designer` (+9 more)
+Cohesion: 0.29
+Nodes (7): Creative and Support Modes, `debugger`, `designer`, `documenter`, `innovator`, `memory-manager`, `tester`
 
 ### Community 13082 - "Community 13082"
 Cohesion: 0.15
@@ -48009,12 +47933,8 @@ Cohesion: 0.07
 Nodes (33): code:json ({), Step 1: Configure MCP Servers, 1. Decision Transformer (Recommended), 2. Q-Learning, 3. SARSA, 4. Actor-Critic, 5. Active Learning, 6. Adversarial Training (+25 more)
 
 ### Community 13088 - "Community 13088"
-Cohesion: 0.05
-Nodes (40): 1. Distributed Task Queue, 1. Repository Organization, 2. Communication, 2. Cross-Repo Testing, 3. Monorepo Migration, 3. Security, 4. Version Management, 5. Testing Integration (+32 more)
-
-### Community 13089 - "Community 13089"
-Cohesion: 0.12
-Nodes (17): Agent Coordination Workflow, Agent Workflow Example, code:bash (# Agent 1: Backend Developer), Agent Coordination Workflow, Agent Workflow Example, Benefits, Best Practices, code:bash (# Agent 2: Test Engineer (receives notification)) (+9 more)
+Cohesion: 0.07
+Nodes (29): 1. Repository Organization, 1. Webhook-Based Coordination, 2. Communication, 2. Event Streaming, 3. Security, 4. Version Management, 5. Testing Integration, Architecture Health Metrics (+21 more)
 
 ### Community 13090 - "Community 13090"
 Cohesion: 0.14
@@ -48025,8 +47945,8 @@ Cohesion: 0.09
 Nodes (23): Example, Basic Configuration, Built-in Agents, CLI Configuration, code:json ({), code:json ({), code:json ({), code:bash (# Set configuration) (+15 more)
 
 ### Community 13095 - "Community 13095"
-Cohesion: 0.04
-Nodes (48): 1. Webhook-Based Coordination, 2. Event Streaming, Architecture Patterns, code:yaml (# Kafka configuration for real-time coordination), code:block25 (ruv-FANN/), code:block26 (.claude/), code:bash (npx claude-flow skill run github-multi-repo diagnose-connect), Command Structure (+40 more)
+Cohesion: 0.06
+Nodes (37): Architecture Patterns, code:block25 (ruv-FANN/), code:block26 (.claude/), Command Structure, Cross-Team Collaboration, Examples, Full-Stack Application Update, Monorepo Structure (+29 more)
 
 ### Community 13102 - "Community 13102"
 Cohesion: 0.42
@@ -48109,8 +48029,8 @@ Cohesion: 0.17
 Nodes (16): code:javascript (mcp__claude-flow__task_orchestrate {), Orchestration Patterns, Pattern 1: Hierarchical Coordination, Pattern 2: Mesh Coordination, Pattern 3: Sequential Pipeline, Pattern 4: Parallel Execution, Pattern 5: Adaptive Strategy, code:javascript (// Initialize hierarchical swarm) (+8 more)
 
 ### Community 13140 - "Community 13140"
-Cohesion: 0.10
-Nodes (19): Custom Chains (`run`), How Context Flows, Options, Syntax, code:json ({), code:bash (claude-flow stream-chain run <prompt1> <prompt2> [...] [opti), code:block4 (Step 1: "Write a sorting function"), Conclusion (+11 more)
+Cohesion: 0.18
+Nodes (9): code:json ({), Conclusion, Configuration Format, Custom Pipeline Definitions, Execute Custom Pipeline, Overview, Performance Characteristics, Related Skills (+1 more)
 
 ### Community 13141 - "Community 13141"
 Cohesion: 0.15
@@ -48185,8 +48105,8 @@ Cohesion: 0.18
 Nodes (14): code:bash (# Step 1: Research and planning), code:bash (# Step 1: Profile performance), Common Workflows, Workflow 1: Feature Development, Workflow 2: Bug Investigation, Workflow 3: Performance Optimization, Workflow 4: Complete Pipeline, code:bash (# Step 1: Analyze issue) (+6 more)
 
 ### Community 13202 - "Community 13202"
-Cohesion: 0.12
-Nodes (15): 1. Choosing the Right Topology, 2. Agent Specialization, 3. Parallel Execution, 4. Memory Management, 5. Monitoring and Optimization, 6. Error Recovery, Advanced Swarm Orchestration, Agent Strategies (+7 more)
+Cohesion: 0.08
+Nodes (23): 1. Choosing the Right Topology, 2. Agent Specialization, 3. Parallel Execution, 4. Memory Management, 5. Monitoring and Optimization, 6. Error Recovery, Advanced Swarm Orchestration, Agent Strategies (+15 more)
 
 ### Community 13203 - "Community 13203"
 Cohesion: 0.10
@@ -48229,12 +48149,12 @@ Cohesion: 0.10
 Nodes (22): 1. Analysis Pipeline, 2. Refactor Pipeline, 3. Test Pipeline, 4. Optimize Pipeline, Available Pipelines, Pipeline Options, Pipeline Output, Predefined Pipelines (`pipeline`) (+14 more)
 
 ### Community 13234 - "Community 13234"
-Cohesion: 0.17
-Nodes (10): code:json ({), Conclusion, Configuration Format, Custom Pipeline Definitions, Execute Custom Pipeline, Overview, Performance Characteristics, Related Skills (+2 more)
+Cohesion: 0.10
+Nodes (20): code:json ({), Conclusion, Configuration Format, Custom Chains (`run`), Custom Pipeline Definitions, Execute Custom Pipeline, How Context Flows, Options (+12 more)
 
 ### Community 13235 - "Community 13235"
 Cohesion: 0.08
-Nodes (23): Basic Pattern, Prerequisites, Quick Start, 1. Choosing the Right Topology, 2. Agent Specialization, 3. Parallel Execution, 4. Memory Management, 5. Monitoring and Optimization (+15 more)
+Nodes (25): Analysis Workflow, Architecture, Pattern 4: Analysis Swarm, Purpose, 1. Choosing the Right Topology, 2. Agent Specialization, 3. Parallel Execution, 4. Memory Management (+17 more)
 
 ### Community 13239 - "Community 13239"
 Cohesion: 0.10
@@ -48278,7 +48198,7 @@ Nodes (14): 1. Review Configuration, 2. Comment Quality, 3. Performance Optimiza
 
 ### Community 13263 - "Community 13263"
 Cohesion: 0.09
-Nodes (21): code:bash (# List modes), code:javascript (// Initialize swarm), Core Philosophy, Development Phases, Key Principles, Most Common Commands, Most Common MCP Calls, Overview (+13 more)
+Nodes (21): Complete TDD Workflow, Core Philosophy, Development Phases, Key Principles, Overview, Performance Benefits, Phase 1: Specification, Phase 2: Architecture (+13 more)
 
 ### Community 13268 - "Community 13268"
 Cohesion: 0.13
@@ -48294,7 +48214,7 @@ Nodes (13): 1. Decentralized Coordination, 2. Fault Tolerance & Resilience, 3. C
 
 ### Community 13280 - "Community 13280"
 Cohesion: 0.09
-Nodes (21): Complete TDD Workflow, Red-Green-Refactor Cycle, TDD Workflows, code:javascript (// Step 1: Initialize TDD swarm), code:javascript (// RED: Write failing test), Complete TDD Workflow, Core Philosophy, Development Phases (+13 more)
+Nodes (21): code:bash (# List modes), code:javascript (// Initialize swarm), Most Common Commands, Most Common MCP Calls, Quick Reference, Core Philosophy, Development Phases, Key Principles (+13 more)
 
 ### Community 13287 - "Community 13287"
 Cohesion: 0.24
@@ -48469,8 +48389,8 @@ Cohesion: 0.26
 Nodes (12): atomicWrite(), commands, fs, path, SESSION_DIR, SESSION_FILE, atomicWrite(), commands (+4 more)
 
 ### Community 13384 - "Community 13384"
-Cohesion: 0.11
-Nodes (21): Issue: Memory growing too large, Issue: Migration from legacy ReasoningBank, Issue: Slow search performance, Troubleshooting, code:bash (# Check database size), code:typescript (// Increase cache size), code:typescript (// Disable or use lighter quantization), Issue: High memory usage (+13 more)
+Cohesion: 0.10
+Nodes (23): Issue: Memory growing too large, Issue: Migration from legacy ReasoningBank, Issue: Slow search performance, Troubleshooting, code:bash (# Check database size), code:typescript (// Increase cache size), code:typescript (// Disable or use lighter quantization), Issue: High memory usage (+15 more)
 
 ### Community 13401 - "Community 13401"
 Cohesion: 0.22
@@ -48758,7 +48678,7 @@ Nodes (6): `apply_migration`, Database Operations, `execute_sql`, `list_extensio
 
 ### Community 13591 - "Community 13591"
 Cohesion: 0.20
-Nodes (9): Advanced Commands (14), CLI Commands, Core Commands (12), Current Configuration, Example Commands, Overview, Performance Targets, RuFlo V3 - Complete Capabilities Reference (+1 more)
+Nodes (9): Consensus Mechanisms, Current Configuration, Hive-Mind Consensus, Overview, Performance Targets, Queen Types, RuFlo V3 - Complete Capabilities Reference, 📋 Table of Contents (+1 more)
 
 ### Community 13592 - "Community 13592"
 Cohesion: 0.18
@@ -48813,8 +48733,8 @@ Cohesion: 0.29
 Nodes (8): code:yaml (# Generate test matrix from code analysis), Dynamic Test Matrix, Intelligent Parallelization, Matrix Strategies, code:bash (# Determine optimal parallelization), Dynamic Test Matrix, Intelligent Parallelization, Matrix Strategies
 
 ### Community 13635 - "Community 13635"
-Cohesion: 0.14
-Nodes (14): 1. Workflow Organization, 2. Security, 3. Performance, Best Practices, code:bash (# Profile workflow performance), Debug Mode, Debugging & Troubleshooting, Overview (+6 more)
+Cohesion: 0.29
+Nodes (8): code:bash (# Profile workflow performance), Debug Mode, Debugging & Troubleshooting, Performance Profiling, code:yaml (- name: Debug Swarm), Debug Mode, Debugging & Troubleshooting, Performance Profiling
 
 ### Community 13636 - "Community 13636"
 Cohesion: 0.29
@@ -48993,24 +48913,24 @@ Cohesion: 0.50
 Nodes (4): Metrics by Stage, Pre-Seed (Product-Market Fit), Seed ($500K-$2M ARR), Series A ($2M-$10M ARR)
 
 ## Knowledge Gaps
-- **73899 isolated node(s):** `Logger`, `Pattern`, `Any`, `Any`, `Any` (+73894 more)
+- **73887 isolated node(s):** `Logger`, `Pattern`, `Any`, `Any`, `Any` (+73882 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **789 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **785 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `stream` connect `Community 376` to `Community 18`, `Community 3`, `Community 518`, `Community 6`?**
+- **Why does `stream` connect `Community 469` to `Community 6`, `Community 518`, `Community 311`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **Why does `============================================================` connect `Community 3187` to `Community 1488`, `Community 1117`?**
+- **Why does `fn` connect `Community 195` to `Community 520`, `Community 6669`, `Community 5134`, `Community 1038`, `Community 4630`, `Community 5657`, `Community 2588`, `Community 35`, `Community 5157`, `Community 5159`, `Community 40`, `Community 2601`, `Community 3115`, `Community 3116`, `Community 3117`, `Community 3118`, `Community 3119`, `Community 3121`, `Community 564`, `Community 5697`, `Community 7237`, `Community 582`, `Community 4677`, `Community 4678`, `Community 73`, `Community 4680`, `Community 77`, `Community 3662`, `Community 3663`, `Community 1622`, `Community 1628`, `Community 97`, `Community 101`, `Community 105`, `Community 3692`, `Community 3693`, `Community 3696`, `Community 119`, `Community 632`, `Community 1143`, `Community 1147`, `Community 2171`, `Community 1149`, `Community 2186`, `Community 2187`, `Community 2710`, `Community 3754`, `Community 2732`, `Community 4273`, `Community 4288`, `Community 4289`, `Community 4290`, `Community 4292`, `Community 4293`, `Community 5319`, `Community 3784`, `Community 1738`, `Community 722`, `Community 3290`, `Community 779`, `Community 12559`, `Community 3856`, `Community 3346`, `Community 3352`, `Community 6428`, `Community 6942`, `Community 291`, `Community 292`, `Community 805`, `Community 3379`, `Community 309`, `Community 2358`, `Community 6453`, `Community 3382`, `Community 3383`, `Community 3384`, `Community 3386`, `Community 1859`, `Community 1860`, `Community 836`, `Community 842`, `Community 4427`, `Community 2899`, `Community 2900`, `Community 2901`, `Community 2902`, `Community 5463`, `Community 2903`, `Community 3931`, `Community 5470`, `Community 5982`, `Community 3947`, `Community 4461`, `Community 3954`, `Community 378`, `Community 383`, `Community 4994`, `Community 3995`, `Community 1435`, `Community 3997`, `Community 3998`, `Community 1436`, `Community 3488`, `Community 3999`, `Community 4000`, `Community 3491`, `Community 4516`, `Community 3494`, `Community 5549`, `Community 430`, `Community 5040`, `Community 2492`, `Community 958`, `Community 964`, `Community 4551`, `Community 2001`, `Community 2002`, `Community 465`, `Community 2517`, `Community 3035`, `Community 2529`, `Community 2530`, `Community 2531`, `Community 2532`, `Community 4591`, `Community 1521`, `Community 1526`?**
   _High betweenness centrality (0.011) - this node is a cross-community bridge._
-- **Why does `fn` connect `Community 195` to `Community 520`, `Community 6669`, `Community 5134`, `Community 1038`, `Community 4630`, `Community 5657`, `Community 2588`, `Community 35`, `Community 5157`, `Community 5159`, `Community 40`, `Community 2601`, `Community 3115`, `Community 3116`, `Community 3117`, `Community 3118`, `Community 3119`, `Community 3121`, `Community 564`, `Community 5697`, `Community 7237`, `Community 582`, `Community 4677`, `Community 4678`, `Community 73`, `Community 4680`, `Community 77`, `Community 3662`, `Community 3663`, `Community 80`, `Community 1628`, `Community 97`, `Community 101`, `Community 105`, `Community 3692`, `Community 3693`, `Community 3696`, `Community 119`, `Community 632`, `Community 1143`, `Community 1147`, `Community 2171`, `Community 1149`, `Community 2186`, `Community 2187`, `Community 2710`, `Community 3754`, `Community 2732`, `Community 4273`, `Community 4288`, `Community 4289`, `Community 4290`, `Community 4292`, `Community 4293`, `Community 5319`, `Community 3784`, `Community 1738`, `Community 722`, `Community 3290`, `Community 6387`, `Community 3831`, `Community 6391`, `Community 779`, `Community 12559`, `Community 3856`, `Community 3346`, `Community 3352`, `Community 6428`, `Community 6942`, `Community 291`, `Community 1829`, `Community 3379`, `Community 309`, `Community 2358`, `Community 6453`, `Community 3382`, `Community 3383`, `Community 3384`, `Community 3386`, `Community 1859`, `Community 1860`, `Community 836`, `Community 842`, `Community 4427`, `Community 2899`, `Community 2900`, `Community 2901`, `Community 2902`, `Community 5463`, `Community 2903`, `Community 3931`, `Community 5475`, `Community 3947`, `Community 4461`, `Community 3954`, `Community 378`, `Community 383`, `Community 4994`, `Community 5521`, `Community 1435`, `Community 1436`, `Community 3997`, `Community 3998`, `Community 3999`, `Community 5022`, `Community 6556`, `Community 4000`, `Community 3491`, `Community 4516`, `Community 3494`, `Community 5549`, `Community 430`, `Community 2492`, `Community 958`, `Community 964`, `Community 2001`, `Community 2002`, `Community 465`, `Community 2529`, `Community 2530`, `Community 2531`, `Community 2532`, `Community 5609`, `Community 4591`, `Community 1521`, `Community 1526`?**
-  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **Why does `============================================================` connect `Community 3187` to `Community 1488`, `Community 3671`?**
+  _High betweenness centrality (0.010) - this node is a cross-community bridge._
 - **Are the 298 inferred relationships involving `str` (e.g. with `main()` and `validate_document()`) actually correct?**
   _`str` has 298 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `Logger`, `Create data directories if they do not already exist.`, `Return the verdict dict that matches the given score (0-100).      Args:` to the rest of the system?**
-  _76584 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _76572 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.006329113924050633 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.025974025974025976 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.02531645569620253 - nodes in this community are weakly interconnected._

@@ -92,6 +92,7 @@ export async function matchFace(
     // Compute face embedding for the input image
     const inputEmbedding = await computeFaceEmbedding(imagePath);
 
+    const db = await getDb();
     const storedEmbeddings = await db
       .select()
       .from(vipEmbeddings)
@@ -150,6 +151,7 @@ export async function listVIPs(
   tenantId: string | number
 ): Promise<{ id: number; label: string; userId?: number; created_at: string }[]> {
   try {
+    const db = await getDb();
     const results = await db
       .select({
         id: vipEmbeddings.id,
@@ -186,6 +188,7 @@ export async function deleteVIP(
   tenantId: string | number
 ): Promise<void> {
   try {
+    const db = await getDb();
     await db
       .delete(vipEmbeddings)
       .where(and(

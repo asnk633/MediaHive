@@ -84,6 +84,7 @@ export async function POST(req: NextRequest) {
     const fileUrl = `/uploads/${safeFilename}`;
     const now = new Date().toISOString();
 
+    const db = await getDb();
     const inserted = await db
       .insert(attachments)
       .values({
@@ -134,6 +135,7 @@ export async function GET(req: NextRequest) {
     }
 
     const { eq, and } = await import('drizzle-orm');
+    const db = await getDb();
     const taskAttachments = await db
       .select()
       .from(attachments)

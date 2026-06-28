@@ -54,7 +54,7 @@ if (rateLimitResponse) {
     const userResult = await db
       .select()
       .from(users)
-      .where(eq(users.id, payload.userId))
+      .where(eq(users.id, parseInt(String(payload.userId), 10)))
       .limit(1);
     
     const user = userResult[0];

@@ -38,13 +38,13 @@ export async function POST(req: Request) {
 
     if (fetchError) throw fetchError;
 
-    const recordsById = new Map(currentRecords?.map((r: any) => [r.id, r]) || []);
+    const recordsById = new Map(currentRecords?.map((r: { id: string; version: number | null }) => [r.id, r]) || []);
     const conflicts: any[] = [];
     const validUpdates: any[] = [];
 
     // 2. Perform Version Check (OCC)
     for (const update of updates) {
-      const taskRecord = recordsById.get(update.id);
+      const taskRecord = recordsById.get(update.id) as { id: string; version: number | null } | undefined;
 if (!taskRecord) {
   console.warn(`[API][TASKS][BULK] Task not found for id: ${update.id}`);
   continue;

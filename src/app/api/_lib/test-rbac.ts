@@ -6,30 +6,33 @@ import { hasRole, AuthUser } from './auth';
 
 // Mock user objects for testing
 const mockAdminUser: AuthUser = {
-  id: 1,
+  id: '1',
   email: 'admin@example.com',
   fullName: 'Admin User',
   role: 'admin',
-  institution_id: 1,
-  tenantId: 1
+  institution_id: '1',
+  tenant_id: '1',
+  tenantId: '1'
 };
 
 const mockTeamUser: AuthUser = {
-  id: 2,
+  id: '2',
   email: 'team@example.com',
   fullName: 'Team User',
   role: 'member',
-  institution_id: 1,
-  tenantId: 1
+  institution_id: '1',
+  tenant_id: '1',
+  tenantId: '1'
 };
 
 const mockMemberUser: AuthUser = {
-  id: 3,
+  id: '3',
   email: 'member@example.com',
   fullName: 'Member User',
   role: 'member',
-  institution_id: 1,
-  tenantId: 1
+  institution_id: '1',
+  tenant_id: '1',
+  tenantId: '1'
 };
 
 console.log('Testing RBAC functions...');

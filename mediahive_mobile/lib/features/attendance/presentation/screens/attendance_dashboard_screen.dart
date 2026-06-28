@@ -7,24 +7,27 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/elastic_scroll_physics.dart';
-import '../../../../core/theme_provider.dart';
-import '../../../../shared/widgets/mh_loading.dart';
-import '../../../../shared/widgets/mh_refresh_indicator.dart';
-import '../../domain/models/attendance_event.dart';
-import '../../domain/models/attendance_record.dart';
-import '../../domain/models/attendance_policy.dart';
-import '../providers/attendance_provider.dart';
-import '../../../../core/providers/user_provider.dart';
+import 'package:mediahive_mobile/core/theme/app_colors.dart';
+import 'package:mediahive_mobile/core/theme/app_typography.dart';
+import 'package:mediahive_mobile/core/theme/elastic_scroll_physics.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_loading.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_refresh_indicator.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_event.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_record.dart';
+import 'package:mediahive_mobile/features/attendance/domain/models/attendance_policy.dart';
+import 'package:mediahive_mobile/features/attendance/presentation/providers/attendance_provider.dart';
+import 'package:mediahive_mobile/core/providers/user_provider.dart';
 import 'field_work_scan_screen.dart';
 import 'field_work_approval_screen.dart';
-import '../providers/field_work_provider.dart';
+import 'package:mediahive_mobile/features/attendance/presentation/providers/field_work_provider.dart';
 import 'missed_checkin_request_sheet.dart';
 import 'remote_checkout_request_sheet.dart';
 import 'qr_scanner_overlay.dart';
-import '../../../../core/services/snackbar_service.dart';
+import 'package:mediahive_mobile/core/services/snackbar_service.dart';
+import 'package:mediahive_mobile/features/attendance/presentation/widgets/attendance_timer_banner.dart';
+import 'package:mediahive_mobile/features/attendance/presentation/widgets/attendance_action_panel.dart';
+import 'package:mediahive_mobile/features/attendance/presentation/widgets/attendance_history_list.dart';
 
 class AttendanceDashboardScreen extends ConsumerStatefulWidget {
   const AttendanceDashboardScreen({super.key});
@@ -78,13 +81,6 @@ class _AttendanceDashboardScreenState
     setState(() => _elapsed = Duration.zero);
   }
 
-  String _formatElapsed(Duration d) {
-    final h = d.inHours.toString().padLeft(2, '0');
-    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '$h:$m:$s';
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = ref.watch(themeColorsProvider);
@@ -95,7 +91,6 @@ class _AttendanceDashboardScreenState
       if (next.status == NfcScanStatus.leaveConflict) {
         _showLeaveConflictDialog(next.physicalTagId!, next.tagName ?? 'Campus Tag');
       }
-      // Navigate to field work screen when a field_work NFC tag is scanned
       if (next.status == NfcScanStatus.fieldWork && next.data != null) {
         final tagData = next.data!;
         Navigator.of(context).push(
@@ -109,7 +104,6 @@ class _AttendanceDashboardScreenState
       }
     });
 
-    // Sync stopwatch state
     activeSessionAsync.whenData((session) {
       if (session != null) {
         final checkIn = DateTime.tryParse(session.checkInTime);
@@ -122,7 +116,6 @@ class _AttendanceDashboardScreenState
       }
     });
 
-    // Handle checkout reminder notification redirect
     final routeState = GoRouterState.of(context);
     final triggerCheckoutReminder = routeState.uri.queryParameters['triggerCheckoutReminder'] == 'true';
     if (triggerCheckoutReminder && !_hasShownReminderDialog) {
@@ -132,7 +125,6 @@ class _AttendanceDashboardScreenState
       });
     }
 
-    // Dynamic calculations for Today's worked hours & overtime
     final records = historyAsync.value ?? [];
     final now = DateTime.now();
     final todayRecords = records.where((r) {
@@ -194,31 +186,160 @@ class _AttendanceDashboardScreenState
                     _buildHeader(context, colors),
                     const SizedBox(height: 24),
                     activeSessionAsync.when(
-                      data: (session) => _buildActiveSessionCard(
-                        context, 
-                        colors, 
-                        session, 
-                        todayWorkedStr: todayWorkedStr, 
-                        todayOvertimeStr: todayOvertimeStr,
-                        policy: policy,
-                      ),
+                      data: (session) {
+                        final isCheckedIn = session != null;
+                        final scanState = ref.watch(globalNfcScanningProvider);
+                        final isScanning = scanState.status == NfcScanStatus.scanning;
+                        final currentStatus = isCheckedIn ? session.status : AttendanceStatus.checkedOut;
+                        final statusColor = _getStatusColor(currentStatus, colors);
+                        final statusLabel = _getStatusLabel(currentStatus);
+
+                        final profileAsync = ref.watch(currentUserProfileProvider);
+                        final profile = profileAsync.value;
+                        final role = (profile?['role']?.toString() ?? 'member').toLowerCase().trim();
+                        final department = (profile?['department_name']?.toString() ?? 'None').toLowerCase().trim();
+                        final isTeam = role == 'team';
+                        final isMediaItManager = role == 'manager' &&
+                            (department.contains('media') && department.contains('it'));
+                        final hasCheckInPermission = isTeam || isMediaItManager;
+
+                        return Column(
+                          children: [
+                            AttendanceTimerBanner(
+                              isCheckedIn: isCheckedIn,
+                              elapsed: _elapsed,
+                              checkInTime: session?.checkInTime,
+                              statusLabel: statusLabel,
+                              statusColor: statusColor,
+                              todayWorkedStr: todayWorkedStr,
+                              todayOvertimeStr: todayOvertimeStr,
+                              policy: policy,
+                              workMode: session?.workMode,
+                              lastKnownWorkLocation: session?.lastKnownWorkLocation,
+                              pulseAnimation: _pulseController,
+                            ),
+                            const SizedBox(height: 16),
+                            AttendanceActionPanel(
+                              isCheckedIn: isCheckedIn,
+                              isScanning: isScanning,
+                              hasCheckInPermission: hasCheckInPermission,
+                              workMode: session?.workMode,
+                              sessionId: session?.id,
+                              assignmentId: session?.assignmentId,
+                              scanState: scanState,
+                              onNfcTap: isScanning ? null : () {
+                                ref.read(globalNfcScanningProvider.notifier).startScan(
+                                  workMode: isCheckedIn ? session.workMode : 'office',
+                                  source: 'nfc',
+                                );
+                              },
+                              onQrTap: isScanning ? null : () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (ctx) => QrScannerOverlay(
+                                    onScan: (payload) {
+                                      Navigator.pop(ctx);
+                                      ref.read(globalNfcScanningProvider.notifier).startScan(
+                                        workMode: isCheckedIn ? session.workMode : 'office',
+                                        source: 'qr',
+                                        qrPayload: payload,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              onQuickCheckoutTap: isScanning ? null : () {
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    backgroundColor: colors.backgroundSecondary,
+                                    title: Row(
+                                      children: [
+                                        const Icon(LucideIcons.logOut, color: AppColors.warning, size: 22),
+                                        const SizedBox(width: 8),
+                                        Text('Quick Check Out',
+                                            style: TextStyle(
+                                                color: colors.textPrimary,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold)),
+                                      ],
+                                    ),
+                                    content: Text(
+                                      'This will check you out immediately without scanning an NFC tag or QR code.\n\nAre you sure?',
+                                      style: TextStyle(color: colors.textSecondary, fontSize: 13),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(ctx),
+                                        child: Text('Cancel',
+                                            style: TextStyle(
+                                                color: colors.textSecondary, fontSize: 12)),
+                                      ),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: AppColors.warning),
+                                        onPressed: () {
+                                          Navigator.pop(ctx);
+                                          ref
+                                              .read(globalNfcScanningProvider.notifier)
+                                              .performManualCheckout(
+                                                  source: 'quick_checkout_button');
+                                        },
+                                        child: const Text('Check Out Now',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold)),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                              onRemoteCheckoutTap: session == null ? null : () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: colors.backgroundSecondary,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                                  ),
+                                  builder: (ctx) => RemoteCheckoutRequestSheet(
+                                    attendanceId: session.id,
+                                    assignmentId: session.assignmentId,
+                                  ),
+                                );
+                              },
+                              onMissedCheckinTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: colors.backgroundSecondary,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                                  ),
+                                  builder: (ctx) => const MissedCheckinRequestSheet(),
+                                );
+                              },
+                            ),
+                          ],
+                        );
+                      },
                       loading: () => const MhLoading(size: 80),
                       error: (e, _) => _buildErrorCard(colors, e.toString()),
                     ),
                     const SizedBox(height: 24),
                     _buildWorkModePanel(context, colors, activeSessionAsync.value),
                     const SizedBox(height: 24),
-                    // Manager-only: Pending field work requests
                     _buildFieldWorkRequestsPanel(context, colors),
-                    historyAsync.when(
-                      data: (records) => _buildStatsSummary(colors, records),
-                      loading: () => const MhLoading(size: 60),
-                      error: (_, __) => const SizedBox.shrink(),
-                    ),
                     const SizedBox(height: 24),
                     historyAsync.when(
-                      data: (records) => _buildHistoryList(colors, records),
-                      loading: () => const MhLoading(size: 100),
+                      data: (historyRecords) => AttendanceHistoryList(
+                        records: historyRecords,
+                        onRecordTap: (record) => _showTimelineSheet(context, colors, record),
+                      ),
+                      loading: () => const MhLoading(size: 60),
                       error: (_, __) => const SizedBox.shrink(),
                     ),
                   ]),
@@ -385,632 +506,7 @@ class _AttendanceDashboardScreenState
     );
   }
 
-  // ─── Active Session Card ───────────────────────────────────────────────────
-  Widget _buildActiveSessionCard(
-      BuildContext context, ThemeColors colors, AttendanceRecord? session,
-      {required String todayWorkedStr, required String todayOvertimeStr, required AttendancePolicy policy}) {
-    final isCheckedIn = session != null;
-    final scanState = ref.watch(globalNfcScanningProvider);
-    final isScanning = scanState.status == NfcScanStatus.scanning;
-
-    final AttendanceStatus currentStatus = isCheckedIn ? session.status : AttendanceStatus.checkedOut;
-    final statusColor = _getStatusColor(currentStatus, colors);
-    final statusLabel = _getStatusLabel(currentStatus);
-
-    final profileAsync = ref.watch(currentUserProfileProvider);
-    final profile = profileAsync.value;
-    final role = (profile?['role']?.toString() ?? 'member').toLowerCase().trim();
-    final department = (profile?['department_name']?.toString() ?? 'None').toLowerCase().trim();
-
-    final isTeam = role == 'team';
-    final isMediaItManager = role == 'manager' && 
-        (department.contains('media') && department.contains('it'));
-        
-    final hasCheckInPermission = isTeam || isMediaItManager;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: isCheckedIn
-              ? statusColor.withValues(alpha: 0.3)
-              : colors.border,
-        ),
-        boxShadow: isCheckedIn
-            ? [
-                BoxShadow(
-                  color: statusColor.withValues(alpha: 0.08),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
-                ),
-              ]
-            : colors.cardShadow,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ─ Status Row ─
-          Row(
-            children: [
-              AnimatedBuilder(
-                animation: _pulseController,
-                builder: (context, _) => Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isCheckedIn
-                        ? statusColor.withValues(
-                            alpha: 0.5 + 0.5 * _pulseController.value)
-                        : colors.textSecondary.withValues(alpha: 0.3),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                statusLabel,
-                style: TextStyle(
-                  color: isCheckedIn ? statusColor : colors.textSecondary,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.5,
-                ),
-              ),
-              const Spacer(),
-              if (isCheckedIn)
-                Navigator.canPop(context) ? const SizedBox.shrink() : Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(100),
-                    border: Border.all(
-                        color: statusColor.withValues(alpha: 0.3)),
-                  ),
-                  child: Text(
-                    session.workMode.toUpperCase(),
-                    style: TextStyle(
-                      color: statusColor,
-                      fontSize: 9,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-
-          // ─ Stopwatch / CTA ─
-          if (isCheckedIn) ...[
-            Center(
-              child: Text(
-                _formatElapsed(_elapsed),
-                style: AppTypography.h1.copyWith(
-                  color: colors.textPrimary,
-                  fontSize: 48,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 2,
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                ),
-              ).animate(onPlay: (c) => c.repeat()).shimmer(
-                    duration: 3000.ms,
-                    color: colors.honey.withValues(alpha: 0.15),
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Center(
-              child: Text(
-                'Checked in at ${DateFormat('hh:mm a').format(DateTime.parse(session.checkInTime).toLocal())}',
-                style: TextStyle(
-                    color: colors.textSecondary, fontSize: 12),
-              ),
-            ),
-            if (session.lastKnownWorkLocation != null) ...[
-              const SizedBox(height: 4),
-              Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(LucideIcons.mapPin, color: colors.honey, size: 12),
-                    const SizedBox(width: 4),
-                    Text(
-                      session.lastKnownWorkLocation!,
-                      style: TextStyle(
-                          color: colors.honey,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            // ─ Worked Today & Overtime display ─
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: colors.backgroundPrimary.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: colors.border),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('WORKED TODAY', style: TextStyle(color: colors.textSecondary, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
-                        const SizedBox(height: 4),
-                        Text(todayWorkedStr, style: TextStyle(color: colors.textPrimary, fontSize: 16, fontWeight: FontWeight.w900)),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: colors.backgroundPrimary.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: colors.border),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('OVERTIME TODAY', style: TextStyle(color: colors.textSecondary, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
-                        const SizedBox(height: 4),
-                        Text(
-                          todayOvertimeStr,
-                          style: TextStyle(
-                            color: policy.overtimeEnabled && todayOvertimeStr != '0m' ? colors.honey : colors.textSecondary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ] else ...[
-            Center(
-              child: Text(
-                'Ready to log attendance',
-                style: TextStyle(color: colors.textSecondary, fontSize: 14),
-              ),
-            ),
-            // Still show Today's summary metrics even when checked out
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: colors.backgroundPrimary.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: colors.border),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('WORKED TODAY', style: TextStyle(color: colors.textSecondary, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
-                        const SizedBox(height: 4),
-                        Text(todayWorkedStr, style: TextStyle(color: colors.textPrimary, fontSize: 16, fontWeight: FontWeight.w900)),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: colors.backgroundPrimary.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: colors.border),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('OVERTIME TODAY', style: TextStyle(color: colors.textSecondary, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
-                        const SizedBox(height: 4),
-                        Text(
-                          todayOvertimeStr,
-                          style: TextStyle(
-                            color: policy.overtimeEnabled && todayOvertimeStr != '0m' ? colors.honey : colors.textSecondary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-
-          if (!hasCheckInPermission && !isCheckedIn) ...[
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: colors.honey.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: colors.honey.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                children: [
-                  Icon(LucideIcons.info, color: colors.honey, size: 20),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Attendance logging is restricted to Team members and Media & IT department Managers.',
-                      style: TextStyle(color: colors.textSecondary, fontSize: 12, height: 1.4),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ] else ...[
-            const SizedBox(height: 24),
-            // ─ NFC Action Button ─
-            GestureDetector(
-              onTap: isScanning
-                  ? null
-                  : () {
-                      ref.read(globalNfcScanningProvider.notifier).startScan(
-                            workMode: isCheckedIn ? session.workMode : 'office',
-                            source: 'nfc',
-                          );
-                    },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                gradient: isCheckedIn
-                    ? const LinearGradient(
-                        colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      )
-                    : (colors.isDark ? AppColors.primaryGradient : AppColors.lightPrimaryGradient),
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: isCheckedIn
-                    ? [
-                        BoxShadow(
-                          color: Colors.red.withValues(alpha: 0.3),
-                          blurRadius: 16,
-                          offset: const Offset(0, 4),
-                        )
-                      ]
-                    : (colors.isDark ? [] : []),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    isScanning
-                        ? LucideIcons.loader
-                        : (isCheckedIn ? LucideIcons.logOut : LucideIcons.nfc),
-                    color: isCheckedIn ? Colors.white : colors.backgroundPrimary,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    isScanning
-                        ? 'SCANNING...'
-                        : (isCheckedIn ? 'TAP NFC TO CHECK OUT' : 'TAP NFC TO CHECK IN'),
-                    style: TextStyle(
-                      color:
-                          isCheckedIn ? Colors.white : colors.backgroundPrimary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          // ─ QR Action Button ─
-          GestureDetector(
-            onTap: isScanning
-                ? null
-                : () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (ctx) => QrScannerOverlay(
-                        onScan: (payload) {
-                          Navigator.pop(ctx);
-                          ref.read(globalNfcScanningProvider.notifier).startScan(
-                                workMode: isCheckedIn ? session.workMode : 'office',
-                                source: 'qr',
-                                qrPayload: payload,
-                              );
-                        },
-                      ),
-                    );
-                  },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                gradient: isCheckedIn
-                    ? const LinearGradient(
-                        colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      )
-                    : const LinearGradient(
-                        colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: [
-                  BoxShadow(
-                    color: (isCheckedIn ? Colors.blue : Colors.purple).withValues(alpha: 0.2),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
-                  )
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    isScanning
-                        ? LucideIcons.loader
-                        : (isCheckedIn ? LucideIcons.logOut : LucideIcons.qrCode),
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    isScanning
-                        ? 'SCANNING...'
-                        : (isCheckedIn ? 'SCAN QR TO CHECK OUT' : 'SCAN QR TO CHECK IN'),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-
-        // ─ Quick Check Out Button (shown only when checked in) ─
-        if (isCheckedIn) ...[
-          const SizedBox(height: 12),
-          GestureDetector(
-            onTap: isScanning
-                ? null
-                : () {
-                    showDialog(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        backgroundColor: colors.backgroundSecondary,
-                        title: Row(
-                          children: [
-                            const Icon(LucideIcons.logOut, color: AppColors.warning, size: 22),
-                            const SizedBox(width: 8),
-                            Text('Quick Check Out',
-                                style: TextStyle(
-                                    color: colors.textPrimary,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                        content: Text(
-                          'This will check you out immediately without scanning an NFC tag or QR code.\n\nAre you sure?',
-                          style: TextStyle(color: colors.textSecondary, fontSize: 13),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx),
-                            child: Text('Cancel',
-                                style: TextStyle(
-                                    color: colors.textSecondary, fontSize: 12)),
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.warning),
-                            onPressed: () {
-                              Navigator.pop(ctx);
-                              ref
-                                  .read(globalNfcScanningProvider.notifier)
-                                  .performManualCheckout(
-                                      source: 'quick_checkout_button');
-                            },
-                            child: const Text('Check Out Now',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.warning.withValues(alpha: 0.5), width: 1.5),
-                borderRadius: BorderRadius.circular(18),
-                color: AppColors.warning.withValues(alpha: 0.08),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(LucideIcons.logOut, color: AppColors.warning, size: 18),
-                  SizedBox(width: 10),
-                  Text(
-                    'QUICK CHECK OUT',
-                    style: TextStyle(
-                      color: AppColors.warning,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-
-        if (isCheckedIn && session.workMode == 'field') ...[
-            const SizedBox(height: 12),
-            GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: colors.backgroundSecondary,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                  ),
-                  builder: (ctx) => RemoteCheckoutRequestSheet(
-                    attendanceId: session.id,
-                    assignmentId: session.assignmentId,
-                  ),
-                );
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: colors.honey.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: colors.honey.withValues(alpha: 0.3)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(LucideIcons.mapPin, color: colors.honey, size: 14),
-                    const SizedBox(width: 8),
-                    Text(
-                      'REQUEST REMOTE CHECKOUT',
-                      style: TextStyle(
-                        color: colors.honey,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ] else if (!isCheckedIn) ...[
-            const SizedBox(height: 12),
-            GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: colors.backgroundSecondary,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                  ),
-                  builder: (ctx) => const MissedCheckinRequestSheet(),
-                );
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: colors.border,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(LucideIcons.calendar, color: colors.textSecondary, size: 14),
-                    const SizedBox(width: 8),
-                    Text(
-                      'REPORT MISSED CHECK-IN',
-                      style: TextStyle(
-                        color: colors.textSecondary,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-
-          // ─ Scan Status Message ─
-          if (scanState.message != null) ...[
-            const SizedBox(height: 12),
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: (scanState.status == NfcScanStatus.error
-                        ? AppColors.error
-                        : AppColors.success)
-                    .withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: (scanState.status == NfcScanStatus.error
-                          ? AppColors.error
-                          : AppColors.success)
-                      .withValues(alpha: 0.3),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    scanState.status == NfcScanStatus.error
-                        ? LucideIcons.alertCircle
-                        : LucideIcons.checkCircle,
-                    color: scanState.status == NfcScanStatus.error
-                        ? AppColors.error
-                        : AppColors.success,
-                    size: 14,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      scanState.message!,
-                      style: TextStyle(
-                        color: scanState.status == NfcScanStatus.error
-                            ? AppColors.error
-                            : AppColors.success,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.3),
-          ],
-        ],
-      ),
-    ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1);
-  }
+  // (extracted to AttendanceTimerBanner + AttendanceActionPanel)
 
   // ─── Manager: Pending Field Work Requests ────────────────────────────────
   Widget _buildFieldWorkRequestsPanel(BuildContext context, ThemeColors colors) {
@@ -1298,298 +794,7 @@ class _AttendanceDashboardScreenState
     );
   }
 
-  // ─── Stats Summary ──────────────────────────────────────────────────────────
-  Widget _buildStatsSummary(ThemeColors colors, List<AttendanceRecord> records) {
-    final now = DateTime.now();
-    final monthStart = DateTime(now.year, now.month, 1);
-    final monthRecords = records.where((r) {
-      final dt = DateTime.tryParse(r.checkInTime);
-      return dt != null && dt.isAfter(monthStart);
-    }).toList();
-
-    int workingDays = 0;
-    Duration totalDuration = Duration.zero;
-    int lateCount = 0;
-
-    for (final r in monthRecords) {
-      workingDays++;
-      totalDuration += r.calculatedDuration;
-      final checkIn = DateTime.tryParse(r.checkInTime)?.toLocal();
-      if (checkIn != null && (checkIn.hour > 9 || (checkIn.hour == 9 && checkIn.minute > 15))) {
-        lateCount++;
-      }
-    }
-
-    final avgHours = workingDays > 0 ? totalDuration.inHours / workingDays : 0.0;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(LucideIcons.barChart3, color: colors.honey, size: 16),
-            const SizedBox(width: 8),
-            Text(
-              'THIS MONTH',
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.w900,
-                fontSize: 11,
-                letterSpacing: 1,
-              ),
-            ),
-            const Spacer(),
-            Text(
-              DateFormat('MMMM yyyy').format(now),
-              style: TextStyle(color: colors.textSecondary, fontSize: 11),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            _buildStatTile(colors, 'DAYS IN', workingDays.toString(), LucideIcons.calendarCheck, AppColors.success),
-            const SizedBox(width: 10),
-            _buildStatTile(colors, 'AVG HOURS', '${avgHours.toStringAsFixed(1)}h', LucideIcons.timer, colors.honey),
-            const SizedBox(width: 10),
-            _buildStatTile(colors, 'LATE IN', lateCount.toString(), LucideIcons.alarmClock, AppColors.warning),
-          ],
-        ),
-      ],
-    ).animate().fadeIn(duration: 500.ms, delay: 200.ms);
-  }
-
-  Widget _buildStatTile(ThemeColors colors, String label, String value, IconData icon, Color accentColor) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: colors.border),
-          boxShadow: [BoxShadow(color: accentColor.withValues(alpha: 0.05), blurRadius: 12)],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: accentColor, size: 18),
-            const SizedBox(height: 12),
-            Text(value,
-                style: TextStyle(
-                    color: colors.textPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900)),
-            const SizedBox(height: 2),
-            Text(label,
-                style: TextStyle(
-                    color: colors.textSecondary,
-                    fontSize: 8,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.5)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ─── History List ────────────────────────────────────────────────────────────
-  Widget _buildHistoryList(ThemeColors colors, List<AttendanceRecord> records) {
-    if (records.isEmpty) {
-      return _buildEmptyState(colors);
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(LucideIcons.history, color: colors.honey, size: 16),
-            const SizedBox(width: 8),
-            Text(
-              'ATTENDANCE HISTORY',
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.w900,
-                fontSize: 11,
-                letterSpacing: 1,
-              ),
-            ),
-            const Spacer(),
-            Text(
-              '${records.length} RECORDS',
-              style: TextStyle(color: colors.textSecondary, fontSize: 10),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        ...records.take(20).toList().asMap().entries.map((entry) {
-          final i = entry.key;
-          final record = entry.value;
-          return _buildHistoryTile(colors, record, i);
-        }),
-      ],
-    ).animate().fadeIn(duration: 500.ms, delay: 300.ms);
-  }
-
-  Widget _buildHistoryTile(ThemeColors colors, AttendanceRecord record, int index) {
-    final checkIn = DateTime.tryParse(record.checkInTime)?.toLocal();
-    final checkOut = record.checkOutTime != null
-        ? DateTime.tryParse(record.checkOutTime!)?.toLocal()
-        : null;
-    final isClosed = record.attendanceState == 'closed';
-
-    Color workModeColor;
-    switch (record.workMode) {
-      case 'field':
-        workModeColor = AppColors.warning;
-        break;
-      case 'remote':
-        workModeColor = AppColors.info;
-        break;
-      default:
-        workModeColor = AppColors.success;
-    }
-
-    return GestureDetector(
-      onTap: () => _showTimelineSheet(context, colors, record),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: colors.border),
-        ),
-        child: Row(
-          children: [
-            // Work mode indicator
-            Container(
-              width: 4,
-              height: 48,
-              decoration: BoxDecoration(
-                color: workModeColor,
-                borderRadius: BorderRadius.circular(100),
-              ),
-            ),
-            const SizedBox(width: 14),
-            // Date
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  checkIn != null ? DateFormat('dd').format(checkIn) : '--',
-                  style: TextStyle(
-                      color: colors.textPrimary,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900),
-                ),
-                Text(
-                  checkIn != null ? DateFormat('MMM').format(checkIn) : '--',
-                  style: TextStyle(
-                      color: colors.textSecondary, fontSize: 10, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(width: 16),
-            // Times
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(LucideIcons.logIn, color: AppColors.success, size: 12),
-                      const SizedBox(width: 4),
-                      Text(
-                        checkIn != null ? DateFormat('hh:mm a').format(checkIn) : '--:--',
-                        style: TextStyle(color: colors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: _getStatusColor(record.status, colors).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(100),
-                          border: Border.all(color: _getStatusColor(record.status, colors).withValues(alpha: 0.3)),
-                        ),
-                        child: Text(
-                          _getStatusLabel(record.status),
-                          style: TextStyle(
-                            color: _getStatusColor(record.status, colors),
-                            fontSize: 7,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(LucideIcons.logOut, color: AppColors.error, size: 12),
-                      const SizedBox(width: 4),
-                      Text(
-                        checkOut != null ? DateFormat('hh:mm a').format(checkOut) : (isClosed ? 'Auto Closed' : '--:-- '),
-                        style: TextStyle(
-                          color: isClosed && record.closeReason == 'Forgotten Checkout' 
-                              ? _getStatusColor(AttendanceStatus.autoClosed, colors) 
-                              : colors.textSecondary, 
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: workModeColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Text(
-                          record.workMode.toUpperCase(),
-                          style: TextStyle(color: workModeColor, fontSize: 8, fontWeight: FontWeight.w900),
-                        ),
-                      ),
-                      if (record.closeReason != null) ...[
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: colors.border,
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Text(
-                            record.closeReason!.toUpperCase(),
-                            style: TextStyle(color: colors.textSecondary, fontSize: 7),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            // Duration
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  record.formattedDuration,
-                  style: TextStyle(
-                      color: colors.honey, fontSize: 16, fontWeight: FontWeight.w900),
-                ),
-                const SizedBox(height: 4),
-                Icon(LucideIcons.chevronRight, color: colors.textSecondary, size: 14),
-              ],
-            ),
-          ],
-        ),
-      ).animate(delay: (index * 50).ms).fadeIn(duration: 300.ms).slideX(begin: 0.05),
-    );
-  }
+  // (extracted to AttendanceHistoryList)
 
   void _showTimelineSheet(BuildContext context, ThemeColors colors, AttendanceRecord record) {
     showModalBottomSheet(
@@ -1938,24 +1143,6 @@ class _AttendanceDashboardScreenState
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyState(ThemeColors colors) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          children: [
-            Icon(LucideIcons.calendarOff, color: colors.textSecondary, size: 48),
-            const SizedBox(height: 16),
-            Text(
-              'No attendance records yet',
-              style: TextStyle(color: colors.textSecondary, fontSize: 14),
-            ),
-          ],
-        ),
       ),
     );
   }

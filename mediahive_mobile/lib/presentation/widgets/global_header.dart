@@ -137,48 +137,59 @@ class GlobalHeader extends ConsumerWidget {
                         Consumer(
                           builder: (context, ref, _) {
                             final unreadChatsCount = ref.watch(unreadChatMessagesCountProvider);
-                            return GestureDetector(
-                              onTap: () {
-                                if (currentRoute.startsWith('/chat')) {
-                                  context.pop();
-                                } else {
-                                  context.push('/chat');
-                                }
-                              },
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Icon(
-                                    LucideIcons.messageSquare,
-                                    color: colors.iconColor.withValues(alpha: 0.7),
-                                    size: 22,
-                                  ),
-                                  if (unreadChatsCount > 0)
-                                    Positioned(
-                                      top: -2,
-                                      right: -2,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xFFEF4444),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        constraints: const BoxConstraints(
-                                          minWidth: 14,
-                                          minHeight: 14,
-                                        ),
-                                        child: Text(
-                                          unreadChatsCount > 9 ? '9+' : unreadChatsCount.toString(),
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 8,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
+                            return Semantics(
+                              label: "Chat",
+                              hint: "Open direct messages screen",
+                              button: true,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkResponse(
+                                  onTap: () {
+                                    if (currentRoute.startsWith('/chat')) {
+                                      context.pop();
+                                    } else {
+                                      context.push('/chat');
+                                    }
+                                  },
+                                  radius: 20,
+                                  splashColor: colors.indigo.withValues(alpha: 0.15),
+                                  highlightColor: colors.indigo.withValues(alpha: 0.08),
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Icon(
+                                        LucideIcons.messageSquare,
+                                        color: colors.iconColor.withValues(alpha: 0.7),
+                                        size: 22,
                                       ),
-                                    ),
-                                ],
+                                      if (unreadChatsCount > 0)
+                                        Positioned(
+                                          top: -2,
+                                          right: -2,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: const BoxDecoration(
+                                              color: Color(0xFFEF4444),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            constraints: const BoxConstraints(
+                                              minWidth: 14,
+                                              minHeight: 14,
+                                            ),
+                                            child: Text(
+                                              unreadChatsCount > 9 ? '9+' : unreadChatsCount.toString(),
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 8,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             );
                           },
@@ -189,62 +200,73 @@ class GlobalHeader extends ConsumerWidget {
                             final unreadCount = ref.watch(unreadNotificationsCountProvider);
                             final hasSyncErrors = ref.watch(syncErrorsProvider).hasSyncErrors;
 
-                            return GestureDetector(
-                              onTap: () {
-                                if (currentRoute.startsWith('/notifications')) {
-                                  context.pop();
-                                } else {
-                                  context.push('/notifications');
-                                }
-                              },
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Icon(
-                                    LucideIcons.bell,
-                                    color: colors.iconColor.withValues(alpha: 0.7),
-                                    size: 22,
-                                  ),
-                                  if (hasSyncErrors)
-                                    Positioned(
-                                      bottom: 0,
-                                      right: 0,
-                                      child: Container(
-                                        width: 8,
-                                        height: 8,
-                                        decoration: BoxDecoration(
-                                          color: Colors.orangeAccent,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(color: colors.surface, width: 1.5),
-                                        ),
+                            return Semantics(
+                              label: "Notifications",
+                              hint: "Open notifications screen",
+                              button: true,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkResponse(
+                                  onTap: () {
+                                    if (currentRoute.startsWith('/notifications')) {
+                                      context.pop();
+                                    } else {
+                                      context.push('/notifications');
+                                    }
+                                  },
+                                  radius: 20,
+                                  splashColor: colors.indigo.withValues(alpha: 0.15),
+                                  highlightColor: colors.indigo.withValues(alpha: 0.08),
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Icon(
+                                        LucideIcons.bell,
+                                        color: colors.iconColor.withValues(alpha: 0.7),
+                                        size: 22,
                                       ),
-                                    ),
-                                  if (unreadCount > 0)
-                                    Positioned(
-                                      top: -2,
-                                      right: -2,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xFFEF4444),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        constraints: const BoxConstraints(
-                                          minWidth: 14,
-                                          minHeight: 14,
-                                        ),
-                                        child: Text(
-                                          unreadCount > 9 ? '9+' : unreadCount.toString(),
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 8,
-                                            fontWeight: FontWeight.bold,
+                                      if (hasSyncErrors)
+                                        Positioned(
+                                          bottom: 0,
+                                          right: 0,
+                                          child: Container(
+                                            width: 8,
+                                            height: 8,
+                                            decoration: BoxDecoration(
+                                              color: Colors.orangeAccent,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(color: colors.surface, width: 1.5),
+                                            ),
                                           ),
-                                          textAlign: TextAlign.center,
                                         ),
-                                      ),
-                                    ),
-                                ],
+                                      if (unreadCount > 0)
+                                        Positioned(
+                                          top: -2,
+                                          right: -2,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: const BoxDecoration(
+                                              color: Color(0xFFEF4444),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            constraints: const BoxConstraints(
+                                              minWidth: 14,
+                                              minHeight: 14,
+                                            ),
+                                            child: Text(
+                                              unreadCount > 9 ? '9+' : unreadCount.toString(),
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 8,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             );
                           },
@@ -258,19 +280,28 @@ class GlobalHeader extends ConsumerWidget {
                               data: (p) => p?['avatar_url'] as String?,
                               orElse: () => null,
                             );
-                            return GestureDetector(
-                              onTap: () {
-                                if (isProfileRoute) {
-                                  if (context.canPop()) {
-                                    context.pop();
-                                  } else {
-                                    context.go('/dashboard');
-                                  }
-                                } else {
-                                  context.push('/profile');
-                                }
-                              },
-                              child: Container(
+                            return Semantics(
+                              label: "Profile",
+                              hint: "Open user profile screen",
+                              button: true,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkResponse(
+                                  onTap: () {
+                                    if (isProfileRoute) {
+                                      if (context.canPop()) {
+                                        context.pop();
+                                      } else {
+                                        context.go('/dashboard');
+                                      }
+                                    } else {
+                                      context.push('/profile');
+                                    }
+                                  },
+                                  radius: 24,
+                                  splashColor: colors.indigo.withValues(alpha: 0.15),
+                                  highlightColor: colors.indigo.withValues(alpha: 0.08),
+                                  child: Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
@@ -290,7 +321,9 @@ class GlobalHeader extends ConsumerWidget {
                                   backgroundColor: colors.surface,
                                 ),
                               ),
-                            );
+                            ),
+                          ),
+                        );
                           },
                         ),
                       ],

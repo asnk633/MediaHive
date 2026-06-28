@@ -99,99 +99,103 @@ class SpeedDialOverlay extends ConsumerWidget {
       alignment: isTablet ? Alignment.topLeft : Alignment.bottomCenter,
       child: Transform.translate(
         offset: isTablet ? Offset(90.0, 40.0 + (index * 85.0)) : offset,
-        child: GestureDetector(
-          onTap: onTap,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 62,
-                height: 62,
-                decoration: BoxDecoration(
-                  color: isLight
-                      ? Colors.white.withValues(alpha: 0.85)
-                      : colors.surface.withValues(alpha: 0.8),
-                  shape: BoxShape.circle,
-                  border: Border.all(
+        child: Semantics(
+          label: "Quick action: Create $label",
+          button: true,
+          child: GestureDetector(
+            onTap: onTap,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 62,
+                  height: 62,
+                  decoration: BoxDecoration(
                     color: isLight
-                        ? DesignTokens.lightBorderStrong
-                        : colors.border.withValues(alpha: 0.5),
-                    width: isLight ? 0.75 : 1.0,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: color.withValues(alpha: isLight ? 0.18 : 0.25),
-                      blurRadius: isLight ? 16 : 20,
-                      spreadRadius: isLight ? 0 : 2,
-                      offset: isLight ? const Offset(0, 4) : Offset.zero,
+                        ? Colors.white.withValues(alpha: 0.85)
+                        : colors.surface.withValues(alpha: 0.8),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isLight
+                          ? DesignTokens.lightBorderStrong
+                          : colors.border.withValues(alpha: 0.5),
+                      width: isLight ? 0.75 : 1.0,
                     ),
-                    if (isLight)
+                    boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        color: color.withValues(alpha: isLight ? 0.18 : 0.25),
+                        blurRadius: isLight ? 16 : 20,
+                        spreadRadius: isLight ? 0 : 2,
+                        offset: isLight ? const Offset(0, 4) : Offset.zero,
                       ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(
-                      sigmaX: isLight ? 20 : 10,
-                      sigmaY: isLight ? 20 : 10,
-                    ),
-                    child: Center(
-                      child: Icon(icon, color: color, size: 26),
+                      if (isLight)
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaX: isLight ? 20 : 10,
+                        sigmaY: isLight ? 20 : 10,
+                      ),
+                      child: Center(
+                        child: Icon(icon, color: color, size: 26),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: BackdropFilter(
-                  filter: isLight
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: BackdropFilter(
+                    filter: isLight
                       ? ImageFilter.blur(sigmaX: 8, sigmaY: 8)
                       : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: isLight
-                          ? Colors.white.withValues(alpha: 0.75)
-                          : Colors.black.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(6),
-                      border: isLight
-                          ? Border.all(color: DesignTokens.lightBorder, width: 0.75)
-                          : null,
-                    ),
-                    child: Text(
-                      label.toUpperCase(),
-                      style: TextStyle(
-                        color: isLight ? DesignTokens.lightTextPrimary : Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1.5,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: isLight
+                            ? Colors.white.withValues(alpha: 0.75)
+                            : Colors.black.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(6),
+                        border: isLight
+                            ? Border.all(color: DesignTokens.lightBorder, width: 0.75)
+                            : null,
+                      ),
+                      child: Text(
+                        label.toUpperCase(),
+                        style: TextStyle(
+                          color: isLight ? DesignTokens.lightTextPrimary : Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.5,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          )
-          .animate()
-          .fadeIn(delay: (index * 40).ms, duration: 300.ms)
-          .scale(
-            begin: const Offset(0.5, 0.5),
-            end: const Offset(1, 1),
-            delay: (index * 40).ms,
-            duration: 400.ms,
-            curve: Curves.easeOutBack,
-          )
-          .move(
-            begin: isTablet ? const Offset(-40, 0) : Offset(-offset.dx * 0.5, -offset.dy * 0.5 + 40),
-            end: Offset.zero,
-            delay: (index * 40).ms,
-            duration: 500.ms,
-            curve: Curves.easeOutBack,
+              ],
+            )
+            .animate()
+            .fadeIn(delay: (index * 40).ms, duration: 300.ms)
+            .scale(
+              begin: const Offset(0.5, 0.5),
+              end: const Offset(1, 1),
+              delay: (index * 40).ms,
+              duration: 400.ms,
+              curve: Curves.easeOutBack,
+            )
+            .move(
+              begin: isTablet ? const Offset(-40, 0) : Offset(-offset.dx * 0.5, -offset.dy * 0.5 + 40),
+              end: Offset.zero,
+              delay: (index * 40).ms,
+              duration: 500.ms,
+              curve: Curves.easeOutBack,
+            ),
           ),
         ),
       ),

@@ -157,23 +157,31 @@ class FloatingNavigationDock extends ConsumerWidget {
 
   Widget _buildIntegratedFAB(ThemeColors colors) {
     final isLight = !colors.isDark;
-    return GestureDetector(
-      onTap: onToggleSpeedDial,
-      child: Container(
-        width: 52,
-        height: 52,
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        decoration: BoxDecoration(
-          gradient: isLight
-              ? AppColors.lightPrimaryGradient
-              : AppColors.primaryGradient,
-          shape: BoxShape.circle,
-          boxShadow: isLight ? DesignTokens.spatialGlowBlue : [],
-        ),
-        child: AnimatedRotation(
-          turns: isSpeedDialOpen ? 0.125 : 0,
-          duration: const Duration(milliseconds: 300),
-          child: const Icon(LucideIcons.plus, color: Colors.white, size: 26),
+    return Semantics(
+      label: isSpeedDialOpen ? "Close quick actions menu" : "Open quick actions menu",
+      button: true,
+      child: Material(
+        color: Colors.transparent,
+        child: InkResponse(
+          onTap: onToggleSpeedDial,
+          radius: 28,
+          child: Container(
+            width: 52,
+            height: 52,
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+              gradient: isLight
+                  ? AppColors.lightPrimaryGradient
+                  : AppColors.primaryGradient,
+              shape: BoxShape.circle,
+              boxShadow: isLight ? DesignTokens.spatialGlowBlue : [],
+            ),
+            child: AnimatedRotation(
+              turns: isSpeedDialOpen ? 0.125 : 0,
+              duration: const Duration(milliseconds: 300),
+              child: const Icon(LucideIcons.plus, color: Colors.white, size: 26),
+            ),
+          ),
         ),
       ),
     ).animate().scale(delay: 400.ms, duration: 400.ms, curve: Curves.easeOutBack);
@@ -207,76 +215,86 @@ class FloatingNavigationDock extends ConsumerWidget {
         fontSize: 10,
         fontWeight: FontWeight.bold,
       ),
-      child: GestureDetector(
-        onTap: () {
-          HapticFeedback.lightImpact();
-          onNavigate(item);
-        },
-        behavior: HitTestBehavior.opaque,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isSelected && isLight)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: DesignTokens.lightHoney.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusM),
-                ),
-                child: Icon(
-                  icon,
-                  size: 22,
-                  color: DesignTokens.lightHoney,
-                ),
-              ).animate(target: 1).scale(
-                begin: const Offset(0.8, 0.8),
-                end: const Offset(1.0, 1.0),
-              )
-            else
-              Icon(
-                icon,
-                size: 24,
-                color: isSelected
-                    ? colors.indigo
-                    : colors.textSecondary.withValues(alpha: isLight ? 0.5 : 0.4),
-              ).animate(target: isSelected ? 1 : 0).scale(
-                begin: const Offset(0.8, 0.8),
-                end: const Offset(1.1, 1.1),
-              ),
+      child: Semantics(
+        label: fullLabel,
+        button: true,
+        selected: isSelected,
+        child: Material(
+          color: Colors.transparent,
+          child: InkResponse(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              onNavigate(item);
+            },
+            radius: 28,
+            splashColor: colors.indigo.withValues(alpha: 0.15),
+            highlightColor: colors.indigo.withValues(alpha: 0.08),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (isSelected && isLight)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: DesignTokens.lightHoney.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(DesignTokens.radiusM),
+                    ),
+                    child: Icon(
+                      icon,
+                      size: 22,
+                      color: DesignTokens.lightHoney,
+                    ),
+                  ).animate(target: 1).scale(
+                    begin: const Offset(0.8, 0.8),
+                    end: const Offset(1.0, 1.0),
+                  )
+                else
+                  Icon(
+                    icon,
+                    size: 24,
+                    color: isSelected
+                        ? colors.indigo
+                        : colors.textSecondary.withValues(alpha: isLight ? 0.5 : 0.4),
+                  ).animate(target: isSelected ? 1 : 0).scale(
+                    begin: const Offset(0.8, 0.8),
+                    end: const Offset(1.1, 1.1),
+                  ),
 
-            const SizedBox(height: 4),
+                const SizedBox(height: 4),
 
-            AnimatedOpacity(
-              duration: const Duration(milliseconds: 200),
-              opacity: isSelected ? 1.0 : 0.0,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                height: isSelected ? 12 : 0,
-                child: Text(
-                  fullLabel.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 7,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.5,
-                    color: isLight && isSelected
-                        ? DesignTokens.lightHoney
-                        : colors.textPrimary,
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: isSelected ? 1.0 : 0.0,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    height: isSelected ? 14 : 0,
+                    child: Text(
+                      fullLabel.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
+                        color: isLight && isSelected
+                            ? DesignTokens.lightHoney
+                            : colors.textPrimary,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
 
-            if (isSelected && !isLight)
-              Container(
-                margin: const EdgeInsets.only(top: 4),
-                width: 4,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: colors.indigo,
-                  shape: BoxShape.circle,
-                ),
-              ).animate().fade().scale(),
-          ],
+                if (isSelected && !isLight)
+                  Container(
+                    margin: const EdgeInsets.only(top: 4),
+                    width: 4,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colors.indigo,
+                      shape: BoxShape.circle,
+                    ),
+                  ).animate().fade().scale(),
+              ],
+            ),
+          ),
         ),
       ),
     );

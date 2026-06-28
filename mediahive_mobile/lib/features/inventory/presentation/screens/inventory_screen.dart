@@ -10,7 +10,6 @@ import '../../../../../core/theme/app_typography.dart';
 import '../../../../../core/services/analytics_service.dart';
 import 'package:mediahive_mobile/features/inventory/presentation/providers/inventory_provider.dart';
 import 'package:mediahive_mobile/features/inventory/domain/models/inventory_item.dart';
-import 'package:mediahive_mobile/features/inventory/domain/models/equipment_booking.dart';
 import 'package:mediahive_mobile/features/inventory/domain/models/inventory_request.dart';
 import '../../../../../shared/widgets/mh_button.dart';
 import '../../../../../shared/widgets/mh_empty_state.dart';
@@ -18,20 +17,22 @@ import '../../../../../shared/widgets/mh_refresh_indicator.dart';
 import 'package:mediahive_mobile/core/services/network_service.dart';
 import 'package:mediahive_mobile/core/providers/user_provider.dart';
 import 'package:mediahive_mobile/features/inventory/presentation/widgets/inventory_transaction_sheets.dart';
-import 'package:mediahive_mobile/core/utils/url_helpers.dart';
 import 'package:mediahive_mobile/presentation/providers/navigation_provider.dart';
 import '../../../../../shared/widgets/mh_loading.dart';
 import 'package:mediahive_mobile/core/services/notification_service.dart';
 import 'dart:async';
 import 'package:mediahive_mobile/core/services/sound_service.dart';
 import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/features/inventory/presentation/widgets/inventory_filter_bar.dart';
+import 'package:mediahive_mobile/features/inventory/presentation/widgets/inventory_category_tabs.dart';
+import 'package:mediahive_mobile/features/inventory/presentation/widgets/inventory_item_card.dart';
+import 'package:mediahive_mobile/features/inventory/presentation/widgets/inventory_schedule_panel.dart';
 
 final inventoryCategoryProvider = StateProvider<String>((ref) => 'ALL');
 final inventorySearchProvider = StateProvider<String>((ref) => '');
 final inventorySortProvider = StateProvider<String>((ref) => 'NAME_ASC');
 final inventoryTabProvider = StateProvider<int>((ref) => 0); // 0: Equipment, 1: Schedule
 final inventoryGuideExpandedProvider = StateProvider<bool>((ref) => false);
-enum InventoryViewMode { grid, list }
 final inventoryViewModeProvider = StateProvider<InventoryViewMode>((ref) => InventoryViewMode.grid);
 
 class InventoryScreen extends ConsumerStatefulWidget {
@@ -331,21 +332,83 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
         children: [
           _buildPageHeader(context, ref, viewMode, isAdmin, isOffline, colors),
           const SizedBox(height: AppSpacing.xxl),
-          _buildTabs(ref, activeTab, colors),
+          InventoryCategoryTabs(
+            activeTab: activeTab,
+            onTabChanged: (index) => ref.read(inventoryTabProvider.notifier).state = index,
+          ),
           const SizedBox(height: AppSpacing.m),
           if (activeTab == 0) ...[
             _buildStatsGrid(items, isAdmin, colors),
             const SizedBox(height: AppSpacing.m),
-            _buildFilterSection(ref, guideExpanded, viewMode, colors),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colors.surface.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: colors.isDark
+                      ? colors.border.withValues(alpha: 0.5)
+                      : colors.border.withValues(alpha: 0.15),
+                ),
+              ),
+              child: Column(
+                children: [
+                  _buildCategorizationGuide(ref, guideExpanded, colors),
+                  const SizedBox(height: 8),
+                  InventoryFilterBar(
+                    searchQuery: searchQuery,
+                    onSearchChanged: (val) => ref.read(inventorySearchProvider.notifier).state = val,
+                    viewMode: viewMode,
+                    onViewModeChanged: (mode) => ref.read(inventoryViewModeProvider.notifier).state = mode,
+                    sortLabel: _sortLabel(sortMethod),
+                    onSortTap: () => _showSortPicker(context, ref, colors),
+                    categoryLabel: selectedCategory == 'ALL' ? 'All Categories' : selectedCategory,
+                    onCategoryTap: () => _showCategoryPicker(context, ref, colors),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: AppSpacing.l),
             if (filteredItems.isEmpty)
               _buildEmptyState(colors)
             else if (viewMode == InventoryViewMode.grid)
-              _buildInventoryGrid(ref, filteredItems, isAdmin, canBook, isOffline, colors)
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.85,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemCount: filteredItems.length,
+                itemBuilder: (context, index) => InventoryItemCard(
+                  item: filteredItems[index],
+                  viewMode: viewMode,
+                  isOffline: isOffline,
+                  onTap: () => _showItemDetails(context, ref, filteredItems[index], isAdmin, canBook, isOffline, colors),
+                ),
+              )
             else
-              _buildInventoryList(ref, filteredItems, isAdmin, canBook, isOffline, colors),
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: filteredItems.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                itemBuilder: (context, index) => InventoryItemCard(
+                  item: filteredItems[index],
+                  viewMode: viewMode,
+                  isOffline: isOffline,
+                  onTap: () => _showItemDetails(context, ref, filteredItems[index], isAdmin, canBook, isOffline, colors),
+                ),
+              ),
           ] else if (activeTab == 1)
-            _buildBookingSchedule(ref, colors)
+            InventorySchedulePanel(
+              bookings: ref.watch(bookingListProvider).valueOrNull ?? [],
+              isLoading: ref.watch(bookingListProvider).isLoading,
+              error: ref.watch(bookingListProvider).hasError ? ref.watch(bookingListProvider).error.toString() : null,
+              onBookEquipment: () => ref.read(inventoryTabProvider.notifier).state = 0,
+            )
           else
             _buildRequestsView(ref, isAdmin, colors),
         ],
@@ -353,26 +416,20 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
     );
   }
 
-  Widget _buildFilterSection(WidgetRef ref, bool guideExpanded, InventoryViewMode viewMode, ThemeColors colors) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colors.surface.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: colors.isDark 
-              ? colors.border.withValues(alpha: 0.5) 
-              : colors.border.withValues(alpha: 0.15),
-        ),
-      ),
-      child: Column(
-        children: [
-          _buildCategorizationGuide(ref, guideExpanded, colors),
-          const SizedBox(height: 8),
-          _buildSearchAndFilters(ref, viewMode, colors),
-        ],
-      ),
-    );
+  String _sortLabel(String sortMethod) {
+    switch (sortMethod) {
+      case 'NAME_ASC': return 'Name (A-Z)';
+      case 'NAME_DESC': return 'Name (Z-A)';
+      case 'STATUS_AVAILABLE': return 'Status: Available';
+      case 'STATUS_IN_USE': return 'Status: In Use';
+      case 'STATUS_MAINTENANCE': return 'Status: Maintenance';
+      case 'STATUS_RETIRED': return 'Status: Retired';
+      case 'CONDITION_GOOD': return 'Condition: Good';
+      case 'CONDITION_FAIR': return 'Condition: Fair';
+      case 'CONDITION_POOR': return 'Condition: Poor';
+      case 'CONDITION_DAMAGED': return 'Condition: Damaged';
+      default: return 'Name (A-Z)';
+    }
   }
 
   Widget _buildLoadingState(ThemeColors colors) {
@@ -525,58 +582,6 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
     );
   }
 
-  Widget _buildTabs(WidgetRef ref, int activeTab, ThemeColors colors) {
-    return Container(
-      height: 48,
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: colors.isDark ? colors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(AppRadius.m),
-        border: Border.all(
-          color: colors.isDark 
-              ? colors.border 
-              : colors.border.withValues(alpha: 0.12),
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(child: _buildTabItem(ref, 'Items', 0, activeTab == 0, colors)),
-          Expanded(child: _buildTabItem(ref, 'Schedule', 1, activeTab == 1, colors)),
-          Expanded(child: _buildTabItem(ref, 'Requests', 2, activeTab == 2, colors)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabItem(WidgetRef ref, String label, int index, bool active, ThemeColors colors) {
-    return GestureDetector(
-      onTap: () => ref.read(inventoryTabProvider.notifier).state = index,
-      child: Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: active ? colors.indigo : Colors.transparent,
-          borderRadius: BorderRadius.circular(AppRadius.s),
-          boxShadow: active && !colors.isDark
-              ? [
-                  BoxShadow(
-                    color: colors.indigo.withValues(alpha: 0.3),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  )
-                ]
-              : null,
-        ),
-        child: Text(
-          label,
-          style: AppTypography.bodyS.copyWith(
-            fontWeight: FontWeight.bold,
-            color: active ? Colors.white : colors.textSecondary.withValues(alpha: 0.8),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildStatsGrid(List<InventoryItem> items, bool isAdmin, ThemeColors colors) {
     final totalItems = items.length;
     final inRepair = items.where((i) {
@@ -647,254 +652,6 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBookingSchedule(WidgetRef ref, ThemeColors colors) {
-    final bookingsAsync = ref.watch(bookingListProvider);
-
-    return bookingsAsync.when(
-      data: (bookings) {
-        if (bookings.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: AppSpacing.xl),
-                Icon(LucideIcons.calendar, size: 64, color: colors.textSecondary.withValues(alpha: 0.2)),
-                const SizedBox(height: AppSpacing.m),
-                Text('No active bookings found', style: AppTypography.bodyM.copyWith(color: colors.textSecondary)),
-                const SizedBox(height: AppSpacing.m),
-                MhButton(
-                  label: 'Book Equipment',
-                  onTap: () => ref.read(inventoryTabProvider.notifier).state = 0,
-                  type: MhButtonType.secondary,
-                  width: 160,
-                ),
-              ],
-            ),
-          );
-        }
-
-        return ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: bookings.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 12),
-          itemBuilder: (context, index) {
-            final booking = bookings[index];
-            return _buildBookingCard(booking, colors);
-          },
-        );
-      },
-      loading: () => const MhLoading(size: 100),
-      error: (err, stack) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          child: Text('Failed to load bookings: $err', style: AppTypography.caption.copyWith(color: colors.error)),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBookingCard(EquipmentBooking booking, ThemeColors colors) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.m),
-      decoration: BoxDecoration(
-        color: colors.isDark ? colors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(AppRadius.l),
-        border: Border.all(
-          color: colors.isDark 
-              ? colors.border 
-              : colors.border.withValues(alpha: 0.12),
-        ),
-        boxShadow: colors.isDark
-            ? []
-            : [
-                BoxShadow(
-                  color: colors.border.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                )
-              ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: colors.indigo.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(AppRadius.m),
-            ),
-            child: Icon(LucideIcons.calendar, color: colors.indigo, size: 20),
-          ),
-          const SizedBox(width: AppSpacing.m),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  booking.equipmentName ?? 'Unknown Equipment',
-                  style: AppTypography.bodyM.copyWith(fontWeight: FontWeight.bold, color: colors.textPrimary),
-                ),
-                Text(
-                  'Booked by: ${booking.bookedByName ?? 'Unknown User'}',
-                  style: AppTypography.caption.copyWith(color: colors.textSecondary),
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${booking.startTime.day}/${booking.startTime.month}',
-                style: AppTypography.bodyS.copyWith(fontWeight: FontWeight.bold, color: colors.honey),
-              ),
-              Text(
-                '${booking.unitsRequested} units',
-                style: AppTypography.caption.copyWith(color: colors.textSecondary),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSearchAndFilters(WidgetRef ref, InventoryViewMode viewMode, ThemeColors colors) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m, vertical: 8),
-                decoration: BoxDecoration(
-                  color: colors.isDark ? colors.surface : Colors.white,
-                  borderRadius: BorderRadius.circular(AppRadius.m),
-                  border: Border.all(color: colors.border),
-                ),
-                child: Row(
-                  children: [
-                    Icon(LucideIcons.search, size: 18, color: colors.textSecondary.withValues(alpha: 0.6)),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextField(
-                        onChanged: (val) => ref.read(inventorySearchProvider.notifier).state = val,
-                        decoration: InputDecoration(
-                          hintText: 'Search by name or serial...',
-                          hintStyle: AppTypography.bodyM.copyWith(color: colors.textSecondary.withValues(alpha: 0.5)),
-                          border: InputBorder.none, filled: false,
-                          isDense: true,
-                        ),
-                        style: AppTypography.bodyM.copyWith(color: colors.textPrimary),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: AppSpacing.s),
-            Container(
-              decoration: BoxDecoration(
-                color: colors.isDark ? colors.surface : Colors.white,
-                borderRadius: BorderRadius.circular(AppRadius.m),
-                border: Border.all(color: colors.border),
-              ),
-              child: IconButton(
-                icon: Icon(
-                  viewMode == InventoryViewMode.grid ? LucideIcons.layoutGrid : LucideIcons.list,
-                  color: colors.honey,
-                  size: 20,
-                ),
-                onPressed: () {
-                  ref.read(inventoryViewModeProvider.notifier).state = 
-                    viewMode == InventoryViewMode.grid ? InventoryViewMode.list : InventoryViewMode.grid;
-                },
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.s),
-        Row(
-          children: [
-            Expanded(
-              child: _buildSortDropdown(ref, colors),
-            ),
-            const SizedBox(width: AppSpacing.s),
-            Expanded(
-              child: _buildCategoryDropdown(ref, colors),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSortDropdown(WidgetRef ref, ThemeColors colors) {
-    final sortMethod = ref.watch(inventorySortProvider);
-    String label = 'Name (A-Z)';
-    switch (sortMethod) {
-      case 'NAME_DESC': label = 'Name (Z-A)'; break;
-      case 'STATUS_AVAILABLE': label = 'Status: Available'; break;
-      case 'STATUS_IN_USE': label = 'Status: In Use'; break;
-      case 'STATUS_MAINTENANCE': label = 'Status: Maintenance'; break;
-      case 'STATUS_RETIRED': label = 'Status: Retired'; break;
-      case 'CONDITION_GOOD': label = 'Condition: Good'; break;
-      case 'CONDITION_FAIR': label = 'Condition: Fair'; break;
-      case 'CONDITION_POOR': label = 'Condition: Poor'; break;
-      case 'CONDITION_DAMAGED': label = 'Condition: Damaged'; break;
-    }
-
-    return GestureDetector(
-      onTap: () => _showSortPicker(ref.context, ref, colors),
-      child: _buildFilterDropdown(label, LucideIcons.arrowUpDown, colors),
-    );
-  }
-
-  Widget _buildCategoryDropdown(WidgetRef ref, ThemeColors colors) {
-    final category = ref.watch(inventoryCategoryProvider);
-    final label = category == 'ALL' ? 'All Categories' : category;
-
-    return GestureDetector(
-      onTap: () => _showCategoryPicker(ref.context, ref, colors),
-      child: _buildFilterDropdown(label, LucideIcons.filter, colors),
-    );
-  }
-
-  Widget _buildFilterDropdown(String label, IconData icon, ThemeColors colors) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m, vertical: 8),
-      decoration: BoxDecoration(
-        color: colors.isDark ? colors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(AppRadius.m),
-        border: Border.all(color: colors.border),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                Icon(icon, size: 16, color: colors.honey),
-                const SizedBox(width: AppSpacing.s),
-                Flexible(
-                  child: Text(
-                    label,
-                    style: AppTypography.bodyS.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colors.textPrimary,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(LucideIcons.chevronDown, size: 16, color: colors.textSecondary),
         ],
       ),
     );
@@ -1298,324 +1055,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
     );
   }
 
-  Widget _buildInventoryGrid(WidgetRef ref, List<InventoryItem> items, bool isAdmin, bool canBook, bool isOffline, ThemeColors colors) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.85,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-      ),
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return _buildInventoryCard(context, ref, item, isAdmin, canBook, isOffline, colors);
-      },
-    );
-  }
 
-  Widget _buildInventoryList(WidgetRef ref, List<InventoryItem> items, bool isAdmin, bool canBook, bool isOffline, ThemeColors colors) {
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: items.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return _buildInventoryListTile(context, ref, item, isAdmin, canBook, isOffline, colors);
-      },
-    );
-  }
-
-  Widget _buildInventoryCard(BuildContext context, WidgetRef ref, InventoryItem item, bool isAdmin, bool canBook, bool isOffline, ThemeColors colors) {
-    final statusLower = item.status.toLowerCase();
-    final statusColor = statusLower == 'available' 
-        ? colors.emerald 
-        : (statusLower == 'in use' || statusLower == 'in_use' ? colors.honey : (statusLower == 'under repair' || statusLower == 'maintenance' ? colors.error : colors.textSecondary));
-    
-    DateTime? maintenanceDate;
-    try {
-      if (item.maintenanceDueDate != null) maintenanceDate = DateTime.parse(item.maintenanceDueDate!);
-    } catch (_) {}
-    final isMaintenanceDue = maintenanceDate != null && maintenanceDate.isBefore(DateTime.now());
-    
-    return GestureDetector(
-      onTap: () => _showItemDetails(context, ref, item, isAdmin, canBook, isOffline, colors),
-      child: Container(
-        decoration: BoxDecoration(
-          color: colors.isDark ? colors.surface : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: colors.isDark 
-                ? colors.border 
-                : colors.border.withValues(alpha: 0.12),
-          ),
-          boxShadow: [
-            if (isMaintenanceDue)
-              BoxShadow(
-                color: colors.error.withValues(alpha: 0.15),
-                blurRadius: 12,
-                spreadRadius: 2,
-              ),
-            BoxShadow(
-              color: colors.border.withValues(alpha: 0.05),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              flex: 3,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: Builder(
-                        builder: (context) {
-                          final directUrl = UrlHelpers.getDirectImageUrl(item.imageUrl, driveFileId: item.metadata['drive_file_id']);
-                          return directUrl != null
-                              ? Image.network(
-                                  directUrl, 
-                                  fit: BoxFit.cover, 
-                                  errorBuilder: (context, error, stackTrace) => _buildPlaceholderImage(colors),
-                                )
-                              : _buildPlaceholderImage(colors);
-                        }
-                      ),
-                    ),
-                    if (item.assetId.isNotEmpty)
-                      Positioned(
-                        top: 8,
-                        left: 8,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.65),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            item.assetId,
-                            style: AppTypography.caption.copyWith(
-                              color: Colors.white,
-                              fontSize: 8,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTypography.bodyS.copyWith(
-                            fontWeight: FontWeight.w900, 
-                            fontSize: 12,
-                            color: colors.textPrimary,
-                          ),
-                        ),
-                        Text(
-                          item.category.toUpperCase(),
-                          style: AppTypography.caption.copyWith(
-                            fontSize: 8, 
-                            fontWeight: FontWeight.w900, 
-                            color: colors.textSecondary.withValues(alpha: 0.5)
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        _buildStatusIndicator(item.status, statusColor, showText: true),
-                        const SizedBox(width: 8),
-                        Text(
-                          'x${item.quantity}',
-                          style: AppTypography.caption.copyWith(
-                            fontWeight: FontWeight.w900,
-                            color: colors.textSecondary,
-                            fontSize: 10,
-                          ),
-                        ),
-                        if (isMaintenanceDue) ...[
-                          const SizedBox(width: 8),
-                          Icon(LucideIcons.wrench, size: 10, color: colors.error),
-                        ],
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInventoryListTile(BuildContext context, WidgetRef ref, InventoryItem item, bool isAdmin, bool canBook, bool isOffline, ThemeColors colors) {
-    final statusLower = item.status.toLowerCase();
-    final statusColor = statusLower == 'available' 
-        ? colors.emerald 
-        : (statusLower == 'in use' || statusLower == 'in_use' ? colors.honey : (statusLower == 'under repair' || statusLower == 'maintenance' ? colors.error : colors.textSecondary));
-    
-    DateTime? maintenanceDate;
-    try {
-      if (item.maintenanceDueDate != null) maintenanceDate = DateTime.parse(item.maintenanceDueDate!);
-    } catch (_) {}
-    final isMaintenanceDue = maintenanceDate != null && maintenanceDate.isBefore(DateTime.now());
-
-    return GestureDetector(
-      onTap: () => _showItemDetails(context, ref, item, isAdmin, canBook, isOffline, colors),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: colors.isDark ? colors.surface : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: colors.isDark 
-                ? colors.border 
-                : colors.border.withValues(alpha: 0.12),
-          ),
-          boxShadow: colors.isDark
-              ? []
-              : [
-                  BoxShadow(
-                    color: colors.border.withValues(alpha: 0.03),
-                    blurRadius: 5,
-                  )
-                ],
-        ),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: SizedBox(
-                width: 44,
-                height: 44,
-                child: Builder(
-                  builder: (context) {
-                    final directUrl = UrlHelpers.getDirectImageUrl(item.imageUrl, driveFileId: item.metadata['drive_file_id']);
-                    return directUrl != null
-                        ? Image.network(directUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _buildPlaceholderImage(colors))
-                        : _buildPlaceholderImage(colors);
-                  }
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.name, 
-                    style: AppTypography.bodyS.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: colors.textPrimary,
-                    ),
-                  ),
-                  Text(
-                    item.assetId.isNotEmpty ? '${item.assetId} • ${item.category}' : item.category, 
-                    style: AppTypography.caption.copyWith(fontSize: 10, color: colors.textSecondary),
-                  ),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (isMaintenanceDue) Icon(LucideIcons.wrench, size: 10, color: colors.error),
-                    if (isMaintenanceDue) const SizedBox(width: 4),
-                    _buildStatusIndicator(item.status, statusColor, showText: false),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'x${item.quantity}', 
-                  style: AppTypography.caption.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color: colors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(width: 8),
-            Icon(LucideIcons.chevronRight, size: 14, color: colors.textSecondary),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPlaceholderImage(ThemeColors colors) {
-    return Container(
-      color: colors.isDark ? colors.surface.withValues(alpha: 0.8) : colors.border.withValues(alpha: 0.12),
-      child: Center(
-        child: Icon(LucideIcons.image, color: colors.textSecondary.withValues(alpha: 0.6), size: 24),
-      ),
-    );
-  }
-
-  Widget _buildStatusIndicator(String label, Color color, {bool showText = true}) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: color.withValues(alpha: 0.5),
-                blurRadius: 4,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-        ),
-        if (showText) ...[
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTypography.caption.copyWith(
-                color: color,
-                fontWeight: FontWeight.w600,
-                fontSize: 10,
-              ),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
 
   Widget _buildRequestsView(WidgetRef ref, bool isAdmin, ThemeColors colors) {
     final requestsAsync = ref.watch(inventoryRequestListProvider);

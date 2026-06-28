@@ -3,7 +3,7 @@
 // Kanban API endpoint returning grouped tasks by status
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { tasks } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
@@ -32,6 +32,8 @@ export async function GET(req: NextRequest) {
     if (status) {
       conditions.push(eq(tasks.status, status));
     }
+
+    const db = await getDb();
 
     // Fetch tasks with conditions
     const allTasks = await db

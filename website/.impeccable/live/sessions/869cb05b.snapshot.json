@@ -1,0 +1,20 @@
+{
+  "id": "869cb05b",
+  "phase": "variants_ready",
+  "pageUrl": "/",
+  "sourceFile": "style.css",
+  "expectedVariants": 3,
+  "arrivedVariants": 0,
+  "visibleVariant": 0,
+  "paramValues": {},
+  "pendingEventSeq": null,
+  "pendingEvent": null,
+  "deliveryLease": null,
+  "checkpointRevision": 1,
+  "activeOwner": "f6e09bdd",
+  "sourceMarkers": {},
+  "fallbackMode": null,
+  "annotationArtifacts": [],
+  "diagnostics": [],
+  "updatedAt": "2026-06-24T07:46:43.720Z"
+}

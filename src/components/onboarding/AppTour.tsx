@@ -1,6 +1,6 @@
 "use client";
 
-import Joyride, { Step, CallBackProps, STATUS } from "react-joyride";
+import { Joyride, Step, EventData, STATUS } from "react-joyride";
 import { useState, useEffect } from "react";
 import { triggerHaptic } from "@/lib/haptics";
 
@@ -20,7 +20,7 @@ export default function AppTour() {
         {
             target: "#fab-create-task",
             content: "Create a new task for shoots, editing, or design work.",
-            disableBeacon: true,
+            skipBeacon: true,
         },
         {
             target: "#calendar-widget",
@@ -32,7 +32,7 @@ export default function AppTour() {
         }
     ];
 
-    const handleJoyrideCallback = (data: CallBackProps) => {
+    const handleJoyrideCallback = (data: EventData) => {
         const { status } = data;
         const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
 
@@ -51,23 +51,23 @@ export default function AppTour() {
             steps={steps}
             run={run}
             continuous
-            showSkipButton
-            showProgress
-            callback={handleJoyrideCallback}
+            options={{
+                showProgress: true,
+                buttons: ['back', 'close', 'primary', 'skip'],
+                zIndex: 10000,
+                primaryColor: "#0096FF",
+                textColor: "#1e293b",
+                backgroundColor: "#ffffff",
+                arrowColor: "#ffffff",
+            }}
+            onEvent={handleJoyrideCallback}
             styles={{
-                options: {
-                    zIndex: 10000,
-                    primaryColor: '#0096FF',
-                    textColor: '#1e293b',
-                    backgroundColor: '#ffffff',
-                    arrowColor: '#ffffff',
-                },
                 tooltipContainer: {
                     textAlign: 'left',
                     borderRadius: '12px',
                     padding: '8px',
                 },
-                buttonNext: {
+                buttonPrimary: {
                     borderRadius: '8px',
                     fontWeight: '600',
                 },

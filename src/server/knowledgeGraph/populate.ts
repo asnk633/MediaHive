@@ -1,7 +1,7 @@
 // src/server/knowledgeGraph/populate.ts
 // Script to populate knowledge graph with data from database
 
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { institutions, users, tasks, events, files } from '@/db/schema';
 import { knowledgeGraph } from './index';
 import { eq } from 'drizzle-orm';
@@ -14,6 +14,7 @@ export async function populateKnowledgeGraph() {
   
   try {
     // Populate institutions
+    const db = await getDb();
     const institutionRecords = await db.select().from(institutions);
     for (const institution of institutionRecords) {
       knowledgeGraph.addNode({

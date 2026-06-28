@@ -1,7 +1,7 @@
 // src/app/api/health/schema/route.ts
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { users, tenants, events, notifications } from '@/db/schema';
 
 type HealthResult = {
@@ -20,6 +20,8 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(_req: NextRequest) {
   try {
+    const db = await getDb();
+
     // Try a lightweight connectivity check
     let dbConnectOk = false;
     let connectDetail = "";
@@ -37,10 +39,10 @@ export async function GET(_req: NextRequest) {
     try {
       // Check each required table by attempting a simple select query
       const tableChecks = [
-        { name: "users", check: () => db.select().from(users).limit(1) },
-        { name: "tenants", check: () => db.select().from(tenants).limit(1) },
-        { name: "events", check: () => db.select().from(events).limit(1) },
-        { name: "notifications", check: () => db.select().from(notifications).limit(1) },
+        { name: "users", check: () => db!.select().from(users).limit(1) },
+        { name: "tenants", check: () => db!.select().from(tenants).limit(1) },
+        { name: "events", check: () => db!.select().from(events).limit(1) },
+        { name: "notifications", check: () => db!.select().from(notifications).limit(1) },
       ];
 
       for (const { name, check } of tableChecks) {

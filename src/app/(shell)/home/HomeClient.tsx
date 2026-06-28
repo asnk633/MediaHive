@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { useWorkspace } from "@/system/workspace/WorkspaceProvider";
@@ -49,7 +48,7 @@ import { useConnectivity } from "@/hooks/useConnectivity";
 import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
 import { CollapsibleSectionHeader } from "@/components/home/CollapsibleSectionHeader";
 import { motion, AnimatePresence } from "framer-motion";
-import EmptyState from "@/components/ui/EmptyState";
+
 import {
     Tooltip,
     TooltipContent,
@@ -98,7 +97,7 @@ export default function HomeClient() {
     }, [tasks]);
 
     const sanitizedEvents = useMemo(() => {
-        return events.filter(e => !e.deleted && !e.is_demo_data);
+        return events.filter(e => !(e as any).deleted && !(e as any).is_demo_data);
     }, [events]);
 
     const dashboardMetrics = useMemo(() => {
@@ -154,7 +153,7 @@ export default function HomeClient() {
             if (signal?.aborted) return;
 
             setTasks(normalizeTasks(tData || []));
-            setEvents(normalizeEvents(eData || []));
+            setEvents(normalizeEvents((eData || []) as unknown as Event[]));
             setTasksLoaded(true);
             console.log('[HomeClient] Core data loaded successfully', { tasks: tData.length, events: eData.length });
         } catch (error: any) {
@@ -281,9 +280,6 @@ export default function HomeClient() {
                                                     <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
                                                         {welcomeData.greeting.split(',')[1]?.trim()}
                                                     </h1>
-                                                    <span className="text-2xl animate-bounce duration-[3000ms]">
-                                                        {welcomeData.icon || "👋"}
-                                                    </span>
                                                 </div>
                                             </div>
                                             <p className="text-sm text-foreground/80 font-medium tracking-wide italic">

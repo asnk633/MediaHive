@@ -59,6 +59,129 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         let mounted = true;
 
+        // 3. Singleton Auth Listener (registered before scrubber to catch PASSWORD_RECOVERY events)
+        const { data: listener } = supabase.auth.onAuthStateChange(
+            async (event: any, session: any) => {
+                // E2E test auth bypass check
+                if (typeof window !== 'undefined' && (process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_E2E_TESTING === 'true') && localStorage.getItem('playwright_test_auth') === 'true') {
+                    console.log('[AUTH LISTENER] E2E test auth bypass active - ignoring state change');
+                    return;
+                }
+
+                console.log("[SUPABASE TRACE] onAuthStateChange event:", event)
+
+                if (event === "PASSWORD_RECOVERY") {
+                    if (mounted) setRecoveryMode(true);
+                    sanitizeUrl();
+                }
+
+                if (event === "SIGNED_IN") {
+                    sanitizeUrl();
+                }
+
+                if (!session?.user) {
+                    if (event === "SIGNED_OUT") {
+                        cancelAllRequests();
+                        sanitizeUrl();
+                    }
+                    if (mounted) {
+                        setUser(null);
+                        setRecoveryMode(false);
+                        setLoading(false);
+                    }
+                    return;
+                }
+
+                // If user changed or session refreshed, update profile
+                let retryCount = 0;
+                const maxRetries = 2;
+
+                const fetchProfileWithRetry = async () => {
+                    let profileData = null;
+                    try {
+                        console.log(`[AUTH LISTENER] Fetching profile (attempt ${retryCount + 1})...`);
+                        const { data: profile, error: profileErr } = await Promise.race([
+                            supabase
+                                .from("profiles")
+                                .select("*")
+                                .eq("id", session.user.id)
+                                .maybeSingle(),
+                            timeout(TIMEOUT_MS)
+                        ]).catch(err => ({ data: null, error: err })) as any;
+
+                        if (!mounted) return;
+
+                        if (profileErr) throw profileErr;
+
+                        if (profile) {
+                            console.log("[AUTH LISTENER] Profile loaded");
+                            await offlineDB.saveProfile(profile);
+                            // Auto-link any pending invites for this existing user
+                            OnboardingService.autoLinkWorkspaces(session.user.id, session.user.email || '').catch(err => console.error('[AUTH LISTENER] autoLinkWorkspaces failed:', err));
+                        } else {
+                            const cached = await offlineDB.getProfile(session.user.id);
+                            if (cached) profileData = cached;
+                        }
+
+                        const finalProfile = profile || profileData;
+
+                        // Fetch institution roles
+                        const { data: roles } = await supabase
+                            .from("user_institutions")
+                            .select("institution_id, role")
+                            .eq("user_id", session.user.id);
+                        
+                        const institutionRoles: Record<string, string> = {};
+                        if (roles) {
+                            roles.forEach((r: any) => institutionRoles[r.institution_id] = r.role);
+                        }
+
+                        const uid = profile?.uid || profile?.id || session.user.id;
+                        setUser({
+                            uid,
+                            id: uid,
+                            email: finalProfile?.email || session.user.email || '',
+                            name: finalProfile?.name || finalProfile?.full_name || 'User',
+                            role: (finalProfile?.role || 'member').toLowerCase() === 'guest' ? 'member' : (finalProfile?.role || 'member') as any,
+                            institution_id: finalProfile?.institution_id,
+                            allowed_institutions: finalProfile?.allowed_institutions || [],
+                            institutionRoles,
+                            tenant_id: finalProfile?.tenantId || finalProfile?.tenant_id,
+                            department_id: finalProfile?.department_id,
+                            avatar_url: finalProfile?.avatar_url,
+                            photoURL: finalProfile?.avatar_url,
+                            avatar_drive_id: finalProfile?.avatar_drive_id,
+                            expo_push_token: finalProfile?.expo_push_token || finalProfile?.expoPushToken,
+                        });
+                    } catch (err: any) {
+                        const isAbort = err?.name === 'AbortError' || err?.message?.includes('Lock broken') || err?.message?.includes('TIMEOUT');
+                        
+                        if (isAbort && retryCount < maxRetries && mounted) {
+                            retryCount++;
+                            console.warn(`[AUTH LISTENER] Profile fetch aborted/timed out, retrying in ${500 * retryCount}ms...`, err?.message || err);
+                            await new Promise(res => setTimeout(res, 500 * retryCount));
+                            return fetchProfileWithRetry();
+                        }
+
+                        console.error("[AUTH LISTENER] Profile fetch failed final:", err?.message || err);
+                        if (mounted) {
+                            setUser({
+                                uid: session.user.id,
+                                id: session.user.id,
+                                email: session.user.email || '',
+                                name: 'User',
+                                role: 'member'
+                            });
+                        }
+                    } finally {
+                        if (mounted) setLoading(false);
+                    }
+                };
+
+                fetchProfileWithRetry();
+            }
+        );
+
         // 1. Global Hash Scrubber (App Load)
         const scrubberTimeout = setTimeout(() => {
             if (typeof window !== 'undefined' && window.location.hash) {
@@ -83,8 +206,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
                 // ── E2E TEST BYPASS ──────────────────────────────────────────────────
                 // playwright_test_auth: allows Playwright tests to inject a mock auth
-                // state without real Supabase credentials. Only active in development.
-                if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+                // state without real Supabase credentials. Only active in development or testing.
+                if (typeof window !== 'undefined' && (process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_E2E_TESTING === 'true')) {
                     const isE2EAuth = localStorage.getItem('playwright_test_auth') === 'true';
                     if (isE2EAuth) {
                         console.log('[BOOT] E2E test auth bypass detected');
@@ -182,7 +305,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     // Cache profile for offline use
                     await offlineDB.saveProfile(profile);
                     // Auto-link any pending invites for this existing user
-                    OnboardingService.autoLinkWorkspaces(session.user.id, session.user.email || '');
+                    OnboardingService.autoLinkWorkspaces(session.user.id, session.user.email || '').catch(err => console.error('[BOOT] autoLinkWorkspaces failed:', err));
                 } else {
                     console.warn("[BOOT] No profile found, checking cache...");
                     const cached = await offlineDB.getProfile(session.user.id);
@@ -245,129 +368,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
 
         init();
-
-        // 3. Singleton Auth Listener
-        const { data: listener } = supabase.auth.onAuthStateChange(
-            async (event: any, session: any) => {
-                // E2E test auth bypass check
-                if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production' && localStorage.getItem('playwright_test_auth') === 'true') {
-                    console.log('[AUTH LISTENER] E2E test auth bypass active - ignoring state change');
-                    return;
-                }
-
-                console.log("[SUPABASE TRACE] onAuthStateChange event:", event)
-
-                if (event === "PASSWORD_RECOVERY") {
-                    if (mounted) setRecoveryMode(true);
-                    sanitizeUrl();
-                }
-
-                if (event === "SIGNED_IN") {
-                    sanitizeUrl();
-                }
-
-                if (!session?.user) {
-                    if (event === "SIGNED_OUT") {
-                        cancelAllRequests();
-                        sanitizeUrl();
-                    }
-                    if (mounted) {
-                        setUser(null);
-                        setRecoveryMode(false);
-                        setLoading(false);
-                    }
-                    return;
-                }
-
-                // If user changed or session refreshed, update profile
-                let retryCount = 0;
-                const maxRetries = 2;
-
-                const fetchProfileWithRetry = async () => {
-                    let profileData = null;
-                    try {
-                        console.log(`[AUTH LISTENER] Fetching profile (attempt ${retryCount + 1})...`);
-                        const { data: profile, error: profileErr } = await Promise.race([
-                            supabase
-                                .from("profiles")
-                                .select("*")
-                                .eq("id", session.user.id)
-                                .maybeSingle(),
-                            timeout(TIMEOUT_MS)
-                        ]).catch(err => ({ data: null, error: err })) as any;
-
-                        if (!mounted) return;
-
-                        if (profileErr) throw profileErr;
-
-                        if (profile) {
-                            console.log("[AUTH LISTENER] Profile loaded");
-                            await offlineDB.saveProfile(profile);
-                            // Auto-link any pending invites for this existing user
-                            OnboardingService.autoLinkWorkspaces(session.user.id, session.user.email || '');
-                        } else {
-                            const cached = await offlineDB.getProfile(session.user.id);
-                            if (cached) profileData = cached;
-                        }
-
-                        const finalProfile = profile || profileData;
-
-                        // Fetch institution roles
-                        const { data: roles } = await supabase
-                            .from("user_institutions")
-                            .select("institution_id, role")
-                            .eq("user_id", session.user.id);
-                        
-                        const institutionRoles: Record<string, string> = {};
-                        if (roles) {
-                            roles.forEach((r: any) => institutionRoles[r.institution_id] = r.role);
-                        }
-
-                        const uid = profile?.uid || profile?.id || session.user.id;
-                        setUser({
-                            uid,
-                            id: uid,
-                            email: finalProfile?.email || session.user.email || '',
-                            name: finalProfile?.name || finalProfile?.full_name || 'User',
-                            role: (finalProfile?.role || 'member').toLowerCase() === 'guest' ? 'member' : (finalProfile?.role || 'member') as any,
-                            institution_id: finalProfile?.institution_id,
-                            allowed_institutions: finalProfile?.allowed_institutions || [],
-                            institutionRoles,
-                            tenant_id: finalProfile?.tenantId || finalProfile?.tenant_id,
-                            department_id: finalProfile?.department_id,
-                            avatar_url: finalProfile?.avatar_url,
-                            photoURL: finalProfile?.avatar_url,
-                            avatar_drive_id: finalProfile?.avatar_drive_id,
-                            expo_push_token: finalProfile?.expo_push_token || finalProfile?.expoPushToken,
-                        });
-                    } catch (err: any) {
-                        const isAbort = err?.name === 'AbortError' || err?.message?.includes('Lock broken') || err?.message?.includes('TIMEOUT');
-                        
-                        if (isAbort && retryCount < maxRetries && mounted) {
-                            retryCount++;
-                            console.warn(`[AUTH LISTENER] Profile fetch aborted/timed out, retrying in ${500 * retryCount}ms...`, err?.message || err);
-                            await new Promise(res => setTimeout(res, 500 * retryCount));
-                            return fetchProfileWithRetry();
-                        }
-
-                        console.error("[AUTH LISTENER] Profile fetch failed final:", err?.message || err);
-                        if (mounted) {
-                            setUser({
-                                uid: session.user.id,
-                                id: session.user.id,
-                                email: session.user.email || '',
-                                name: 'User',
-                                role: 'member'
-                            });
-                        }
-                    } finally {
-                        if (mounted) setLoading(false);
-                    }
-                };
-
-                fetchProfileWithRetry();
-            }
-        );
 
         return () => {
             mounted = false;

@@ -2,7 +2,7 @@
 // VIP Face Matching API endpoint
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { config } from '@/lib/config';
 import { matchFace } from '@/lib/faceRecognition';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';

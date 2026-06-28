@@ -38,18 +38,18 @@ export async function POST(req: Request) {
 
     if (fetchError) throw fetchError;
 
-    const versionMap = new Map(currentRecords?.map((r: any) => [r.id, r.version]) || []);
+    const recordsById = new Map(currentRecords?.map((r: any) => [r.id, r]) || []);
     const conflicts: any[] = [];
     const validUpdates: any[] = [];
 
     // 2. Perform Version Check (OCC)
     for (const update of updates) {
-      const task = await supabase.from('tasks').select('*').eq('id', update.id).single();
-if (!task || !task.data) {
+      const taskRecord = recordsById.get(update.id);
+if (!taskRecord) {
   console.warn(`[API][TASKS][BULK] Task not found for id: ${update.id}`);
   continue;
 }
-const serverVersion = task.data.version;
+const serverVersion = taskRecord.version;
 if (update.owner_id !== user.uid) {
   console.warn(`[API][TASKS][BULK] Unauthorized update attempt by user ${user.uid} on task ${update.id}`);
   conflicts.push({
@@ -61,7 +61,6 @@ if (update.owner_id !== user.uid) {
       
       // If version is provided, it MUST match the server version
       if (update.version !== undefined && serverVersion !== undefined && update.version !== serverVersion) {
-        // console.warn(`[API][TASKS][BULK] ⚔️ Version conflict for task ${update.id}. Server: ${serverVersion}, Payload: ${update.version}`);
         conflicts.push({ 
           id: update.id, 
           serverVersion, 

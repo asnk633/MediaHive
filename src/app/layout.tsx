@@ -11,6 +11,7 @@ import QueryProvider from "@/providers/QueryProvider";
 import { AmbientCursorLight } from '@/components/ui/AmbientCursorLight';
 import { GlobalCommandPalette } from '@/components/layout/GlobalCommandPalette';
 import { WebViewDetector } from '@/components/WebViewDetector';
+import { Toaster } from '@/components/ui/sonner';
 import '@/utils/safeAreaInitializer';
 
 const dmSans = DM_Sans({
@@ -105,9 +106,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               {children}
             </div>
             <GlobalCommandPalette />
+            <Toaster />
           </RootProviders>
         </QueryProvider>
-      </body>
+      {/* impeccable-live-start */}
+<script src="http://localhost:8400/live.js"></script>
+{/* impeccable-live-end */}
+</body>
     </html>
   );
 }

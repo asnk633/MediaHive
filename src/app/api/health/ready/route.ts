@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { users, tasks, auditLog } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
   };
 
   try {
+    const db = await getDb();
     // Check database connectivity and basic operations
     try {
       const dbCheck = await db.select().from(users).limit(1);

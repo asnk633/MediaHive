@@ -124,3 +124,9 @@ The Master Blueprints are the system memory. Skipping an update means the next a
 - Add any new "Known Quirks" discovered during the task
 
 **This rule overrides all other priorities. Do not end a task without updating the Blueprint.**
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan:
+[plan.md](file:///D:/MediaHive App/specs/001-mediahive-core-architecture/plan.md)
+<!-- SPECKIT END -->

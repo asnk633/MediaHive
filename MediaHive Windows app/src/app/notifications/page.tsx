@@ -59,6 +59,22 @@ export default function NotificationsPage() {
     fetchNotifications();
   }, [user]);
 
+  // Handle global quick create "?create=true" query parameter offline-safe
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const checkQuery = () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("create") === "true") {
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    };
+
+    checkQuery();
+    const interval = setInterval(checkQuery, 250);
+    return () => clearInterval(interval);
+  }, []);
+
   const markAllRead = async () => {
     setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
     if (user) {

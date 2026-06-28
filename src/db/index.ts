@@ -56,24 +56,17 @@ async function initializeDatabase() {
   return dbPromise;
 }
 
-// Export a proxy that initializes on first access
-export const db = new Proxy({} as Record<string, any>, {
-  get(target, prop) {
-    if (!_db) {
-      // In a synchronous proxy getter, we can't await initializeDatabase()
-      // This is a known limitation of this specific architecture choice.
-      // However, we can return the property from the _db if it exists, 
-      // otherwise we throw a more helpful error.
-      // To fix this properly, we should ensure initializeDatabase is called at boot.
-      throw new Error('Database not initialized. Call getDb() or ensure initializeDatabase() is called at app start.');
-    }
-    return _db[prop];
-  }
-});
+let _initPromise: Promise<any> | null = null;
 
-// Export async getter for safer usage
-export async function getDb() {
-  return initializeDatabase();
+export async function getDb(): Promise<any> {
+  if (_db) return _db;
+  if (!_initPromise) {
+    _initPromise = initializeDatabase().then(db => {
+      _db = db;
+      return db;
+    });
+  }
+  return _initPromise;
 }
 
 export type Database = any;

@@ -67,11 +67,33 @@ function InviteContent() {
   const handleAcceptInvite = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.password) return;
+
+    // Enforce email match if the invitation specifies one
+    if (invite.email && form.email.trim().toLowerCase() !== invite.email.trim().toLowerCase()) {
+      setError(`This invitation is for ${invite.email}. Please use that email address.`);
+      return;
+    }
+
     setSubmitting(true);
     setError("");
 
     try {
-      // 1. Sign up the user
+      // Step 1 — Claim the invitation slot FIRST (before creating auth account)
+      // This reduces the TOCTOU window: two concurrent requests can't both claim the slot
+      const { data, error: updateErr } = await supabase
+        .from("invitations")
+        .update({ status: "accepted" })
+        .eq("id", invite.id)
+        .eq("status", "pending")
+        .select("id");
+
+      if (updateErr || !data || data.length === 0) {
+        setError("This invitation has already been used.");
+        setSubmitting(false);
+        return;
+      }
+
+      // Step 2 — Create auth account (only runs if we claimed the invite)
       const { data: authData, error: authErr } = await supabase.auth.signUp({
         email: form.email,
         password: form.password,
@@ -83,12 +105,25 @@ function InviteContent() {
         }
       });
 
-      if (authErr) throw authErr;
-      if (!authData.user) throw new Error("Failed to create account.");
+      if (authErr) {
+        // Rollback: re-open the invite so the user can try again
+        await supabase.from("invitations").update({ status: "pending" }).eq("id", invite.id);
+        throw authErr;
+      }
+      if (!authData.user) {
+        await supabase.from("invitations").update({ status: "pending" }).eq("id", invite.id);
+        throw new Error("Failed to create account.");
+      }
+
+      // Step 3 — Detect already-registered email (Fix 2.7)
+      if (authData.user.identities?.length === 0) {
+        await supabase.from("invitations").update({ status: "pending" }).eq("id", invite.id);
+        throw new Error("An account with this email already exists. Please log in instead.");
+      }
 
       const userId = authData.user.id;
 
-      // 2. Create the profile
+      // Step 4 — Create the profile
       const { error: profileErr } = await supabase.from("profiles").insert({
         id: userId,
         tenant_id: invite.tenant_id,
@@ -101,13 +136,14 @@ function InviteContent() {
       });
 
       if (profileErr) {
-        console.error("Profile creation failed, might already exist.", profileErr);
+        console.error("[Invite] Profile creation failed:", profileErr);
+        // Auth account was created but profile failed — known dead end (no rollback from client)
+        // Invite is already marked accepted. Redirect to login.
+        router.push("/login?message=Account setup incomplete. Please contact your administrator.");
+        return;
       }
 
-      // 3. Mark invite as accepted
-      await supabase.from("invitations").update({ status: "accepted" }).eq("id", invite.id);
-
-      // 4. Redirect to login
+      // 5. Redirect to login
       router.push("/login?message=Invite accepted! You can now log in.");
 
     } catch (err: any) {
@@ -181,7 +217,7 @@ function InviteContent() {
                 <div className="relative">
                   <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
                   <input required type="password" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                    placeholder="••••••••" minLength={6}
+                    placeholder="••••••••" minLength={8}
                     className="w-full bg-zinc-950/60 border border-white/5 rounded-xl pl-11 pr-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/30 transition-all" />
                 </div>
               </div>

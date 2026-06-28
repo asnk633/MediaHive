@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -52,7 +51,7 @@ import {
 } from "@/components/ui/select";
 import { cn, nativeNavigate } from "@/lib/utils";
 import { triggerHaptic } from "@/lib/haptics";
-import EmptyState from '@/components/ui/EmptyState';
+import { Empty, EmptyMedia, EmptyHeader, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty';
 
 interface TaskListViewProps {
     tasks: Task[];
@@ -193,7 +192,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             });
             
             if (changed) {
-                nativeNavigate(`${window.location.pathname}?${params.toString()}`, router, 'TaskListView (URL Update)', { scroll: false, replace: true });
+                nativeNavigate(`${window.location.pathname}?${params.toString()}`, router, 'TaskListView (URL Update)');
             }
         }, 200), [searchParams, router]);
 
@@ -288,7 +287,8 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
 
             // Filter: "Requested" View
             if (view === 'requested' && user) {
-                const isCreatedBy = (t.createdBy?.uid || t.created_by?.uid || t.created_by) === user.uid;
+                const createdBy = t.created_by;
+                const isCreatedBy = (createdBy && typeof createdBy === 'object' && 'uid' in createdBy ? (createdBy as any).uid : createdBy) === user.uid;
                 if (!isCreatedBy) return;
             }
 
@@ -553,7 +553,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                         }
                         await withTenant(
                             supabase.from('tasks').update({ deleted: true }),
-                            tenantId
+                            String(tenantId)
                         ).eq('id', taskId);
                         ActivityHistory.push(taskId, {
                             action: 'deleted',
@@ -908,25 +908,30 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                     <TaskListSkeleton count={6} />
                 ) : processedTasks.length === 0 ? (
                     showEmptyState ? (
-                        <EmptyState
-                            icon={CheckCircle2}
-                            title={COPY.emptyStates.generic}
-                            description={
-                                view === 'today' ? COPY.emptyStates.tasks.today : 
-                                view === 'assigned' ? COPY.emptyStates.tasks.assigned :
-                                view === 'requested' ? COPY.emptyStates.tasks.requested :
-                                COPY.emptyStates.tasks.all
-                            }
-                            action={view === 'today' ? (
-                                <button
-                                    onClick={() => setView('all')}
-                                    className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest"
-                                >
-                                    View All Tasks
-                                </button>
-                            ) : undefined}
-                            className="bg-foreground/[0.01]"
-                        />
+                        <Empty className="bg-foreground/[0.01]">
+                            <EmptyMedia variant="icon">
+                                <CheckCircle2 />
+                            </EmptyMedia>
+                            <EmptyHeader>
+                                <EmptyTitle>{COPY.emptyStates.generic}</EmptyTitle>
+                                <EmptyDescription>
+                                    {view === 'today' ? COPY.emptyStates.tasks.today : 
+                                    view === 'assigned' ? COPY.emptyStates.tasks.assigned :
+                                    view === 'requested' ? COPY.emptyStates.tasks.requested :
+                                    COPY.emptyStates.tasks.all}
+                                </EmptyDescription>
+                            </EmptyHeader>
+                            {view === 'today' && (
+                                <EmptyContent>
+                                    <button
+                                        onClick={() => setView('all')}
+                                        className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest"
+                                    >
+                                        View All Tasks
+                                    </button>
+                                </EmptyContent>
+                            )}
+                        </Empty>
                     ) : (
                         <TaskListSkeleton count={1} />
                     )
@@ -970,7 +975,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                                     expandedTasks={expandedTasks}
                                                     density={density}
                                                     currentUser={user}
-                                                    canManage={canManage}
+                                                    canManage={!!canManage}
                                                     toggleExpand={(id) => {
                                                         toggleExpand(id);
                                                         setTimeout(() => virtualizer.measure(), 0);

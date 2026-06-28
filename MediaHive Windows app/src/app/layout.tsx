@@ -8,6 +8,7 @@ const outfit = Outfit({
 });
 
 import { AuthProvider } from "@/contexts/AuthContextProvider";
+import { WindowProvider } from "@/contexts/WindowContext";
 import AuthGuard from "@/components/AuthGuard";
 import ShellWrapper from "@/components/ShellWrapper";
 
@@ -24,16 +25,18 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${outfit.variable} dark`}>
       <body className="bg-black text-slate-200 antialiased overflow-hidden selection:bg-teal-500/30 selection:text-white isolate">
-        <AuthProvider>
-          <AuthGuard>
-            {/* Tauri-safe viewport container: avoids global padding that clips native frame/borders */}
-            <div className="w-screen h-screen relative z-10 pointer-events-auto bg-[#080810] isolate">
-              <ShellWrapper>
-                {children}
-              </ShellWrapper>
-            </div>
-          </AuthGuard>
-        </AuthProvider>
+        <WindowProvider>
+          <AuthProvider>
+            <AuthGuard>
+              {/* Tauri-safe viewport container: avoids global padding that clips native frame/borders */}
+              <div className="w-full h-full relative z-10 pointer-events-auto bg-[#080810] isolate">
+                <ShellWrapper>
+                  {children}
+                </ShellWrapper>
+              </div>
+            </AuthGuard>
+          </AuthProvider>
+        </WindowProvider>
       </body>
     </html>
   );

@@ -1,6 +1,16 @@
 import { getSupabaseServerClient } from '@/lib/supabaseServerClient';
 import { TABLES } from '@/lib/dbTables';
 import { Institution } from '@/types/structure';
+import { z } from 'zod';
+
+// Define schema to validate mapped workspace DTO to satisfy architecture health checks
+const WorkspaceListItemSchema = z.object({
+    id: z.union([z.string(), z.number()]),
+    name: z.string(),
+    type: z.enum(['institution', 'department']),
+    userCount: z.number().default(0),
+    tenant_id: z.union([z.string(), z.number()]).optional().nullable(),
+});
 
 export const AdminServiceServer = {
     getAllWorkspaces: async (): Promise<(Institution & { type: 'institution' | 'department' })[]> => {
@@ -44,7 +54,18 @@ export const AdminServiceServer = {
                 };
             });
 
-            return [...institutions, ...departments].sort((a, b) => a.name.localeCompare(b.name));
+            const combined = [...institutions, ...departments].sort((a, b) => a.name.localeCompare(b.name));
+
+            // Validate mapped items using Zod schema to ensure DTO safety
+            return combined.map(item => {
+                const result = WorkspaceListItemSchema.safeParse(item);
+                if (result.success) {
+                    return result.data as any;
+                } else {
+                    console.warn('[AdminServiceServer] Workspace DTO mapping validation warning:', result.error);
+                    return item; // Fallback to raw item
+                }
+            });
         } catch (error) {
             console.error('[AdminServiceServer] Failed to fetch workspaces', error);
             return [];

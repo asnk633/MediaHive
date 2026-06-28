@@ -1,0 +1,2840 @@
+import * as THREE from 'three';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+
+
+// Register GSAP ScrollTrigger
+gsap.registerPlugin(ScrollTrigger);
+
+// Initialize RectAreaLightUniformsLib for RectAreaLight support in MeshStandardMaterial
+RectAreaLightUniformsLib.init();
+
+let globalDeskSceneGroup = null;
+let globalDeskMesh = null;
+
+function updateTableOpacity(val) {
+  if (globalDeskMesh) {
+    globalDeskMesh.traverse((child) => {
+      if (child.isMesh) {
+        if (Array.isArray(child.material)) {
+          child.material.forEach((mat) => {
+            mat.transparent = true;
+            mat.opacity = val;
+          });
+        } else if (child.material) {
+          child.material.transparent = true;
+          child.material.opacity = val;
+        }
+      }
+    });
+  }
+}
+
+
+// ==========================================================================
+// 0. Audio Subsystem (Web Audio API Synthesizer)
+// ==========================================================================
+window.MediaHive_AudioConfig = {
+  enabled: true,
+  isJumping: false,
+  settleTimeout: null
+};
+
+class AudioSynthEngine {
+  constructor() {
+    this.isSupported = false;
+    this.isMuted = true;
+    this.ctx = null;
+    this.masterGain = null;
+    this.activeVoices = [];
+    this.droneGain = null;
+    this.hissGain = null;
+    this.oscillatorsStarted = false;
+
+    if (!window.MediaHive_AudioConfig.enabled) {
+      console.log("[Audio Synth] Audio subsystem disabled via config kill-switch.");
+      return;
+    }
+
+    try {
+      const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtxClass) {
+        console.warn("[Audio Synth] Web Audio API not supported in this browser.");
+        return;
+      }
+      this.ctx = new AudioCtxClass();
+      this.isSupported = true;
+    } catch (e) {
+      console.error("[Audio Synth] Failed to initialize AudioContext:", e);
+      return;
+    }
+
+    // Safe localStorage read
+    try {
+      const storedMute = localStorage.getItem('mediahive_audio_muted');
+      if (storedMute !== null) {
+        this.isMuted = storedMute === 'true';
+      }
+    } catch (e) {
+      console.warn("[Audio Synth] localStorage is blocked:", e);
+    }
+
+    // Prefers reduced motion override
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      this.isMuted = true;
+    }
+
+    this.initAudioGraph();
+  }
+
+  initAudioGraph() {
+    try {
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : 0.8, this.ctx.currentTime);
+      this.masterGain.connect(this.ctx.destination);
+
+      // 1. Ambient Drone Graph
+      this.droneGain = this.ctx.createGain();
+      this.droneGain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+
+      this.droneFilter = this.ctx.createBiquadFilter();
+      this.droneFilter.type = 'lowpass';
+      this.droneFilter.frequency.setValueAtTime(150, this.ctx.currentTime);
+
+      this.droneGain.connect(this.droneFilter);
+      this.droneFilter.connect(this.masterGain);
+
+      // 2. Tape Hiss Graph
+      const bufferSize = this.ctx.sampleRate;
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+
+      this.hissSource = this.ctx.createBufferSource();
+      this.hissSource.buffer = buffer;
+      this.hissSource.loop = true;
+
+      this.hissHP = this.ctx.createBiquadFilter();
+      this.hissHP.type = 'highpass';
+      this.hissHP.frequency.setValueAtTime(1000, this.ctx.currentTime);
+
+      this.hissLP = this.ctx.createBiquadFilter();
+      this.hissLP.type = 'lowpass';
+      this.hissLP.frequency.setValueAtTime(4000, this.ctx.currentTime);
+
+      this.hissGain = this.ctx.createGain();
+      this.hissGain.gain.setValueAtTime(0.04, this.ctx.currentTime); // very subtle tape hiss background
+
+      this.hissSource.connect(this.hissHP);
+      this.hissHP.connect(this.hissLP);
+      this.hissLP.connect(this.hissGain);
+      this.hissGain.connect(this.masterGain);
+    } catch (e) {
+      console.error("[Audio Synth] Failed to construct audio graph:", e);
+      this.isSupported = false;
+    }
+  }
+
+  startContinuousOscillators() {
+    if (this.oscillatorsStarted || !this.isSupported) return;
+    this.oscillatorsStarted = true;
+
+    try {
+      const now = this.ctx.currentTime;
+
+      // Start Tape Hiss
+      this.hissSource.start(now);
+
+      // Start Ambient Binaural Drone (55Hz / 55.4Hz detuned triangle waves)
+      this.osc1 = this.ctx.createOscillator();
+      this.osc1.type = 'triangle';
+      this.osc1.frequency.setValueAtTime(55, now);
+
+      this.osc2 = this.ctx.createOscillator();
+      this.osc2.type = 'triangle';
+      this.osc2.frequency.setValueAtTime(55.4, now);
+
+      this.osc1.connect(this.droneGain);
+      this.osc2.connect(this.droneGain);
+
+      this.osc1.start(now);
+      this.osc2.start(now);
+
+      // Tape hiss gain LFO modulation
+      this.lfo = this.ctx.createOscillator();
+      this.lfo.frequency.setValueAtTime(0.2, now); // 0.2Hz slow modulation
+      this.lfoGain = this.ctx.createGain();
+      this.lfoGain.gain.setValueAtTime(0.015, now);
+
+      this.lfo.connect(this.lfoGain);
+      this.lfoGain.connect(this.hissGain.gain);
+      this.lfo.start(now);
+    } catch (e) {
+      console.error("[Audio Synth] Failed to start continuous oscillators:", e);
+    }
+  }
+
+  resumeContext() {
+    if (!this.isSupported) return;
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume().then(() => {
+        this.startContinuousOscillators();
+      });
+    } else {
+      this.startContinuousOscillators();
+    }
+  }
+
+  toggleMute() {
+    if (!this.isSupported) return this.isMuted;
+    this.resumeContext();
+
+    const now = this.ctx.currentTime;
+    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+
+    if (this.isMuted) {
+      this.masterGain.gain.linearRampToValueAtTime(0.8, now + 0.25); // fade in 250ms
+      this.isMuted = false;
+    } else {
+      this.masterGain.gain.linearRampToValueAtTime(0, now + 0.25); // fade out 250ms
+      this.isMuted = true;
+    }
+
+    try {
+      localStorage.setItem('mediahive_audio_muted', this.isMuted);
+    } catch (e) {}
+
+    // Dispatch custom event for UI updates
+    window.dispatchEvent(new CustomEvent('mediahive-audio-toggle', { detail: { isMuted: this.isMuted } }));
+    return this.isMuted;
+  }
+
+  // Voice allocation capping to prevent GC and clipping
+  allocateVoice(sourceNodes, gainNode, durationMs) {
+    if (this.activeVoices.length >= 3) {
+      // Reclaim oldest voice package cleanly
+      const oldest = this.activeVoices.shift();
+      if (oldest) {
+        const now = this.ctx.currentTime;
+        oldest.gainNode.gain.setValueAtTime(oldest.gainNode.gain.value, now);
+        oldest.gainNode.gain.linearRampToValueAtTime(0, now + 0.2); // Clean 200ms ramp down to prevent pop
+        
+        setTimeout(() => {
+          oldest.sources.forEach(src => {
+            try { src.stop(); src.disconnect(); } catch (e) {}
+          });
+          try { oldest.gainNode.disconnect(); } catch (e) {}
+        }, 220);
+      }
+    }
+
+    const voice = { sources: sourceNodes, gainNode: gainNode };
+    this.activeVoices.push(voice);
+
+    setTimeout(() => {
+      const idx = this.activeVoices.indexOf(voice);
+      if (idx !== -1) {
+        this.activeVoices.splice(idx, 1);
+      }
+      const now = this.ctx.currentTime;
+      gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+      gainNode.gain.linearRampToValueAtTime(0, now + 0.2);
+      
+      setTimeout(() => {
+        sourceNodes.forEach(src => {
+          try { src.stop(); src.disconnect(); } catch (e) {}
+        });
+        try { gainNode.disconnect(); } catch (e) {}
+      }, 220);
+    }, durationMs);
+  }
+
+  playUIFeedback(type) {
+    if (!this.isSupported || this.isMuted) return;
+    this.resumeContext();
+
+    const now = this.ctx.currentTime;
+
+    if (type === 'hover') {
+      // Soft, high-frequency chime
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(2000, now);
+        
+        gain.gain.setValueAtTime(0.015, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+
+        osc.start(now);
+        this.allocateVoice([osc], gain, 150);
+      } catch (e) {}
+    } else if (type === 'click') {
+      // High frequency glass click
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1400, now);
+        
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+
+        osc.start(now);
+        this.allocateVoice([osc], gain, 60);
+      } catch (e) {}
+    } else if (type === 'boot') {
+      // Harmonic arpeggio sweep chime
+      try {
+        const freqs = [146.83, 220.00, 293.66, 440.00]; // D3, A3, D4, A4 warm chord
+        const sources = [];
+        const subMasterGain = this.ctx.createGain();
+        subMasterGain.gain.setValueAtTime(0, now);
+        subMasterGain.gain.linearRampToValueAtTime(0.18, now + 0.25);
+        subMasterGain.connect(this.masterGain);
+
+        freqs.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+
+          const voiceGain = this.ctx.createGain();
+          voiceGain.gain.setValueAtTime(0, now);
+          voiceGain.gain.linearRampToValueAtTime(0.15, now + idx * 0.06 + 0.05);
+          voiceGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+
+          osc.connect(voiceGain);
+          voiceGain.connect(subMasterGain);
+          osc.start(now);
+          sources.push(osc);
+        });
+
+        this.allocateVoice(sources, subMasterGain, 1500);
+      } catch (e) {}
+    } else if (type === 'servo') {
+      // FM servo sweep click/slide
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.exponentialRampToValueAtTime(580, now + 0.35);
+
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.14, now + 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+
+        osc.start(now);
+        this.allocateVoice([osc], gain, 500);
+      } catch (e) {}
+    }
+  }
+}
+
+// Instantiate global audio manager
+window.MediaHive_AudioSynth = new AudioSynthEngine();
+
+
+// // No canvas drawing needed for the desk photo now.
+// We animate the DOM elements directly.
+
+// ==========================================================================
+// 1. Shared GLTF Loader
+// ==========================================================================
+const gltfLoader = new GLTFLoader();
+
+// Shared variables
+let imgAspectRatio = 1;
+
+// Offscreen canvas for drawing the Desktop App UI
+let desktopTexture = null;
+
+window.activeVideoTextures = window.activeVideoTextures || [];
+
+function createVideoTexture(videoUrl, rotation = 0, zoom = 1.0, flipX = false, flipY = false, uvOffset = null, uvScale = null) {
+  const video = document.createElement('video');
+  video.src = videoUrl;
+  video.crossOrigin = 'anonymous';
+  video.loop = true;
+  video.muted = true;
+  video.playsInline = true;
+  video.play().catch(e => console.warn("Video autoplay failed:", e));
+  
+  const texture = new THREE.VideoTexture(video);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.userData = { video, videoUrl };
+  window.activeVideoTextures.push(texture);
+  // Usually glTF textures expect flipY to be false
+  texture.flipY = false;
+  
+  if (rotation !== 0 || zoom !== 1.0 || flipX || flipY || uvOffset || uvScale) {
+    texture.center.set(0.5, 0.5);
+  }
+  
+  if (rotation !== 0) {
+    texture.rotation = rotation;
+  }
+  
+  let repeatX = 1 / zoom;
+  let repeatY = 1 / zoom;
+  
+  if (flipX) {
+    texture.wrapS = THREE.RepeatWrapping;
+    repeatX = -repeatX;
+  }
+  if (flipY) {
+    texture.wrapT = THREE.RepeatWrapping;
+    repeatY = -repeatY;
+  }
+  
+  if (uvScale) {
+    texture.repeat.set(uvScale.x, uvScale.y);
+  } else {
+    texture.repeat.set(repeatX, repeatY);
+  }
+  
+  if (uvOffset) {
+    texture.offset.set(uvOffset.x, uvOffset.y);
+  }
+  
+  return texture;
+}
+
+function createIphoneVideoTexture(videoUrl, originalImage, observerCanvasId) {
+  const video = document.createElement('video');
+  video.src = videoUrl;
+  video.crossOrigin = 'anonymous';
+  video.loop = true;
+  video.muted = true;
+  video.playsInline = true;
+  video.play().catch(e => console.warn("Video autoplay failed:", e));
+  
+  // Downscale canvas to 1024x1024 to reduce GPU upload data by 75% for smooth performance
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 1024;
+  const ctx = canvas.getContext('2d');
+  
+  // Draw the original texture atlas once at 1024x1024
+  ctx.drawImage(originalImage, 0, 0, 1024, 1024);
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.userData = { video };
+  
+  // 1024x1024 scaled coordinates
+  const screenX = 259;
+  const screenY = 31;
+  const screenW = 663;
+  const screenH = 769;
+  
+  const screenCenterX = screenX + screenW / 2;
+  const screenCenterY = screenY + screenH / 2;
+  
+  // Calibrated alignment settings
+  const rotation = -1.5708;
+  const scaleX = 0.61;
+  const scaleY = 0.89;
+  const offsetX = -233;
+  const offsetY = 105;
+  const drawW = 616;
+  const drawH = 742;
+  
+  let isVisible = true;
+  let isAnimating = true;
+  // Use the provided canvas ID for visibility tracking, or fall back to 'iphone-canvas'
+  const watchCanvasId = observerCanvasId || 'iphone-canvas';
+  const iphoneCanvas = document.getElementById(watchCanvasId);
+  
+  let lastRenderTime = 0;
+  const FPS_INTERVAL = 1000 / 30; // 30 FPS cap
+
+  function update(now) {
+    if (!isVisible) {
+      isAnimating = false;
+      return;
+    }
+    requestAnimationFrame(update);
+    const timestamp = now || performance.now();
+    if (timestamp - lastRenderTime < FPS_INTERVAL) return;
+    lastRenderTime = timestamp;
+
+    // Only upload texture to GPU when video moves to a new frame
+    if (video.readyState >= video.HAVE_CURRENT_DATA && video.currentTime !== lastTime) {
+      lastTime = video.currentTime;
+      
+      // Clear the screen area
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(screenX, screenY, screenW, screenH);
+      
+      ctx.save();
+      // Translate to the adjusted center position on the atlas
+      ctx.translate(screenCenterX + offsetX, screenCenterY + offsetY);
+      
+      // Apply calibrated rotation and scaling
+      ctx.rotate(rotation);
+      ctx.scale(scaleX, scaleY);
+      
+      // Draw the video frame
+      ctx.drawImage(video, -drawW / 2, -drawH / 2, drawW, drawH);
+      ctx.restore();
+      
+      texture.needsUpdate = true;
+    }
+  }
+
+  if (iphoneCanvas) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        isVisible = entry.isIntersecting;
+        
+        if (isVisible) {
+          video.play().catch(e => console.warn("Iphone video resume failed:", e));
+        } else {
+          video.pause();
+        }
+
+        if (isVisible && !isAnimating) {
+          isAnimating = true;
+          update();
+        }
+      });
+    }, { threshold: 0 });
+    observer.observe(iphoneCanvas);
+  }
+
+  let lastTime = -1;
+  update();
+  
+  return texture;
+}
+
+function createDesktopTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1440;
+  canvas.height = 900;
+  const ctx = canvas.getContext('2d');
+
+  // Background: #0D1117
+  ctx.fillStyle = '#0D1117';
+  ctx.fillRect(0, 0, 1440, 900);
+
+  // Left sidebar (180px): dark #111827 bg
+  ctx.fillStyle = '#111827';
+  ctx.fillRect(0, 0, 180, 900);
+
+  // Top bar: dark #161B22 bg
+  ctx.fillStyle = '#161B22';
+  ctx.fillRect(180, 0, 1440 - 180, 60);
+
+  // Top bar logo: amber #F5A623 "MediaHive" logo
+  ctx.fillStyle = '#F5A623';
+  ctx.font = 'bold 28px sans-serif';
+  ctx.fillText('ðŸ MediaHive', 210, 42);
+
+  // Left sidebar: 5 nav items
+  const navItems = ['ðŸ“Š Dashboard', 'ðŸ“‹ Tasks', 'ðŸ“… Calendar', 'ðŸ’¬ Messages', 'âš™ï¸ Settings'];
+  navItems.forEach((item, index) => {
+    const y = 120 + index * 55;
+    if (index === 0) {
+      ctx.fillStyle = 'rgba(245, 166, 35, 0.15)';
+      ctx.fillRect(10, y - 30, 160, 42);
+      ctx.fillStyle = '#F5A623';
+    } else {
+      ctx.fillStyle = '#8B949E';
+    }
+    ctx.font = '20px sans-serif';
+    ctx.fillText(item, 25, y);
+  });
+
+  // Main: 2x2 card grid
+  const drawCard = (x, y, w, h, title, lines, color, status) => {
+    ctx.fillStyle = '#161B22';
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, 12);
+    ctx.fill();
+    ctx.strokeStyle = '#30363D';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 22px sans-serif';
+    ctx.fillText(title, x + 25, y + 45);
+    ctx.fillStyle = '#8B949E';
+    ctx.font = '16px sans-serif';
+    lines.forEach((line, i) => ctx.fillText(line, x + 25, y + 95 + i * 30));
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x + 35, y + h - 35, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#8B949E';
+    ctx.font = '15px sans-serif';
+    ctx.fillText(status, x + 55, y - 30 + h);
+  };
+
+  const cardW = 560, cardH = 340;
+  drawCard(220, 100, cardW, cardH, 'Project Transcoding',
+    ['Input: Raw 4K Prores RAW','Output: AV1 10bit HDR','Destination: AWS S3 Staging','Speed: 240 fps (GPU Accelerated)'],
+    '#F5A623', 'In Progress (78%)');
+  drawCard(820, 100, cardW, cardH, 'Server Telemetry',
+    ['Sync state: Active','Target: Firestore US-East','Throughput: 1.2 GB/s','Health index: 99.9%'],
+    '#4FC3F7', 'Connected');
+  drawCard(220, 480, cardW, cardH, 'Broadcast Schedule',
+    ['Dept 14: Drone Broadcast','Host: Garden Live Stage','Bandwidth: 15 Mbps RTMP','Delay buffer: 1.5s'],
+    '#52C41A', 'Scheduled');
+  drawCard(820, 480, cardW, cardH, 'Device Inventory',
+    ['Sony FX3 - Dept 4 Checked Out','DJI Mavic 3 - Active Flight','Macbook M3 Max - Admin Desk','Focusrite 4i4 - Checked In'],
+    '#722ED1', 'All Assets Logged');
+
+  // Bottom bar
+  ctx.fillStyle = '#161B22';
+  ctx.fillRect(180, 840, 1440 - 180, 60);
+  ctx.fillStyle = '#52C41A';
+  ctx.beginPath();
+  ctx.arc(210, 870, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#8B949E';
+  ctx.font = '16px sans-serif';
+  ctx.fillText('All Systems Active (Latency: 12ms)', 230, 875);
+
+  desktopTexture = new THREE.CanvasTexture(canvas);
+  desktopTexture.colorSpace = THREE.SRGBColorSpace;
+  desktopTexture.needsUpdate = true;
+
+
+
+  return desktopTexture;
+}
+
+// Render the texture when fonts are loaded
+if (typeof document !== 'undefined' && document.fonts) {
+  document.fonts.ready.then(() => createDesktopTexture());
+} else {
+  window.addEventListener('load', () => createDesktopTexture());
+}
+
+// ==========================================================================
+// ==========================================================================
+// 3.5. Reveal Text Component Init
+// ==========================================================================
+function initRevealText() {
+  const container = document.querySelector('.reveal-text');
+  if (!container) return;
+  container.innerHTML = `
+    <svg 
+      id="text-hover-svg"
+      width="100%" 
+      height="100%" 
+      viewBox="0 0 1500 500" 
+      style="overflow: visible; user-select: none; cursor: default; width: 100%; display: block;"
+    >
+      <defs>
+        <!-- Colorful linear gradient for the text fill -->
+        <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#c084fc" />
+          <stop offset="25%" stop-color="#818cf8" />
+          <stop offset="50%" stop-color="#38bdf8" />
+          <stop offset="75%" stop-color="#818cf8" />
+          <stop offset="100%" stop-color="#c084fc" />
+        </linearGradient>
+
+        <!-- Radial gradient mask for spotlight reveal -->
+        <radialGradient id="revealMask" gradientUnits="userSpaceOnUse" r="0%" cx="10%" cy="50%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
+          <stop offset="40%" stop-color="#ffffff" stop-opacity="0.8" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </radialGradient>
+
+        <!-- Mask containing the radial gradient -->
+        <mask id="textMask">
+          <rect x="-100" y="-100" width="1700" height="700" fill="url(#revealMask)" />
+        </mask>
+      </defs>
+
+      <!-- Layer 1: Background stroke text (Subtle outline, always visible) -->
+      <text 
+        text-anchor="middle" 
+        class="text-stroke"
+        font-family="var(--font-title)"
+      >
+        <tspan x="50%" y="180" font-size="120" font-weight="500" letter-spacing="-1">Meet</tspan>
+        <tspan x="50%" y="400" font-size="240" font-weight="900" letter-spacing="-4">MediaHive.</tspan>
+      </text>
+
+      <!-- Layer 2: Foreground gradient-filled text (Only visible inside the mask) -->
+      <text 
+        text-anchor="middle" 
+        class="text-fill"
+        mask="url(#textMask)"
+        font-family="var(--font-title)"
+      >
+        <tspan x="50%" y="180" font-size="120" font-weight="500" letter-spacing="-1">Meet</tspan>
+        <tspan x="50%" y="400" font-size="240" font-weight="900" letter-spacing="-4">MediaHive.</tspan>
+      </text>
+    </svg>
+  `;
+
+  setupTextHoverInteraction();
+}
+
+function setupTextHoverInteraction() {
+  const svg = document.getElementById('text-hover-svg');
+  const revealMask = document.getElementById('revealMask');
+  if (!svg || !revealMask) return;
+
+  let isHovered = false;
+
+  const startAutoShine = () => {
+    if (isHovered) return;
+    gsap.killTweensOf(revealMask);
+    gsap.set(revealMask, { attr: { cx: "10%", cy: "50%", r: "0%" } });
+    
+    // Smoothly breathe in radius, slide across, then fade out in a loop
+    const tl = gsap.timeline({ repeat: -1 });
+    tl.to(revealMask, { attr: { r: "12%" }, duration: 0.8, ease: "power2.out" })
+      .to(revealMask, { attr: { cx: "90%" }, duration: 2.2, ease: "sine.inOut" })
+      .to(revealMask, { attr: { r: "0%" }, duration: 0.8, ease: "power2.in" });
+  };
+
+  svg.addEventListener('mouseenter', (e) => {
+    isHovered = true;
+    gsap.killTweensOf(revealMask);
+    
+    // Scale up the radius
+    gsap.to(revealMask, {
+      attr: { r: "20%" },
+      duration: 0.4,
+      ease: "power2.out"
+    });
+  });
+
+  svg.addEventListener('mousemove', (e) => {
+    const rect = svg.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 1500;
+    const y = ((e.clientY - rect.top) / rect.height) * 500;
+    
+    gsap.to(revealMask, {
+      attr: { cx: x, cy: y },
+      duration: 0.15,
+      ease: "power2.out",
+      overwrite: "auto"
+    });
+  });
+
+  svg.addEventListener('mouseleave', () => {
+    isHovered = false;
+    gsap.to(revealMask, {
+      attr: { r: "0%" },
+      duration: 0.4,
+      ease: "power2.out",
+      onComplete: startAutoShine
+    });
+  });
+
+  startAutoShine();
+}
+
+// ==========================================================================
+// 4 + 5. Animations
+// ==========================================================================
+function setupAnimations() {
+  // Setup fixed global background color blending
+  setupGlobalBackground();
+
+  // Initialize cinematic desk awakening 3D hero background
+  initDeskAwakening();
+
+  // Initialize dynamic reveal text layout
+  initRevealText();
+
+  // Initialize desktop-overlay
+  gsap.set('#desktop-overlay', { opacity: 0, x: -50, pointerEvents: 'none' });
+
+  // Trigger Highlighted Text sliding animations
+  setTimeout(() => {
+    document.querySelectorAll('.highlighted-text').forEach((el, index) => {
+      setTimeout(() => {
+        el.classList.add('animate');
+      }, index * 250 + 400); // staggered delay
+    });
+  }, 100);
+
+  // Build scroll timeline for UI elements
+  const scrollTimeline = gsap.timeline({
+    scrollTrigger: {
+      trigger: '#hero-photo-wrapper',
+      start: 'top top',
+      end: '+=3500',
+      pin: true,
+      scrub: 1.5,
+      onUpdate: (self) => {
+        const p = self.progress;
+        const heroTextOverlay = document.getElementById('hero-text-container') || document.getElementById('hero-text-overlay');
+        
+        // Fade hero text early on
+        if (heroTextOverlay) {
+          if (p > 0.05) {
+            const textFade = Math.min(1, (p - 0.05) / 0.07);
+            heroTextOverlay.style.opacity = 1 - textFade;
+          } else {
+            heroTextOverlay.style.opacity = 1;
+          }
+        }
+
+      }
+    }
+  });
+
+  // Cinematic sound effects synchronized via ScrollTrigger timeline
+  const triggerBootChime = () => {
+    const audioSynth = window.MediaHive_AudioSynth;
+    if (!audioSynth || audioSynth.isMuted || window.MediaHive_AudioConfig.isJumping) return;
+    if (scrollTimeline.scrollTrigger && scrollTimeline.scrollTrigger.direction > 0) {
+      audioSynth.playUIFeedback('boot');
+    }
+  };
+
+  const triggerServoWake = () => {
+    const audioSynth = window.MediaHive_AudioSynth;
+    if (!audioSynth || audioSynth.isMuted || window.MediaHive_AudioConfig.isJumping) return;
+    if (scrollTimeline.scrollTrigger && scrollTimeline.scrollTrigger.direction > 0) {
+      audioSynth.playUIFeedback('servo');
+    }
+  };
+
+  scrollTimeline.call(triggerBootChime, [], 0.68);
+  scrollTimeline.call(triggerServoWake, [], 0.82);
+
+  // Staggered letters Reveal Text ("Meet MediaHive") animation
+  const finalMsg = document.querySelector('.chaos-message.final');
+  if (finalMsg) {
+    // Fade in the container (starts at 1800px scroll / 0.514 progress)
+    scrollTimeline.fromTo(finalMsg,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.04, ease: 'none' },
+      0.514
+    );
+
+    // Fade/scale in the text-hover-svg (starts at 1800px scroll / 0.514 progress)
+    const svgEl = document.getElementById('text-hover-svg');
+    if (svgEl) {
+      scrollTimeline.fromTo(svgEl,
+        { scale: 0.85, opacity: 0, y: 30 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.08, ease: 'back.out(1.2)' },
+        0.514
+      );
+    }
+
+    // Fade out the entire container (starts at 2700px scroll / 0.771 progress, fully gone by 2800px scroll / 0.8 progress)
+    scrollTimeline.to(finalMsg,
+      { opacity: 0, scale: 0.95, y: -30, duration: 0.029, ease: 'power2.in' },
+      0.771
+    );
+  }
+
+  // Dark Horizon Glow build up inside the main timeline (200px to 2000px scroll)
+  scrollTimeline.fromTo('#hero-dark-glow',
+    { opacity: 0 },
+    { opacity: 1, duration: 0.514, ease: 'none' },
+    0.057
+  );
+
+  // Desktop overlay appears at 2700px / 0.771 progress
+  scrollTimeline
+    .to('#desktop-overlay', {
+      opacity: 1,
+      x: 0,
+      duration: 0.16,
+      ease: 'power1.out',
+      onStart: () => gsap.set('#desktop-overlay', { pointerEvents: 'auto', visibility: 'visible' }),
+      onReverseComplete: () => gsap.set('#desktop-overlay', { pointerEvents: 'none', visibility: 'hidden' })
+    }, 0.771);
+
+  // --- Hero Background Sequence Animation ---
+  const bgCanvas = document.getElementById('hero-bg-canvas');
+  const frameNames = [
+    "00000", "00007", "00013", "00020", "00027", "00034", "00040", "00047", "00054", "00061",
+    "00067", "00074", "00081", "00087", "00094", "00101", "00108", "00114", "00121", "00128",
+    "00134", "00141", "00148", "00155", "00161", "00168", "00175", "00182", "00188", "00195"
+  ];
+  let renderBgFrame = () => {};
+
+  if (bgCanvas) {
+    const bgCtx = bgCanvas.getContext('2d');
+    
+    const resizeBgCanvas = () => {
+      bgCanvas.width = window.innerWidth;
+      bgCanvas.height = window.innerHeight;
+      if (typeof sequence !== 'undefined') renderBgFrame(sequence.frame);
+    };
+    window.addEventListener('resize', resizeBgCanvas);
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+
+    const images = [];
+    let imagesLoaded = 0;
+    
+    for (let i = 0; i < frameNames.length; i++) {
+      const img = new Image();
+      img.src = `/images/frames/${i + 1}.png`;
+      images.push(img);
+      img.onload = () => {
+        imagesLoaded++;
+        if (imagesLoaded === 1) renderBgFrame(0);
+      };
+    }
+
+    renderBgFrame = (index) => {
+      if (!images[index] || !images[index].complete || images[index].naturalWidth === 0) return;
+      
+      const img = images[index];
+      const canvasRatio = bgCanvas.width / bgCanvas.height;
+      const imgRatio = img.width / img.height;
+      let drawWidth, drawHeight, offsetX = 0, offsetY = 0;
+      
+      if (imgRatio > canvasRatio) {
+        drawHeight = bgCanvas.height;
+        drawWidth = img.width * (bgCanvas.height / img.height);
+        offsetX = (bgCanvas.width - drawWidth) / 2;
+      } else {
+        drawWidth = bgCanvas.width;
+        drawHeight = img.height * (bgCanvas.width / img.width);
+        offsetY = (bgCanvas.height - drawHeight) / 2;
+      }
+      
+      bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+      bgCtx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+    };
+  }
+
+  // --- Hero Laptop 3D Animation ---
+  const heroCanvas = document.getElementById('hero-laptop-canvas');
+  if (heroCanvas) {
+    let heroModelGroup = null;
+    
+    initDevice('hero-laptop-canvas', '/models/macbook_pro_14_inch_M5.glb', 2.4, () => createVideoTexture('/video/laptop-demo.mp4'), { 
+      skipScrollTrigger: true,
+      rotateX: 0.1,
+      rotateY: -0.5,
+      onModelLoaded: (group) => {
+        heroModelGroup = group;
+      }
+    });
+
+    const sequence = { frame: 0 };
+    const laptopAnim = { p: 0 };
+
+    if (bgCanvas) bgCanvas.style.opacity = 1;
+    if (heroCanvas) heroCanvas.style.opacity = 0;
+
+    // 1. Background Sequence Animation (scrubs up to progress 0.75)
+    scrollTimeline.to(sequence, {
+      frame: frameNames.length - 1,
+      snap: "frame",
+      duration: 0.75, 
+      ease: "none",
+      onUpdate: function() {
+        if (bgCanvas) renderBgFrame(sequence.frame);
+      }
+    }, 0);
+
+    // Logo styling initial setup
+    const logoOverlayEl = document.getElementById('hero-logo-overlay');
+    if (logoOverlayEl) {
+      logoOverlayEl.style.display = 'none';
+      logoOverlayEl.style.opacity = 0;
+    }
+
+    // 2. Fade out background sequence, bottom gradient, and dark horizon glow (starts at 0.65, fully transparent by 0.75)
+    if (bgCanvas) {
+      scrollTimeline.to(bgCanvas, {
+        opacity: 0,
+        duration: 0.10, 
+        ease: "none"
+      }, 0.65);
+    }
+
+    const bottomFadeEl = document.getElementById('hero-bottom-fade');
+    if (bottomFadeEl) {
+      scrollTimeline.to(bottomFadeEl, {
+        opacity: 0,
+        duration: 0.10,
+        ease: "none"
+      }, 0.65);
+    }
+
+    const darkGlowEl = document.getElementById('hero-dark-glow');
+    if (darkGlowEl) {
+      scrollTimeline.to(darkGlowEl, {
+        opacity: 0,
+        duration: 0.10,
+        ease: "none"
+      }, 0.65);
+    }
+
+    // 3. Fade in 3D Laptop (starts at 0.65, fully visible by 0.75)
+    if (heroCanvas) {
+      scrollTimeline.to(heroCanvas, {
+        opacity: 1,
+        duration: 0.10, 
+        ease: "none"
+      }, 0.65);
+    }
+
+    // 4. Laptop 3D Animation (starts at 0.65 and completes at 0.93)
+    scrollTimeline.to(laptopAnim, {
+      p: 1,
+      duration: 0.28,
+      ease: "power2.out",
+      onUpdate: function() {
+        if (heroModelGroup) {
+          const p = laptopAnim.p;
+          const isMobile = window.innerWidth < 1024;
+          heroModelGroup.position.y = isMobile 
+            ? -2.5 + (p * 2.8) 
+            : -4.2 + (p * 4.5);  
+          heroModelGroup.position.x = isMobile ? 0 : p * 0.65;
+          heroModelGroup.rotation.y = isMobile 
+            ? -0.5 + (p * 0.5)
+            : -0.8 + (p * 0.8); 
+          heroModelGroup.rotation.x = 0.5 - (p * 0.4);  
+        }
+      }
+    }, 0.65);
+  }
+}
+
+
+// ==========================================================================
+// 3.75. Desk Awakening â€” Cinematic 3D Hero Background
+// All 8 review findings applied:
+//   #1  Lid tween on master timeline (not detached)
+//   #2  needsUpdate on every material tween
+//   #3  transparent pre-set at init (no shader recompile flash)
+//   #4  webglcontextlost/restored listeners
+//   #5  PCFShadowMap (not Soft) for BokehPass depth compat
+//   #6  Explicit z-indexes handled in HTML
+//   #7  Isolated GLTFLoader to prevent shared cache leak
+//   #8  Mobile-adaptive DPR + shadow map budget
+// ==========================================================================
+function initDeskAwakening() {
+  const canvas = document.getElementById('desk-awakening-canvas');
+  const vignette = document.getElementById('desk-loop-vignette');
+  if (!canvas) return;
+
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+  // WebGL Renderer with context safety
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isMobile, powerPreference: 'high-performance' });
+  } catch (err) {
+    console.warn('[DeskAwakening] WebGL context creation failed:', err);
+    return;
+  }
+
+  renderer.setPixelRatio(isMobile ? 1.0 : Math.min(window.devicePixelRatio, 1.0));
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.8;
+
+  let rafId = null;
+  let particleMat = null;
+  let laptopVideoElement = null;
+  canvas.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault();
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
+    console.warn('[DeskAwakening] WebGL context lost.');
+  }, false);
+  canvas.addEventListener('webglcontextrestored', () => {
+    console.log('[DeskAwakening] WebGL context restored, reinitializing.');
+    startRenderLoop();
+  }, false);
+
+  const scene = new THREE.Scene();
+
+  // Camera â€” 3/4 elevated view
+  const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+  camera.position.set(3.8, 3.0, 5.8);
+  camera.lookAt(0, 0.4, 0);
+
+  // 1. Hemisphere fill light â€” bright enough to see the desk clearly
+  const hemiLight = new THREE.HemisphereLight(0xffffff, 0x443322, 1.8);
+  scene.add(hemiLight);
+
+  // 2. Main key light from above-right
+  const keyLight = new THREE.DirectionalLight(0xfff4e0, 3.5);
+  keyLight.position.set(4, 10, 6);
+  keyLight.castShadow = true;
+  const shadowMapSize = isMobile ? 1024 : 2048;
+  keyLight.shadow.mapSize.width = shadowMapSize;
+  keyLight.shadow.mapSize.height = shadowMapSize;
+  keyLight.shadow.camera.near = 0.5;
+  keyLight.shadow.camera.far = 30;
+  keyLight.shadow.camera.left = -8;
+  keyLight.shadow.camera.right = 8;
+  keyLight.shadow.camera.top = 8;
+  keyLight.shadow.camera.bottom = -8;
+  keyLight.shadow.bias = -0.001;
+  keyLight.shadow.radius = 3;
+  scene.add(keyLight);
+
+  // 3. Fill light from left
+  const fillLight = new THREE.DirectionalLight(0xd0e8ff, 1.5);
+  fillLight.position.set(-5, 5, 3);
+  scene.add(fillLight);
+
+  // 4. Warm under-fill
+  const warmFill = new THREE.PointLight(0xffe8c0, 1.2, 20);
+  warmFill.position.set(2, 2, 5);
+  scene.add(warmFill);
+
+  // 5. Screen glow (starts off, animated in by GSAP)
+  const screenRimLight = new THREE.PointLight(0x6699ff, 0, 8);
+  screenRimLight.position.set(0, 1.2, 0.5);
+  scene.add(screenRimLight);
+
+  // Shadow catcher below desk (invisible, only receives shadows)
+  const floorPlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(50, 50),
+    new THREE.ShadowMaterial({ opacity: 0.25 })
+  );
+  floorPlane.rotation.x = -Math.PI / 2;
+  floorPlane.position.y = -0.07; // just below the desk surface
+  floorPlane.receiveShadow = true;
+  scene.add(floorPlane);
+
+  // Desk Surface (procedural wood grain texture)
+  function createWoodTexture() {
+    const c = document.createElement('canvas');
+    c.width = 512; c.height = 512;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#3b1e0a';
+    ctx.fillRect(0, 0, 512, 512);
+    for (let i = 0; i < 80; i++) {
+      const y = (i / 80) * 512;
+      const wave = Math.sin(i * 0.8) * 6;
+      ctx.beginPath();
+      ctx.moveTo(0, y + wave);
+      for (let x = 0; x < 512; x += 4) {
+        ctx.lineTo(x, y + Math.sin(x * 0.02 + i * 0.5) * 4 + wave);
+      }
+      const light = i % 5 === 0 ? '#a0622a' : '#5c2c0c';
+      ctx.strokeStyle = light;
+      ctx.globalAlpha = 0.04 + Math.random() * 0.08;
+      ctx.lineWidth = 1 + Math.random() * 2;
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    for (let k = 0; k < 4; k++) {
+      const kx = 60 + Math.random() * 400;
+      const ky = 60 + Math.random() * 400;
+      const grad = ctx.createRadialGradient(kx, ky, 0, kx, ky, 18);
+      grad.addColorStop(0, 'rgba(20,8,2,0.5)');
+      grad.addColorStop(1, 'rgba(20,8,2,0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.ellipse(kx, ky, 18, 10, Math.random(), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(3, 1);
+    return tex;
+  }
+
+  // Main Scene Group for Mouse Parallax (ALL objects go here)
+  const sceneGroup = new THREE.Group();
+  scene.add(sceneGroup);
+  globalDeskSceneGroup = sceneGroup;
+
+  // ── 1. Interactive GPU Particles (Colorful Dust) ───────────────────────────
+  const particleCount = isMobile ? 1200 : 3500;
+  const particleGeo = new THREE.BufferGeometry();
+  const positions = new Float32Array(particleCount * 3);
+  const randoms = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount * 3; i += 3) {
+    positions[i] = (Math.random() - 0.5) * 16.0;
+    positions[i + 1] = Math.random() * 8.0 - 1.0;
+    positions[i + 2] = -Math.random() * 10.0 - 2.0; // strictly behind desk/screen on Z axis
+
+    randoms[i] = Math.random();
+    randoms[i + 1] = Math.random();
+    randoms[i + 2] = Math.random();
+  }
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  particleGeo.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 3));
+
+  function createParticleTexture() {
+    const c = document.createElement('canvas');
+    c.width = 16; c.height = 16;
+    const ctx = c.getContext('2d');
+    const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+    grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    grad.addColorStop(0.3, 'rgba(220, 200, 255, 0.7)');
+    grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, 16, 16);
+    return new THREE.CanvasTexture(c);
+  }
+  const particleTex = createParticleTexture();
+
+  particleMat = new THREE.ShaderMaterial({
+    uniforms: {
+      uTime: { value: 0 },
+      uTexture: { value: particleTex },
+      uParticleSize: { value: isMobile ? 25.0 : 45.0 },
+      uFlowIntensity: { value: 0.2 }
+    },
+    vertexShader: `
+      uniform float uTime;
+      uniform float uParticleSize;
+      uniform float uFlowIntensity;
+      attribute vec3 aRandom;
+      varying vec3 vColor;
+      varying float vAlpha;
+      void main() {
+        vec3 pos = position;
+        // Swirling harmonic motion (fluid flow simulation)
+        pos.x += sin(uTime * 0.45 + pos.z * 0.4 + aRandom.x * 6.28) * uFlowIntensity * 1.3;
+        pos.y += cos(uTime * 0.35 + pos.x * 0.4 + aRandom.y * 6.28) * uFlowIntensity * 0.9;
+        pos.z += sin(uTime * 0.50 + pos.y * 0.4 + aRandom.z * 6.28) * uFlowIntensity * 1.3;
+
+        vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+        gl_Position = projectionMatrix * mvPosition;
+        gl_PointSize = uParticleSize / -mvPosition.z;
+
+        // Dynamic multi-hued particles based on design system
+        if (aRandom.x < 0.35) {
+          vColor = vec3(0.42, 0.24, 0.96); // primary purple #6C3EF4
+        } else if (aRandom.x < 0.68) {
+          vColor = vec3(0.0, 0.94, 1.0);  // neon cyan #00f0ff
+        } else {
+          vColor = vec3(0.96, 0.65, 0.14); // accent amber #F5A623
+        }
+
+        vAlpha = 0.4 + 0.4 * sin(uTime * 0.3 + aRandom.z * 6.28);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D uTexture;
+      varying vec3 vColor;
+      varying float vAlpha;
+      void main() {
+        vec4 texColor = texture2D(uTexture, gl_PointCoord);
+        if (texColor.a < 0.05) discard;
+        gl_FragColor = vec4(vColor, texColor.a * vAlpha * 0.7);
+      }
+    `,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+
+  const particles = new THREE.Points(particleGeo, particleMat);
+  scene.add(particles);
+
+
+  // ── Wooden Desk Table (real GLB model) ─────────────────────────────────
+  let deskMesh = null;
+  const tableLoader = new GLTFLoader();
+  tableLoader.load('/models/wooden_table.glb', (gltf) => {
+    deskMesh = gltf.scene;
+    globalDeskMesh = deskMesh;
+    // Rotate the table to align wood grain and orient correctly
+    deskMesh.rotation.y = Math.PI / 2;
+    
+    // Scale up to cover the viewport width
+    const tableBbox = new THREE.Box3().setFromObject(deskMesh);
+    const tableSz = new THREE.Vector3();
+    tableBbox.getSize(tableSz);
+    const tableScale = 24.0 / tableSz.x;
+    deskMesh.scale.setScalar(tableScale);
+
+    // Position so top surface is at y = 0
+    tableBbox.setFromObject(deskMesh);
+    deskMesh.position.set(0, -tableBbox.max.y, 0.5);
+
+    deskMesh.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    sceneGroup.add(deskMesh);
+  }, undefined, (err) => {
+    console.warn('[DeskAwakening] Failed to load wooden_table.glb:', err);
+    // Fallback: plain dark wooden box if GLB fails
+    const woodTex = createWoodTexture();
+    deskMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(12, 0.12, 8),
+      new THREE.MeshStandardMaterial({ map: woodTex, roughness: 0.7, metalness: 0.0 })
+    );
+    globalDeskMesh = deskMesh;
+    deskMesh.position.set(0, -0.06, 0.5);
+    deskMesh.receiveShadow = true;
+    sceneGroup.add(deskMesh);
+  });
+
+
+  // â”€â”€ 4. Laptop GLTF Loading & Setup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const laptopGroup = new THREE.Group();
+  sceneGroup.add(laptopGroup);
+
+  let laptopLid = null;
+  let lidPivot = null;
+  const screenMat = new THREE.MeshStandardMaterial({
+    color: 0x000000,
+    emissive: new THREE.Color(0xffffff),
+    emissiveIntensity: 0.0,
+    roughness: 0.08,
+    metalness: 0.2,
+    transparent: true,
+    opacity: 1
+  });
+
+  const deskLoader = new GLTFLoader();
+  deskLoader.load('/models/macbook_pro_14_inch_M5.glb', (gltf) => {
+    const model = gltf.scene;
+    const bbox = new THREE.Box3().setFromObject(model);
+    const sz = new THREE.Vector3();
+    bbox.getSize(sz);
+    const scale = 1.95 / Math.max(sz.x, sz.y, sz.z);
+    model.scale.setScalar(scale);
+
+    bbox.setFromObject(model);
+    const center = new THREE.Vector3();
+    bbox.getCenter(center);
+    model.position.set(-center.x, -bbox.min.y, -center.z);
+
+    model.traverse((child) => {
+      if (child.name === 'RcexTyyhpuJYATQ') {
+        laptopLid = child;
+      }
+
+      if (!child.isMesh) return;
+      child.castShadow = true;
+      child.receiveShadow = true;
+      if (child.material) child.material.envMapIntensity = 0.6;
+
+      const name = child.name.toLowerCase();
+      const matName = child.material?.name?.toLowerCase() ?? '';
+      const isScreen =
+        name === 'tftbkkzhxqpkrgc' || matName === 'hlqwfcapwzetdqy' ||
+        name.includes('screen') || name.includes('display');
+
+      if (isScreen) {
+        const videoTex = createVideoTexture('/video/laptop-demo.mp4');
+        laptopVideoElement = videoTex.userData.video;
+        screenMat.map = videoTex;
+        screenMat.emissiveMap = videoTex;
+        child.material = screenMat;
+        if (!laptopLid) {
+          let cur = child.parent;
+          for (let d = 0; d < 6 && cur && cur !== model; d++) {
+            if (cur.children.length > 2) { laptopLid = cur; break; }
+            cur = cur.parent;
+          }
+          if (!laptopLid) laptopLid = child.parent ?? model;
+        }
+      }
+    });
+
+    model.updateMatrixWorld(true);
+
+    if (laptopLid) {
+      lidPivot = new THREE.Group();
+      lidPivot.name = "lidPivot";
+      
+      const parentNode = model.getObjectByName('nIhhmAXgzOpXafM');
+      if (parentNode) {
+        // Place the pivot at the hinge line relative to parent node
+        lidPivot.position.set(0, -11.46, -0.42);
+        parentNode.add(lidPivot);
+        
+        // Remove lid from parent and add to pivot
+        laptopLid.parent.remove(laptopLid);
+        lidPivot.add(laptopLid);
+        
+        // Apply optimal calibrated values to ensure flush fit when closed and zero distortion when open
+        const scaleY = 1.0617;
+        const scaleZ = 1.028;
+        const posZOffset = -0.060;
+        
+        laptopLid.scale.set(1.0, scaleY, scaleZ);
+        laptopLid.position.set(0, 11.46 * scaleY, 0.42 * scaleZ + posZOffset);
+        
+        console.log(`[3D Setup] Landing page laptop calibrated using optimal pre-sets: scaleY=${scaleY}, scaleZ=${scaleZ}, posZOffset=${posZOffset}`);
+      } else {
+        console.warn("[3D Setup] Could not find parentNode nIhhmAXgzOpXafM for laptop lid pivot creation.");
+      }
+    } else {
+      console.warn("[3D Setup] Could not find laptopLid for pivot calibration.");
+      laptopLid = model;
+    }
+
+    if (lidPivot) {
+      lidPivot.rotation.x = 1.91; // Initial closed state
+    } else {
+      laptopLid.rotation.x = 1.91;
+    }
+    laptopGroup.add(model);
+  });
+
+  // ── 4b. Desk Accessories Loading ──────────────────────────────────────────
+  const accessoryLoader = new GLTFLoader();
+  const accessories = [];
+
+  function loadAccessory(url, pos, rot, scale, name, flyDir) {
+    return new Promise((resolve) => {
+      accessoryLoader.load(url, (gltf) => {
+        const model = gltf.scene;
+        // Auto-scale to target size
+        const bbox = new THREE.Box3().setFromObject(model);
+        const sz = new THREE.Vector3();
+        bbox.getSize(sz);
+        const maxDim = Math.max(sz.x, sz.y, sz.z);
+        model.userData.maxDim = maxDim;
+        // Cap maxDim at 5.0 — photogrammetry / 3D-scan models often include
+        // background geometry, inflating their bbox to 50-500 units.
+        // Without this cap, scale / maxDim → near-zero → model invisible.
+        const s = Math.abs(scale) / maxDim;
+        model.scale.setScalar(s);
+
+        // Apply rotation BEFORE bbox measurement so rotated shape is correct
+        if (rot) model.rotation.set(rot[0], rot[1], rot[2]);
+
+        // Auto-snap: place model at origin, measure its bottom face,
+        // then lift so bottom sits at y = pos[1] (desk surface = 0).
+        // pos[1] is treated as desired height of item's bottom above desk.
+        model.position.set(0, 0, 0);
+        const snapBbox = new THREE.Box3().setFromObject(model);
+        const desiredFloor = Math.max(0, pos[1]); // clamp negative (can't sink below desk)
+        const computedY = desiredFloor - snapBbox.min.y;
+
+        model.position.set(pos[0], computedY, pos[2]);
+        model.userData.flyDir = flyDir || { x: 12, y: 0, z: 0 };
+
+        model.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+
+        model.name = name;
+        model.userData._origPos = [pos[0], computedY, pos[2]];
+        model.userData._origRot = rot ? [rot[0], rot[1], rot[2]] : [0, 0, 0];
+        model.userData._origScale = scale;
+        model.userData._url = url;
+        model.userData._name = name;
+        model.userData._flyDir = flyDir || { x: 12, y: 0, z: 0 };
+
+        sceneGroup.add(model);
+        accessories.push(model);
+        resolve(model);
+      }, undefined, (err) => {
+        console.warn(`[DeskAwakening] Failed to load accessory: ${name}`, err);
+        resolve(null);
+      });
+    });
+  }
+
+  // pos[1] = desired height of item's BOTTOM above the desk surface (y=0).
+  // 0 = sitting on desk. Scale = visual size of the object.
+  // loadAccessory auto-snaps every item so its bottom face touches y=pos[1].
+  const accessoryPromises = [
+    loadAccessory('/models/simple_pc_mouse.glb', [1.600, 0, 2.008], [0.000, -0.300, 0.000], 0.610, 'PC Mouse', { x: 20, y: 0, z: 5.5 }),
+    loadAccessory('/models/usb_memory.glb', [1.380, 0, 0.270], [0.000, 0.500, 0.000], 0.210, 'USB Memory', { x: 20, y: 0, z: 3.5 }),
+    loadAccessory('/models/paper_lowpoly.glb', [-1.600, 0, 0.200], [0.000, 0.300, 0.000], 1.000, 'Paper Sheet', { x: -20, y: 0, z: 0.5 }),
+    loadAccessory('/models/paper%20with line.glb', [0.460, 0, -1.660], [1.593, 0.003, 0.851], 1.535, 'Lined Paper', { x: -18, y: 0, z: -2 }),
+    loadAccessory('/models/cup.glb', [-2.940, 0, 2.398], [0.000, 0.300, 0.000], 0.684, 'Coffee Cup', { x: -22, y: 0, z: 3.5 }),
+    loadAccessory('/models/crumpled_paper.glb', [-2.500, 0, 0.400], [0.200, 3.665, 0.100], 0.400, 'Crumpled Paper', { x: -22, y: 0, z: 1 }),
+    loadAccessory('/models/gopro_hero_8.glb', [2.250, 0, 2.400], [0.000, -0.500, 0.000], 0.500, 'GoPro Hero 8', { x: 20, y: 0, z: 4.5 }),
+    loadAccessory('/models/earphone.glb', [-2.990, 0, 1.210], [1.571, -0.175, -1.484], 1.010, 'Earphones', { x: -22, y: 0, z: 4.5 }),
+    loadAccessory('/models/a18eff8fc5334944b386d36c71fdce17.glb', [1.750, 0, -1.930], [0.611, -1.387, 1.856], 0.460, 'Note Memo', { x: 18, y: 0, z: -2 }),
+    loadAccessory('/models/pencil.glb', [1.720, 0, 0.990], [0.000, 1.200, 1.571], 0.760, 'Pencil', { x: 20, y: 0, z: 4.5 }),
+    loadAccessory('/models/sony_alpha_3.glb', [3.000, 0, -1.440], [0.000, 5.061, 0.000], 1.410, 'Sony Alpha Camera', { x: 22, y: 0, z: -3.5 }),
+    loadAccessory('/models/notebook_and_pen.glb', [2.870, 0, 0.500], [0.000, -0.698, 0.000], 1.360, 'Notebook & Pen', { x: 22, y: 0, z: 2 }),
+    loadAccessory('/models/thermos_-_hydration_bottle_24oz.glb', [-2.170, 0, -1.470], [0.000, 0.000, 0.000], 1.460, 'Thermos Flask', { x: -22, y: 0, z: -4.5 }),
+    loadAccessory('/models/dji_mavic3_classic_dji_drone.glb', [-4.390, 0, -1.410], [0.000, -5.498, 0.000], 1.800, 'DJI Mavic Drone', { x: -24, y: 0, z: -2 }),
+  ];
+  Promise.all(accessoryPromises).then(() => {
+    console.log('[DeskAwakening] All accessories loaded:', accessories.length);
+  });
+
+
+
+  // ── 5. Post Processing ── simple render pass only (no bloom, no dof blur)
+  let composer = null;
+  // Note: bloom and DoF disabled to keep the scene clean and well-lit
+
+  // ── 6. State proxy for GSAP timeline (prevents desyncs) ────────────────────
+  const animState = {
+    lidRotationX: 1.91,
+    screenEmissive: 0.0,
+    ambientLight: 0.1,
+    particleFlow: 0.2
+  };
+
+  function updateVisuals() {
+    if (lidPivot) {
+      lidPivot.rotation.x = animState.lidRotationX;
+    } else if (laptopLid) {
+      laptopLid.rotation.x = animState.lidRotationX;
+    }
+    screenMat.emissiveIntensity = animState.screenEmissive;
+    screenMat.needsUpdate = true;
+    if (particleMat) {
+      particleMat.uniforms.uFlowIntensity.value = animState.particleFlow;
+    }
+  }
+
+  // ── 7. Scroll-Driven Scene Animation ─────────────────────────────────────
+  // Phase 1 — Laptop lid opens: 0px → 600px scroll
+  const scrollTl = gsap.timeline({
+    scrollTrigger: {
+      trigger: document.body,
+      start: 'top top',
+      end: '+=600',
+      scrub: 1.5,
+    }
+  });
+  scrollTl.to(animState, {
+    lidRotationX: 0.0,
+    screenEmissive: 1.2,
+    particleFlow: 0.35,
+    duration: 1,
+    ease: 'power3.inOut',
+    onUpdate: updateVisuals
+  });
+
+  // Phase 2 — Camera zooms into laptop screen + accessories scatter: 600px → 1800px scroll
+  // Camera position state for GSAP
+  const camState = {
+    posX: camera.position.x,
+    posY: camera.position.y,
+    posZ: camera.position.z,
+    fov: camera.fov,
+    lookY: 0.4,
+  };
+
+  Promise.all(accessoryPromises).then(() => {
+    // 2a. Accessories fly off desk
+    accessories.forEach((acc) => {
+      if (!acc) return;
+      const fd = acc.userData._flyDir || { x: 12, y: 0, z: 0 };
+      const origPos = acc.userData._origPos || [0, 0, 0];
+      gsap.to(acc.position, {
+        x: origPos[0] + fd.x,
+        y: origPos[1] + (fd.y || 0) + 3,
+        z: origPos[2] + (fd.z || 0),
+        ease: 'power2.in',
+        scrollTrigger: {
+          trigger: document.body,
+          start: '+=600',
+          end: '+=1800',
+          scrub: 1.2,
+        }
+      });
+    });
+
+    // 2b. Camera zooms in toward the laptop screen
+    gsap.to(camState, {
+      posX: 0.5,
+      posY: 1.45,
+      posZ: 2.95,
+      fov: 27,
+      lookY: 1.0,
+      ease: 'power2.inOut',
+      scrollTrigger: {
+        trigger: document.body,
+        start: '+=600',
+        end: '+=1800',
+        scrub: 1.5,
+        onUpdate: () => {
+          camera.position.set(camState.posX, camState.posY, camState.posZ);
+          camera.lookAt(0, camState.lookY, 0);
+          camera.fov = camState.fov;
+          camera.updateProjectionMatrix();
+        }
+      }
+    });
+
+    // 2c. Screen glow intensifies as camera zooms in
+    gsap.to(animState, {
+      screenEmissive: 2.5,
+      particleFlow: 0.6,
+      ease: 'power2.inOut',
+      scrollTrigger: {
+        trigger: document.body,
+        start: '+=600',
+        end: '+=1800',
+        scrub: 1,
+        onUpdate: updateVisuals,
+      }
+    });
+
+    // 2d. Desk movement timeline (pull back 600px-1800px, hold 1800px-2000px, table fade 2000px-2500px, hold 2500px-3500px)
+    const tableOpacityObj = { value: 1.0 };
+    const deskTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: document.body,
+        start: '+=600',
+        end: '+=2900',
+        scrub: 1.5
+      }
+    });
+
+    // Step 1: Pull back (600 to 1800, duration 12)
+    deskTl.to(sceneGroup.position, {
+      z: -1,
+      y: 0.28,
+      duration: 12,
+      ease: 'power2.inOut'
+    }, 'pullback');
+    deskTl.to(tableOpacityObj, {
+      value: 1.0,
+      duration: 12,
+      onUpdate: () => { updateTableOpacity(tableOpacityObj.value); }
+    }, 'pullback');
+
+    // Step 2: Hold 1 (1800 to 2000, duration 2)
+    deskTl.to(sceneGroup.position, {
+      z: -1,
+      y: 0.28,
+      duration: 2
+    }, 'hold1');
+    deskTl.to(tableOpacityObj, {
+      value: 1.0,
+      duration: 2,
+      onUpdate: () => { updateTableOpacity(tableOpacityObj.value); }
+    }, 'hold1');
+
+    // Step 3: Fade Table (2000 to 2500, duration 5)
+    deskTl.to(sceneGroup.position, {
+      z: -1,
+      y: 0.28,
+      duration: 5
+    }, 'fadeTable');
+    deskTl.to(tableOpacityObj, {
+      value: 0.0,
+      duration: 5,
+      ease: 'power2.inOut',
+      onUpdate: () => { updateTableOpacity(tableOpacityObj.value); }
+    }, 'fadeTable');
+
+    // Step 4: Hold 2 (2500 to 3500, duration 10)
+    deskTl.to(sceneGroup.position, {
+      z: -1,
+      y: 0.28,
+      duration: 10
+    }, 'hold2');
+    deskTl.to(tableOpacityObj, {
+      value: 0.0,
+      duration: 10,
+      onUpdate: () => { updateTableOpacity(tableOpacityObj.value); }
+    }, 'hold2');
+
+    // 2e. Desk exit timeline (slide up 3500px-4900px in lockstep with unpinned page scroll)
+    const deskExitTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: document.body,
+        start: '+=3500',
+        end: '+=1400',
+        scrub: true,
+        onUpdate: (self) => {
+          // Hide sceneGroup past 99% progress to save resources
+          sceneGroup.visible = (self.progress < 0.99);
+        }
+      }
+    });
+
+    deskExitTl.to(sceneGroup.position, {
+      y: 2.28,
+      duration: 1,
+      ease: 'none'
+    });
+  });
+
+  // â”€â”€ 8. Dampened Mouse Parallax Tilt (Design Spell) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  let mouseX = 0, mouseY = 0;
+  let targetMouseX = 0, targetMouseY = 0;
+
+  const onMouseMove = (e) => {
+    targetMouseX = (e.clientX / window.innerWidth) * 2 - 1;
+    targetMouseY = (e.clientY / window.innerHeight) * 2 - 1;
+  };
+  window.addEventListener('mousemove', onMouseMove, { passive: true });
+
+  // â”€â”€ 9. Resize Observer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const ro = new ResizeObserver(() => {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    if (!w || !h) return;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h, false);
+    if (composer) {
+      composer.setSize(w, h);
+    }
+  });
+  ro.observe(canvas);
+
+  // â”€â”€ 10. Intersection Observer (Off-screen render freeze) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  let active = true;
+  const ioObs = new IntersectionObserver(([e]) => {
+    active = e.isIntersecting;
+    if (active) {
+      if (laptopVideoElement) {
+        laptopVideoElement.play().catch(err => console.warn("Laptop video resume failed:", err));
+      }
+      if (!rafId) startRenderLoop();
+    } else {
+      if (laptopVideoElement) {
+        laptopVideoElement.pause();
+      }
+    }
+  }, { threshold: 0 });
+  ioObs.observe(canvas);
+
+  const clock = new THREE.Clock();
+  let lastRenderTime = 0;
+  const FPS_INTERVAL = 1 / 30; // 30 FPS cap
+
+  function startRenderLoop() {
+    (function loop() {
+      if (!active) { rafId = null; return; }
+      rafId = requestAnimationFrame(loop);
+
+      const time = clock.getElapsedTime();
+      if (time - lastRenderTime < FPS_INTERVAL) return;
+      lastRenderTime = time;
+
+      if (particleMat) {
+        particleMat.uniforms.uTime.value = time;
+      }
+
+      mouseX += (targetMouseX - mouseX) * 0.045;
+      mouseY += (targetMouseY - mouseY) * 0.045;
+
+      const scrollY = window.lenis ? window.lenis.scroll : window.scrollY;
+      if (scrollY < 2500) {
+        sceneGroup.rotation.y = mouseX * 0.16;
+        sceneGroup.rotation.x = -mouseY * 0.08;
+      } else {
+        // Smoothly lerp sceneGroup rotation back to 0
+        sceneGroup.rotation.y += (0 - sceneGroup.rotation.y) * 0.1;
+        sceneGroup.rotation.x += (0 - sceneGroup.rotation.x) * 0.1;
+      }
+
+      if (particles) {
+        particles.rotation.y = mouseX * 0.06;
+        particles.rotation.x = -mouseY * 0.03;
+      }
+      if (composer) {
+        composer.render();
+      } else {
+        renderer.render(scene, camera);
+      }
+    })();
+  }
+  startRenderLoop();
+}
+
+function setupGlobalBackground() {
+  const bgTimeline = gsap.timeline({
+    scrollTrigger: {
+      trigger: '#scroll-wrapper',
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: 1.5,
+    }
+  });
+
+  bgTimeline.addLabel('hero', 0);
+  bgTimeline.addLabel('tablet', 1);
+  bgTimeline.addLabel('phone', 2);
+  bgTimeline.addLabel('features', 3);
+  bgTimeline.addLabel('showcase', 4);
+
+  // Animate Purple Glow (Celestial Ellipse curved path)
+  bgTimeline
+    .to('.glow-purple', { opacity: 0.2, x: '-15%', y: '10%', scale: 0.9, duration: 1, ease: 'power2.inOut' }, 'hero')
+    .to('.glow-purple', { opacity: 0.1, x: '-25%', y: '30%', scale: 0.8, duration: 1, ease: 'power2.inOut' }, 'tablet')
+    .to('.glow-purple', { opacity: 0.35, x: '-10%', y: '25%', scale: 1.1, duration: 1, ease: 'power2.inOut' }, 'phone')
+    .to('.glow-purple', { opacity: 0.05, x: '0%', y: '40%', scale: 0.8, duration: 1, ease: 'power2.inOut' }, 'features');
+
+  // Animate Blue Glow (Brightens and centers behind tablet text)
+  bgTimeline
+    .to('.glow-blue', { opacity: 0.55, x: '25%', y: '15%', scale: 1.25, duration: 1, ease: 'power2.inOut' }, 'hero')
+    .to('.glow-blue', { opacity: 0.15, x: '10%', y: '30%', scale: 1.0, duration: 1, ease: 'power2.inOut' }, 'tablet')
+    .to('.glow-blue', { opacity: 0.1, x: '0%', y: '40%', scale: 0.9, duration: 1, ease: 'power2.inOut' }, 'phone')
+    .to('.glow-blue', { opacity: 0.05, duration: 1, ease: 'power2.inOut' }, 'features');
+
+  // Animate Indigo Glow (Brightens and centers behind phone text)
+  bgTimeline
+    .to('.glow-indigo', { opacity: 0.2, x: '0%', y: '10%', scale: 1.0, duration: 1, ease: 'power2.inOut' }, 'hero')
+    .to('.glow-indigo', { opacity: 0.6, x: '-20%', y: '15%', scale: 1.35, duration: 1, ease: 'power2.inOut' }, 'tablet')
+    .to('.glow-indigo', { opacity: 0.25, x: '-10%', y: '30%', scale: 1.1, duration: 1, ease: 'power2.inOut' }, 'phone')
+    .to('.glow-indigo', { opacity: 0.05, duration: 1, ease: 'power2.inOut' }, 'features');
+
+  // Animate Teal Glow (Rises and expands at the bottom)
+  bgTimeline
+    .to('.glow-teal', { opacity: 0.15, x: '10%', y: '0%', scale: 1.0, duration: 1, ease: 'power2.inOut' }, 'hero')
+    .to('.glow-teal', { opacity: 0.25, x: '20%', y: '-10%', scale: 1.1, duration: 1, ease: 'power2.inOut' }, 'tablet')
+    .to('.glow-teal', { opacity: 0.5, x: '10%', y: '-20%', scale: 1.25, duration: 1, ease: 'power2.inOut' }, 'phone')
+    .to('.glow-teal', { opacity: 0.7, x: '0%', y: '-35%', scale: 1.45, duration: 1, ease: 'power2.inOut' }, 'features');
+}
+
+// (Logo Setup Removed)
+
+// Call animations
+setupAnimations();
+
+// ==========================================================================
+// 5.5  Navbar Scroll Reveal â€” appears after 2500px, fades on reverse
+// ==========================================================================
+(function initNavbarReveal() {
+  const nav = document.querySelector('.main-nav');
+  if (!nav) return;
+
+  // Variant 1 (default): Fade + slide down from -8px â€” elegant entrance
+  // Variant 2: Fade + scale from 0.96
+  // Variant 3: Pure fade only
+
+  const SCROLL_SHOW = 2500; // px â€” show navbar after this
+  const SCROLL_HIDE = 2300; // px â€” hide again if scroll goes below this (hysteresis)
+
+  let isVisible = false;
+
+  function showNav() {
+    if (isVisible) return;
+    isVisible = true;
+    nav.style.transition = 'opacity 0.55s cubic-bezier(0.22,1,0.36,1), transform 0.55s cubic-bezier(0.22,1,0.36,1), pointer-events 0s';
+    nav.style.opacity = '1';
+    nav.style.transform = 'translateY(0px)';
+    nav.style.pointerEvents = 'auto';
+  }
+
+  function hideNav() {
+    if (!isVisible) return;
+    isVisible = false;
+    nav.style.transition = 'opacity 0.35s ease, transform 0.35s ease, pointer-events 0s';
+    nav.style.opacity = '0';
+    nav.style.transform = 'translateY(-8px)';
+    nav.style.pointerEvents = 'none';
+  }
+
+  // Use Lenis scroll events if available, otherwise listen to native scroll
+  function onScroll(scrollY) {
+    if (scrollY >= SCROLL_SHOW) {
+      showNav();
+    } else if (scrollY < SCROLL_HIDE) {
+      hideNav();
+    }
+  }
+
+  // Hook into Lenis (set up after Lenis initialises)
+  const hookLenis = () => {
+    if (window.lenis) {
+      window.lenis.on('scroll', ({ scroll }) => onScroll(scroll));
+    } else {
+      window.addEventListener('scroll', () => onScroll(window.scrollY), { passive: true });
+    }
+  };
+
+  // Lenis is initialised slightly after this IIFE â€” defer one tick
+  setTimeout(hookLenis, 200);
+})();
+
+
+// ==========================================================================
+// 6. Window Resize Handler
+// ==========================================================================
+// Handle Resize (Removed global camera/renderer logic as devices handle their own)
+
+// ==========================================================================
+// 7. Lenis Smooth Scroll Setup
+// ==========================================================================
+let lenis = null;
+if (typeof window !== 'undefined' && window.Lenis) {
+  lenis = new window.Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smoothWheel: true,
+  });
+
+  // Sync GSAP ScrollTrigger updates with Lenis scrolling
+  lenis.on('scroll', ScrollTrigger.update);
+
+  // Fade out scroll hint on first scroll
+  lenis.on('scroll', (e) => {
+    if (e.scroll > 20) {
+      gsap.to('#scroll-hint', { opacity: 0, duration: 0.5, overwrite: 'auto' });
+    } else {
+      gsap.to('#scroll-hint', { opacity: 1, duration: 0.5, overwrite: 'auto' });
+    }
+  });
+
+  // Hook Lenis into GSAP ticker
+  gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+  });
+
+  // Global debugger update
+  const updateDebugger = () => {
+    const debuggerEl = document.getElementById('frame-debugger');
+    if (debuggerEl) {
+      const scrollY = window.scrollY;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? (scrollY / maxScroll * 100).toFixed(1) : 0;
+      
+      debuggerEl.innerText = `Scroll: ${Math.round(scrollY)}px (${progress}%)`;
+    }
+  };
+
+  lenis.on('scroll', updateDebugger);
+  window.addEventListener('scroll', updateDebugger);
+  
+  // Disable lag smoothing in GSAP to avoid sync jumps
+  gsap.ticker.lagSmoothing(0);
+} else {
+  // Fallback scroll listener if Lenis is not available
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) {
+      gsap.to('#scroll-hint', { opacity: 0, duration: 0.5, overwrite: 'auto' });
+    } else {
+      gsap.to('#scroll-hint', { opacity: 1, duration: 0.5, overwrite: 'auto' });
+    }
+  });
+}
+
+// ==========================================================================
+// 8. Intersection Observers for HTML Sections
+// ==========================================================================
+const tabletObserver = new IntersectionObserver((entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.getElementById('tablet-text').classList.add('visible');
+      document.getElementById('tablet-visual').classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+const tabletSection = document.getElementById('tablet-section');
+if (tabletSection) {
+  tabletObserver.observe(tabletSection);
+}
+
+const phoneObserver = new IntersectionObserver((entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.getElementById('phone-text').classList.add('visible');
+      document.getElementById('phone-visual').classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+const phoneSection = document.getElementById('phone-section');
+if (phoneSection) {
+  phoneObserver.observe(phoneSection);
+}
+
+const showcaseObserver = new IntersectionObserver((entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.getElementById('showcase-text').classList.add('visible');
+      // Trigger device float-in animations
+      const laptop = document.getElementById('showcase-laptop');
+      const ipad = document.getElementById('showcase-ipad');
+      const iphone = document.getElementById('showcase-iphone');
+      if (laptop) setTimeout(() => laptop.classList.add('visible'), 200);
+      if (ipad)   setTimeout(() => ipad.classList.add('visible'),  400);
+      if (iphone) setTimeout(() => iphone.classList.add('visible'), 600);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.25 });
+
+const showcaseSection = document.getElementById('showcase-section');
+if (showcaseSection) {
+  showcaseObserver.observe(showcaseSection);
+}
+
+// ==========================================================================
+// 10. Secondary Devices (iPad and iPhone)
+// ==========================================================================
+
+function createIpadTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 768;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#0D1117';
+  ctx.fillRect(0, 0, 1024, 768);
+
+  // Header
+  ctx.fillStyle = '#111827';
+  ctx.fillRect(0, 0, 1024, 60);
+  ctx.fillStyle = '#1f2937';
+  ctx.fillRect(0, 59, 1024, 1);
+  ctx.fillStyle = '#F5A623';
+  ctx.font = '600 24px sans-serif';
+  ctx.fillText('ðŸ¯ MediaHive', 24, 38);
+  ctx.fillStyle = '#6b7280';
+  ctx.font = '20px sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('Saturday, June 7', 1000, 38);
+  ctx.textAlign = 'left';
+
+  // Sidebar
+  const sidebarWidth = 225;
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(0, 60, sidebarWidth, 708);
+
+  const sidebarItems = [
+    { text: 'ðŸ“‹ Tasks', active: true },
+    { text: 'ðŸ“… Calendar', active: false },
+    { text: 'ðŸ“ Assets', active: false },
+    { text: 'ðŸ‘¥ Team', active: false }
+  ];
+
+  sidebarItems.forEach((item, index) => {
+    const y = 80 + index * 50;
+    if (item.active) {
+      ctx.fillStyle = '#1f2937';
+      ctx.beginPath();
+      ctx.roundRect(12, y - 24, sidebarWidth - 24, 40, 6);
+      ctx.fill();
+      ctx.fillStyle = '#F5A623';
+    } else {
+      ctx.fillStyle = '#9ca3af';
+    }
+    ctx.font = '18px sans-serif';
+    ctx.fillText(item.text, 24, y + 4);
+  });
+
+  // Calendar Grid
+  const gridX = 225 + 16;
+  const gridY = 60 + 16;
+  const gridW = 799 - 32;
+  const gridH = 708 - 32;
+  const cols = 3;
+  const rows = 2;
+  const gap = 12;
+  const cellW = (gridW - gap * (cols - 1)) / cols;
+  const cellH = (gridH - gap * (rows - 1)) / rows;
+
+  const cards = [
+    { label: 'VIDEO', labelColor: '#F5A623', title: 'Edit Tuesday Reel', empty: false },
+    { label: 'ADMIN', labelColor: '#10b981', title: 'Send Invoice', empty: false },
+    { label: 'TECH', labelColor: '#3b82f6', title: 'Drone Firmware', empty: false },
+    { label: 'DESIGN', labelColor: '#a855f7', title: 'Logo Revision v3', empty: false },
+    { label: 'SHOOT', labelColor: '#f59e0b', title: 'Garden Campus', empty: false },
+    { label: '', labelColor: '', title: '+ Add Task', empty: true }
+  ];
+
+  cards.forEach((card, index) => {
+    const col = index % cols;
+    const row = Math.floor(index / cols);
+    const cx = gridX + col * (cellW + gap);
+    const cy = gridY + row * (cellH + gap);
+
+    if (card.empty) {
+      ctx.fillStyle = '#111827';
+      ctx.beginPath(); ctx.roundRect(cx, cy, cellW, cellH, 8); ctx.fill();
+      ctx.fillStyle = '#374151';
+      ctx.font = '18px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(card.title, cx + cellW / 2, cy + cellH / 2);
+      ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    } else {
+      ctx.fillStyle = '#1f2937';
+      ctx.beginPath(); ctx.roundRect(cx, cy, cellW, cellH, 8); ctx.fill();
+      ctx.fillStyle = card.labelColor;
+      ctx.beginPath(); ctx.roundRect(cx, cy, 6, cellH, {tl: 8, bl: 8, tr: 0, br: 0}); ctx.fill();
+      ctx.font = '600 16px sans-serif';
+      ctx.fillText(card.label, cx + 24, cy + 30);
+      ctx.fillStyle = '#e5e7eb';
+      ctx.font = '20px sans-serif';
+      ctx.fillText(card.title, cx + 24, cy + 60);
+    }
+  });
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+function createIphoneTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 390;
+  canvas.height = 844;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#0D1117';
+  ctx.fillRect(0, 0, 390, 844);
+
+  // Dynamic Island
+  ctx.fillStyle = '#000000';
+  ctx.beginPath();
+  ctx.roundRect(135, 12, 120, 36, 18);
+  ctx.fill();
+
+  // Status Bar Left
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '600 14px sans-serif';
+  ctx.fillText('9:41', 32, 34);
+
+  // Status Bar Right (Icons placeholder)
+  ctx.textAlign = 'right';
+  ctx.fillText('ðŸ“¶ ðŸ”‹', 358, 34);
+  ctx.textAlign = 'left';
+
+  // App Header
+  ctx.fillStyle = '#111827';
+  ctx.fillRect(0, 60, 390, 60);
+  ctx.fillStyle = '#1f2937';
+  ctx.fillRect(0, 119, 390, 1);
+  ctx.fillStyle = '#F5A623';
+  ctx.font = 'bold 22px sans-serif';
+  ctx.fillText('ðŸ¯ MediaHive', 24, 98);
+
+  // Task Cards
+  const drawCard = (y, color, tag, title) => {
+    ctx.fillStyle = '#161B22';
+    ctx.beginPath();
+    ctx.roundRect(20, y, 350, 100, 16);
+    ctx.fill();
+
+    // Left border
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(20, y, 6, 100, {tl: 16, bl: 16, tr: 0, br: 0});
+    ctx.fill();
+
+    ctx.fillStyle = color;
+    ctx.font = '600 12px sans-serif';
+    ctx.fillText(tag, 42, y + 34);
+
+    ctx.fillStyle = '#e5e7eb';
+    ctx.font = 'bold 18px sans-serif';
+    ctx.fillText(title, 42, y + 64);
+  };
+
+  drawCard(140, '#F5A623', 'VIDEO', 'Edit Tuesday Reel');
+  drawCard(260, '#10b981', 'ADMIN', 'Send Client Invoice');
+  drawCard(380, '#3b82f6', 'TECH', 'Drone Firmware');
+
+  // Bottom Nav
+  ctx.fillStyle = '#111827';
+  ctx.fillRect(0, 750, 390, 94);
+
+  // Icons
+  ctx.fillStyle = '#F5A623';
+  ctx.fillText('ðŸ“Š', 48, 790);
+
+  ctx.fillStyle = '#9ca3af';
+  ctx.fillText('ðŸ“‹', 138, 790);
+  ctx.fillText('ðŸ’¬', 228, 790);
+  ctx.fillText('âš™ï¸', 318, 790);
+
+  // Home Indicator
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.roundRect(130, 830, 130, 5, 3);
+  ctx.fill();
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+function initDevice(canvasId, modelUrl, targetSize, createTextureFn, options = {}) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  // Handle WebGL context loss gracefully
+  canvas.addEventListener('webglcontextlost', (event) => {
+    event.preventDefault();
+    console.warn(`[WebGL] Context lost on canvas: ${canvasId}`);
+    const container = canvas.parentElement;
+    if (container) {
+      container.classList.add('webgl-context-lost');
+    }
+  }, false);
+
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isMobile });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+
+  const scene = new THREE.Scene();
+
+  const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+  camera.position.set(0, 0, 5);
+
+  const pmremGenerator = new THREE.PMREMGenerator(renderer);
+  pmremGenerator.compileEquirectangularShader();
+  scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+  
+  const light = new THREE.DirectionalLight(0xffffff, 1.0);
+  light.position.set(2, 2, 2);
+  scene.add(light);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(ambientLight);
+
+  let modelGroup = new THREE.Group();
+  scene.add(modelGroup);
+
+  const activeVideos = [];
+  const texture = createTextureFn();
+  if (texture && texture.userData && texture.userData.video) {
+    activeVideos.push(texture.userData.video);
+  }
+
+  gltfLoader.load(modelUrl, (gltf) => {
+    const model = gltf.scene;
+
+    const bbox = new THREE.Box3().setFromObject(model);
+    const size = new THREE.Vector3();
+    bbox.getSize(size);
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const scaleFactor = targetSize / (maxDim || 1);
+    model.scale.setScalar(scaleFactor);
+
+    bbox.setFromObject(model);
+    const center = new THREE.Vector3();
+    bbox.getCenter(center);
+    model.position.x = -center.x;
+    model.position.y = -center.y;
+    model.position.z = -center.z;
+
+    const modelWrapper = new THREE.Group();
+    modelWrapper.add(model);
+    if (options.rotateX !== undefined) modelWrapper.rotation.x = options.rotateX;
+    if (options.rotateY !== undefined) modelWrapper.rotation.y = options.rotateY;
+    if (options.rotateZ !== undefined) modelWrapper.rotation.z = options.rotateZ;
+    if (options.positionY !== undefined) modelWrapper.position.y = options.positionY;
+    if (options.positionZ !== undefined) modelWrapper.position.z = options.positionZ;
+    modelGroup.add(modelWrapper);
+
+    if (options.glowColor) {
+      const underGlow = new THREE.PointLight(options.glowColor, 0.6, 10);
+      underGlow.position.set(0, -3, 2);
+      scene.add(underGlow);
+    }
+
+    if (options.onModelLoaded) {
+      options.onModelLoaded(modelGroup, model);
+    }
+
+    model.traverse((child) => {
+      if (child.isMesh && child.material) {
+        child.material.envMapIntensity = 0.3;
+        if (child.material.roughness !== undefined) {
+          child.material.roughness = Math.max(child.material.roughness, 0.35);
+        }
+        
+        // Force depth testing to prevent back-face elements from bleeding through to the front
+        child.material.depthTest = true;
+        child.material.depthWrite = true;
+        child.material.needsUpdate = true;
+      }
+
+      if (child.isMesh) {
+        const name = child.name.toLowerCase();
+        const matName = child.material && child.material.name ? child.material.name.toLowerCase() : '';
+        
+        const isScreen = 
+          name.includes('screen') || name.includes('display') || name.includes('lcd') ||
+          (name.includes('scr_0') && !name.includes('glass')) || // iPhone screen mesh name (object.010_scr_0)
+          name === 'tftbkkzhxqpkrgc' || // Macbook screen mesh name
+          name === 'auxuzfpidyyvcpo' || // iPad screen mesh name
+          matName === 'hlqwfcapwzetdqy' || // Macbook screen material name
+          matName === 'hlumgtgdbnvpsa' ||   // iPad screen material name
+          matName === 'material_10';       // Pizza3 iPhone screen material name
+
+        if (isScreen) {
+          console.log(`[3D Setup] Applying texture to screen mesh: "${child.name}" with material: "${child.material.name}"`);
+          child.material = new THREE.MeshBasicMaterial({
+            map: texture,
+            color: 0xffffff,
+            depthTest: true,
+            depthWrite: true,
+            transparent: false
+          });
+          child.material.needsUpdate = true;
+        } else if (matName === 'scene_-_root') {
+          // This is the original iPhone model which is a single unified mesh using a single material!
+          // We draw the video onto the screen region of its original texture atlas via a 2D canvas,
+          // so the rest of the phone body doesn't get overwritten with the video.
+          console.log(`[3D Setup] Intercepting texture atlas for unified material: "${child.material.name}"`);
+          if (child.material.map && child.material.map.image) {
+            const originalImage = child.material.map.image;
+            const videoTexture = createIphoneVideoTexture('/video/mobile-demo.mp4', originalImage, canvasId);
+            child.material.map = videoTexture;
+            if (videoTexture && videoTexture.userData && videoTexture.userData.video) {
+              activeVideos.push(videoTexture.userData.video);
+            }
+          }
+          child.material.roughness = 0.4;
+          child.material.metalness = 0.8;
+          child.material.needsUpdate = true;
+        }
+      }
+    });
+  });
+
+  const resizeObserver = new ResizeObserver(() => {
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    if(width === 0 || height === 0) return;
+    camera.aspect = width / height;
+    
+    // Lock horizontal FOV in portrait to prevent models from being clipped on mobile/narrow screens
+    if (width < height) {
+      const defaultFov = 45;
+      const radFov = (defaultFov * Math.PI) / 180;
+      const halfHFit = Math.tan(radFov / 2);
+      camera.fov = (2 * Math.atan(halfHFit / camera.aspect) * 180) / Math.PI;
+    } else {
+      camera.fov = 45;
+    }
+    
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height, false);
+  });
+  resizeObserver.observe(canvas);
+
+  if (!options.skipScrollTrigger) {
+    ScrollTrigger.create({
+      trigger: canvas.closest('section') || canvas.parentElement,
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: 1,
+      onUpdate: (self) => {
+        modelGroup.rotation.y = (self.progress - 0.5) * Math.PI * 0.8;
+        modelGroup.rotation.x = (self.progress - 0.5) * 0.4;
+      }
+    });
+  }
+
+  let isVisible = true;
+  let isAnimating = true;
+  const targetElement = canvas.closest('section') || canvas;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      isVisible = entry.isIntersecting;
+      
+      // Control video playback based on visibility
+      activeVideos.forEach(video => {
+        if (isVisible) {
+          video.play().catch(e => console.warn("Device video resume failed:", e));
+        } else {
+          video.pause();
+        }
+      });
+
+      if (isVisible && !isAnimating) {
+        isAnimating = true;
+        render();
+      }
+    });
+  }, { threshold: 0 });
+  observer.observe(targetElement);
+
+  // ── Per-instance mouse-tilt state ──────────────────────────────────────
+  let mouseTargetX = 0, mouseTargetY = 0;
+  let mouseCurrX   = 0, mouseCurrY   = 0;
+
+  if (options.mouseTracking) {
+    const trackEl = canvas.parentElement || canvas;
+
+    trackEl.addEventListener('mousemove', (e) => {
+      const rect = trackEl.getBoundingClientRect();
+      // Normalise to -1 … +1 relative to the element centre
+      mouseTargetX = ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+      mouseTargetY = ((e.clientY - rect.top)  / rect.height) * 2 - 1;
+    });
+
+    // On leave, ease back to neutral
+    trackEl.addEventListener('mouseleave', () => {
+      mouseTargetX = 0;
+      mouseTargetY = 0;
+    });
+  }
+  // ───────────────────────────────────────────────────────────────────────
+
+  let lastRenderTime = 0;
+  const FPS_INTERVAL = 1000 / 30; // 30 FPS cap
+
+  function render(now) {
+    if (!isVisible) {
+      isAnimating = false;
+      return;
+    }
+    requestAnimationFrame(render);
+    const timestamp = now || performance.now();
+    if (timestamp - lastRenderTime < FPS_INTERVAL) return;
+    lastRenderTime = timestamp;
+
+    // Smooth mouse-driven tilt (lerp factor 0.06 → silky, not snappy)
+    if (options.mouseTracking) {
+      mouseCurrX += (mouseTargetX - mouseCurrX) * 0.06;
+      mouseCurrY += (mouseTargetY - mouseCurrY) * 0.06;
+      // Horizontal mouse → rotate around Y; vertical mouse → subtle X tilt
+      modelGroup.rotation.y = mouseCurrX *  0.35;
+      modelGroup.rotation.x = mouseCurrY * -0.18;
+    }
+
+    renderer.render(scene, camera);
+  }
+  render();
+}
+
+// Initialize iPad and iPhone in Hero section
+initDevice('ipad-canvas', '/models/ipad_pro_13_silver_m4.glb', 3.3, () => createVideoTexture('/video/tablet-demo.mp4', -Math.PI / 2, 1.15), { rotateX: Math.PI / 2 });
+
+initDevice('iphone-canvas', '/models/iphone_16_pro_max.glb', 3.8, () => null, { rotateY: 0.26, rotateZ: -0.09 });
+
+// Initialize Laptop, iPad and iPhone in Showcase ("One platform, every screen") section
+// Each device plays the same looping video as its dedicated hero section
+initDevice(
+  'showcase-laptop-canvas',
+  '/models/macbook_pro_14_inch_M5.glb',
+  3.2,
+  () => createVideoTexture('/video/laptop-demo.mp4'),
+  { rotateY: 0.22, skipScrollTrigger: true, mouseTracking: true }
+);
+initDevice(
+  'showcase-ipad-canvas',
+  '/models/ipad_pro_13_silver_m4.glb',
+  3.6,
+  () => createVideoTexture('/video/tablet-demo.mp4', -Math.PI / 2, 1.15),
+  { rotateX: Math.PI / 2, rotateY: -0.12, skipScrollTrigger: true, mouseTracking: true }
+);
+initDevice(
+  'showcase-iphone-canvas',
+  '/models/iphone_16_pro_max.glb',
+  4.5,
+  () => null,   // iPhone auto-applies mobile-demo.mp4 via scene_-_root material detection
+  { rotateY: -0.22, rotateZ: -0.05, skipScrollTrigger: true, mouseTracking: true }
+);
+
+// Click ripple effect for Digital Serenity background
+const heroPhotoWrapper = document.getElementById('hero-photo-wrapper');
+if (heroPhotoWrapper) {
+  heroPhotoWrapper.addEventListener('click', (e) => {
+    const ripple = document.createElement('div');
+    ripple.className = 'ripple-effect';
+    ripple.style.left = `${e.clientX}px`;
+    ripple.style.top = `${e.clientY}px`;
+    document.body.appendChild(ripple);
+    
+    // Auto cleanup after 1 second
+    setTimeout(() => {
+      ripple.remove();
+    }, 1000);
+  });
+}
+
+// ==========================================================================
+// 11. Stats Counters and Reveal Animations for New Sections
+// ==========================================================================
+const counters = document.querySelectorAll('.stats-number');
+counters.forEach(counter => {
+  const target = parseInt(counter.getAttribute('data-target'));
+  if (isNaN(target)) return;
+  
+  const countObj = { val: 0 };
+  gsap.to(countObj, {
+    val: target,
+    duration: 2.2,
+    ease: 'power2.out',
+    scrollTrigger: {
+      trigger: '#stats-section',
+      start: 'top 80%',
+      toggleActions: 'play none none none'
+    },
+    onUpdate: () => {
+      if (counter.id === 'counter-visibility') {
+        counter.innerText = Math.floor(countObj.val) + '%';
+      } else {
+        counter.innerText = Math.floor(countObj.val);
+      }
+    }
+  });
+});
+
+// Reveal animations for new sections
+const revealSections = [
+  { selector: '.mid-statement-section', y: 30 },
+  { selector: '.prob-card', x: -50 },
+  { selector: '.sol-card', x: 50 },
+  { selector: '.feature-card', y: 40, stagger: 0.08 },
+  { selector: '.founder-container', y: 40 },
+  { selector: '.before-footer-section', y: 30 }
+];
+
+revealSections.forEach(section => {
+  const elements = document.querySelectorAll(section.selector);
+  if (elements.length === 0) return;
+  
+  const animConfig = {
+    opacity: 1,
+    duration: 1.0,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: elements[0].closest('section') || elements[0],
+      start: 'top 85%',
+      toggleActions: 'play none none none'
+    }
+  };
+  
+  if (section.y !== undefined) {
+    gsap.set(elements, { opacity: 0, y: section.y });
+    animConfig.y = 0;
+  } else if (section.x !== undefined) {
+    gsap.set(elements, { opacity: 0, x: section.x });
+    animConfig.x = 0;
+  }
+  
+  if (section.stagger !== undefined) {
+    animConfig.stagger = section.stagger;
+  }
+  
+  gsap.to(elements, animConfig);
+});
+
+// ==========================================================================
+// 12. Rotating Text Subheadline Animation (Dynamic Width Box Style)
+// ==========================================================================
+function initRotatingText() {
+  const items = document.querySelectorAll('.rotating-text-item');
+  const wrapper = document.querySelector('.rotating-text-wrapper');
+  if (items.length === 0 || !wrapper) return;
+
+  // Split each item's text into letters
+  items.forEach(item => {
+    const text = item.textContent.trim();
+    const words = text.split(" ");
+    item.innerHTML = ""; // Clear existing text
+    
+    words.forEach((word, wordIndex) => {
+      const wordSpan = document.createElement("span");
+      wordSpan.className = "flip-word";
+      wordSpan.style.display = "inline-block";
+      wordSpan.style.whiteSpace = "nowrap";
+      
+      const letters = word.split("");
+      letters.forEach((letter) => {
+        const letterSpan = document.createElement("span");
+        letterSpan.className = "flip-letter";
+        letterSpan.style.display = "inline-block";
+        letterSpan.textContent = letter;
+        wordSpan.appendChild(letterSpan);
+      });
+      
+      item.appendChild(wordSpan);
+      
+      // Add non-breaking space between words
+      if (wordIndex < words.length - 1) {
+        const spaceSpan = document.createElement("span");
+        spaceSpan.className = "flip-space";
+        spaceSpan.style.display = "inline-block";
+        spaceSpan.innerHTML = "&nbsp;";
+        item.appendChild(spaceSpan);
+      }
+    });
+  });
+
+  let currentIndex = 0;
+
+  // Helper to adjust wrapper width dynamically to fit the text
+  const adjustWrapperWidth = (element) => {
+    if (element) {
+      wrapper.style.width = `${element.offsetWidth + 24}px`;
+    }
+  };
+
+  // Set initial states
+  items.forEach((item, index) => {
+    if (index === currentIndex) {
+      item.classList.add('active');
+      gsap.set(item, { opacity: 1, y: 0, x: 0, scale: 1, filter: "blur(0px)" });
+      const letters = item.querySelectorAll('.flip-letter');
+      gsap.set(letters, { opacity: 1, y: 0, filter: "blur(0px)" });
+    } else {
+      item.classList.remove('active');
+      gsap.set(item, { opacity: 0, y: 10, x: 0, scale: 1, filter: "blur(8px)" });
+      const letters = item.querySelectorAll('.flip-letter');
+      gsap.set(letters, { opacity: 0, y: 10, filter: "blur(8px)" });
+    }
+  });
+
+  // Adjust wrapper width initially
+  setTimeout(() => {
+    const activeItem = items[currentIndex];
+    if (activeItem) adjustWrapperWidth(activeItem);
+  }, 200);
+
+  setInterval(() => {
+    const current = items[currentIndex];
+    const nextIndex = (currentIndex + 1) % items.length;
+    const next = items[nextIndex];
+
+    // 1. Animate current word out (Aceternity style)
+    gsap.to(current, {
+      opacity: 0,
+      y: -40,
+      x: 40,
+      scale: 2,
+      filter: "blur(8px)",
+      duration: 0.6,
+      ease: "power2.inOut",
+      onComplete: () => {
+        current.classList.remove('active');
+        // Reset properties so it starts from initial position next time
+        gsap.set(current, { opacity: 0, y: 10, x: 0, scale: 1, filter: "blur(8px)" });
+      }
+    });
+
+    // 2. Prepare next word (entrance)
+    gsap.set(next, { 
+      opacity: 1, 
+      y: 10, 
+      x: 0, 
+      scale: 1, 
+      filter: "blur(0px)" 
+    });
+    
+    const nextLetters = next.querySelectorAll('.flip-letter');
+    gsap.set(nextLetters, { 
+      opacity: 0, 
+      y: 10, 
+      filter: "blur(8px)" 
+    });
+
+    next.classList.add('active');
+    adjustWrapperWidth(next);
+
+    // 3. Animate next word container (spring) and its letters (staggered)
+    gsap.to(next, {
+      y: 0,
+      duration: 0.5,
+      ease: "back.out(1.7)"
+    });
+
+    nextLetters.forEach((letter) => {
+      const parentWord = letter.closest('.flip-word');
+      const wordsArray = Array.from(next.querySelectorAll('.flip-word'));
+      const wordIdx = wordsArray.indexOf(parentWord);
+      
+      const lettersInWord = Array.from(parentWord.querySelectorAll('.flip-letter'));
+      const letterInWordIdx = lettersInWord.indexOf(letter);
+
+      const delay = wordIdx * 0.3 + letterInWordIdx * 0.05;
+
+      gsap.to(letter, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        duration: 0.3,
+        delay: delay,
+        ease: "power2.out"
+      });
+    });
+
+    currentIndex = nextIndex;
+  }, 3000); // cycle words every 3 seconds
+}
+
+// Start rotating text
+initRotatingText();
+
+// Dismiss cinematic preloader on load
+window.addEventListener('load', () => {
+  const preloader = document.getElementById('cinematic-preloader');
+  if (preloader) {
+    preloader.classList.add('fade-out');
+  }
+});
+
+// Safety fallback timeout
+setTimeout(() => {
+  const preloader = document.getElementById('cinematic-preloader');
+  if (preloader && !preloader.classList.contains('fade-out')) {
+    preloader.classList.add('fade-out');
+  }
+}, 4000);
+
+// ==========================================================================
+// 13. Audio UI Controller Integration
+// ==========================================================================
+function initAudioUI() {
+  const soundBtn = document.getElementById('sound-control-btn');
+  if (!soundBtn) return;
+
+  const audioSynth = window.MediaHive_AudioSynth;
+
+  // 1. Silent degradation check: hide toggle if audio engine is not supported or disabled
+  if (!audioSynth || !audioSynth.isSupported) {
+    soundBtn.style.display = 'none';
+    console.log("[Audio UI] Audio synth not supported/disabled. Hiding sound toggle.");
+    return;
+  }
+
+  // 2. Initial state sync
+  const updateUI = (isMuted) => {
+    if (isMuted) {
+      soundBtn.classList.add('muted');
+      soundBtn.setAttribute('aria-pressed', 'false');
+      soundBtn.setAttribute('aria-label', 'Unmute Sound Effects');
+    } else {
+      soundBtn.classList.remove('muted');
+      soundBtn.setAttribute('aria-pressed', 'true');
+      soundBtn.setAttribute('aria-label', 'Mute Sound Effects');
+    }
+  };
+
+  // Sync initial UI state with synth state
+  updateUI(audioSynth.isMuted);
+
+  // 3. Toggle click handler
+  const handleToggle = (e) => {
+    e.preventDefault();
+    audioSynth.toggleMute();
+    audioSynth.playUIFeedback('click');
+  };
+
+  soundBtn.addEventListener('click', handleToggle);
+
+  // Keyboard navigation (Enter / Space)
+  soundBtn.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      audioSynth.toggleMute();
+      audioSynth.playUIFeedback('click');
+    }
+  });
+
+  // 4. Global state sync listener
+  window.addEventListener('mediahive-audio-toggle', (e) => {
+    updateUI(e.detail.isMuted);
+  });
+}
+
+// Run Audio UI Initialization
+initAudioUI();
+
+// ==========================================================================
+// 14. Interactive Audio Bindings & Settle Filters
+// ==========================================================================
+function initInteractiveAudio() {
+  const audioSynth = window.MediaHive_AudioSynth;
+  if (!audioSynth || !audioSynth.isSupported) return;
+
+  // 1. Page-wide click/pointerdown to resume suspended AudioContext
+  const resumeAudioOnGesture = () => {
+    audioSynth.resumeContext();
+    document.removeEventListener('pointerdown', resumeAudioOnGesture);
+    document.removeEventListener('click', resumeAudioOnGesture);
+  };
+  document.addEventListener('pointerdown', resumeAudioOnGesture);
+  document.addEventListener('click', resumeAudioOnGesture);
+
+  // 2. High-velocity scroll check on Lenis
+  if (lenis) {
+    lenis.on('scroll', (e) => {
+      // e.velocity is typically px/ms. If it exceeds 15px/ms, suppress scroll-based sounds
+      if (Math.abs(e.velocity) > 15) {
+        window.MediaHive_AudioConfig.isJumping = true;
+        clearTimeout(window.MediaHive_AudioConfig.settleTimeout);
+        window.MediaHive_AudioConfig.settleTimeout = setTimeout(() => {
+          window.MediaHive_AudioConfig.isJumping = false;
+        }, 150);
+      }
+    });
+
+    // 3. Programmatic scroll event suppression for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          window.MediaHive_AudioConfig.isJumping = true;
+          lenis.scrollTo(targetEl, {
+            duration: 1.2,
+            onComplete: () => {
+              setTimeout(() => {
+                window.MediaHive_AudioConfig.isJumping = false;
+              }, 100);
+            }
+          });
+        }
+      });
+    });
+  }
+
+  // 4. Tab Visibility API (Fade out/in master gain)
+  document.addEventListener('visibilitychange', () => {
+    const now = audioSynth.ctx.currentTime;
+    if (document.hidden) {
+      audioSynth.masterGain.gain.setValueAtTime(audioSynth.masterGain.gain.value, now);
+      audioSynth.masterGain.gain.linearRampToValueAtTime(0, now + 0.2);
+    } else {
+      if (!audioSynth.isMuted) {
+        audioSynth.masterGain.gain.setValueAtTime(audioSynth.masterGain.gain.value, now);
+        audioSynth.masterGain.gain.linearRampToValueAtTime(0.8, now + 0.2);
+      }
+    }
+  });
+
+  // 5. Interactive UI micro-SFX (Hover & Click)
+  const interactiveSelector = '.cta-btn, .main-nav a, .bento-card, .nav-btn-secondary, .nav-btn-primary, .use-case-card, .footer-links a';
+  const interactiveEls = document.querySelectorAll(interactiveSelector);
+  
+  interactiveEls.forEach(el => {
+    el.addEventListener('pointerenter', () => {
+      if (!audioSynth.isMuted) {
+        audioSynth.playUIFeedback('hover');
+      }
+    });
+
+    el.addEventListener('pointerdown', () => {
+      if (!audioSynth.isMuted) {
+        audioSynth.playUIFeedback('click');
+      }
+    });
+  });
+}
+
+// Run Interactive Audio bindings
+initInteractiveAudio();

@@ -1,4 +1,4 @@
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { vipEmbeddings } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { withTenantDrizzle } from '@/lib/tenantQuery';
@@ -53,6 +53,7 @@ export async function enrollVIP(
     const encryptedEmbedding = encryptData(JSON.stringify(embedding));
 
     // Store in database
+    const db = await getDb();
     const [result] = await db
       .insert(vipEmbeddings)
       .values({

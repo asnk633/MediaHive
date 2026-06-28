@@ -2,7 +2,7 @@
 // src/server/ai/service.ts
 // AI Service for institutional assistance
 
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { tasks, events, users, institutions } from '@/db/schema';
 import { eq, and, gte, lte } from 'drizzle-orm';
 
@@ -89,6 +89,7 @@ export class AIService {
       const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       
       // Get tasks completed this week
+      const db = await getDb();
       const completedTasks = await db
         .select()
         .from(tasks)

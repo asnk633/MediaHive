@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { attachments } from '@/db/schema';
 import { verifyUser } from '@/lib/verifyUser';
 import { writeFile } from 'fs/promises';

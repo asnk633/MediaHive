@@ -3,7 +3,7 @@
 // Equipment Bookings API - GET bookings & POST new booking with multi-unit conflict check
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { equipmentBookings } from '@/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { verifyUser } from '@/lib/server/server-utils';
@@ -28,6 +28,8 @@ export async function GET(req: NextRequest) {
         const taskId = searchParams.get('task_id');
         const start = searchParams.get('start');
         const end = searchParams.get('end');
+
+        const db = await getDb();
 
         let query = db.select().from(equipmentBookings);
         const conditions = [];
@@ -82,6 +84,8 @@ export async function POST(req: NextRequest) {
         }
 
         const unitsReq = Math.max(1, parseInt(units_requested, 10) || 1);
+
+        const db = await getDb();
 
         // --- Fetch total units for this equipment item from inventory ---
         const inventoryResult = await db.execute(

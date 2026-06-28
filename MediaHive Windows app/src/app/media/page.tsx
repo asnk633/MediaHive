@@ -130,6 +130,23 @@ export default function MediaPage() {
     }
   }, [user, authLoading]);
 
+  // Handle global quick create "?create=true" query parameter offline-safe
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const checkQuery = () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("create") === "true") {
+        fileInputRef.current?.click();
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    };
+
+    checkQuery();
+    const interval = setInterval(checkQuery, 250);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files || []);
     if (!selected.length || !user) return;

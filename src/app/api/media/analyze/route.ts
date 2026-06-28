@@ -2,7 +2,7 @@
 // Media Quality Analyzer API endpoint
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { mediaReports } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { config } from '@/lib/config';
@@ -122,6 +122,8 @@ export async function POST(request: NextRequest) {
     // Analyze media quality
     const qualityReport = await analyzeMediaQuality(tempFilePath, file.type);
 
+    const db = await getDb();
+
     // Save report to database
     const [report] = await db
       .insert(mediaReports)
@@ -197,6 +199,8 @@ export async function GET(
       console.error(`[GET /api/media/analyze] ❌ Missing tenant context for user: ${user.uid}`);
       return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
     }
+
+    const db = await getDb();
 
     const reports = await db
       .select()

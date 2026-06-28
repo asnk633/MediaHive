@@ -93,7 +93,7 @@ export default function BottomNavigation() {
             minHeight: 'var(--bottom-nav-height, 4.5rem)',
             paddingBottom: 'env(safe-area-inset-bottom)',
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr) 72px repeat(3, 1fr)',
+            gridTemplateColumns: 'repeat(3, 1fr) clamp(56px, 12vw, 72px) repeat(3, 1fr)',
             alignItems: 'center',
             justifyItems: 'center'
           }}

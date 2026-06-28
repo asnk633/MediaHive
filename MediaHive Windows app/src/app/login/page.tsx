@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useIsTauri } from "@/lib/hooks/useIsTauri";
+import { useWindow } from "@/contexts/WindowContext";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionValueEvent, animate } from "framer-motion";
 import {
   CheckSquare, Activity, Film, FolderOpen, MessageSquare,
@@ -9,8 +11,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { supabase } from "@/lib/supabaseClient";
-import { ShootingStars } from "@/components/ui/shooting-stars";
-import { StarsBackground } from "@/components/ui/stars-background";
+import { UnifiedStars } from "@/components/ui/unified-stars";
 import { EtheralShadow } from "@/components/ui/etheral-shadow";
 import { getDriveImageUrl } from "@/lib/driveUtils";
 
@@ -335,25 +336,14 @@ const FLOATING_ICONS: FloatingIconConfig[] = [
   }
 ];
 
-const buttonParticles = [
-  { x: 10, y: 20, duration: 1.5, delay: 0.1, size: 0.2, originX: 400, originY: 300 },
-  { x: 80, y: 10, duration: 2.1, delay: 0.3, size: 0.25, originX: -300, originY: 500 },
-  { x: 50, y: 80, duration: 1.8, delay: 0.5, size: 0.15, originX: 200, originY: -400 },
-  { x: 20, y: 70, duration: 1.2, delay: 0.2, size: 0.3, originX: -500, originY: -300 },
-  { x: 90, y: 60, duration: 2.5, delay: 0.4, size: 0.2, originX: 600, originY: 400 },
-  { x: 30, y: 40, duration: 1.7, delay: 0.1, size: 0.18, originX: -400, originY: 200 },
-  { x: 70, y: 30, duration: 2.3, delay: 0.6, size: 0.22, originX: 500, originY: -500 },
-  { x: 40, y: 90, duration: 1.4, delay: 0.3, size: 0.28, originX: 300, originY: 600 },
-  { x: 60, y: 50, duration: 1.9, delay: 0.2, size: 0.16, originX: -200, originY: -200 },
-  { x: 85, y: 85, duration: 2.2, delay: 0.7, size: 0.24, originX: 450, originY: -450 },
-];
 
 
 // Single floating, cursor-repelling coin component
 const Icon = ({
   mouseX,
   mouseY,
-  mousePos,
+  parallaxMX,
+  parallaxMY,
   iconData,
   index,
   showLoginForm,
@@ -365,7 +355,8 @@ const Icon = ({
 }: {
   mouseX: React.MutableRefObject<number>;
   mouseY: React.MutableRefObject<number>;
-  mousePos: { x: number; y: number };
+  parallaxMX: any;
+  parallaxMY: any;
   iconData: FloatingIconConfig;
   index: number;
   showLoginForm: boolean;
@@ -434,8 +425,8 @@ const Icon = ({
   const coinSize = 82 * scaleFactor * (iconData.isBackground ? 0.6 : 1.0);
  
   // 3D parallax displacement: foreground shifts by up to 10px, background by 4px (disabled on sign-in page to keep orbits perfectly stable)
-  const parallaxX = showLoginForm ? 0 : mousePos.x * (iconData.isBackground ? 4 : 10) * scaleFactor;
-  const parallaxY = showLoginForm ? 0 : mousePos.y * (iconData.isBackground ? 4 : 10) * scaleFactor;
+  const parallaxX = useTransform(parallaxMX, (v: number) => showLoginForm ? 0 : v * (iconData.isBackground ? 4 : 10) * scaleFactor);
+  const parallaxY = useTransform(parallaxMY, (v: number) => showLoginForm ? 0 : v * (iconData.isBackground ? 4 : 10) * scaleFactor);
 
   // Smoothly colorize the coin border based on mouse proximity
   const borderColor = useTransform(
@@ -456,13 +447,14 @@ const Icon = ({
 
 
   return (
-    <div
+    <motion.div
       ref={ref}
       style={{
         position: "absolute",
         left: 0,
         top: 0,
-        transform: `translate3d(${parallaxX}px, ${parallaxY}px, 0)`,
+        x: parallaxX,
+        y: parallaxY,
         zIndex: isHovered ? 40 : iconData.isBackground ? 5 : 10,
         marginLeft: -coinSize / 2,
         marginTop: -coinSize / 2,
@@ -654,8 +646,30 @@ const Icon = ({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
+};
+
+const boxTransition = {
+  type: "spring" as const,
+  stiffness: 110,
+  damping: 18,
+  mass: 1.0,
+};
+
+const box1Variants = {
+  collapsed: { width: 140, height: 140, top: -70, right: -70, borderRadius: "50%", transition: boxTransition },
+  expanded: { width: "100%", height: "100%", top: 0, right: 0, borderRadius: "16px", transition: boxTransition },
+};
+
+const box2Variants = {
+  collapsed: { width: 180, height: 180, top: -90, right: -90, borderRadius: "50%", transition: boxTransition },
+  expanded: { width: "100%", height: "100%", top: 0, right: 0, borderRadius: "16px", transition: boxTransition },
+};
+
+const box3Variants = {
+  collapsed: { width: 220, height: 220, top: -110, right: -110, borderRadius: "50%", transition: boxTransition },
+  expanded: { width: "100%", height: "100%", top: 0, right: 0, borderRadius: "16px", transition: boxTransition },
 };
 
 export default function LoginPage() {
@@ -680,6 +694,9 @@ export default function LoginPage() {
 
   // Fetch real user profiles from Supabase to construct orbits on sign-in page
   useEffect(() => {
+    const controller = new AbortController();
+    let cancelled = false;
+
     const fetchRealUsers = async () => {
       try {
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -692,7 +709,8 @@ export default function LoginPage() {
           headers: {
             apikey: supabaseKey,
             Authorization: `Bearer ${supabaseKey}`
-          }
+          },
+          signal: controller.signal
         });
 
         if (!res.ok) {
@@ -700,6 +718,7 @@ export default function LoginPage() {
         }
 
         const data = await res.json();
+        if (cancelled) return;
         if (data) {
           const profileColors = [
             { color: "#14b8a6", rgb: "20,184,166" }, // Teal
@@ -736,22 +755,19 @@ export default function LoginPage() {
           setUserCoins(mapped);
         }
       } catch (err: any) {
+        if (err.name === 'AbortError' || cancelled) return;
         console.error("Error fetching real users for login screen orbits:", err);
-        setDbError(err.message || String(err));
+        if (!cancelled) setDbError(err.message || String(err));
       }
     };
     fetchRealUsers();
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   }, []);
   
-  // Track transition state to enable layoutId only during transitions, preventing orbit jitter
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  useEffect(() => {
-    setIsTransitioning(true);
-    const timer = setTimeout(() => {
-      setIsTransitioning(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [showLoginForm]);
+
 
   const [authMode, setAuthMode] = useState<"gate" | "login" | "signup" | "forgot">("gate");
   const [email, setEmail] = useState("");
@@ -766,72 +782,13 @@ export default function LoginPage() {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [dbError, setDbError] = useState<string | null>(null);
 
-  const boxTransition = {
-    type: "spring" as const,
-    stiffness: 110,
-    damping: 18,
-    mass: 1.0,
-  };
-
-  const box1Variants = {
-    collapsed: {
-      width: 140,
-      height: 140,
-      top: -70,
-      right: -70,
-      borderRadius: "50%",
-      transition: boxTransition,
-    },
-    expanded: {
-      width: "100%",
-      height: "100%",
-      top: 0,
-      right: 0,
-      borderRadius: "16px",
-      transition: boxTransition,
-    },
-  };
-
-  const box2Variants = {
-    collapsed: {
-      width: 180,
-      height: 180,
-      top: -90,
-      right: -90,
-      borderRadius: "50%",
-      transition: boxTransition,
-    },
-    expanded: {
-      width: "100%",
-      height: "100%",
-      top: 0,
-      right: 0,
-      borderRadius: "16px",
-      transition: boxTransition,
-    },
-  };
-
-  const box3Variants = {
-    collapsed: {
-      width: 220,
-      height: 220,
-      top: -110,
-      right: -110,
-      borderRadius: "50%",
-      transition: boxTransition,
-    },
-    expanded: {
-      width: "100%",
-      height: "100%",
-      top: 0,
-      right: 0,
-      borderRadius: "16px",
-      transition: boxTransition,
-    },
-  };
+  // variants moved outside of component
   
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const parallaxMX = useMotionValue(0);
+  const parallaxMY = useMotionValue(0);
   const [windowSize, setWindowSize] = useState({ w: 1920, h: 1080 });
+  const isDesktopApp = useIsTauri();
+  const { isMaximized } = useWindow();
 
   const mouseX = useRef(0);
   const mouseY = useRef(0);
@@ -845,25 +802,26 @@ export default function LoginPage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const handleResize = () => {
-      setWindowSize({ w: window.innerWidth, h: window.innerHeight });
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      setWindowSize({ w, h });
     };
     window.addEventListener("resize", handleResize);
     handleResize();
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [showLoginForm]);
 
   const handleGlobalMouseMove = (e: React.MouseEvent) => {
     mouseX.current = e.clientX;
     mouseY.current = e.clientY;
-    
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    setMousePos({ x, y });
+    const w = windowSize.w || 1920;
+    const h = windowSize.h || 1080;
+    parallaxMX.set(e.clientX / w - 0.5);
+    parallaxMY.set(e.clientY / h - 0.5);
   };
 
   const handleMouseLeave = () => {
-    setMousePos({ x: 0, y: 0 });
+    // 
   };
 
   const renderOrbit = (
@@ -875,28 +833,37 @@ export default function LoginPage() {
   ) => {
     const isClockwise = direction === "clockwise";
     return (
-      <motion.div
+      <div
         key={`orbit-${orbitIndex}`}
-        initial={{ opacity: 0, rotate: 0 }}
-        animate={{ 
-          opacity: 1,
-          rotate: isClockwise ? 360 : -360
-        }}
-        transition={{ 
-          opacity: { duration: 1.5, delay: 0.2 * orbitIndex },
-          rotate: { duration: duration, repeat: Infinity, ease: "linear" }
-        }}
-        className="absolute border border-dashed border-white/5 rounded-full flex items-center justify-center pointer-events-none"
+        className="absolute flex items-center justify-center pointer-events-none"
         style={{
           width: radius * 2,
           height: radius * 2,
           left: "50%",
           top: "50%",
-          x: "-50%",
-          y: "-50%",
+          transform: "translate(-50%, -50%)",
           zIndex: 1,
         }}
       >
+        {/* [Optimization] Static border layer to prevent massive rotating GPU textures.
+            A 2000x2000px dashed border requires thousands of vector segment calculations and 
+            causes Chromium DWM exhaustion. We use a faint solid border instead. */}
+        <div className="absolute inset-0 border border-solid border-white/5 rounded-full pointer-events-none" />
+
+        {/* Rotating inner layer for the coins only - forced to 0x0 so the GPU texture size is 0 bytes */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ 
+            opacity: 1,
+            rotate: isClockwise ? 360 : -360 
+          }}
+          transition={{ 
+            opacity: { duration: 1.5, delay: 0.2 * orbitIndex },
+            rotate: { duration: duration, repeat: Infinity, ease: "linear" } 
+          }}
+          className="absolute pointer-events-none"
+          style={{ width: 0, height: 0, left: "50%", top: "50%" }}
+        >
         {coins.map((iconData, i) => {
           const angle = (360 / coins.length) * i;
           return (
@@ -904,8 +871,6 @@ export default function LoginPage() {
               key={iconData.id}
               className="absolute pointer-events-auto"
               style={{
-                left: "50%",
-                top: "50%",
                 transform: `translate(-50%, -50%) rotate(${angle}deg) translate(${radius}px) rotate(${-angle}deg)`,
               }}
             >
@@ -921,11 +886,12 @@ export default function LoginPage() {
                   justifyContent: "center",
                 }}
               >
-                <motion.div layoutId={(!showLoginForm || isTransitioning) ? `coin-${iconData.id}` : undefined}>
+                <motion.div layoutId={`coin-${iconData.id}`}>
                   <Icon
                     mouseX={mouseX}
                     mouseY={mouseY}
-                    mousePos={mousePos}
+                    parallaxMX={parallaxMX}
+                    parallaxMY={parallaxMY}
                     iconData={iconData}
                     index={i + orbitIndex * 10}
                     showLoginForm={showLoginForm}
@@ -940,7 +906,8 @@ export default function LoginPage() {
             </div>
           );
         })}
-      </motion.div>
+        </motion.div>
+      </div>
     );
   };
 
@@ -950,6 +917,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
+      setLoading(false);
     } catch (err: any) {
       setError(err.message || "Invalid email or password. Please try again.");
       setLoading(false);
@@ -961,6 +929,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await loginWithGoogle();
+      setLoading(false);
     } catch (err: any) {
       setError(err.message || "Failed to sign in with Google. Please try again.");
       setLoading(false);
@@ -1016,7 +985,7 @@ export default function LoginPage() {
   };
 
   if (!mounted) {
-    return <div className="w-screen h-screen bg-[#030305]" />;
+    return <div className="w-full h-full bg-[#030305]" />;
   }
 
   // When showLoginForm is true, the left panel width is 58.33% of the window width
@@ -1026,8 +995,13 @@ export default function LoginPage() {
   // Scales all text, coin dimensions, and layout distances proportionally in sync
   const scaleFactor = Math.max(Math.min(currentPanelWidth / 1920, windowSize.h / 1080), 0.55);
 
+  // [Optimization] Cap the effective panel width for orbital calculations to prevent 
+  // Chromium GPU compositor layer overflow on 4k/maximized windows. 
+  // A 2560px width creates ~4200x4200px rotating orbit divs, causing severe DWM flickering on Windows.
+  const effectivePanelWidth = Math.min(currentPanelWidth, 1400);
+
   const innerRadius = 370 * scaleFactor;
-  const outerRadius = currentPanelWidth * 0.82;
+  const outerRadius = effectivePanelWidth * 0.82;
   const orbitGap = (outerRadius - innerRadius) / 6;
 
   const getOrbitRadius = (index: number) => {
@@ -1035,23 +1009,35 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-screen h-screen flex overflow-hidden font-sans select-none p-4 bg-[#030305] relative">
-      
-      {/* ── Outer desktop frame border wrapper ── */}
-      <div className="w-full h-full border border-zinc-800/80 rounded-2xl overflow-hidden flex relative shadow-2xl">
+    <div className="login-page-root w-full h-full overflow-hidden font-sans select-none bg-[#030305] relative">
+
+      {/* ── Outer desktop frame — fixed to viewport so height never depends on parent chain ── */}
+      <div
+        className="login-page-frame absolute overflow-hidden flex shadow-2xl rounded-2xl border border-zinc-800/80"
+        style={{
+          top: isDesktopApp ? 36 : 16,
+          left: isMaximized ? 0 : 16,
+          right: isMaximized ? 0 : 16,
+          bottom: isMaximized ? 0 : 16,
+          borderRadius: isMaximized ? 0 : undefined,
+          border: isMaximized ? "none" : undefined,
+          boxShadow: isMaximized ? "none" : undefined,
+          zIndex: 10,
+        }}
+      >
         
         {/* Top desktop window style bar */}
-        <div className="absolute top-0 inset-x-0 h-10 border-b border-white/5 flex items-center justify-between px-6 z-50 pointer-events-none">
-          <span className="text-[10px] text-zinc-500 font-bold tracking-[0.15em] uppercase">MediaHive Desktop v2.1</span>
-        </div>
+        {!isDesktopApp && (
+          <div className="absolute top-0 inset-x-0 h-10 border-b border-white/5 flex items-center justify-between px-6 z-50 pointer-events-none">
+            <span className="text-[10px] text-zinc-500 font-bold tracking-[0.15em] uppercase">MediaHive Desktop v2.1</span>
+          </div>
+        )}
 
-        {/* Dynamic gritty background noise filter */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.06] mix-blend-overlay z-0">
-          <filter id="noiseFilter">
-            <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="4" stitchTiles="stitch" />
-          </filter>
-          <rect width="100%" height="100%" filter="url(#noiseFilter)" />
-        </svg>
+        {/* Dynamic gritty background noise filter (Optimized) */}
+        <div 
+          className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.06] mix-blend-overlay z-0"
+          style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.6%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')", backgroundRepeat: "repeat" }}
+        />
 
         {/* Outer Interaction Wrapper with Ethereal Shadow */}
         <EtheralShadow
@@ -1076,24 +1062,15 @@ export default function LoginPage() {
                 linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
               `,
               backgroundSize: "4px 4px, 40px 40px, 40px 40px",
-              transform: `translate3d(${mousePos.x * 10}px, ${mousePos.y * 10}px, 0)`,
-              transition: "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
             }}
           />
 
           {/* Concentric Orbiting Rings Background (behind centerpiece text, in same Left Panel container to slide with it) */}
-          <motion.div
-            initial={{ width: "100%" }}
-            animate={{
-              width: showLoginForm ? "58.333333%" : "100%",
-            }}
-            transition={{
-              type: "spring",
-              stiffness: 70,
-              damping: 18,
-            }}
-            className="h-full flex items-center justify-center relative overflow-visible z-5"
-            style={{ perspective: 1000 }}
+          <div
+            className={`h-full flex items-center justify-center relative overflow-visible transition-[width] duration-500 ease-out ${
+              showLoginForm ? "w-[58.333333%]" : "w-full"
+            }`}
+            style={{ perspective: 1000, zIndex: 5 }}
           >
             {showLoginForm ? (
               /* Concentric Orbiting Rings (z-index 1, centered at right-edge of Left Panel) */
@@ -1195,11 +1172,12 @@ export default function LoginPage() {
                         transform: `translate(-50%, -50%) translate3d(${nx}px, ${ny}px, 0)`,
                       }}
                     >
-                      <motion.div layoutId={(!showLoginForm || isTransitioning) ? `coin-${iconData.id}` : undefined}>
+                      <motion.div layoutId={`coin-${iconData.id}`}>
                         <Icon
                           mouseX={mouseX}
                           mouseY={mouseY}
-                          mousePos={mousePos}
+                          parallaxMX={parallaxMX}
+                          parallaxMY={parallaxMY}
                           iconData={iconData}
                           index={index}
                           showLoginForm={showLoginForm}
@@ -1358,7 +1336,7 @@ export default function LoginPage() {
                 </motion.div>
               ) : null}
             </AnimatePresence>
-          </motion.div>
+          </div>
 
           {/* ═══════════════════════════════════════════════════════════════
               RIGHT CONTAINER: Sleek tactile glassmorphic form card
@@ -1377,16 +1355,15 @@ export default function LoginPage() {
                   stiffness: 80,
                   damping: 18
                 }}
-                style={{ perspective: 1200, width: "41.666667%", minWidth: "320px" }}
-                className="h-full flex items-center justify-center p-6 lg:p-12 absolute right-0 top-0 bg-[#040406] border-l border-zinc-900/60 z-20 overflow-y-auto"
+                style={{ perspective: 1200, width: "41.666667%", minWidth: "320px", zIndex: 20 }}
+                className="h-full flex items-center justify-center p-6 lg:p-12 absolute right-0 top-0 bg-[#040406] border-l border-zinc-900/60 overflow-y-auto"
               >
                 {/* Subtle mobile ambient glows */}
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(20,184,166,0.04),transparent_60%)] pointer-events-none z-0" />
                 
-                {/* Shooting Stars & Stars Background */}
-                <div className="absolute inset-0 pointer-events-none z-0 opacity-70">
-                  <StarsBackground />
-                  <ShootingStars />
+                {/* Unified Space Background (single canvas, optimized and baked opacity) */}
+                <div className="absolute inset-0 pointer-events-none z-0">
+                  <UnifiedStars />
                 </div>
 
                 {/* Paper Stack Wrapper — cloth physics via keyframes, no ghost DOM layers */}
@@ -1772,16 +1749,6 @@ export default function LoginPage() {
                               </div>
                             </div>
 
-                            <div className="flex items-center gap-2 py-0.5">
-                              <input
-                                type="checkbox"
-                                id="rememberMe"
-                                className="rounded border-white/20 bg-black/20 text-white focus:ring-0 focus:ring-offset-0 w-3 h-3 cursor-pointer"
-                              />
-                              <label htmlFor="rememberMe" className="text-[9px] text-white/70 font-bold uppercase tracking-wider cursor-pointer select-none">
-                                Remember me
-                              </label>
-                            </div>
 
                             <button
                               type="submit"

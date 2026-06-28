@@ -94,6 +94,9 @@ export async function verifyUser(req: Request, options = { strict: true }): Prom
         return null;
     }
 
+    // Validates UUID strings — Supabase profiles.id, tenant_id, and institution_id
+    // are all UUID columns (confirmed via sync_admin_profile.sql / tenant_isolation.sql).
+    // Integer IDs never flow through this function.
     const sanitizeUUID = (val: any) => {
         if (!val || val === 'undefined' || val === 'null' || typeof val !== 'string') return null;
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -124,13 +127,6 @@ export async function verifyUser(req: Request, options = { strict: true }): Prom
         tenant_id: sanitizeUUID(profile.tenant_id),
         tenantId: sanitizeUUID(profile.tenant_id),
     };
-
-    const logMsg = `[${new Date().toISOString()}] Path: ${new URL(req.url).pathname}, User: ${authUser.uid}, Role: ${authUser.role}, Tenant: ${authUser.tenant_id} (${typeof authUser.tenant_id})\n`;
-    try {
-        const fs = require('fs');
-        const path = require('path');
-        fs.appendFileSync(path.join(process.cwd(), 'auth_debug.log'), logMsg);
-    } catch (e) { }
 
     console.log(`[verifyUser] 🏁 Returning user for ${new URL(req.url).pathname}:`, {
         uid: authUser.uid,

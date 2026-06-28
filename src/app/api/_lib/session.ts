@@ -29,14 +29,18 @@ export async function createSession(user: AuthUser): Promise<{ accessToken: stri
   const now = Math.floor(Date.now() / 1000);
   
   // Create access token (short-lived)
-  const accessToken = await new SignJWT({ user })
+  const accessToken = await new SignJWT({
+    sub: String(user.id),
+    role: user.role,
+    tenant_id: user.tenant_id || user.tenantId,
+  })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt(now)
     .setExpirationTime(now + SESSION_MAX_AGE)
     .sign(secretKey);
   
   // Create refresh token (longer-lived)
-  const refreshToken = await new SignJWT({ userId: user.id })
+  const refreshToken = await new SignJWT({ sub: user.id })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt(now)
     .setExpirationTime(now + REFRESH_TOKEN_MAX_AGE)
@@ -52,7 +56,11 @@ export async function verifyAccessToken(token: string): Promise<AuthUser | null>
   try {
     const secretKey = getJwtSecretKey();
     const { payload } = await jwtVerify(token, secretKey);
-    return payload.user as AuthUser;
+    return {
+      id: payload.sub as string,
+      role: payload.role as UserRole,
+      tenant_id: payload.tenant_id as string,
+    } as AuthUser;
   } catch {
     return null;
   }
@@ -61,11 +69,11 @@ export async function verifyAccessToken(token: string): Promise<AuthUser | null>
 /**
  * Verify refresh token
  */
-export async function verifyRefreshToken(token: string): Promise<{ userId: number } | null> {
+export async function verifyRefreshToken(token: string): Promise<{ userId: string } | null> {
   try {
     const secretKey = getJwtSecretKey();
     const { payload } = await jwtVerify(token, secretKey);
-    return { userId: payload.userId as number };
+    return { userId: String(payload.sub) };
   } catch {
     return null;
   }

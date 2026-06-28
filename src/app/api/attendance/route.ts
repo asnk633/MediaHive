@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyUser } from '@/lib/server/server-utils';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { attendance } from '@/db/schema';
 import { eq, and, gte, lte, desc, sql } from 'drizzle-orm';
 import { withTenantDrizzle, validateTenant } from '@/lib/tenantQuery';
@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
         );
       }
 
+      const db = await getDb();
       const record = await db
         .select()
         .from(attendance)

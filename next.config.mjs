@@ -16,6 +16,15 @@ const nextConfig = {
   experimental: {
     proxyClientMaxBodySize: 250 * 1024 * 1024,      // 250MB
   },
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.watchOptions = {
+        ...config.watchOptions,
+        ignored: ['**/node_modules/**', '**/test-results/**'],
+      };
+    }
+    return config;
+  },
 };
 
 // Sentry configuration options
@@ -44,14 +53,14 @@ const sentryConfig = {
   // Hides source maps from visitors
   hideSourceMaps: true,
 
-  // Automatically tree-shake Sentry logger statements to reduce bundle size
-  disableLogger: true,
-
-  // Enables automatic instrumentation of Vercel Cron Monitors.
-  // See the following for more information:
-  // https://docs.sentry.io/product/crons/
-  // https://vercel.com/docs/cron-jobs
-  automaticVercelMonitors: true,
+  webpack: {
+    // Automatically tree-shake Sentry logger statements to reduce bundle size
+    treeshake: {
+      removeDebugLogging: true,
+    },
+    // Enables automatic instrumentation of Vercel Cron Monitors.
+    automaticVercelMonitors: true,
+  },
 
   // Disable Sentry plugins during build in CI if auth token is missing to prevent build failure
   disableServerWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,

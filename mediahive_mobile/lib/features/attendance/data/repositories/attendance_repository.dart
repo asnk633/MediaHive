@@ -54,6 +54,8 @@ class AttendanceRepository {
           .select()
           .eq('userId', userId)
           .eq('attendanceState', 'active')
+          .order('checkInTime', ascending: false)
+          .limit(1)
           .maybeSingle();
       if (response == null) return null;
       

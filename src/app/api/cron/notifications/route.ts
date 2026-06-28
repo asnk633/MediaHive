@@ -3,7 +3,7 @@
 // Smart Notifications Cron - runs daily to send media team reminders
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { tasks, notifications, events, equipmentBookings } from '@/db/schema';
 import { sql, and, gt, lt, eq, or, not } from 'drizzle-orm';
 
@@ -28,6 +28,8 @@ export async function GET(req: NextRequest) {
         const in2h_eq = new Date(now.getTime() + 2 * 60 * 60 * 1000 + 5 * 60 * 1000); // slight window
 
         const notificationsToInsert: any[] = [];
+
+        const db = await getDb();
 
         // ── 1. EVENT REMINDERS ────────────────────────────────────────────────
 

@@ -3,9 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '../_lib/auth';
-import { db } from '@/db';
-import { users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { getDb } from '@/db';
 
 // GET /api/notification-settings - Get user's notification settings
 

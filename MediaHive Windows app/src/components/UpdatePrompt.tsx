@@ -13,6 +13,12 @@ export default function UpdatePrompt() {
     // Only run in Tauri context
     if (typeof window === "undefined" || !(('__TAURI_INTERNALS__' in window || 'isTauri' in window))) return;
 
+    // Skip update check in development mode to avoid dev server console errors and Next.js dev overlay disruption
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Updater] Skipping update check in development mode");
+      return;
+    }
+
     async function checkForUpdates() {
       try {
         const update = await check();
@@ -20,7 +26,8 @@ export default function UpdatePrompt() {
           setUpdateInfo(update);
         }
       } catch (err) {
-        console.error("Failed to check for updates:", err);
+        // Log as a warning instead of error to avoid polluting console, especially if offline
+        console.warn("Failed to check for updates:", err);
       }
     }
 

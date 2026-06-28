@@ -3,19 +3,80 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, CheckSquare, Calendar, FileText, Package, Bell, ChevronDown } from "lucide-react";
-import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContextProvider";
+import { CreateTaskModal } from "../modals/CreateTaskModal";
+import { CreateEventModal } from "../modals/CreateEventModal";
+import { FileUploadModal } from "../modals/FileUploadModal";
+import { CreateInventoryModal } from "../modals/CreateInventoryModal";
+import { CreateNotificationModal } from "../modals/CreateNotificationModal";
 
 export function MasterCreateButton() {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Modal open states
+  const [showTask, setShowTask] = useState(false);
+  const [showEvent, setShowEvent] = useState(false);
+  const [showFile, setShowFile] = useState(false);
+  const [showInventory, setShowInventory] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+
+  const role = user?.role || "member";
+
+  // Filter items based on user role permissions
   const menuItems = [
-    { icon: CheckSquare, label: "Task", desc: "Create a new workspace task", color: "text-blue-400", bg: "bg-blue-400/10", border: "border-blue-400/20", href: "/tasks/new" },
-    { icon: Calendar, label: "Event", desc: "Schedule a team meeting", color: "text-purple-400", bg: "bg-purple-400/10", border: "border-purple-400/20", href: "/events/new" },
-    { icon: FileText, label: "File", desc: "Upload a new document", color: "text-teal-400", bg: "bg-teal-400/10", border: "border-teal-400/20", href: "/files/new" },
-    { icon: Package, label: "Inventory", desc: "Add new lab equipment", color: "text-orange-400", bg: "bg-orange-400/10", border: "border-orange-400/20", href: "/inventory/new" },
-    { icon: Bell, label: "Notification", desc: "Send an alert broadcast", color: "text-pink-400", bg: "bg-pink-400/10", border: "border-pink-400/20", href: "/notifications/new" },
-  ];
+    {
+      icon: CheckSquare,
+      label: "Task",
+      desc: "Create a new workspace task",
+      color: "text-blue-400",
+      bg: "bg-blue-400/10",
+      border: "border-blue-400/20",
+      allowed: true, // All roles can create tasks
+      action: () => setShowTask(true),
+    },
+    {
+      icon: Calendar,
+      label: "Event",
+      desc: "Schedule a team meeting",
+      color: "text-purple-400",
+      bg: "bg-purple-400/10",
+      border: "border-purple-400/20",
+      allowed: role === "admin" || role === "manager" || role === "team",
+      action: () => setShowEvent(true),
+    },
+    {
+      icon: FileText,
+      label: "File",
+      desc: "Upload a new document",
+      color: "text-teal-400",
+      bg: "bg-teal-400/10",
+      border: "border-teal-400/20",
+      allowed: role === "admin" || role === "manager" || role === "team",
+      action: () => setShowFile(true),
+    },
+    {
+      icon: Package,
+      label: "Inventory",
+      desc: "Add new lab equipment",
+      color: "text-orange-400",
+      bg: "bg-orange-400/10",
+      border: "border-orange-400/20",
+      allowed: role === "admin" || role === "manager" || role === "team",
+      action: () => setShowInventory(true),
+    },
+    {
+      icon: Bell,
+      label: "Notification",
+      desc: "Send an alert broadcast",
+      color: "text-pink-400",
+      bg: "bg-pink-400/10",
+      border: "border-pink-400/20",
+      allowed: role === "admin" || role === "manager",
+      action: () => setShowNotification(true),
+    },
+  ].filter(item => item.allowed);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -82,7 +143,13 @@ export function MasterCreateButton() {
               {/* Items List */}
               <div className="flex flex-col p-2">
                 {menuItems.map((item, index) => (
-                  <Link href={item.href} key={item.label} onClick={() => setIsOpen(false)}>
+                  <div
+                    key={item.label}
+                    onClick={() => {
+                      setIsOpen(false);
+                      item.action();
+                    }}
+                  >
                     <motion.div
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -109,7 +176,7 @@ export function MasterCreateButton() {
                         </span>
                       </div>
                     </motion.div>
-                  </Link>
+                  </div>
                 ))}
               </div>
               
@@ -128,6 +195,13 @@ export function MasterCreateButton() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Inline Quick-Create Modals */}
+      <CreateTaskModal isOpen={showTask} onClose={() => setShowTask(false)} />
+      <CreateEventModal isOpen={showEvent} onClose={() => setShowEvent(false)} />
+      <FileUploadModal isOpen={showFile} onClose={() => setShowFile(false)} />
+      <CreateInventoryModal isOpen={showInventory} onClose={() => setShowInventory(false)} />
+      <CreateNotificationModal isOpen={showNotification} onClose={() => setShowNotification(false)} />
     </>
   );
 }

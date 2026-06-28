@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { PlusIcon, MessageSquareIcon, Search, HelpCircle, Users2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getDriveImageUrl } from '@/lib/driveUtils';
@@ -55,7 +55,7 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
   const [loading, setLoading] = useState(false);
 
   const handleCreateRoom = async () => {
-    if (!newRoomName.trim() || !currentUser?.tenantId) return;
+    if (!newRoomName.trim() || !currentUser?.tenant_id) return;
     setLoading(true);
     try {
       const roomId = crypto.randomUUID();
@@ -69,7 +69,7 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
           name: newRoomName.trim(),
           is_media_team_only: false,
           created_by: currentUser.id,
-          tenant_id: currentUser.tenantId,
+          tenant_id: currentUser.tenant_id,
           created_at: now
         });
 
@@ -79,7 +79,7 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
       const { data: mediaTeam } = await supabase
         .from('profiles')
         .select('id, role')
-        .eq('tenant_id', currentUser.tenantId)
+        .eq('tenant_id', currentUser.tenant_id)
         .in('role', ['manager', 'team']);
 
       const participantsToInsert: any[] = [{
@@ -87,7 +87,7 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
         room_id: roomId,
         user_id: currentUser.id,
         role: currentUser.role,
-        tenant_id: currentUser.tenantId,
+        tenant_id: currentUser.tenant_id,
         created_at: now
       }];
 
@@ -102,7 +102,7 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
             room_id: roomId,
             user_id: member.id,
             role: member.role,
-            tenant_id: currentUser.tenantId,
+            tenant_id: currentUser.tenant_id,
             created_at: now
           });
         }
@@ -151,9 +151,9 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
           <DialogContent className="bg-zinc-950 border border-white/[0.08] text-white shadow-2xl rounded-2xl max-w-md">
             <DialogHeader>
               <DialogTitle className="typo-heading text-lg text-white font-medium">Create Chat Room</DialogTitle>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+              <DialogDescription className="text-xs text-zinc-400 mt-1 leading-relaxed">
                 Start a group to communicate. All Media & IT team members are automatically added as default participants.
-              </p>
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-6">
               <div className="space-y-2">

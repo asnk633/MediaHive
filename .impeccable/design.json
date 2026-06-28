@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-23T22:35:00Z",
+  "title": "Design System: MediaHive",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Console Indigo", "canonical": "#6366f1", "tonalRamp": ["#1e1b4b", "#312e81", "#3730a3", "#4338ca", "#4f46e5", "#6366f1", "#818cf8", "#a5b4fc", "#c7d2fe", "#e0e7ff"] },
+      "neutral-bg": { "role": "neutral", "displayName": "Canvas Black", "canonical": "#000000", "tonalRamp": ["#000000", "#09090b", "#18181b", "#27272a", "#3f3f46", "#52525b", "#71717a", "#d4d4d8", "#e4e4e7", "#fafafa"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page-level titles and main metrics." },
+      "body": { "displayName": "Body", "purpose": "Standard reading, task descriptions, and forms." }
+    },
+    "shadows": [
+      { "name": "soft", "value": "0 1px 2px rgba(0, 0, 0, 0.4)", "purpose": "Subtle grouping shadow for cards." },
+      { "name": "medium", "value": "0 4px 12px rgba(0, 0, 0, 0.1)", "purpose": "Overlay navigation bars." }
+    ],
+    "motion": [
+      { "name": "fast", "value": "120ms", "purpose": "Standard tap and feedback transitions." },
+      { "name": "normal", "value": "200ms", "purpose": "Component state changes and hover animations." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Standard action triggers.",
+      "html": "<button class=\"ds-btn-primary\">Save Changes</button>",
+      "css": ".ds-btn-primary { background: #6366f1; color: #ffffff; padding: 8px 16px; border-radius: 4px; border: none; font-family: sans-serif; font-weight: 500; cursor: pointer; transition: background 0.2s; } .ds-btn-primary:hover { background: #4f46e5; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-standard",
+      "description": "Form input and search entries.",
+      "html": "<input class=\"ds-input-text\" type=\"text\" placeholder=\"Enter task name...\" />",
+      "css": ".ds-input-text { background: rgba(255,255,255,0.03); color: #ffffff; border: 1px solid rgba(255,255,255,0.08); padding: 8px 12px; border-radius: 4px; font-family: sans-serif; width: 100%; outline: none; } .ds-input-text:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }"
+    },
+    {
+      "name": "Standard Card",
+      "kind": "card",
+      "refersTo": "card-standard",
+      "description": "Informational list container.",
+      "html": "<div class=\"ds-card\"><h4 class=\"ds-card-title\">Task Title</h4><p class=\"ds-card-desc\">This is a standard card container.</p></div>",
+      "css": ".ds-card { background: #0A0E21; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.4); } .ds-card-title { color: #ffffff; font-weight: 600; margin: 0 0 8px 0; font-family: sans-serif; } .ds-card-desc { color: #d4d4d8; font-size: 0.875rem; margin: 0; font-family: sans-serif; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Utility Console",
+    "overview": "Focuses on zero-clutter, high-integrity, and command-center task efficiency. Designed for operators in mission-critical environments, the system rejects Dribbble-style atmospheric glows, neon gradients, and playful visual cues. It enforces clean visual structure, grayscale-first styling, and high contrast layouts.",
+    "keyCharacteristics": [
+      "Grayscale-First: Contrast over color drives all hierarchy decisions.",
+      "Strict 8pt Grid: Precise, predictable spacing.",
+      "Flat by Default: Shadows represent structure, never pure ornament.",
+      "Binary Themes: True black (#000000) for Dark mode and clean paper white for Light mode."
+    ],
+    "rules": [
+      { "name": "The 10% Accent Rule", "body": "The primary accent (#6366f1) is restricted to <=10% of any given screen. Its scarcity is what guides the user's eye to high-priority actions.", "section": "colors" },
+      { "name": "The Grayscale Priority Rule", "body": "Every visual interface must remain fully readable, usable, and distinguishable when evaluated under grayscale/monochrome preview modes.", "section": "colors" },
+      { "name": "The Letter-Spacing Rule", "body": "Wide tracking (0.12em) is exclusively reserved for uppercase labels, badges, and brief eyebrows (<=4 words). Display headings must use tight tracking (-0.025em).", "section": "typography" },
+      { "name": "The Flat-by-Default Rule", "body": "All interactive elements sit flat at rest. Elevation or lighting adjustments occur only in response to state transitions (hover, active press).", "section": "elevation" }
+    ],
+    "dos": [
+      "Do align all margins and padding to the 8pt spacing grid.",
+      "Do maintain a single primary action per viewport on mobile portrait views.",
+      "Do verify text and placeholder contrast matches or exceeds WCAG 4.5:1."
+    ],
+    "donts": [
+      "Don't use border-left or border-right accents greater than 1px as a colored stripe on cards.",
+      "Don't use gradient text (background-clip: text) or colorful background fills.",
+      "Don't add decorative glassmorphism or aura-glow backdrops.",
+      "Don't use cream, sand, or beige body backgrounds; stick to the binary black/white rules."
+    ]
+  }
+}

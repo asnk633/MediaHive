@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { tasks, events, institutions, users, files } from '@/db/schema';
 import { eq, and, gte, lte, count, sql } from 'drizzle-orm';
 
@@ -54,6 +54,8 @@ export async function GET(req: NextRequest) {
 
     // Build tenant condition
     const tenantCondition = tenantId !== 'all' ? eq(tasks.tenantId, parseInt(tenantId)) : undefined;
+
+    const db = await getDb();
 
     // 1. Task Workload by Institution
     const taskWorkloadQuery = db

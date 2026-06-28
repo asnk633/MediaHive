@@ -382,7 +382,7 @@ export default function ChatWindow({
           sender_id: currentUser.id,
           text: textToSend,
           media_type: 'text',
-          tenant_id: currentUser.tenantId
+          tenant_id: currentUser.tenant_id
         })
         .select()
         .single();
@@ -681,7 +681,7 @@ export default function ChatWindow({
           drive_file_id: uploadData.fileId,
           media_type: mediaType,
           text: textPayload,
-          tenant_id: currentUser.tenantId
+          tenant_id: currentUser.tenant_id
         });
 
       if (insertError) throw insertError;

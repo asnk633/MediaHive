@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, List, LayoutGrid, Search, Filter,
@@ -9,6 +9,7 @@ import {
   Flag, User, Eye, Pencil, Trash2, Clock, CheckCheck,
   ListTodo, AlertTriangle, Pause, TrendingUp
 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { supabase } from "@/lib/supabaseClient";
 import { AnimatedList } from "@/components/ui/animated-list";
@@ -123,7 +124,22 @@ function StatCard({ label, value, icon: Icon, color, sub }: {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function TasksPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center gap-3 text-zinc-500 text-sm py-10 justify-center">
+        <Loader2 size={16} className="animate-spin" /> Loading tasks...
+      </div>
+    }>
+      <TasksContent />
+    </Suspense>
+  );
+}
+
+function TasksContent() {
   const { user, loading: authLoading } = useAuth();
+  const searchParams = useSearchParams();
+  const createParam = searchParams ? searchParams.get("create") : null;
+  const hasAutoOpened = useRef(false);
   const [viewMode, setViewMode] = useState<"list" | "kanban">("list");
   const [tasks, setTasks] = useState<Task[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
@@ -255,6 +271,30 @@ export default function TasksPage() {
     else if (!authLoading) setLoading(false);
   }, [user, authLoading, fetchTasksAndProfiles]);
 
+  // Handle global quick create "?create=true" query parameter reactively
+  useEffect(() => {
+    if (createParam === "true" && !hasAutoOpened.current) {
+      hasAutoOpened.current = true;
+      setForm({
+        title: "",
+        description: "",
+        status: "To Do",
+        priority: "Medium",
+        category: "General",
+        due_date: "",
+        assignee_id: user?.id || ""
+      });
+      setEditTask(null);
+      setShowModal(true);
+
+      // Clear query param reactively and cleanly
+      const params = new URLSearchParams(window.location.search);
+      params.delete("create");
+      const newPath = window.location.pathname + (params.toString() ? `?${params.toString()}` : "");
+      window.history.replaceState(null, "", newPath);
+    }
+  }, [createParam, user?.id]);
+
   // ─── Create / Edit Task ──────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -266,8 +306,8 @@ export default function TasksPage() {
       const payload: any = {
         title: form.title.trim(),
         description: form.description.trim(),
-        status: dbStatus === "on_hold" ? "on_hold" : dbStatus === "to_do" ? "todo" : dbStatus,
-        priority: form.priority.toLowerCase(),
+        status: user.role === "member" ? "todo" : (dbStatus === "on_hold" ? "on_hold" : dbStatus === "to_do" ? "todo" : dbStatus),
+        priority: user.role === "member" ? "medium" : form.priority.toLowerCase(),
         department: form.category,
         due_date: form.due_date || null,
         updated_at: new Date().toISOString(),
@@ -287,7 +327,7 @@ export default function TasksPage() {
         payload.institution_id = user.institution_id || null;
         payload.tenant_id = user.tenant_id || null;
         payload.created_by = user.id;
-        payload.assigned_by = form.assignee_id || user.id;
+        payload.assigned_by = user.role === "admin" || user.role === "manager" ? (form.assignee_id || user.id) : user.id;
         payload.created_at = new Date().toISOString();
         if (form.status === "Done") payload.completed_at = new Date().toISOString();
         const { error } = await supabase.from("tasks").insert(payload);
@@ -609,7 +649,7 @@ export default function TasksPage() {
                     required autoFocus type="text" value={form.title}
                     onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                     placeholder="e.g. Review Q2 campaign assets"
-                    className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/10 transition-all font-sans"
+                    className="glass-form-input placeholder:text-zinc-500 w-full"
                   />
                 </div>
 
@@ -620,31 +660,35 @@ export default function TasksPage() {
                     value={form.description} rows={3}
                     onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                     placeholder="Optional — add context, acceptance criteria, links..."
-                    className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-teal-500/50 transition-all font-sans resize-none"
+                    className="glass-form-input placeholder:text-zinc-500 resize-none w-full"
                   />
                 </div>
 
                 {/* Status + Priority */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Status</label>
-                    <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as Task["status"] }))}
-                      className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-teal-500/50 transition-all font-sans cursor-pointer">
-                      <option className="bg-zinc-900" value="To Do">To Do</option>
-                      <option className="bg-zinc-900" value="In Progress">In Progress</option>
-                      <option className="bg-zinc-900" value="On Hold">On Hold</option>
-                      <option className="bg-zinc-900" value="Done">Done</option>
-                    </select>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Priority</label>
-                    <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value as Task["priority"] }))}
-                      className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-teal-500/50 transition-all font-sans cursor-pointer">
-                      <option className="bg-zinc-900" value="High">🔴 High</option>
-                      <option className="bg-zinc-900" value="Medium">🟡 Medium</option>
-                      <option className="bg-zinc-900" value="Low">⚪ Low</option>
-                    </select>
-                  </div>
+                  {!(user?.role === "member") && (
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Status</label>
+                      <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as Task["status"] }))}
+                        className="glass-form-input cursor-pointer w-full">
+                        <option className="bg-zinc-900" value="To Do">To Do</option>
+                        <option className="bg-zinc-900" value="In Progress">In Progress</option>
+                        <option className="bg-zinc-900" value="On Hold">On Hold</option>
+                        <option className="bg-zinc-900" value="Done">Done</option>
+                      </select>
+                    </div>
+                  )}
+                  {!(user?.role === "member") && (
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Priority</label>
+                      <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value as Task["priority"] }))}
+                        className="glass-form-input cursor-pointer w-full">
+                        <option className="bg-zinc-900" value="High">High</option>
+                        <option className="bg-zinc-900" value="Medium">Medium</option>
+                        <option className="bg-zinc-900" value="Low">Low</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
 
                 {/* Category + Due Date */}
@@ -654,25 +698,25 @@ export default function TasksPage() {
                     <input type="text" value={form.category}
                       onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
                       placeholder="e.g. Marketing, Editorial"
-                      className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-teal-500/50 transition-all font-sans" />
+                      className="glass-form-input placeholder:text-zinc-500 w-full" />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Due Date</label>
                     <input type="date" value={form.due_date}
                       onChange={e => setForm(f => ({ ...f, due_date: e.target.value }))}
-                      className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-teal-500/50 transition-all font-sans" />
+                      className="glass-form-input w-full" />
                   </div>
                 </div>
 
                 {/* Assignee */}
-                {!editTask && (
+                {!editTask && (user?.role === "admin" || user?.role === "manager") && (
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Assignee</label>
                     <select value={form.assignee_id} onChange={e => setForm(f => ({ ...f, assignee_id: e.target.value }))}
-                      className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-teal-500/50 transition-all font-sans cursor-pointer">
+                      className="glass-form-input cursor-pointer w-full">
                       {profiles.map((p: any) => (
                         <option key={p.id} value={p.id} className="bg-zinc-900">
-                          {p.full_name || p.name || p.email}
+                           {p.full_name || p.name || p.email}
                         </option>
                       ))}
                     </select>

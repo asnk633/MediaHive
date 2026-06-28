@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { tasks } from '@/db/schema';
 import { like } from 'drizzle-orm';
 import { getUserFromRequest, isAdmin } from '@/app/api/_lib/auth';
@@ -29,6 +29,8 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       );
     }
+
+    const db = await getDb();
 
     // Delete test tasks (those with titles starting with "e2e seeded task")
     const deletedTasks = await db

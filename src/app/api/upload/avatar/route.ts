@@ -1,7 +1,7 @@
 // src/app/api/upload/avatar/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -38,7 +38,8 @@ export async function POST(request: NextRequest) {
       const base64 = buffer.toString("base64");
       const dataUrl = `data:${file.type};base64,${base64}`;
 
-      await db.update(users).set({ avatar_url: dataUrl }).where(eq(users.id, userId));
+      const database = await getDb();
+      await database.update(users).set({ avatar_url: dataUrl }).where(eq(users.id, userId));
       return NextResponse.json({ avatar_url: dataUrl, message: "Avatar stored as base64 (dev)" }, { status: 200 });
     }
 
@@ -61,7 +62,8 @@ export async function POST(request: NextRequest) {
     const publicUrl = publicData.publicUrl;
 
     // Persist to DB
-    await db.update(users).set({ avatar_url: publicUrl }).where(eq(users.id, userId));
+    const database = await getDb();
+    await database.update(users).set({ avatar_url: publicUrl }).where(eq(users.id, userId));
 
     return NextResponse.json({ avatar_url: publicUrl, message: "Avatar uploaded" }, { status: 200 });
   } catch (err) {

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { UserPlusIcon, Search, Shield, ShieldAlert, Sparkles, Check, CheckCircle2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { supabase } from '@/lib/supabaseClient';
 
 const getUserGradient = (name: string = 'User') => {
@@ -57,7 +57,7 @@ export default function AddUserModal({ room, currentUser, allUsers, trigger }: a
           user_id: user.id,
           role: user.role,
           added_by: currentUser.id,
-          tenant_id: currentUser.tenantId,
+          tenant_id: currentUser.tenant_id,
           created_at: now,
         }));
 
@@ -72,7 +72,7 @@ export default function AddUserModal({ room, currentUser, allUsers, trigger }: a
         const { data: managers } = await supabase
           .from('profiles')
           .select('id')
-          .eq('tenant_id', currentUser.tenantId)
+          .eq('tenant_id', currentUser.tenant_id)
           .eq('role', 'manager');
 
         if (managers && managers.length > 0) {
@@ -165,6 +165,9 @@ export default function AddUserModal({ room, currentUser, allUsers, trigger }: a
             <Sparkles className="h-4.5 w-4.5 text-indigo-400" />
             Add to Chat
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Add team members to this chat room.
+          </DialogDescription>
           <div className="text-xs text-zinc-400 mt-1.5 leading-relaxed bg-white/[0.01] border border-white/[0.03] p-2.5 rounded-xl flex gap-2 items-start">
             <ShieldAlert className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
             <span>

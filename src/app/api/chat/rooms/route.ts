@@ -48,102 +48,96 @@ export async function GET(req: NextRequest) {
       if (roomsError) throw roomsError;
       rooms = data || [];
 
-      // Fetch the latest message and unread count for each room
-      for (const room of rooms) {
-        // Fetch latest message details
-        const { data: lastMsgData } = await supabase
-          .from('chat_messages')
-          .select('sender_id, text, media_type, created_at, profiles(full_name)')
-          .eq('room_id', room.id)
-          .order('created_at', { ascending: false })
-          .limit(1);
-        
-        const lastMsg = lastMsgData && lastMsgData.length > 0 ? lastMsgData[0] : null;
-        
-        if (lastMsg) {
-          let prefix = '';
-          const isGroup = room.is_media_team_only || (room.name && room.name.trim().length > 0);
-          
-          if (isGroup) {
-            if (lastMsg.sender_id === userId) {
-              prefix = 'You: ';
-            } else {
-              const profilesObj = lastMsg.profiles as any;
-              const senderName = (Array.isArray(profilesObj) ? profilesObj[0]?.full_name : profilesObj?.full_name)?.split(' ')[0];
-              if (senderName) {
-                prefix = `${senderName}: `;
+      // Fetch the latest message and unread count for each room in parallel
+      await Promise.all(
+        rooms.map(async (room) => {
+          const lastReadTime = lastReadMap[room.id];
+
+          // Fetch last message details and unread count concurrently for this room
+          const [lastMsgResult, unreadCountResult] = await Promise.all([
+            supabase
+              .from('chat_messages')
+              .select('sender_id, text, media_type, created_at, profiles(full_name)')
+              .eq('room_id', room.id)
+              .order('created_at', { ascending: false })
+              .limit(1),
+            lastReadTime
+              ? supabase
+                  .from('chat_messages')
+                  .select('*', { count: 'exact', head: true })
+                  .eq('room_id', room.id)
+                  .gt('created_at', lastReadTime)
+                  .neq('sender_id', userId)
+              : supabase
+                  .from('chat_messages')
+                  .select('*', { count: 'exact', head: true })
+                  .eq('room_id', room.id)
+                  .neq('sender_id', userId)
+          ]);
+
+          const lastMsgData = lastMsgResult.data;
+          const lastMsg = lastMsgData && lastMsgData.length > 0 ? lastMsgData[0] : null;
+
+          if (lastMsg) {
+            let prefix = '';
+            const isGroup = room.is_media_team_only || (room.name && room.name.trim().length > 0);
+            
+            if (isGroup) {
+              if (lastMsg.sender_id === userId) {
+                prefix = 'You: ';
+              } else {
+                const profilesObj = lastMsg.profiles as any;
+                const senderName = (Array.isArray(profilesObj) ? profilesObj[0]?.full_name : profilesObj?.full_name)?.split(' ')[0];
+                if (senderName) {
+                  prefix = `${senderName}: `;
+                }
               }
             }
-          }
 
-          let previewText = room.last_message_preview || '';
-          const msgText = lastMsg.text || '';
-          const mediaType = lastMsg.media_type;
-          
-          if (mediaType === 'audio' || mediaType === 'voice') {
-            const seconds = parseInt(msgText.trim(), 10);
-            if (!isNaN(seconds)) {
-              const minutes = Math.floor(seconds / 60).toString();
-              const secs = (seconds % 60).toString().padStart(2, '0');
-              previewText = `Voice note (${minutes}:${secs})`;
-            } else if (msgText.includes('Voice note')) {
-              previewText = msgText;
-            } else if (msgText) {
-              previewText = msgText;
-            } else {
-              previewText = 'Voice note';
-            }
-          } else if (msgText.trim()) {
-            previewText = msgText;
-          } else if (mediaType && mediaType !== 'text') {
-            previewText = `Sent a ${mediaType}`;
-          } else if (!previewText) {
-            previewText = 'Attachment';
-          }
-
-          if (!previewText.startsWith('You:') && !previewText.includes(': ')) {
-            room.lastMessagePreview = `${prefix}${previewText}`;
-            room.last_message_preview = `${prefix}${previewText}`;
-          } else {
-            room.lastMessagePreview = previewText;
-            room.last_message_preview = previewText;
-          }
-          
-          // Also set the correct dynamic last message time from actual message
-          room.lastMessageTime = lastMsg.created_at;
-          room.last_message_time = lastMsg.created_at;
-        }
-
-        // Calculate unread count
-        const lastReadTime = lastReadMap[room.id];
-        if (lastReadTime) {
-          const { count, error: countError } = await supabase
-            .from('chat_messages')
-            .select('*', { count: 'exact', head: true })
-            .eq('room_id', room.id)
-            .gt('created_at', lastReadTime)
-            .neq('sender_id', userId);
+            let previewText = room.last_message_preview || '';
+            const msgText = lastMsg.text || '';
+            const mediaType = lastMsg.media_type;
             
-          if (!countError) {
-            room.unreadCount = count || 0;
-          } else {
-            room.unreadCount = 0;
-          }
-        } else {
-          // If no last read timestamp exists for this room, count all messages sent by others
-          const { count, error: countError } = await supabase
-            .from('chat_messages')
-            .select('*', { count: 'exact', head: true })
-            .eq('room_id', room.id)
-            .neq('sender_id', userId);
+            if (mediaType === 'audio' || mediaType === 'voice') {
+              const seconds = parseInt(msgText.trim(), 10);
+              if (!isNaN(seconds)) {
+                const minutes = Math.floor(seconds / 60).toString();
+                const secs = (seconds % 60).toString().padStart(2, '0');
+                previewText = `Voice note (${minutes}:${secs})`;
+              } else if (msgText.includes('Voice note')) {
+                previewText = msgText;
+              } else if (msgText) {
+                previewText = msgText;
+              } else {
+                previewText = 'Voice note';
+              }
+            } else if (msgText.trim()) {
+              previewText = msgText;
+            } else if (mediaType && mediaType !== 'text') {
+              previewText = `Sent a ${mediaType}`;
+            } else if (!previewText) {
+              previewText = 'Attachment';
+            }
 
-          if (!countError) {
-            room.unreadCount = count || 0;
+            if (!previewText.startsWith('You:') && !previewText.includes(': ')) {
+              room.lastMessagePreview = `${prefix}${previewText}`;
+              room.last_message_preview = `${prefix}${previewText}`;
+            } else {
+              room.lastMessagePreview = previewText;
+              room.last_message_preview = previewText;
+            }
+            
+            room.lastMessageTime = lastMsg.created_at;
+            room.last_message_time = lastMsg.created_at;
+          }
+
+          if (!unreadCountResult.error) {
+            room.unreadCount = unreadCountResult.count || 0;
           } else {
             room.unreadCount = 0;
           }
-        }
-      }
+        })
+      );
     }
 
     return NextResponse.json(rooms, { status: 200 });

@@ -1,7 +1,8 @@
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { tasks } from '@/db/schema';
 
 async function main() {
+    const db = await getDb();
     const now = new Date();
     const currentTimestamp = now.toISOString();
     

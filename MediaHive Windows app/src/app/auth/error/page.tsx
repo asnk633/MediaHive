@@ -1,14 +1,19 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { AlertCircle, ArrowRight, Loader2 } from "lucide-react";
 import { EtheralShadow } from "@/components/ui/etheral-shadow";
+import { useIsTauri } from "@/lib/hooks/useIsTauri";
+import { useWindow } from "@/contexts/WindowContext";
 
 function AuthErrorContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  const isDesktopApp = useIsTauri();
+  const { isMaximized } = useWindow();
 
   // Extract error details from URL parameters
   const errorType = searchParams.get("error") || "auth_error";
@@ -23,17 +28,30 @@ function AuthErrorContent() {
   }
 
   return (
-    <div className="w-screen h-screen flex overflow-hidden font-sans select-none p-4 bg-[#030305] relative">
-      
-      {/* ── Outer desktop frame border wrapper ── */}
-      <div className="w-full h-full border border-zinc-800/80 rounded-2xl overflow-hidden flex relative shadow-2xl">
-        
+    <div className="w-full h-full overflow-hidden font-sans select-none bg-[#030305] relative">
+
+      {/* Outer desktop frame — fixed to viewport so height never depends on parent chain */}
+      <div
+        className="login-page-frame fixed overflow-hidden flex shadow-2xl rounded-2xl border border-zinc-800/80"
+        style={{
+          top: isDesktopApp ? 36 : 16,
+          left: isMaximized ? 0 : 16,
+          right: isMaximized ? 0 : 16,
+          bottom: isMaximized ? 0 : 16,
+          borderRadius: isMaximized ? 0 : undefined,
+          border: isMaximized ? "none" : undefined,
+          boxShadow: isMaximized ? "none" : undefined,
+          zIndex: 10,
+        }}
+      >
         {/* Top desktop window style bar */}
-        <div className="absolute top-0 inset-x-0 h-10 border-b border-white/5 flex items-center justify-between px-6 z-50 pointer-events-none">
-          <span className="text-[10px] text-zinc-500 font-bold tracking-[0.15em] uppercase">
-            MediaHive Desktop v2.1
-          </span>
-        </div>
+        {!isDesktopApp && (
+          <div className="absolute top-0 inset-x-0 h-10 border-b border-white/5 flex items-center justify-between px-6 z-50 pointer-events-none">
+            <span className="text-[10px] text-zinc-500 font-bold tracking-[0.15em] uppercase">
+              MediaHive Desktop v2.1
+            </span>
+          </div>
+        )}
 
         {/* Dynamic gritty background noise filter */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.06] mix-blend-overlay z-0">
@@ -138,7 +156,7 @@ export default function AuthErrorPage() {
   return (
     <Suspense
       fallback={
-        <div className="w-screen h-screen bg-[#030305] flex items-center justify-center">
+        <div className="w-full h-full bg-[#030305] flex items-center justify-center">
           <Loader2 className="animate-spin text-teal-500" size={32} />
         </div>
       }

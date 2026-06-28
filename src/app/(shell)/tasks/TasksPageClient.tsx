@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client';
 
 import React, { useEffect, useState, useCallback } from "react";
@@ -109,7 +108,7 @@ export default function TasksPageClient() {
             {
                 role,
                 userId: user?.uid,
-                institutionId: currentWorkspaceId,
+                institutionId: currentWorkspaceId != null ? String(currentWorkspaceId) : undefined,
                 includeDemoData: true,
                 includeAllHistory: true
             },
@@ -148,7 +147,7 @@ export default function TasksPageClient() {
         params.set('id', task.id);
 
         // Use soft navigation to avoid full page reload
-        nativeNavigate(`/tasks?${params.toString()}`, { scroll: false }, router, 'TasksPageClient.tsx');
+            nativeNavigate(`/tasks?${params.toString()}`, router, 'TasksPageClient.tsx');
     };
 
     const handleCloseModal = () => {
@@ -160,7 +159,7 @@ export default function TasksPageClient() {
             params.delete('id');
             params.delete('returnTo');
             // Soft replace
-            nativeNavigate(`/tasks?${params.toString()}`, { scroll: false }, router, 'TasksPageClient.tsx');
+        nativeNavigate(`/tasks?${params.toString()}`, router, 'TasksPageClient.tsx');
         }
     };
 
@@ -180,7 +179,7 @@ export default function TasksPageClient() {
                     updates, 
                     'task',
                     taskToEdit.updatedAt,
-                    taskToEdit.version
+                    (taskToEdit as Task & { version?: number }).version
                 );
                 
                 if (success) {

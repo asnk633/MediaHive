@@ -2,7 +2,7 @@
 // Refresh token endpoint for secure session management
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { verifyRefreshToken, createSession, setSessionCookies } from '../../_lib/session';
@@ -19,9 +19,7 @@ export async function POST(request: NextRequest) {
 if (rateLimitResponse) {
   return rateLimitResponse;
 }
-    if (rateLimitResponse) {
-      return rateLimitResponse;
-    }
+
     
     // Get refresh token from cookies
     const refreshToken = request.cookies.get('refresh_token')?.value;
@@ -52,6 +50,7 @@ if (rateLimitResponse) {
     }
     
     // Fetch user from database
+    const db = await getDb();
     const userResult = await db
       .select()
       .from(users)
@@ -71,6 +70,12 @@ if (rateLimitResponse) {
     const { passwordHash, ...userWithoutPassword } = user;
     
     // Create new session with fresh tokens
+    // UNSAFE CAST: Drizzle user row force-cast to AuthUser. Works today because
+    // the fields refresh/route.ts reads happen to overlap, but AuthUser and
+    // AuthenticatedUser are structurally incompatible (id: string vs uid: string,
+    // etc). If MediaHive consolidates onto the Supabase auth path, this cast
+    // should be replaced with an explicit mapper function instead of relying
+    // on field overlap. See audit item #8.
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await createSession(userWithoutPassword as AuthUser);
     
     // Create response

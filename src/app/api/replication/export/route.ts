@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import {
   tasks,
   events,
@@ -111,6 +111,7 @@ export async function GET(request: NextRequest) {
       conditions.push(eq(auditLog.resourceType, table));
     }
 
+    const db = await getDb();
     const auditEvents = await db.select()
       .from(auditLog)
       .where(and(...conditions))

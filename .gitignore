@@ -99,3 +99,6 @@ credentials/
 
 # Graphify large cache files
 graphify-out/graph.json
+
+# Large Assets
+public/MediaHive new log 3dsvg.glb

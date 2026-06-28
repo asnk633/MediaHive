@@ -10,6 +10,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:mediahive_mobile/features/auth/presentation/widgets/profile_header.dart';
 import 'package:mediahive_mobile/features/auth/presentation/widgets/profile_info_grid.dart';
 import 'package:mediahive_mobile/features/auth/presentation/widgets/profile_settings_tiles.dart';
+import 'package:mediahive_mobile/core/services/auth_service.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -509,7 +510,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       width: 200,
       child: OutlinedButton.icon(
         onPressed: () async {
-          await Supabase.instance.client.auth.signOut();
+          await ref.read(authServiceProvider).signOut();
           if (mounted) {
             context.go('/login');
           }

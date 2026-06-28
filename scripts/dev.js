@@ -43,7 +43,7 @@ const { spawn, execSync } = require("child_process");
   // Spawn next dev with proper args
   // On Windows, npx requires shell to be enabled
   const isWindows = process.platform === 'win32';
-  const child = spawn('npx', ['next', 'dev', '-p', port.toString()], {
+  const child = spawn('npx', ['next', 'dev', '-p', port.toString(), '--webpack'], {
     stdio: 'inherit',
     shell: isWindows // Enable shell on Windows, disable on Unix for security
   });

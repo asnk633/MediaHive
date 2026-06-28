@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -100,7 +99,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                     async () => {
                         await withTenant(
                             supabase.from('tasks').delete(),
-                            user?.tenant_id
+                            String(user?.tenant_id)
                         ).eq('id', task.id);
                         ActivityHistory.push(task.id, {
                             action: 'deleted',
@@ -139,10 +138,10 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                     try {
                                         const snap = entry.snapshot.get(task.id);
                                         if (snap) {
-                                            await withTenant(
-                                                supabase.from('tasks').update(snap),
-                                                user?.tenant_id
-                                            ).eq('id', task.id);
+                                await withTenant(
+                                    supabase.from('tasks').update(snap),
+                                    String(user?.tenant_id)
+                                ).eq('id', task.id);
                                         }
                                         ActivityHistory.push(task.id, {
                                             action: 'restored',
@@ -166,7 +165,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
             } else {
                 await withTenant(
                     supabase.from('tasks').delete(),
-                    user?.tenant_id
+                    String(user?.tenant_id)
                 ).eq('id', task.id);
 
                 // Log activity
@@ -187,7 +186,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 if (snap) {
                                     await withTenant(
                                         supabase.from('tasks').update(snap),
-                                        user?.tenant_id
+                                        String(user?.tenant_id)
                                     ).eq('id', task.id);
                                 }
                                 toast.success('Task restored');
@@ -415,7 +414,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                         {/* 3px Status-colored Accent Strip */}
                         <div className={cn(
                             "absolute top-0 left-0 w-full h-[3px] z-30",
-                            getSeverityColor(getAdminSeverity((task.priority === 'urgent' || task.priority === 'high') ? 4 : task.priority === 'medium' ? 2 : 1))
+                            getSeverityColor(getAdminSeverity((task.priority === ('urgent' as any) || task.priority === 'high') ? 4 : task.priority === 'medium' ? 2 : 1))
                         )} />
                         {/* HEADER BLOCK - Identity, Authoritative, 180px */}
                         <div
@@ -429,7 +428,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                  <PresencePile users={activeUsers} />
                                  <div className="h-6 w-px bg-foreground/10 hidden sm:block" />
                                  <div className="flex items-center gap-2">
-                                     {(user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member') || user?.uid === task?.createdBy?.uid) && (
+                                     {(user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member') || (task?.created_by && typeof task.created_by === 'object' && (task.created_by as any).uid === user?.uid)) && (
                                          <>
                                              <button
                                                  onClick={async () => {
@@ -468,7 +467,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 {/* Badges - Small, Subordinate */}
                                 <div className="flex items-center gap-3 mb-4">
                                     <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-widest uppercase border ${priorityColors[task.priority!] || priorityColors.low}`}>
-                                        {task.priority === 'urgent' ? 'high' : (task.priority || 'low')}
+                                        {task.priority === ('urgent' as string) ? 'high' : (task.priority || 'low')}
                                     </span>
                                     <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface border border-soft text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                                         {statusIcons[task.status]}
@@ -611,7 +610,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                                         <ResolvedStructureName
                                                             id={task.departmentId || task.institutionId || linkedEvent?.department_id || linkedEvent?.institution_id}
                                                             type={(task.departmentId || linkedEvent?.department_id) ? 'department' : 'institution'}
-                                                            fallback={(!task.departmentId && !task.institutionId && !linkedEvent?.department_id && !linkedEvent?.institution_id) ? (task.department || task.createdBy?.name) : undefined}
+                                                            fallback={(!task.departmentId && !task.institutionId && !linkedEvent?.department_id && !linkedEvent?.institution_id) ? (task.department || (typeof task.created_by === 'object' && task.created_by !== null ? (task.created_by as { name?: string }).name : undefined)) : undefined}
                                                         />
                                                     )}
                                                 </p>
@@ -703,6 +702,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                                                 src={assignee.avatarUrl}
                                                                 name={assignee.name}
                                                                 size={18}
+                                                                alt={assignee.name || 'Assignee'}
                                                             />
                                                             <span className="text-xs text-foreground/80 font-medium">{assignee.name}</span>
                                                         </div>
@@ -732,8 +732,8 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                         // Just trigger local refresh, not full page refresh
                                         withTenant(
                                             supabase.from('tasks').select('*'),
-                                            user?.tenant_id
-                                        ).eq('id', task.id).single().then(({ data }) => data && setFullTask(data as any));
+                                            String(user?.tenant_id)
+                                        ).eq('id', task.id).single().then(({ data }: { data: any }) => data && setFullTask(data as any));
                                     }}
                                 />
                             </div>
@@ -745,7 +745,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                         taskId={task.id}
                                         subtasks={fullTask.subtasks || []}
                                         onUpdate={() => {
-                                            supabase.from('tasks').select('*').eq('id', task.id).single().then(({ data }) => data && setFullTask(data as any));
+                                            supabase.from('tasks').select('*').eq('id', task.id).single().then(({ data }: { data: any }) => data && setFullTask(data as any));
                                         }}
                                     />
                                 </div>
@@ -762,7 +762,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                     taskId={task.id}
                                     activity={fullTask.activity || []}
                                     onCommentAdded={() => {
-                                        supabase.from('tasks').select('*').eq('id', task.id).single().then(({ data }) => data && setFullTask(data as any));
+                                        supabase.from('tasks').select('*').eq('id', task.id).single().then(({ data }: { data: any }) => data && setFullTask(data as any));
                                     }}
                                 />
                             </div>

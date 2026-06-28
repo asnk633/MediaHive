@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContextProvider";
 import { Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { EtheralShadow } from "@/components/ui/etheral-shadow";
+import { useWindow } from "@/contexts/WindowContext";
 
 const PUBLIC_ROUTES = ["/login", "/auth/error"];
 
@@ -13,6 +14,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const { isMaximized } = useWindow();
 
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
 
@@ -31,8 +33,21 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   // While resolving the session, show a full-screen loader
   if (loading) {
     return (
-      <div className="w-screen h-screen bg-[#030305] p-4 flex">
-        <div className="w-full h-full border border-zinc-800/80 rounded-2xl overflow-hidden relative shadow-2xl">
+      <div className="w-full h-full bg-[#030305] relative overflow-hidden">
+        {/* Absolute-positioned card: top=36px clears the fixed Titlebar */}
+        <div
+          className="login-page-frame absolute overflow-hidden border border-zinc-800/80 rounded-2xl shadow-2xl"
+          style={{
+            top: 36,
+            left: isMaximized ? 0 : 16,
+            right: isMaximized ? 0 : 16,
+            bottom: isMaximized ? 0 : 16,
+            borderRadius: isMaximized ? 0 : undefined,
+            border: isMaximized ? "none" : undefined,
+            boxShadow: isMaximized ? "none" : undefined,
+            zIndex: 10,
+          }}
+        >
           <EtheralShadow
             className="w-full h-full"
             sizing="fill"

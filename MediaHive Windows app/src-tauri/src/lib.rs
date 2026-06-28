@@ -2,7 +2,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    Manager,
+    Listener, Manager,
 };
 
 pub struct AppState {
@@ -12,12 +12,9 @@ pub struct AppState {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-            if let Some(window) = app.get_webview_window("main") {
-                let _ = window.show();
-                let _ = window.unminimize();
-                let _ = window.set_focus();
-            }
+        .plugin(tauri_plugin_single_instance::init(|_app, _args, _cwd| {
+            // No-op: deep-link listener handles re-focus for URL launches.
+            // For non-URL second instances, the OS brings the existing window forward.
         }))
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_window_state::Builder::new().build())
@@ -36,7 +33,7 @@ pub fn run() {
             tauri::WindowEvent::CloseRequested { api, .. } => {
                 let state = window.state::<AppState>();
                 if !state.is_quitting.load(Ordering::Relaxed) {
-                    window.hide().unwrap();
+                    if let Err(e) = window.hide() { log::error!("[window] hide() failed: {:?}", e); }
                     api.prevent_close();
                 }
             }
@@ -49,7 +46,7 @@ pub fn run() {
             let menu = Menu::with_items(app, &[&toggle_i, &quit_i])?;
 
             let _tray = TrayIconBuilder::new()
-                .icon(app.default_window_icon().unwrap().clone())
+                .icon(app.default_window_icon().expect("No default window icon configured").clone())
                 .menu(&menu)
                 .show_menu_on_left_click(false)
                 .on_menu_event(|app, event| match event.id.as_ref() {
@@ -61,10 +58,10 @@ pub fn run() {
                     "toggle" => {
                         if let Some(window) = app.get_webview_window("main") {
                             if window.is_visible().unwrap_or(false) {
-                                window.hide().unwrap();
+                                if let Err(e) = window.hide() { log::error!("[tray toggle] hide() failed: {:?}", e); }
                             } else {
-                                window.show().unwrap();
-                                window.set_focus().unwrap();
+                                if let Err(e) = window.show() { log::error!("[tray toggle] show() failed: {:?}", e); }
+                                if let Err(e) = window.set_focus() { log::error!("[tray toggle] set_focus() failed: {:?}", e); }
                             }
                         }
                     }
@@ -80,10 +77,10 @@ pub fn run() {
                         let app = tray.app_handle();
                         if let Some(window) = app.get_webview_window("main") {
                             if window.is_visible().unwrap_or(false) {
-                                window.hide().unwrap();
+                                if let Err(e) = window.hide() { log::error!("[tray click] hide() failed: {:?}", e); }
                             } else {
-                                window.show().unwrap();
-                                window.set_focus().unwrap();
+                                if let Err(e) = window.show() { log::error!("[tray click] show() failed: {:?}", e); }
+                                if let Err(e) = window.set_focus() { log::error!("[tray click] set_focus() failed: {:?}", e); }
                             }
                         }
                     }
@@ -93,35 +90,51 @@ pub fn run() {
             let args: Vec<String> = std::env::args().collect();
             if let Some(window) = app.get_webview_window("main") {
                 if args.iter().any(|arg| arg == "--autostart") {
-                    window.hide().unwrap();
+                    if let Err(e) = window.hide() { log::error!("[autostart] hide() failed: {:?}", e); }
                 } else {
-                    window.show().unwrap();
+                    if let Err(e) = window.show() { log::error!("[autostart] show() failed: {:?}", e); }
                 }
             }
 
-            if cfg!(debug_assertions) {
-                app.handle().plugin(
-                    tauri_plugin_log::Builder::default()
-                        .level(log::LevelFilter::Info)
-                        .build(),
-                )?;
-            }
+            app.handle().plugin(
+                tauri_plugin_log::Builder::default()
+                    .level(if cfg!(debug_assertions) {
+                        log::LevelFilter::Debug
+                    } else {
+                        log::LevelFilter::Warn
+                    })
+                    .build(),
+            )?;
 
             let app_handle = app.handle().clone();
             std::thread::spawn(move || {
-                // Wait briefly to let the dev server initialize if starting up
                 std::thread::sleep(std::time::Duration::from_millis(1500));
 
                 if cfg!(debug_assertions) {
-                    // Try to connect to the devUrl
                     if std::net::TcpStream::connect("127.0.0.1:3000").is_err() {
-                        if let Some(window) = app_handle.get_webview_window("main") {
-                            let error_html = include_str!("../error.html");
-                            let encoded = urlencoding::encode(error_html);
-                            let url = format!("data:text/html;charset=utf-8,{}", encoded);
-                            let _ = window.navigate(url.parse().unwrap());
-                        }
+                        let error_html = include_str!("../error.html");
+                        let encoded = urlencoding::encode(error_html);
+                        let url_str = format!("data:text/html;charset=utf-8,{}", encoded);
+                        let app_inner = app_handle.clone();
+                        let _ = app_handle.run_on_main_thread(move || {
+                            if let Some(window) = app_inner.get_webview_window("main") {
+                                match url_str.parse() {
+                                    Ok(url) => { let _ = window.navigate(url); }
+                                    Err(e) => log::error!("[debug] Error page URL parse failed: {:?}", e),
+                                }
+                            }
+                        });
                     }
+                }
+            });
+
+            // Deep-link listener: re-focus window on any mediahive:// URL
+            let app_handle_dl = app.handle().clone();
+            app.listen("deep-link://new-url", move |_event| {
+                if let Some(window) = app_handle_dl.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.unminimize();
+                    let _ = window.set_focus();
                 }
             });
 

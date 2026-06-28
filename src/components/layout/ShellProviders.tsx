@@ -3,7 +3,6 @@
 import React, { useEffect } from "react";
 import BottomNav from "@/components/BottomNavigation";
 import TopBar from "@/components/TopBar";
-import { ToastProvider } from "@/components/ToastProvider";
 import { ClientDataProvider } from "@/app/(shell)/ClientDataContext";
 import { HydrationDetector } from "@/components/HydrationDetector";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -17,6 +16,7 @@ import { collabManager } from "@/lib/collaboration/collabManager";
 import { useAuth } from "@/contexts/AuthContextProvider";
  
 import { MobileViewportSafety } from "@/components/layout/MobileViewportSafety";
+import ClipDetection from "@/components/ClipDetection.client";
 import DesktopSideNav from "@/components/layout/DesktopSideNav";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -38,10 +38,10 @@ export default function ShellProviders({ children }: { children: React.ReactNode
  
     return (
         <CrashLoopBreaker>
-            <ToastProvider>
-                <ClientDataProvider>
+            <ClientDataProvider>
                     {/* Mobile Viewport Management */}
                     <MobileViewportSafety />
+                    <ClipDetection />
  
                     {/* Shell Container - Fixed height, NO transforms/filters */}
                     <div
@@ -105,7 +105,6 @@ export default function ShellProviders({ children }: { children: React.ReactNode
 
                     <BottomNav />
                 </ClientDataProvider>
-            </ToastProvider>
         </CrashLoopBreaker>
     );
 }

@@ -1,0 +1,20 @@
+{
+  "id": "38198035",
+  "phase": "completed",
+  "pageUrl": "/home",
+  "sourceFile": "src/app/(shell)/home/HomeClient.tsx",
+  "expectedVariants": 2,
+  "arrivedVariants": 2,
+  "visibleVariant": 1,
+  "paramValues": {},
+  "pendingEventSeq": null,
+  "pendingEvent": null,
+  "deliveryLease": null,
+  "checkpointRevision": 5,
+  "activeOwner": "1f3a42dd",
+  "sourceMarkers": {},
+  "fallbackMode": null,
+  "annotationArtifacts": [],
+  "diagnostics": [],
+  "updatedAt": "2026-06-23T17:10:34.848Z"
+}

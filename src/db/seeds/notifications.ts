@@ -1,7 +1,8 @@
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { notifications } from '@/db/schema';
 
 async function main() {
+    const db = await getDb();
     const sampleNotifications = [
         {
             userId: 3,

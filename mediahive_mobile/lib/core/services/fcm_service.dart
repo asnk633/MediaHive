@@ -111,6 +111,11 @@ class FCMService {
 
   // De-register token on auth sign-out
   Future<void> deregisterToken() async {
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    if (currentUser == null) {
+      _logger.info('FCM Token de-registration skipped: User already logged out');
+      return;
+    }
     try {
       final token = await FirebaseMessaging.instance.getToken();
       if (token != null) {

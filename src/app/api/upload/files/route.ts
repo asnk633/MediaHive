@@ -1,7 +1,7 @@
 // src/app/api/upload/files/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { files } from "@/db/schema";
 // small helper: avoid depending on a missing export in utils during local dev
 function isBase64DataUrl(s: string | null | undefined) {
@@ -30,7 +30,8 @@ export async function POST(request: NextRequest) {
 
 // Check if the user is authorized to upload files for the specific institution
 const userId = uploadedByIdRaw; // Assuming this is the user ID
-const { data: userInstitutions, error } = await db.from('user_institutions').select('*').eq('user_id', userId).eq('institution_id', institution_id);
+      const database = await getDb();
+      const { data: userInstitutions, error } = await database.from('user_institutions').select('*').eq('user_id', userId).eq('institution_id', institution_id);
 if (!userInstitutions || userInstitutions.length === 0) {
   return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
 }
@@ -47,7 +48,7 @@ if (!userInstitutions || userInstitutions.length === 0) {
       const fileBuf = Buffer.from(arrayBuffer);
       const dataUrl = `data:${file.type};base64,${fileBuf.toString("base64")}`;
 
-      const inserted = await db.insert(files).values({
+      const inserted = await database.insert(files).values({
         name: file.name,
         fileUrl: dataUrl,
         fileType: file.type,
@@ -78,7 +79,7 @@ if (!userInstitutions || userInstitutions.length === 0) {
     }
 
     // Save DB record with storage path
-    const inserted = await db.insert(files).values({
+    const inserted = await database.insert(files).values({
       name: file.name,
       fileUrl: null, // Will be generated on GET request if needed
       fileType: file.type,

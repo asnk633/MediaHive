@@ -6,18 +6,13 @@ import 'package:mediahive_mobile/core/router/router.dart';
 
 class SessionRecoveryService {
   static Future<void> handleExpiredSession() async {
-    // 1. Clear auth state & caches
-    try {
-      await Supabase.instance.client.auth.signOut();
-    } catch (_) {}
-    
-    // 2. Notify UI (context-free, works from anywhere)
+    // 1. Notify UI (context-free, works from anywhere)
     SnackbarService.show(
       text: 'Session expired. Please sign in again.',
       duration: const Duration(seconds: 2),
     );
 
-    // 3. Redirect & clear backstack
+    // 2. Redirect & clear backstack
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final context = rootNavigatorKey.currentContext;
       if (context != null) {

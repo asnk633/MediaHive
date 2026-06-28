@@ -16,24 +16,42 @@ class AuthService {
   final Ref _ref;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   StreamSubscription<AuthState>? _authSubscription;
+  bool _isManualSignOut = false;
+  User? _previousUser;
 
   AuthService(this._client, this._logger, this._ref) {
     _init();
   }
 
   void _init() {
+    _previousUser = _client.auth.currentUser;
+
     _authSubscription = _client.auth.onAuthStateChange.listen((data) {
       final AuthChangeEvent event = data.event;
       final Session? session = data.session;
+      final User? user = session?.user ?? _client.auth.currentUser;
 
       _logger.info('Auth Event: ${event.name}');
       
-      if (session == null && event != AuthChangeEvent.signedIn && event != AuthChangeEvent.initialSession) {
-        // Session lost/expired -> trigger recovery
-        SessionRecoveryService.handleExpiredSession();
+      final wasSignedIn = _previousUser != null;
+      _previousUser = user;
+
+      if (session == null) {
+        // Reset manual sign-out flag to prevent stale leakage
+        if (_isManualSignOut) {
+          _isManualSignOut = false;
+          _logger.info('Manual sign out flag consumed and cleared');
+        } else if (event != AuthChangeEvent.signedIn && event != AuthChangeEvent.initialSession) {
+          if (wasSignedIn) {
+            // Session lost/expired -> trigger recovery
+            _logger.warning('Session lost/expired (transitioned to null), triggering recovery');
+            SessionRecoveryService.handleExpiredSession();
+          }
+        }
       }
 
       if (event == AuthChangeEvent.signedIn) {
+        _isManualSignOut = false; // Reset flag on sign in to prevent leak
         _logger.info('User signed in: ${session?.user.email}');
         _ref.read(fcmServiceProvider).initialize();
         _ref.read(fcmServiceProvider).uploadTokenForCurrentUser();
@@ -116,9 +134,22 @@ class AuthService {
   Future<void> signOut() async {
     _logger.info('Signing out user');
     try {
+      // 1. Attempt to deregister the FCM token while still authenticated.
+      // Scoped inside a 2-second timeout and try-catch to prevent network issues from blocking local sign-out.
+      await _ref.read(fcmServiceProvider).deregisterToken().timeout(
+        const Duration(seconds: 2),
+        onTimeout: () => _logger.warning('FCM token deregistration timed out during manual sign-out'),
+      );
+    } catch (e) {
+      _logger.warning('Failed to deregister FCM token before sign out: $e');
+    }
+
+    _isManualSignOut = true;
+    try {
       await _client.auth.signOut();
     } catch (e) {
       _logger.error('Sign out failed', e);
+      _isManualSignOut = false;
     }
   }
 

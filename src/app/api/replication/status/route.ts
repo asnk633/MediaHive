@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import {
   tasks,
   events,
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     // Get approximate row counts for key tables
     try {
       const tableStats = [
-        { name: 'tasks', query: () => db.select({ count: count() }).from(tasks).where(withTenantDrizzle(tasks, tenantId)) },
+        { name: 'tasks', query: () => db!.select({ count: count() }).from(tasks).where(withTenantDrizzle(tasks, tenantId)) },
         { name: 'events', query: () => db.select({ count: count() }).from(events).where(withTenantDrizzle(events, tenantId)) },
         { name: 'users', query: () => db.select({ count: count() }).from(users).where(withTenantDrizzle(users, tenantId)) },
         { name: 'auditLog', query: () => db.select({ count: count() }).from(auditLog).where(withTenantDrizzle(auditLog, tenantId)) }

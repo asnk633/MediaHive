@@ -2,7 +2,7 @@
 // Endpoint to acquire a task edit lock
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { editLocks, tasks } from '@/db/schema';
 import { eq, gt, and } from 'drizzle-orm';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
@@ -27,6 +27,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    const db = await getDb();
 
     // Check if task exists
     const [task] = await db.select().from(tasks).where(eq(tasks.id, taskId));

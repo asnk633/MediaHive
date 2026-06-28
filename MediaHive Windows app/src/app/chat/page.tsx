@@ -44,7 +44,7 @@ export default function ChatPage() {
           id: profile.id,
           fullName: profile.full_name || profile.name || "User",
           role: profile.role || "member",
-          tenantId: tenantId,
+          tenant_id: tenantId,
           avatarUrl: profile.avatar_url,
           avatarDriveId: profile.avatar_drive_id
         };

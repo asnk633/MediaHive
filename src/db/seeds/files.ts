@@ -1,7 +1,8 @@
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { files } from '@/db/schema';
 
 async function main() {
+    const db = await getDb();
     const sampleFiles = [
         {
             name: 'Company_Logo_2024.png',

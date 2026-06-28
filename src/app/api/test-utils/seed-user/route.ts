@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { users, institutions, tenants } from '@/db/schema';
 import bcrypt from 'bcryptjs';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 // Only allow this endpoint in development/test environments
 const isDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
@@ -31,9 +31,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Ensure database is initialized
-    const { getDb } = await import('@/db');
-    const { sql } = await import('drizzle-orm');
     const dbInstance = await getDb();
 
     // Ensure core tables exist (Manual initialization for robustness in test env)

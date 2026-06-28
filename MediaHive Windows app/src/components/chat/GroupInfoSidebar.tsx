@@ -19,7 +19,7 @@ import {
   CheckCircle2,
   Check
 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import AddUserModal from './AddUserModal';
 import { supabase } from '@/lib/supabaseClient';
 import { getDriveImageUrl } from '@/lib/driveUtils';
@@ -565,9 +565,9 @@ export default function GroupInfoSidebar({
                     <AlertCircle className="h-5 w-5 text-amber-500 animate-pulse" />
                     Clear Chat History
                   </DialogTitle>
-                  <p className="text-xs text-[#a1a1aa] mt-2 leading-relaxed">
+                  <DialogDescription className="text-xs text-[#a1a1aa] mt-2 leading-relaxed">
                     Are you sure you want to clear **"{room.name || 'this chat'}"**? This will permanently wipe all text message records from Supabase. Drive attachment files will remain saved.
-                  </p>
+                  </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="gap-2 justify-center sm:justify-center mt-4">
                   <Button 
@@ -601,9 +601,9 @@ export default function GroupInfoSidebar({
                     <AlertCircle className="h-5 w-5 text-rose-500 animate-pulse" />
                     Delete Conversation
                   </DialogTitle>
-                  <p className="text-xs text-[#a1a1aa] mt-2 leading-relaxed">
+                  <DialogDescription className="text-xs text-[#a1a1aa] mt-2 leading-relaxed">
                     Are you sure you want to delete **"{room.name}"**? This will permanently wipe all participants, media uploads, and message records.
-                  </p>
+                  </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="gap-2 justify-center sm:justify-center mt-4">
                   <Button 

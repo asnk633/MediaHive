@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { isTauri } from '@tauri-apps/api/core';
 
 import { useEffect } from "react";
@@ -22,7 +22,6 @@ const NO_SHELL_ROUTES = [
  */
 export default function ShellWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = import("next/navigation").then(m => m.useRouter).catch(() => null); // or just import useRouter at the top
   const hideShell = NO_SHELL_ROUTES.includes(pathname);
 
   // Mount mouse light listener globally on shell-activated pages

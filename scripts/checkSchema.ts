@@ -2,14 +2,16 @@ import { createClient } from '@supabase/supabase-js';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 
-// Load .env.local first (Next.js standard); fall back to .env if it doesn't exist
-if (fs.existsSync('.env.local')) {
-    dotenv.config({ path: '.env.local' });
-} else {
+// Load default .env first
+if (fs.existsSync('.env')) {
     dotenv.config({ path: '.env' });
 }
+// Then load .env.local to override (Next.js behavior)
+if (fs.existsSync('.env.local')) {
+    dotenv.config({ path: '.env.local', override: true });
+}
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {

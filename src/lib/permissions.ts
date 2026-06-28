@@ -31,7 +31,7 @@ export const ROLES: Record<string, Permission[]> = {
     ],
     manager: [
         'read:tasks', 'create:tasks', 'edit:tasks', 'delete:tasks', 'edit:task_status', 'edit:task_priority', 'assign:tasks',
-        'read:events', 'create:events', 'edit:events',
+        'read:events', 'create:events', 'edit:events', 'delete:events',
         'read:users', 'read:files', 'upload:files', 'delete:files', 'read:reports'
     ],
     team: [ 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { automationRules } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { verifyUser } from '@/lib/verifyUser';
@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
     }
 
     try {
+        const db = await getDb();
         const customRules = await db.query.automationRules.findMany({
             where: and(
                 eq(automationRules.isSystem, false),
@@ -58,6 +59,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
+        const db = await getDb();
         const body = await req.json();
         const { ruleKey, scopeType, scopeId, eventType, action, priority, conditions } = body;
 
@@ -97,6 +99,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     try {
+        const db = await getDb();
         const { id, command } = await req.json();
 
         if (command === 'activate') {

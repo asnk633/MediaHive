@@ -3,8 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  CheckSquare, Calendar, Clock, AlertCircle,
-  Play, CheckCircle2, Sparkles, ArrowUpRight
+  CheckSquare, Calendar, Sparkles, ArrowUpRight
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContextProvider";
@@ -62,32 +61,52 @@ export default function Dashboard() {
     setTagline(lines[Math.floor(Math.random() * lines.length)]);
   }, []);
 
+  const fetchDashboardData = React.useCallback(async () => {
+    if (!user) return;
+    setLoadingData(true);
+    try {
+      const tenant = user.institution_id || user.tenant_id;
+
+      // SAFETY: Never run unscoped queries. If tenant is missing, show empty state.
+      // RLS enforces this server-side too, but we guard client-side as defense-in-depth.
+      if (!tenant) {
+        console.warn("[Dashboard] User has no tenant_id. Showing empty state.");
+        setTasks([]);
+        setEvents([]);
+        setCampaigns([]);
+        setLoadingData(false);
+        return;
+      }
+
+      // tenant is guaranteed non-null here — always apply filter
+      let tQ = supabase.from("tasks").select("*, task_assignments(*)").eq("deleted", false).eq("tenant_id", tenant).order("created_at", { ascending: false }).limit(500);
+      let eQ = supabase.from("events").select("*").eq("deleted", false).eq("tenant_id", tenant).order("date", { ascending: true }).limit(5);
+      let cQ = supabase.from("campaigns").select("*").eq("status", "active").eq("tenant_id", tenant).order("created_at", { ascending: false }).limit(1);
+
+      const [tR, eR, cR] = await Promise.all([tQ, eQ, cQ]);
+      if (tR.data) setTasks(tR.data.filter((t: any) => !t.is_demo_data));
+      if (eR.data) setEvents(eR.data.filter((e: any) => !e.is_demo_data));
+      if (cR.data) setCampaigns(cR.data);
+    } catch (e) {
+      console.error("Dashboard fetch error:", e);
+    } finally {
+      setLoadingData(false);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (authLoading) return;
     if (!user) { setLoadingData(false); return; }
+    fetchDashboardData();
+  }, [user, authLoading, fetchDashboardData]);
 
-    (async () => {
-      setLoadingData(true);
-      try {
-        const tenant = user.institution_id || user.tenant_id;
-
-        let tQ = supabase.from("tasks").select("*, task_assignments(*)").eq("deleted", false).order("created_at", { ascending: false }).limit(500);
-        let eQ = supabase.from("events").select("*").eq("deleted", false).order("date", { ascending: true }).limit(5);
-        let cQ = supabase.from("campaigns").select("*").eq("status", "active").order("created_at", { ascending: false }).limit(1);
-
-        if (tenant) { tQ = tQ.eq("tenant_id", tenant); eQ = eQ.eq("tenant_id", tenant); cQ = cQ.eq("tenant_id", tenant); }
-
-        const [tR, eR, cR] = await Promise.all([tQ, eQ, cQ]);
-        if (tR.data) setTasks(tR.data.filter((t: any) => !t.is_demo_data));
-        if (eR.data) setEvents(eR.data.filter((e: any) => !e.is_demo_data));
-        if (cR.data) setCampaigns(cR.data);
-      } catch (e) {
-        console.error("Dashboard fetch error:", e);
-      } finally {
-        setLoadingData(false);
-      }
-    })();
-  }, [user, authLoading]);
+  useEffect(() => {
+    const handleRefresh = () => {
+      fetchDashboardData();
+    };
+    window.addEventListener("mediahive:dashboard-refresh", handleRefresh);
+    return () => window.removeEventListener("mediahive:dashboard-refresh", handleRefresh);
+  }, [fetchDashboardData]);
 
   // Date helpers
   const today = new Date(); today.setHours(0, 0, 0, 0);
@@ -246,7 +265,7 @@ export default function Dashboard() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 relative z-10">
             {loadingData
-              ? <>{[0,1,2,4].map(i => <ScheduleSkeleton key={i} />)}</>
+              ? <>{[0,1,2,3].map(i => <ScheduleSkeleton key={i} />)}</>
               : events.length > 0
                 ? events.map(ev => (
                     <ScheduleItem

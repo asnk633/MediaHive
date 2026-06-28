@@ -9,7 +9,7 @@ import React, {
 } from "react";
 
 import { supabase } from "@/lib/supabaseClient";
-import { useToast } from "@/components/ToastProvider";
+import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { withTenant } from "@/lib/tenantQuery";
 import { apiFromUiStatus, uiFromApiStatus, type UiStatus } from "./utils/uiMaps";
@@ -80,7 +80,6 @@ export function useClientData() {
 // ---------- Provider ----------
 export function ClientDataProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
-  const toast = useToast();
 
   const [tasks, setTasks] = useState<TaskLite[]>([]);
   const [loading, setLoading] = useState(true);
@@ -162,7 +161,7 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
         .single();
 
       if (error) {
-        toast.show("Couldn't create task", "error");
+        toast.error("Couldn't create task");
         throw error;
       }
 
@@ -174,9 +173,9 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
         ...prev,
       ]);
 
-      toast.show("Task created", "success");
+      toast.success("Task created");
     },
-    [toast, user]
+    [user]
   );
 
   // ---------- Update Task ----------
@@ -207,7 +206,7 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
         .single();
 
       if (error) {
-        toast.show("Couldn't update task", "error");
+        toast.error("Couldn't update task");
         return false;
       }
 
@@ -222,10 +221,10 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
         )
       );
 
-      toast.show("Saved", "success");
+      toast.success("Saved");
       return true;
     },
-    [toast]
+    []
   );
 
   // ---------- Soft Delete ----------
@@ -249,15 +248,15 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
         .eq("id", id);
 
       if (error) {
-        toast.show("Delete failed", "error");
+        toast.error("Delete failed");
         return false;
       }
 
       setTasks((prev) => prev.filter((t) => t.id !== id));
-      toast.show("Task deleted", "success");
+      toast.success("Task deleted");
       return true;
     },
-    [toast]
+    []
   );
 
   return (

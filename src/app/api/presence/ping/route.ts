@@ -2,7 +2,7 @@
 // Endpoint to update user presence status
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { presence } from '@/db/schema';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { broadcastEvent } from '../../_lib/realtime';
@@ -17,6 +17,8 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const db = await getDb();
 
     // Update presence in database
     const now = new Date().toISOString();

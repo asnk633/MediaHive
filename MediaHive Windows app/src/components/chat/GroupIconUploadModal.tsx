@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import Cropper from 'react-easy-crop';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
@@ -92,6 +92,9 @@ export const GroupIconUploadModal: React.FC<GroupIconUploadModalProps> = ({
                             </div>
                             Edit Group Icon Photo
                         </DialogTitle>
+                        <DialogDescription className="sr-only">
+                            Upload and crop a new image for the group chat icon.
+                        </DialogDescription>
                     </DialogHeader>
                 </div>
 

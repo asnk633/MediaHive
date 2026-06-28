@@ -5,7 +5,7 @@ import { Toaster as Sonner, ToasterProps } from "sonner"
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
-      theme={"dark"} // Use dark theme by default to match our app
+      // Theme adapts via CSS variables — no hardcoded theme
       className="toaster group"
       style={
         {

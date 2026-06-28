@@ -3,6 +3,7 @@ import { Capacitor } from '@capacitor/core';
 import { COPY } from '@/lib/copy';
 import { logPerformance } from '@/system/performanceLogger';
 import { devMonitor } from '@/system/devMonitor';
+import { toast } from 'sonner';
 
 // Request deduplication cache
 const inflightRequests = new Map<string, Promise<any>>();
@@ -135,13 +136,10 @@ function show429Toast() {
   if (now - last429Toast > TOAST_COOLDOWN_MS) {
     last429Toast = now;
 
-    // Dynamically import toast to avoid SSR issues
     if (typeof window !== 'undefined') {
-      import('sonner').then(({ toast }) => {
-        toast.error(COPY.toasts.rateLimit, {
-          duration: 5000,
-          id: 'rate-limit-429' // Prevent duplicate toasts
-        });
+      toast.error(COPY.toasts.rateLimit, {
+        duration: 5000,
+        id: 'rate-limit-429' // Prevent duplicate toasts
       });
     }
   }

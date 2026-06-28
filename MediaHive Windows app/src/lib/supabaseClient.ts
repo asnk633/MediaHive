@@ -7,7 +7,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: false // Tauri: tokens arrive via deep-link plugin, not URL hash
   }
 });
 

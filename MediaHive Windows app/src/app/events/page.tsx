@@ -61,6 +61,31 @@ export default function EventsPage() {
     fetchEvents();
   }, [user, authLoading]);
 
+  // Handle global quick create "?create=true" query parameter offline-safe
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const checkQuery = () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("create") === "true") {
+        setFormData({
+          title: "",
+          description: "",
+          location: "",
+          start_at: "",
+          end_at: "",
+          production_stage: "Shoot"
+        });
+        setShowModal(true);
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    };
+
+    checkQuery();
+    const interval = setInterval(checkQuery, 250);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;

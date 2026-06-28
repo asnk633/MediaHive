@@ -34,7 +34,7 @@ interface AdminConfidencePanelProps {
 
 const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, events, mediaFiles, users, institution_id, onTaskClick }) => {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  const isAuthorized = user?.role === 'admin' || user?.role === 'manager';
 
   // Local helper for safe date parsing across ISO and legacy formats
   const parseDate = (d: any): Date => {
@@ -48,8 +48,8 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
   // Check if workflow power tools feature is enabled
   const isFeatureEnabledFlag = isFeatureEnabled('workflowPowerTools');
 
-  // If feature is disabled or not admin, don't render the panel
-  if (!isFeatureEnabledFlag || !isAdmin) {
+  // If feature is disabled or not authorized, don't render the panel
+  if (!isFeatureEnabledFlag || !isAuthorized) {
     return null;
   }
 

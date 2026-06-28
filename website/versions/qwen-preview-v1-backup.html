@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desk Awakening — Cinematic 3D Hero (Qwen Version)</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #06090f;
+    overflow-x: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .hero-section {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+  }
+
+  #three-canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(6,9,15,0.25) 0%, rgba(6,9,15,0.55) 50%, rgba(6,9,15,0.75) 100%);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    text-shadow: 0 2px 40px rgba(0,0,0,0.6);
+    margin-bottom: 1rem;
+  }
+
+  .hero-content p {
+    font-size: clamp(1rem, 1.8vw, 1.35rem);
+    color: rgba(255,255,255,0.7);
+    max-width: 520px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+    text-shadow: 0 1px 20px rgba(0,0,0,0.5);
+  }
+
+  .hero-cta {
+    display: inline-block;
+    padding: 0.9rem 2.8rem;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.05rem;
+    border-radius: 60px;
+    text-decoration: none;
+    pointer-events: auto;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 30px rgba(99,102,241,0.4);
+    letter-spacing: -0.01em;
+  }
+
+  .hero-cta:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 40px rgba(99,102,241,0.55);
+  }
+
+  #fade-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #06090f;
+    z-index: 4;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.05s;
+  }
+
+  .spacer {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.3);
+    font-size: 1.2rem;
+  }
+</style>
+</head>
+<body>
+
+<section class="hero-section">
+  <canvas id="three-canvas"></canvas>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>Desk Awakening</h1>
+    <p>A cinematic scene that comes to life. Watch the clutter clear as your workspace transforms.</p>
+    <a href="#" class="hero-cta">Explore Workspace</a>
+  </div>
+  <div id="fade-overlay"></div>
+</section>
+
+<div class="spacer">↓ Scroll content below hero ↓</div>
+
+<!-- Three.js + Post Processing -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+  }
+}
+</script>
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { BokehPass } from 'three/addons/postprocessing/BokehPass.js';
+import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+// ─── GLOBALS ──────────────────────────────────────────────
+let renderer, scene, camera, composer;
+let laptopBase, laptopLid, screenMaterial, keyLight, screenRimLight;
+let clapperboard, sdCard, lensCap, cableGroup, notebook, coffeeCup;
+let sceneGroup, deskMesh, laptopGroup;
+const clock = new THREE.Clock();
+const fadeOverlay = document.getElementById('fade-overlay');
+
+// ─── INIT ─────────────────────────────────────────────────
+function init() {
+  // Renderer
+  const canvas = document.getElementById('three-canvas');
+  renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: false,
+    powerPreference: 'high-performance'
+  });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  // Scene
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0a0e17);
+  scene.fog = new THREE.FogExp2(0x0a0e17, 0.035);
+
+  // Camera — 3/4 angle
+  camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.set(4, 3.2, 6);
+  camera.lookAt(0, 0.5, 0);
+
+  // Scene group for reset
+  sceneGroup = new THREE.Group();
+  scene.add(sceneGroup);
+
+  buildEnvironment();
+  buildDesk();
+  buildLaptop();
+  buildClutterObjects();
+  setupLighting();
+  setupPostProcessing();
+  setupCameraIdle();
+  setupAnimationTimeline();
+
+  window.addEventListener('resize', onResize);
+}
+
+// ─── ENVIRONMENT MAP ──────────────────────────────────────
+function createEnvMap() {
+  const pmremGen = new THREE.PMREMGenerator(renderer);
+  pmremGen.compileEquirectangularShader();
+  scene.environment = pmremGen.fromScene(new RoomEnvironment(), 0.04).texture;
+  pmremGen.dispose();
+}
+
+// ─── BUILD ENVIRONMENT ────────────────────────────────────
+function buildEnvironment() {
+  createEnvMap();
+}
+
+// ─── BUILD DESK SURFACE ───────────────────────────────────
+function buildDesk() {
+  // Desk surface
+  const deskGeo = new THREE.BoxGeometry(14, 0.15, 8);
+  const deskMat = new THREE.MeshStandardMaterial({
+    color: 0x1a1510,
+    roughness: 0.75,
+    metalness: 0.05,
+  });
+  deskMesh = new THREE.Mesh(deskGeo, deskMat);
+  deskMesh.position.set(0, -0.075, 0);
+  deskMesh.receiveShadow = true;
+  deskMesh.castShadow = false;
+  sceneGroup.add(deskMesh);
+
+  // Subtle edge highlight strip on desk front
+  const edgeGeo = new THREE.BoxGeometry(14, 0.02, 0.03);
+  const edgeMat = new THREE.MeshStandardMaterial({
+    color: 0x2a2520, roughness: 0.5, metalness: 0.3
+  });
+  const edgeMesh = new THREE.Mesh(edgeGeo, edgeMat);
+  edgeMesh.position.set(0, 0.076, 4.01);
+  sceneGroup.add(edgeMesh);
+
+  // Desk leg hints (back)
+  for (let x of [-5.8, 5.8]) {
+    const legGeo = new THREE.BoxGeometry(0.2, 3, 0.2);
+    const legMat = new THREE.MeshStandardMaterial({ color: 0x12100d, roughness: 0.9 });
+    const leg = new THREE.Mesh(legGeo, legMat);
+    leg.position.set(x, -1.65, -3.5);
+    leg.receiveShadow = true;
+    sceneGroup.add(leg);
+  }
+}
+
+// ─── BUILD LAPTOP ─────────────────────────────────────────
+function buildLaptop() {
+  laptopGroup = new THREE.Group();
+
+  // ── Laptop Base (keyboard area) ──
+  const baseGeo = new THREE.BoxGeometry(2.8, 0.12, 1.9);
+  const baseMat = new THREE.MeshStandardMaterial({
+    color: 0x3a3a42,
+    roughness: 0.35,
+    metalness: 0.7,
+  });
+  laptopBase = new THREE.Mesh(baseGeo, baseMat);
+  laptopBase.position.set(0, 0.18, 0);
+  laptopBase.castShadow = true;
+  laptopBase.receiveShadow = true;
+  laptopGroup.add(laptopBase);
+
+  // Keyboard well (recessed dark area)
+  const kbWellGeo = new THREE.BoxGeometry(2.5, 0.01, 1.4);
+  const kbMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1e, roughness: 0.9 });
+  const kbWell = new THREE.Mesh(kbWellGeo, kbMat);
+  kbWell.position.set(0, 0.25, -0.15);
+  kbWell.receiveShadow = true;
+  laptopGroup.add(kbWell);
+
+  // Trackpad
+  const tpGeo = new THREE.BoxGeometry(0.7, 0.008, 0.4);
+  const tpMat = new THREE.MeshStandardMaterial({ color: 0x2a2a30, roughness: 0.5, metalness: 0.4 });
+  const trackpad = new THREE.Mesh(tpGeo, tpMat);
+  trackpad.position.set(0, 0.265, 0.45);
+  trackpad.receiveShadow = true;
+  laptopGroup.add(trackpad);
+
+  // ── Screen Lid (hinged) ──
+  laptopLid = new THREE.Group();
+  laptopLid.position.set(0, 0.24, -0.92); // hinge point
+
+  const lidGeo = new THREE.BoxGeometry(2.8, 0.1, 1.75);
+  const lidMat = new THREE.MeshStandardMaterial({
+    color: 0x3a3a42,
+    roughness: 0.35,
+    metalness: 0.7,
+  });
+  const lidMesh = new THREE.Mesh(lidGeo, lidMat);
+  lidMesh.position.set(0, 0.05, 0.875); // offset so hinge is at bottom-back
+  lidMesh.castShadow = true;
+  laptopLid.add(lidMesh);
+
+  // Screen panel (emissive)
+  const screenGeo = new THREE.BoxGeometry(2.55, 0.01, 1.6);
+  screenMaterial = new THREE.MeshStandardMaterial({
+    color: 0x000000,
+    emissive: new THREE.Color(0x000000),
+    emissiveIntensity: 0,
+    roughness: 0.2,
+    metalness: 0.8,
+  });
+  const screenMesh = new THREE.Mesh(screenGeo, screenMaterial);
+  screenMesh.position.set(0, -0.005, 0.875);
+  laptopLid.add(screenMesh);
+
+  // Screen bezel frame (thin dark border)
+  const bezelMat = new THREE.MeshStandardMaterial({ color: 0x1a1a20, roughness: 0.4, metalness: 0.5 });
+
+  // Top bezel with camera dot
+  const topBezelGeo = new THREE.BoxGeometry(2.7, 0.02, 0.06);
+  const topBezel = new THREE.Mesh(topBezelGeo, bezelMat);
+  topBezel.position.set(0, -0.005, 1.705);
+  laptopLid.add(topBezel);
+
+  // Bottom bezel (chin)
+  const chinGeo = new THREE.BoxGeometry(2.7, 0.02, 0.06);
+  const chin = new THREE.Mesh(chinGeo, bezelMat);
+  chin.position.set(0, -0.005, 0.045);
+  laptopLid.add(chin);
+
+  // Left/Right bezels
+  for (let side of [-1, 1]) {
+    const sideBezelGeo = new THREE.BoxGeometry(0.03, 0.02, 1.72);
+    const sb = new THREE.Mesh(sideBezelGeo, bezelMat);
+    sb.position.set(side * 1.365, -0.005, 0.875);
+    laptopLid.add(sb);
+  }
+
+  // Webcam dot
+  const camDotGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.01, 16);
+  const camDotMat = new THREE.MeshStandardMaterial({ color: 0x222228, roughness: 0.3, metalness: 0.9 });
+  const camDot = new THREE.Mesh(camDotGeo, camDotMat);
+  camDot.rotation.x = Math.PI / 2;
+  camDot.position.set(0, -0.01, 1.705);
+  laptopLid.add(camDot);
+
+  // Initial state: lid closed (flat on keyboard)
+  laptopLid.rotation.x = 0;
+
+  laptopGroup.add(laptopLid);
+  sceneGroup.add(laptopGroup);
+}
+
+// ─── BUILD CLUTTER OBJECTS ────────────────────────────────
+function buildClutterObjects() {
+  // ── CLAPPERBOARD ──
+  clapperboard = new THREE.Group();
+
+  // Board base
+  const cbBaseGeo = new THREE.BoxGeometry(0.9, 1.1, 0.06);
+  const cbBaseMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.85 });
+  const cbBase = new THREE.Mesh(cbBaseGeo, cbBaseMat);
+  clapperboard.add(cbBase);
+
+  // Top hinged strip (angled)
+  const topStripGroup = new THREE.Group();
+  const tsGeo = new THREE.BoxGeometry(0.95, 0.12, 0.08);
+  const tsMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.8 });
+
+  // Stripes on top bar
+  for (let i = -4; i <= 4; i++) {
+    const stripeGeo = new THREE.BoxGeometry(0.1, 0.12, 0.085);
+    const stripeMat = new THREE.MeshStandardMaterial({
+      color: i % 2 === 0 ? 0xeeeeee : 0x111111,
+      roughness: 0.7
+    });
+    const stripe = new THREE.Mesh(stripeGeo, stripeMat);
+    stripe.position.x = i * 0.1;
+    topStripGroup.add(stripe);
+  }
+
+  const tsMesh = new THREE.Mesh(tsGeo, tsMat);
+  tsMesh.position.y = 0.55;
+  tsMesh.rotation.x = -0.35; // slightly angled open
+  topStripGroup.add(tsMesh);
+  clapperboard.add(topStripGroup);
+
+  clapperboard.position.set(-3.2, 0.65, -1.8);
+  clapperboard.rotation.set(0.1, -0.3, 0.15);
+  clapperboard.castShadow = true;
+  clapperboard.receiveShadow = true;
+
+  // ── SD CARD ──
+  const sdGeo = new THREE.BoxGeometry(0.22, 0.015, 0.34);
+  const sdMat = new THREE.MeshStandardMaterial({
+    color: 0x1a1a1a,
+    roughness: 0.6,
+    metalness: 0.3,
+  });
+  sdCard = new THREE.Mesh(sdGeo, sdMat);
+
+  // Gold contacts on one corner
+  const contactGeo = new THREE.BoxGeometry(0.08, 0.016, 0.04);
+  const contactMat = new THREE.MeshStandardMaterial({
+    color: 0xd4a017,
+    roughness: 0.2,
+    metalness: 0.95,
+    emissive: new THREE.Color(0xd4a017),
+    emissiveIntensity: 0.15,
+  });
+  const contact = new THREE.Mesh(contactGeo, contactMat);
+  contact.position.set(0.06, 0, -0.12);
+  sdCard.add(contact);
+
+  sdCard.position.set(-2.2, 0.08, -0.5);
+  sdCard.rotation.y = 0.4;
+  sdCard.castShadow = true;
+  sdCard.receiveShadow = true;
+
+  // ── LENS CAP ──
+  lensCap = new THREE.Group();
+  const lcBodyGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.1, 32);
+  const lcMat = new THREE.MeshStandardMaterial({
+    color: 0x1a1a1e,
+    roughness: 0.85,
+    metalness: 0.05,
+  });
+  const lcBody = new THREE.Mesh(lcBodyGeo, lcMat);
+  lensCap.add(lcBody);
+
+  // Ridge ring on top
+  const ridgeGeo = new THREE.TorusGeometry(0.26, 0.015, 8, 32);
+  const ridgeMat = new THREE.MeshStandardMaterial({ color: 0x2a2a30, roughness: 0.7 });
+  const ridge = new THREE.Mesh(ridgeGeo, ridgeMat);
+  ridge.rotation.x = Math.PI / 2;
+  ridge.position.y = 0.05;
+  lensCap.add(ridge);
+
+  // Center depression
+  const depGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.02, 32);
+  const depMat = new THREE.MeshStandardMaterial({ color: 0x111115, roughness: 0.9 });
+  const dep = new THREE.Mesh(depGeo, depMat);
+  dep.position.y = 0.06;
+  lensCap.add(dep);
+
+  lensCap.position.set(2.5, 0.14, 0.8);
+  lensCap.rotation.x = Math.PI * 0.45;
+  lensCap.castShadow = true;
+  lensCap.receiveShadow = true;
+
+  // ── COILED CABLE (behind laptop) ──
+  cableGroup = new THREE.Group();
+  const cableMat = new THREE.MeshStandardMaterial({
+    color: 0x1a1a20,
+    roughness: 0.9,
+    metalness: 0.05,
+  });
+
+  // Create spiral path
+  const points = [];
+  const spiralRadius = 0.4;
+  const spiralTight = 0.35;
+  for (let i = 0; i <= 60; i++) {
+    const t = (i / 60) * Math.PI * 4;
+    points.push(new THREE.Vector3(
+      Math.cos(t) * spiralRadius,
+      Math.sin(t * 2) * spiralTight * 0.15,
+      Math.sin(t) * spiralRadius
+    ));
+  }
+
+  const tubeGeo = new THREE.TubeGeometry(
+    new THREE.CatmullRomCurve3(points),
+    80, 0.025, 12, false
+  );
+  const cableMesh = new THREE.Mesh(tubeGeo, cableMat);
+  cableMesh.castShadow = true;
+  cableGroup.add(cableMesh);
+
+  // Plug end (USB-C shape)
+  const plugGeo = new THREE.BoxGeometry(0.06, 0.04, 0.18);
+  const plugMat = new THREE.MeshStandardMaterial({ color: 0x333338, roughness: 0.5, metalness: 0.6 });
+  const plug = new THREE.Mesh(plugGeo, plugMat);
+  plug.position.set(spiralRadius * Math.cos(Math.PI * 4), 0, spiralRadius * Math.sin(Math.PI * 4));
+  plug.castShadow = true;
+  cableGroup.add(plug);
+
+  cableGroup.position.set(0.5, 0.12, -2.0);
+  cableGroup.rotation.y = 0.5;
+  cableGroup.castShadow = true;
+  cableGroup.receiveShadow = true;
+
+  // ── NOTEBOOK (slightly open) ──
+  notebook = new THREE.Group();
+
+  const pageMat = new THREE.MeshStandardMaterial({ color: 0xf5f0e8, roughness: 0.95 });
+  const coverMat = new THREE.MeshStandardMaterial({ color: 0x2a1f3d, roughness: 0.7, metalness: 0.05 });
+
+  // Back cover (flat on desk)
+  const backGeo = new THREE.BoxGeometry(0.6, 0.04, 0.85);
+  const backCover = new THREE.Mesh(backGeo, coverMat);
+  notebook.add(backCover);
+
+  // Pages block (slightly raised, angled)
+  const pagesGeo = new THREE.BoxGeometry(0.56, 0.035, 0.8);
+  const pagesBlock = new THREE.Mesh(pagesGeo, pageMat);
+  pagesBlock.position.y = 0.03;
+  pagesBlock.rotation.z = -0.25; // slightly open
+  pagesBlock.position.x = 0.05;
+  notebook.add(pagesBlock);
+
+  // Front cover (angled up)
+  const frontGeo = new THREE.BoxGeometry(0.6, 0.04, 0.85);
+  const frontCover = new THREE.Mesh(frontGeo, coverMat);
+  frontCover.position.set(0.05, 0.05, -0.1);
+  frontCover.rotation.x = -0.35;
+  frontCover.castShadow = true;
+  notebook.add(frontCover);
+
+  // Page edges detail
+  const edgeGeo = new THREE.BoxGeometry(0.57, 0.02, 0.78);
+  const edgeMat2 = new THREE.MeshStandardMaterial({ color: 0xe8e0d0, roughness: 0.9 });
+  const pageEdge = new THREE.Mesh(edgeGeo, edgeMat2);
+  pageEdge.position.set(0.05, -0.01, 0);
+  notebook.add(pageEdge);
+
+  notebook.position.set(3.0, 0.05, -0.5);
+  notebook.castShadow = true;
+  notebook.receiveShadow = true;
+
+  // ── COFFEE CUP ──
+  coffeeCup = new THREE.Group();
+
+  const cupMat = new THREE.MeshStandardMaterial({
+    color: 0xc8a882,
+    roughness: 0.65,
+    metalness: 0.0,
+  });
+
+  // Cup body (cylinder)
+  const cupGeo = new THREE.CylinderGeometry(0.18, 0.15, 0.35, 32);
+  const cupBody = new THREE.Mesh(cupGeo, cupMat);
+  coffeeCup.add(cupBody);
+
+  // Coffee liquid surface
+  const coffeeGeo = new THREE.CylinderGeometry(0.17, 0.17, 0.02, 32);
+  const coffeeMat = new THREE.MeshStandardMaterial({ color: 0x2a1508, roughness: 0.4, metalness: 0.1 });
+  const coffeeSurf = new THREE.Mesh(coffeeGeo, coffeeMat);
+  coffeeSurf.position.y = 0.15;
+  coffeeCup.add(coffeeSurf);
+
+  // Handle (torus segment)
+  const handleGeo = new THREE.TorusGeometry(0.12, 0.02, 8, 24, Math.PI);
+  const handleMat = new THREE.MeshStandardMaterial({ color: 0xc8a882, roughness: 0.65 });
+  const handle = new THREE.Mesh(handleGeo, handleMat);
+  handle.position.set(0.18, 0, 0);
+  handle.rotation.z = -Math.PI / 2;
+  coffeeCup.add(handle);
+
+  // Saucer
+  const saucerGeo = new THREE.CylinderGeometry(0.25, 0.23, 0.02, 32);
+  const saucerMat = new THREE.MeshStandardMaterial({ color: 0xc8a882, roughness: 0.6 });
+  const saucer = new THREE.Mesh(saucerGeo, saucerMat);
+  saucer.position.y = -0.18;
+  coffeeCup.add(saucer);
+
+  coffeeCup.position.set(-2.5, 0.22, 1.5);
+  coffeeCup.rotation.z = 0.08; // slight tilt
+  coffeeCup.castShadow = true;
+  coffeeCup.receiveShadow = true;
+
+  // ── ADD ALL TO SCENE GROUP ──
+  sceneGroup.add(clapperboard);
+  sceneGroup.add(sdCard);
+  sceneGroup.add(lensCap);
+  sceneGroup.add(cableGroup);
+  sceneGroup.add(notebook);
+  sceneGroup.add(coffeeCup);
+}
+
+// ─── LIGHTING (3+ sources minimum) ────────────────────────
+function setupLighting() {
+  // 1. Hemisphere fill light (soft ambient)
+  const hemiLight = new THREE.HemisphereLight(0x4a5a8a, 0x1a1008, 0.6);
+  scene.add(hemiLight);
+
+  // 2. Key directional/spot light with shadow casting (decay = 0 for predictable lighting)
+  keyLight = new THREE.SpotLight(0xfaf0e6, 3.5, 0, Math.PI * 0.35, 0.6, 0);
+  keyLight.position.set(3, 8, 4);
+  keyLight.target.position.set(0, 0, 0);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.width = 1024;
+  keyLight.shadow.mapSize.height = 1024;
+  keyLight.shadow.camera.near = 0.5;
+  keyLight.shadow.camera.far = 20;
+  keyLight.shadow.bias = -0.001;
+  keyLight.shadow.radius = 4;
+  scene.add(keyLight);
+  scene.add(keyLight.target);
+
+  // 3. Rim/accent light (cool blue from behind-left)
+  const rimLight = new THREE.PointLight(0x4a7aff, 2.5, 0, 0);
+  rimLight.position.set(-4, 4, -3);
+  scene.add(rimLight);
+
+  // 4. Screen glow light (will ramp up)
+  screenRimLight = new THREE.PointLight(0x6088ff, 0, 0, 0);
+  screenRimLight.position.set(0, 1.5, -0.5);
+  scene.add(screenRimLight);
+
+  // 5. Subtle warm fill from front-right
+  const fillLight = new THREE.PointLight(0xffe8c0, 0.8, 0, 0);
+  fillLight.position.set(4, 2, 3);
+  scene.add(fillLight);
+}
+
+// ─── POST-PROCESSING (DoF + SSAO) ────────────────────────
+function setupPostProcessing() {
+  composer = new EffectComposer(renderer);
+
+  // Render pass
+  const renderPass = new RenderPass(scene, camera);
+  composer.addPass(renderPass);
+
+  // SSAO — subtle ambient occlusion for contact shadows (Disabled to check black screen issue)
+  /*
+  const ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight);
+  ssaoPass.kernelRadius = 8;
+  ssaoPass.minDistance = 0.005;
+  ssaoPass.maxDistance = 0.15;
+  ssaoPass.output = SSAOPass.OUTPUT.Default;
+  composer.addPass(ssaoPass);
+  */
+
+  // Bokeh depth of field — calibrated focus distance (7.82m) to keep the laptop perfectly sharp
+  const bokehPass = new BokehPass(scene, camera, {
+    focus: 7.82,          // distance to focal plane (laptop)
+    aperture: 0.012,     // small aperture for subtle blur
+    maxblur: 0.008,      // mild blur amount
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+  composer.addPass(bokehPass);
+
+  // Output pass (tone mapping + color space)
+  const outputPass = new OutputPass();
+  composer.addPass(outputPass);
+}
+
+// ─── CAMERA IDLE DRIFT ────────────────────────────────────
+function setupCameraIdle() {
+  gsap.to(camera.position, {
+    x: '+=0.35',
+    y: '+=0.12',
+    duration: 12,
+    repeat: -1,
+    yoyo: true,
+    ease: 'sine.inOut',
+  });
+
+  // Subtle orbit around lookAt target
+  gsap.to(camera.position, {
+    z: '+=0.2',
+    duration: 8,
+    repeat: -1,
+    yoyo: true,
+    ease: 'sine.inOut',
+  });
+}
+
+// ─── ANIMATION TIMELINE ──────────────────────────────────
+function setupAnimationTimeline() {
+  const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.5 });
+
+  // Store initial positions for reset
+  const initPositions = {
+    clapperboard: clapperboard.position.clone(),
+    clapperboardRot: clapperboard.rotation.z,
+    sdCard: sdCard.position.clone(),
+    lensCap: lensCap.position.clone(),
+    cable: cableGroup.position.clone(),
+    notebook: notebook.position.clone(),
+    coffeeCup: coffeeCup.position.clone(),
+  };
+
+  // PHASE 2 (0.5-4.5s): Staggered cleanup
+  tl.to(clapperboard.position, { x: -9, duration: 1.2, ease: 'power2.in' }, 0.5)
+    .to(clapperboard.rotation, { z: Math.PI * 2, duration: 1.2 }, 0.5)
+    .to(sdCard.position, { y: -3, duration: 0.8, ease: 'power3.in' }, 1.0)
+    .to(clapperboard.material || clapperboard.children[0].material, { opacity: 0, duration: 0.3 }, 1.6) // soft fade hint
+
+  tl.to(lensCap.position, { x: 8, z: 2, duration: 1.0, ease: 'power2.inOut' }, 1.3)
+    .to(cableGroup.position, { y: -3, duration: 1.0, ease: 'power2.in' }, 1.6)
+
+  tl.to(notebook.position, { x: 9, y: 0.5, duration: 1.1, ease: 'back.in(1.2)' }, 2.0)
+    .to(coffeeCup.position, { x: -7, y: -2, duration: 0.9, ease: 'power2.in' }, 2.4);
+
+  // PHASE 3 (4.5-7s): Laptop lid opens
+  tl.to(laptopLid.rotation, {
+    x: -Math.PI * 0.65, // corrected opening rotation (pointing backwards ~117deg)
+    duration: 2.2,
+    ease: 'power2.out',
+  }, 4.5);
+
+  // Screen emissive ramps in sync with lid angle
+  tl.to(screenMaterial, {
+    emissiveIntensity: 1.2,
+    emissive: new THREE.Color(0x3060cc),
+    duration: 1.5,
+    ease: 'power3.in',
+  }, 5.3);
+
+  // Key light intensity rises (screen becomes light source)
+  tl.to(keyLight, { intensity: 2.8, color: new THREE.Color(0x9ab4ff), duration: 1.5 }, 5.0)
+    .to(screenRimLight, { intensity: 3.0, duration: 1.8 }, 5.3);
+
+  // PHASE 4 (7-10s): Dashboard texture cross-fades on screen
+  tl.call(() => {
+    // Generate dashboard preview texture
+    if (!window.dashboardTexture) {
+      const c = document.createElement('canvas');
+      c.width = 512; c.height = 320;
+      const cx = c.getContext('2d');
+
+      // Dark dashboard background
+      cx.fillStyle = '#0c1528';
+      cx.fillRect(0, 0, 512, 320);
+
+      // Speedometer arcs
+      cx.strokeStyle = 'rgba(96, 160, 255, 0.4)';
+      cx.lineWidth = 3;
+      cx.beginPath();
+      cx.arc(140, 220, 80, Math.PI * 0.8, Math.PI * 0.1);
+      cx.stroke();
+
+      // Speed numbers
+      cx.fillStyle = 'rgba(180, 200, 255, 0.6)';
+      cx.font = '14px monospace';
+      for (let i = 0; i <= 8; i++) {
+        const angle = Math.PI * 0.8 + (i / 8) * (-Math.PI * 0.7);
+        const r = 72;
+        cx.fillText(String(i * 30), 140 + Math.cos(angle) * r - 5, 220 + Math.sin(angle) * r + 5);
+      }
+
+      // Center display
+      cx.fillStyle = 'rgba(96, 200, 180, 0.7)';
+      cx.font = 'bold 36px monospace';
+      cx.fillText('87', 260, 180);
+      cx.font = '12px monospace';
+      cx.fillStyle = 'rgba(96, 200, 180, 0.4)';
+      cx.fillText('km/h', 258, 200);
+
+      // RPM bar
+      cx.fillStyle = 'rgba(255, 100, 80, 0.3)';
+      for (let i = 0; i < 40; i++) {
+        cx.fillRect(100 + i * 9, 260, 7, 8);
+      }
+
+      // Bottom data line
+      cx.fillStyle = 'rgba(96, 160, 255, 0.25)';
+      cx.fillRect(60, 290, 390, 1);
+
+      // GPS-like route line
+      cx.strokeStyle = 'rgba(80, 220, 160, 0.5)';
+      cx.lineWidth = 2;
+      cx.beginPath();
+      cx.moveTo(80, 140);
+      cx.bezierCurveTo(150, 100, 300, 180, 420, 90);
+      cx.stroke();
+
+      // Grid dots
+      for (let x = 40; x < 520; x += 30) {
+        for (let y = 30; y < 270; y += 30) {
+          cx.fillStyle = 'rgba(80, 120, 200, 0.08)';
+          cx.fillRect(x, y, 2, 2);
+        }
+      }
+
+      window.dashboardTexture = new THREE.CanvasTexture(c);
+      window.dashboardTexture.minFilter = THREE.LinearFilter;
+      window.dashboardTexture.magFilter = THREE.LinearFilter;
+    }
+
+    // Blend dashboard onto screen using custom shader-like approach
+    const oldEmissive = screenMaterial.emissive.clone();
+    const oldIntensity = screenMaterial.emissiveIntensity;
+
+    // We'll use a two-texture blend: original dark → dashboard
+    if (!window.dashboardTexture2) {
+      window.dashboardTexture2 = window.dashboardTexture.clone();
+    }
+
+    screenMaterial.emissiveMap = window.dashboardTexture;
+    screenMaterial.needsUpdate = true;
+  }, null, 7.0);
+
+  tl.to(screenMaterial, {
+    emissiveIntensity: 1.8,
+    emissive: new THREE.Color(0xffffff), // transition emissive color to white to render the texture in full color
+    duration: 1.0,
+    ease: 'power2.inOut',
+  }, 7.0)
+  .to(keyLight, { intensity: 3.5, color: new THREE.Color(0xb0c8ff), duration: 1.0 }, 7.0);
+
+  // PHASE 5 (10-12s): Hold → fade to black → reset
+  tl.to(fadeOverlay, { opacity: 1, duration: 0.8 }, 10.0)
+    .call(() => {
+      // Instantly reset all objects while scene is hidden
+      clapperboard.position.copy(initPositions.clapperboard);
+      clapperboard.rotation.z = initPositions.clapperboardRot;
+
+      sdCard.position.copy(initPositions.sdCard);
+
+      lensCap.position.copy(initPositions.lensCap);
+
+      cableGroup.position.copy(initPositions.cable);
+
+      notebook.position.copy(initPositions.notebook);
+
+      coffeeCup.position.copy(initPositions.coffeeCup);
+
+      // Close laptop lid instantly (0 is flat on keyboard)
+      laptopLid.rotation.x = 0;
+
+      // Reset screen
+      screenMaterial.map = null;
+      screenMaterial.emissiveMap = null;
+      screenMaterial.emissiveIntensity = 0;
+      screenMaterial.emissive = new THREE.Color(0x000000);
+      screenMaterial.needsUpdate = true;
+
+      // Reset lights
+      keyLight.intensity = 3.5;
+      keyLight.color = new THREE.Color(0xfaf0e6);
+      screenRimLight.intensity = 0;
+
+    }, null, 10.8)
+    .to(fadeOverlay, { opacity: 0, duration: 0.2 }, 10.8);
+}
+
+// ─── SUBTLE IDLE MICRO-MOTION (continuous, not GSAP timeline)
+function applyIdleMotion(delta) {
+  const t = clock.elapsedTime;
+
+  // Every object gets a barely perceptible "held breath" wobble
+  const wobbleZ = Math.sin(t * 0.8) * 0.01;
+  clapperboard.rotation.z = clapperboard.userData.baseRotZ + wobbleZ;
+
+  const wobbleY = Math.cos(t * 0.6) * 0.008;
+  sdCard.position.y = sdCard.userData.basePosY + Math.sin(t * 1.1) * 0.003;
+
+  lensCap.rotation.z = lensCap.userData.baseRotZ + Math.sin(t * 0.7) * 0.01;
+
+  cableGroup.position.y = cableGroup.userData.basePosY + Math.sin(t * 0.5) * 0.002;
+
+  notebook.rotation.z = notebook.userData.baseRotZ + Math.sin(t * 0.9) * 0.008;
+
+  coffeeCup.rotation.z = coffeeCup.userData.baseRotZ + Math.cos(t * 0.65) * 0.006;
+}
+
+// Store base rotations for idle motion offset
+function storeBaseValues() {
+  clapperboard.userData.baseRotZ = clapperboard.rotation.z;
+  sdCard.userData.basePosY = sdCard.position.y;
+  lensCap.userData.baseRotZ = lensCap.rotation.z;
+  cableGroup.userData.basePosY = cableGroup.position.y;
+  notebook.userData.baseRotZ = notebook.rotation.z;
+  coffeeCup.userData.baseRotZ = coffeeCup.rotation.z;
+}
+
+// ─── RESIZE ──────────────────────────────────────────────
+function onResize() {
+  const w = window.innerWidth, h = window.innerHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+  composer.setSize(w, h);
+
+  // Update Bokeh pass dimensions
+  const bokehPass = composer.passes[2];
+  if (bokehPass) {
+    bokehPass.uniforms['aspect'].value = camera.aspect;
+  }
+}
+
+// ─── ANIMATION LOOP ──────────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+
+  const delta = clock.getDelta();
+  applyIdleMotion(delta);
+
+  composer.render();
+}
+
+// ─── START ───────────────────────────────────────────────
+init();
+storeBaseValues();
+animate();
+
+</script>
+</body>
+</html>

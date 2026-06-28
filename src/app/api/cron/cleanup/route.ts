@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { tenants, tasks } from '@/db/schema';
 import { sql, and, eq } from 'drizzle-orm';
 
@@ -16,6 +16,8 @@ export async function GET(req: NextRequest) {
         }
 
         console.log("[CRON] Starting daily task cleanup job...");
+
+        const db = await getDb();
 
         // Get all tenants to iterate through
         const allTenants = await db.select().from(tenants);

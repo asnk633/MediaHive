@@ -9,7 +9,6 @@ import { networkMonitor } from '@/utils/networkMonitor';
 import { toast } from 'sonner';
 import { WorkspaceProvider } from "@/system/workspace/WorkspaceProvider";
 import { useRouter } from 'next/navigation';
-import { App } from '@capacitor/app';
 import { nativeNavigate } from '@/lib/utils';
 
 
@@ -124,15 +123,21 @@ export default function RootProviders({ children }: { children: ReactNode }) {
 
     // 8. Capacitor Deep Link Listener
     if ((window as any).Capacitor?.isNative) {
-      App.addListener('appUrlOpen', data => {
-        const url = new URL(data.url);
-        // data.url is the full URL (e.g. https://thaibagarden.media/tasks/123)
-        // We want to extract the pathname and navigate
-        const path = url.pathname;
-        if (path) {
-          nativeNavigate(path, router);
-          toast.info(`Navigating to shared content...`);
-        }
+      import('@capacitor/app').then(({ App }) => {
+        App.addListener('appUrlOpen', data => {
+          try {
+            const url = new URL(data.url);
+            const path = url.pathname;
+            if (path) {
+              nativeNavigate(path, router);
+              toast.info(`Navigating to shared content...`);
+            }
+          } catch (urlErr) {
+            console.error('[Capacitor] Failed to parse deep link URL:', urlErr);
+          }
+        });
+      }).catch(err => {
+        console.error('[Capacitor] Failed to dynamically load @capacitor/app plugin:', err);
       });
     }
 

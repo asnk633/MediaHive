@@ -1,7 +1,8 @@
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { institutions } from '@/db/schema';
 
 async function main() {
+    const db = await getDb();
     const sampleInstitutions = [
         {
             name: 'Thaiba Garden Media',

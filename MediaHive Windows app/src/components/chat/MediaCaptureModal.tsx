@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Camera, RefreshCw, X, AlertCircle } from 'lucide-react';
 
@@ -100,6 +100,9 @@ export const MediaCaptureModal: React.FC<MediaCaptureModalProps> = ({
                             </div>
                             Take Picture
                         </DialogTitle>
+                        <DialogDescription className="sr-only">
+                            Use your camera capture stream to take a picture.
+                        </DialogDescription>
                     </DialogHeader>
                     <Button 
                         variant="ghost" 

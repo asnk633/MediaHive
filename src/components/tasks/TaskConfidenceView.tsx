@@ -21,7 +21,7 @@ const TaskConfidenceViewComponent: React.FC<TaskConfidenceViewProps> = ({ tasks,
 
     useEffect(() => {
         const fetchAdminData = async () => {
-            if (user?.role === 'admin') {
+            if (user?.role === 'admin' || user?.role === 'manager') {
                 const data = await CanonicalDataService.getAdminConfidenceData((user as any)?.institution_id);
                 setAdminData(data);
             }
@@ -38,10 +38,10 @@ const TaskConfidenceViewComponent: React.FC<TaskConfidenceViewProps> = ({ tasks,
         );
     }
 
-    if (user?.role !== 'admin') {
+    if (user?.role !== 'admin' && user?.role !== 'manager') {
         return (
             <div className="bg-foreground/5 backdrop-blur-md border border-foreground/5 rounded-2xl overflow-hidden shadow-sm p-6 text-center">
-                <p className="text-foreground/60">Access denied. Admin privileges required.</p>
+                <p className="text-foreground/60">Access denied. Admin or Manager privileges required.</p>
             </div>
         );
     }

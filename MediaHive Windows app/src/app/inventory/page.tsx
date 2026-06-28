@@ -272,6 +272,38 @@ export default function InventoryPage() {
     }
   }, [user, authLoading]);
 
+  // Handle global quick create "?create=true" query parameter offline-safe
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const checkQuery = () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("create") === "true") {
+        setAddForm({
+          name: "",
+          category: "Camera Accessories",
+          serial_number: "",
+          status: "Available",
+          condition: "Good",
+          quantity: "1",
+          location: "",
+          description: "",
+          brand: "",
+          model: "",
+          purchase_price: "",
+          purchase_date: "",
+        });
+        setCurrentStep(1);
+        setShowAddModal(true);
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    };
+
+    checkQuery();
+    const interval = setInterval(checkQuery, 250);
+    return () => clearInterval(interval);
+  }, []);
+
   // Close menus when clicking outside
   useEffect(() => {
     const handleOutsideClick = () => setOpenMenuId(null);

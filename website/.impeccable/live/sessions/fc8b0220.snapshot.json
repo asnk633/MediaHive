@@ -1,0 +1,20 @@
+{
+  "id": "fc8b0220",
+  "phase": "variants_ready",
+  "pageUrl": "/",
+  "sourceFile": "index.html",
+  "expectedVariants": 3,
+  "arrivedVariants": 0,
+  "visibleVariant": 0,
+  "paramValues": {},
+  "pendingEventSeq": null,
+  "pendingEvent": null,
+  "deliveryLease": null,
+  "checkpointRevision": 1,
+  "activeOwner": "96fd0008",
+  "sourceMarkers": {},
+  "fallbackMode": null,
+  "annotationArtifacts": [],
+  "diagnostics": [],
+  "updatedAt": "2026-06-24T07:56:13.697Z"
+}

@@ -2,6 +2,33 @@
 
 import { useEffect } from 'react';
 
+function setStylePropertyIfChanged(name: string, value: string) {
+  try {
+    const root = document.documentElement;
+    const current = root.style.getPropertyValue(name);
+    if (current !== value) {
+      root.style.setProperty(name, value);
+    }
+  } catch (e) {
+    // Suppress errors silently in production
+  }
+}
+
+function safeRequestAnimationFrame(callback: () => void): number {
+  if (typeof document !== 'undefined' && document.hidden) {
+    return window.setTimeout(callback, 16) as any;
+  }
+  return window.requestAnimationFrame(callback);
+}
+
+function safeCancelAnimationFrame(id: number) {
+  if (typeof document !== 'undefined' && document.hidden) {
+    window.clearTimeout(id);
+    return;
+  }
+  window.cancelAnimationFrame(id);
+}
+
 /**
  * MobileViewportSafety
  * 
@@ -10,52 +37,69 @@ import { useEffect } from 'react';
  * to the mobile keyboard appearing/disappearing.
  */
 export function MobileViewportSafety() {
-    useEffect(() => {
-        const setViewportHeight = () => {
-            const vh = window.innerHeight;
-            document.documentElement.style.setProperty('--viewport-height', `${vh}px`);
-        };
+  useEffect(() => {
+    let resizeRafId: number | null = null;
+    let visualViewportRafId: number | null = null;
 
-        const handleVisualViewportChange = () => {
-            if (!window.visualViewport) return;
+    const setViewportHeight = () => {
+      if (resizeRafId !== null) {
+        safeCancelAnimationFrame(resizeRafId);
+      }
+      resizeRafId = safeRequestAnimationFrame(() => {
+        resizeRafId = null;
+        const vh = window.innerHeight;
+        setStylePropertyIfChanged('--viewport-height', `${vh}px`);
+      });
+    };
 
-            const vv = window.visualViewport;
-            const scrollHeight = document.documentElement.scrollHeight;
-            const viewportHeight = vv.height;
-            const offsetTop = vv.offsetTop;
+    const handleVisualViewportChange = () => {
+      if (!window.visualViewport) return;
 
-            // Calculate keyboard height approx
-            const keyboardHeight = Math.max(0, window.innerHeight - viewportHeight);
+      if (visualViewportRafId !== null) {
+        safeCancelAnimationFrame(visualViewportRafId);
+      }
 
-            document.documentElement.style.setProperty('--keyboard-offset', `${keyboardHeight}px`);
-            document.documentElement.style.setProperty('--viewport-height', `${viewportHeight}px`);
-            document.documentElement.style.setProperty('--safe-bottom', 'env(safe-area-inset-bottom)');
+      visualViewportRafId = safeRequestAnimationFrame(() => {
+        visualViewportRafId = null;
+        if (!window.visualViewport) return;
 
-            // Log for debugging (only in dev)
-            if (process.env.NODE_ENV === 'development') {
-                // console.log(`[Viewport] height: ${viewportHeight}, keyboard: ${keyboardHeight}`);
-            }
-        };
+        const vv = window.visualViewport;
+        const viewportHeight = vv.height;
 
-        // Initial set
-        setViewportHeight();
-        handleVisualViewportChange();
+        // Calculate keyboard height approx
+        const keyboardHeight = Math.max(0, window.innerHeight - viewportHeight);
 
-        // Listen for changes
-        window.addEventListener('resize', setViewportHeight);
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener('resize', handleVisualViewportChange);
-            window.visualViewport.addEventListener('scroll', handleVisualViewportChange);
-        }
+        setStylePropertyIfChanged('--keyboard-offset', `${keyboardHeight}px`);
+        setStylePropertyIfChanged('--viewport-height', `${viewportHeight}px`);
+        setStylePropertyIfChanged('--safe-bottom', 'env(safe-area-inset-bottom)');
+      });
+    };
 
-        return () => {
-            window.removeEventListener('resize', setViewportHeight);
-            if (window.visualViewport) {
-                window.visualViewport.removeEventListener('resize', handleVisualViewportChange);
-                window.visualViewport.removeEventListener('scroll', handleVisualViewportChange);
-            }
-        };
-    }, []);
+    // Initial set
+    setViewportHeight();
+    handleVisualViewportChange();
 
-    return null;
+    // Listen for changes
+    window.addEventListener('resize', setViewportHeight);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleVisualViewportChange);
+      window.visualViewport.addEventListener('scroll', handleVisualViewportChange);
+    }
+
+    return () => {
+      window.removeEventListener('resize', setViewportHeight);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleVisualViewportChange);
+        window.visualViewport.removeEventListener('scroll', handleVisualViewportChange);
+      }
+      if (resizeRafId !== null) {
+        safeCancelAnimationFrame(resizeRafId);
+      }
+      if (visualViewportRafId !== null) {
+        safeCancelAnimationFrame(visualViewportRafId);
+      }
+    };
+  }, []);
+
+  return null;
 }

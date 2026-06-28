@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediaHive - Turning Media Chaos Into Organized Excellence</title>
+  <meta name="description" content="MediaHive brings your projects, tasks, assets, events, teams, approvals, reports, and workflows into one intelligent platform—built specifically for media departments.">
+  <meta name="keywords" content="media management, project management, asset management, production workflow, media teams">
+  <meta property="og:title" content="MediaHive - Turning Media Chaos Into Organized Excellence">
+  <meta property="og:description" content="MediaHive brings your projects, tasks, assets, events, teams, approvals, reports, and workflows into one intelligent platform—built specifically for media departments.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MediaHive - Turning Media Chaos Into Organized Excellence">
+  <meta name="twitter:description" content="MediaHive brings your projects, tasks, assets, events, teams, approvals, reports, and workflows into one intelligent platform.">
+  <link rel="icon" type="image/png" href="/Media Hive final logo.png?v=2" />
+  <link rel="apple-touch-icon" href="/Media Hive final logo.png?v=2" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lenis CDN for smooth scroll -->
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  
+
+
+
+  <!-- Devices.css for realistic device mockups -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/picturepan2/devices.css@master/dist/devices.min.css">
+
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <!-- Cinematic Pre-Loader -->
+  <div id="cinematic-preloader">
+    <div class="preloader-content">
+      <div class="preloader-logo">🐝</div>
+      <div class="preloader-text">Loading MediaHive Environment...</div>
+      <div class="preloader-bar"><div class="preloader-progress"></div></div>
+    </div>
+  </div>
+
+  <!-- Glassmorphic Navigation Bar -->
+  <nav class="main-nav">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <span class="logo-icon">
+          <img src="/Media Hive final logo.png?v=2" alt="MediaHive Logo" />
+        </span>
+        <img src="/Media Hive final brand name white.png?v=2" alt="MediaHive" class="logo-text-img" />
+      </div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#ecosystem">Ecosystem</a>
+        <a href="#about">About</a>
+      </div>
+      <div class="nav-actions">
+        <button class="nav-btn-waitlist" onclick="openWaitlist()">Join Waitlist</button>
+        <a href="https://github.com/asnk633/MediaHive" target="_blank" class="nav-btn-secondary">GitHub</a>
+        <a href="https://github.com/asnk633/MediaHive/releases" target="_blank" class="nav-btn-primary">Download App</a>
+      </div>
+      <!-- Hamburger Menu Button (Mobile/Tablet) -->
+      <button class="nav-hamburger-btn" aria-label="Toggle Navigation" aria-expanded="false">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Navigation Overlay -->
+  <div id="mobile-nav-overlay" class="mobile-nav-overlay">
+    <button class="nav-close-btn" aria-label="Close Navigation">&times;</button>
+    <div class="mobile-nav-content">
+      <div class="mobile-nav-links">
+        <a href="#features" onclick="toggleMobileMenu()">Features</a>
+        <a href="#ecosystem" onclick="toggleMobileMenu()">Ecosystem</a>
+        <a href="#about" onclick="toggleMobileMenu()">About</a>
+      </div>
+      <div class="mobile-nav-actions">
+        <button class="nav-btn-waitlist mobile-w" onclick="openWaitlist(); toggleMobileMenu();">Join Waitlist</button>
+        <a href="https://github.com/asnk633/MediaHive" target="_blank" class="nav-btn-secondary">GitHub</a>
+        <a href="https://github.com/asnk633/MediaHive/releases" target="_blank" class="nav-btn-primary">Download App</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sound Control — fixed bottom-right corner, always visible -->
+  <button id="sound-control-btn" class="sound-toggle-btn sound-corner-btn muted"
+          role="button" aria-label="Toggle Sound Effects" data-tooltip="Toggle Sound"
+          aria-pressed="false" tabindex="0">
+    <!-- Equaliser bars (UIverse-inspired) -->
+    <div class="sound-eq-bars">
+      <span class="eq-bar"></span>
+      <span class="eq-bar"></span>
+      <span class="eq-bar"></span>
+      <span class="eq-bar"></span>
+      <span class="eq-mute-slash"></span>
+    </div>
+    <!-- Hidden: kept so JS mute-toggle class logic still works -->
+    <div class="sound-waves" style="display:none;">
+      <span class="wave-bar bar-1"></span><span class="wave-bar bar-2"></span>
+      <span class="wave-bar bar-3"></span><span class="wave-bar bar-4"></span>
+    </div>
+    <span class="mute-line" style="display:none;"></span>
+  </button>
+
+  <!-- Global background container -->
+  <div id="global-bg" style="background: #000; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2;">
+  </div>
+
+  <!-- Desk Awakening 3D Background Canvas -->
+  <canvas id="desk-awakening-canvas" style="
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: -1; pointer-events: none;"></canvas>
+
+  <!-- Loop-reset vignette (peaks opaque at instant reset, normally invisible) -->
+  <div id="desk-loop-vignette" style="
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: #060910;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;"></div>
+
+
+
+  <div id="scroll-wrapper">
+    <!-- Continuous Scrolling Grid -->
+    <div class="global-grid-container">
+      <svg class="global-grid-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <pattern id="globalGridPattern" width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(100, 116, 139, 0.05)" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#globalGridPattern)" />
+      </svg>
+    </div>
+
+    <div id="hero-photo-wrapper" style="
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: transparent;">
+
+      <!-- Digital Serenity Background Elements Removed for Global Unified Background -->
+
+      <!-- Corner Elements -->
+      <div class="corner-element-animate" style="position: absolute; top: 16px; left: 16px; width: 40px; height: 40px; animation-delay: 4s;">
+        <div style="position: absolute; top: 0; left: 0; width: 8px; height: 8px; background: #94a3b8; opacity: 0.3; border-radius: 50%;"></div>
+      </div>
+      <div class="corner-element-animate" style="position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; animation-delay: 4.2s;">
+        <div style="position: absolute; top: 0; right: 0; width: 8px; height: 8px; background: #94a3b8; opacity: 0.3; border-radius: 50%;"></div>
+      </div>
+      <div class="corner-element-animate" style="position: absolute; bottom: 16px; left: 16px; width: 40px; height: 40px; animation-delay: 4.4s;">
+        <div style="position: absolute; bottom: 0; left: 0; width: 8px; height: 8px; background: #94a3b8; opacity: 0.3; border-radius: 50%;"></div>
+      </div>
+      <div class="corner-element-animate" style="position: absolute; bottom: 16px; right: 16px; width: 40px; height: 40px; animation-delay: 4.6s;">
+        <div style="position: absolute; bottom: 0; right: 0; width: 8px; height: 8px; background: #94a3b8; opacity: 0.3; border-radius: 50%;"></div>
+      </div>
+
+      <!-- Floating Elements -->
+      <div class="floating-element-animate" style="top: 25%; left: 15%; animation-delay: 0.5s;"></div>
+      <div class="floating-element-animate" style="top: 60%; left: 85%; animation-delay: 1.0s;"></div>
+      <div class="floating-element-animate" style="top: 40%; left: 10%; animation-delay: 1.5s;"></div>
+      <div class="floating-element-animate" style="top: 75%; left: 90%; animation-delay: 2.0s;"></div>
+
+
+
+      <div id="hero-text-container" style="
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        z-index: 6;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;">
+          
+        <div id="hero-text-overlay" class="hero-text-container">
+          <h1>From <span class="highlighted-text"><span>Creative Chaos</span></span> to <span class="highlighted-text"><span>Complete Control.</span></span><br><span class="highlighted-text"><span>Sounds Good ?</span></span></h1>
+          <p>But you're still dealing with <span class="rotating-text-wrapper"><span class="rotating-text-item active">Lost files...</span><span class="rotating-text-item">Missed deadlines...</span><span class="rotating-text-item">WhatsApp requests...</span><span class="rotating-text-item">Scattered feedback...</span><span class="rotating-text-item">Unclear priorities...</span><span class="rotating-text-item">Duplicate work...</span><span class="rotating-text-item">Last-minute chaos...</span></span></p>
+        </div>
+      </div>
+
+      <!-- Floating Chaos Messages (Faded in/out during desk cleaning scroll sequence) -->
+      <div id="chaos-messages-container" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 4; perspective: 1000px; transform-style: preserve-3d;">
+        <!-- Meet MediaHive text with Reveal Text effect -->
+        <div class="chaos-message final" style="top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 95vw;">
+          <div class="reveal-text" data-text="Meet MediaHive"></div>
+        </div>
+      </div>
+
+      <!-- Scroll hint -->
+      <div id="scroll-hint" style="
+        position: absolute;
+        bottom: 4%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        text-align: center;
+        color: rgba(255,255,255,0.5);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        animation: bounce 2s infinite;">
+        ↓ Scroll to explore
+      </div>
+
+    <!-- Dark gradient fade at bottom of photo -->
+    <div id="hero-bottom-fade" style="
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%;
+      height: 28%;
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(0,0,0,0.8) 50%,
+        #000000 90%,
+        #000000 100%
+      );
+      z-index: 2;
+      pointer-events: none;">
+    </div>
+
+    <!-- Hero Background Sequence Canvas (Commented out to prevent duplicate canvas context loading)
+    <canvas id="hero-bg-canvas" style="
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1; pointer-events: none;"></canvas>
+    -->
+
+
+
+    <!-- Dark Horizon Glow overlay for logo reveal -->
+    <div id="hero-dark-glow" style="
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.85) 80%);
+      z-index: 4; pointer-events: none; opacity: 0;"></div>
+
+
+    <!-- Hero Laptop 3D Canvas (Commented out as the 3D MacBook is now fully integrated into the Desk Awakening canvas)
+    <div id="hero-laptop-container" style="
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 5;">
+      <canvas id="hero-laptop-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+    </div>
+    -->
+
+    <!-- Logo Caption -->
+    <div id="logo-caption">
+      <h2>MediaHive</h2>
+      <p>Turning Media Chaos Into Organized Excellence</p>
+    </div>
+
+    <!-- Desktop App HTML Overlay -->
+    <div class="desktop-overlay" id="desktop-overlay" style="opacity: 0; pointer-events: none; visibility: hidden;">
+      <span class="desktop-badge">Platform Overview</span>
+      <h2 class="desktop-title">Meet MediaHive</h2>
+      <p class="desktop-subtitle">MediaHive brings your projects, tasks, assets, events, teams, approvals, reports, and workflows into one intelligent platform—built specifically for media departments.</p>
+      <div class="desktop-features-list">
+        <div class="desktop-feature-item"><span>✦</span> Project Management</div>
+        <div class="desktop-feature-item"><span>✦</span> Task Assignment</div>
+        <div class="desktop-feature-item"><span>✦</span> Team Coordination</div>
+        <div class="desktop-feature-item"><span>✦</span> Workflow Tracking</div>
+        <div class="desktop-feature-item"><span>✦</span> Performance Reporting</div>
+        <div class="desktop-feature-item"><span>✦</span> Smart Notifications</div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <!-- STEP 5: TABLET SECTION -->
+  <section class="tablet-section" id="tablet-section">
+    <!-- Digital Serenity Background Elements Removed for Global Unified Background -->
+    <div class="floating-element-animate" style="top: 25%; left: 15%; animation-delay: 0.5s;"></div>
+    <div class="floating-element-animate" style="top: 60%; left: 85%; animation-delay: 1.0s;"></div>
+
+    <div class="tablet-container">
+      <!-- Left: Editorial Text -->
+      <div class="tablet-text" id="tablet-text">
+        <span class="section-label">WEB &amp; TABLET</span>
+        <h2>Your Entire Media Department. Anywhere.</h2>
+        <p>Whether you're in the office, at an event, or reviewing work remotely, MediaHive keeps your team connected and your projects moving.</p>
+        <div class="tablet-micro-pills">
+          <div class="micro-pill">⚡ SSE Real-Time Sync</div>
+          <div class="micro-pill">🔒 Ghost Edit-Locking</div>
+          <div class="micro-pill">📊 Manager Dashboards</div>
+          <div class="micro-pill">💾 Dexie Offline Cache</div>
+        </div>
+      </div>
+
+      <!-- Right: iPad (devices.css) -->
+      <div class="tablet-visual" id="tablet-visual">
+        <canvas id="ipad-canvas" class="device-canvas"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 6: PHONE SECTION -->
+  <section class="phone-section" id="phone-section">
+    <!-- Digital Serenity Background Elements Removed for Global Unified Background -->
+    <div class="floating-element-animate" style="top: 40%; left: 10%; animation-delay: 1.5s;"></div>
+    <div class="floating-element-animate" style="top: 75%; left: 90%; animation-delay: 2.0s;"></div>
+
+    <div class="phone-container">
+      <!-- Left: Visual (Phone — devices.css) -->
+      <div class="phone-visual" id="phone-visual">
+        <canvas id="iphone-canvas" class="device-canvas"></canvas>
+
+        <!-- Screen Glow -->
+        <div class="phone-glow"></div>
+      </div>
+
+      <!-- Right: Editorial Text -->
+      <div class="phone-text" id="phone-text">
+        <span class="section-label">MOBILE APP</span>
+        <h2>Built For Teams That Never Sit Still</h2>
+        <p>Approve requests, check progress, create tasks, upload media, and stay connected from anywhere.</p>
+        <div class="phone-features-grid">
+          <div class="phone-pill">📶 Offline Sync Queue</div>
+          <div class="phone-pill">📲 NFC Check-in Terminal</div>
+          <div class="phone-pill">📍 Geofence Heartbeats</div>
+          <div class="phone-pill">🔔 FCM Push Alerts</div>
+          <div class="phone-pill">📷 Google Drive Uploads</div>
+          <div class="phone-pill">⚠️ Sync Error DLQ</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 6.5: MID-PAGE STATEMENT -->
+  <section class="mid-statement-section">
+    <h2>Stop Managing Media Through WhatsApp.</h2>
+    <p>Media departments outgrow chats, spreadsheets, and scattered folders. MediaHive gives your team a professional system built for real operations.</p>
+  </section>
+
+  <!-- Problem → Solution Section -->
+  <section class="problem-solution-section">
+    <div class="prob-sol-container">
+      <!-- Without MediaHive -->
+      <div class="prob-card">
+        <h3>Without MediaHive</h3>
+        <ul class="prob-list">
+          <li><span class="prob-icon">✗</span> Requests get lost</li>
+          <li><span class="prob-icon">✗</span> Deadlines get missed</li>
+          <li><span class="prob-icon">✗</span> Teams work blindly</li>
+          <li><span class="prob-icon">✗</span> Assets become unmanageable</li>
+          <li><span class="prob-icon">✗</span> Reporting takes hours</li>
+        </ul>
+      </div>
+
+      <!-- With MediaHive -->
+      <div class="sol-card">
+        <h3>With MediaHive</h3>
+        <ul class="sol-list">
+          <li><span class="sol-icon">✓</span> Every request tracked</li>
+          <li><span class="sol-icon">✓</span> Every task assigned</li>
+          <li><span class="sol-icon">✓</span> Every deadline visible</li>
+          <li><span class="sol-icon">✓</span> Every asset organized</li>
+          <li><span class="sol-icon">✓</span> Every report available instantly</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Statistics Section -->
+  <section class="stats-section" id="stats-section">
+    <!-- Digital Serenity Background Elements -->
+    <svg class="digital-serenity-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;">
+      <rect width="100%" height="100%" fill="url(#gridReactDarkResponsive)" />
+    </svg>
+    
+    <div class="stats-grid">
+      <div class="stats-card">
+        <div class="stats-number" id="counter-platform" data-target="1">0</div>
+        <div class="stats-label">Unified Dashboard</div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-number" id="counter-devices" data-target="3">0</div>
+        <div class="stats-label">Native Platforms</div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-number" id="counter-visibility" data-target="0">0</div>
+        <div class="stats-label">Dropped Requests</div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-number" style="font-size: 3rem; line-height: 4.5rem; color: #c084fc;">∞</div>
+        <div class="stats-label">Creative Possibilities</div>
+      </div>
+    </div>
+
+    <div class="stats-unified-title">Unified inside MediaHive</div>
+    <div class="stats-unified-grid">
+      <div class="unified-badge">Tasks</div>
+      <div class="unified-badge">Projects</div>
+      <div class="unified-badge">Assets</div>
+      <div class="unified-badge">Events</div>
+      <div class="unified-badge">Reports</div>
+      <div class="unified-badge">Teams</div>
+      <div class="unified-badge">Notifications</div>
+      <div class="unified-badge">Workflows</div>
+    </div>
+  </section>
+
+  <!-- Features Section (Bento Box Layout) -->
+  <section class="features-section" id="features">
+    <div class="features-header">
+      <h2>More Than A Task Manager</h2>
+      <p>MediaHive was built around the way real media departments operate—not the way generic project management software thinks they should.</p>
+    </div>
+    <div class="bento-grid">
+      <!-- Task Management (Wide) -->
+      <div class="bento-card wide">
+        <div class="feature-icon-wrapper">📋</div>
+        <h3>Offline-First Task Management</h3>
+        <p>Keep working under any conditions. Changes are cached locally in IndexedDB/Dexie and optimistically synced when connection returns, using a seamless Last-Write-Wins (LWW) resolution engine with server-merge fallback warnings.</p>
+      </div>
+      <!-- Asset Library (Square) -->
+      <div class="bento-card">
+        <div class="feature-icon-wrapper">📁</div>
+        <h3>Google Drive Proxy</h3>
+        <p>Stream high-res footage and assets directly through a secure Vercel API proxy. Bypasses CORS and protects service credentials entirely on the server.</p>
+      </div>
+      <!-- Team Coordination (Square) -->
+      <div class="bento-card">
+        <div class="feature-icon-wrapper">👥</div>
+        <h3>NFC & Presence Tracking</h3>
+        <p>Verify on-site presence using mobile NFC scan terminals and battery-adaptive background geofencing heartbeats for total crew accountability.</p>
+      </div>
+      <!-- Event Management (Tall) -->
+      <div class="bento-card tall">
+        <div class="feature-icon-wrapper">📅</div>
+        <h3>Real-time Event Operations</h3>
+        <p>Coordinate shoots, broadcasts, and gear bookings. Prevents editing conflicts across devices using a real-time Server-Sent Events (SSE) <strong>Ghost Edit-Locking</strong> registry that instantly flags active editors.</p>
+      </div>
+      <!-- Reports & Analytics (Wide) -->
+      <div class="bento-card wide">
+        <div class="feature-icon-wrapper">📊</div>
+        <h3>Role-Based Analytics & Reports</h3>
+        <p>De-risk project governance. Get secure, role-restricted manager dashboards tracking crew velocity, department-wide bottlenecks, and automatic presence timesheet CSV exports.</p>
+      </div>
+      <!-- Notifications (Square) -->
+      <div class="bento-card">
+        <div class="feature-icon-wrapper">🔔</div>
+        <h3>Smart SSE Streams</h3>
+        <p>Cut the slack. Get real-time event updates via lightweight Server-Sent Events (SSE) subscriptions, with low-latency Expo mobile push notification routing.</p>
+      </div>
+      <!-- Cross Platform (Square) -->
+      <div class="bento-card">
+        <div class="feature-icon-wrapper">🖥️</div>
+        <h3>Native Desktop Integration</h3>
+        <p>A premium Tauri-wrapped Windows experience with system tray minimize-to-tray lifecycle, global hotkeys, background autostart, and signed OTA updates.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use Case Strip (Honest Social Proof Alternative) -->
+  <section class="use-case-strip">
+    <div class="use-case-container">
+      <h3>Built For How Media Teams Actually Work</h3>
+      <div class="use-case-cards">
+        <div class="use-case-card">
+          <h4>Video Production</h4>
+          <p>Track raw ingest to final cut. Manage revision cycles without losing feedback in chat threads.</p>
+        </div>
+        <div class="use-case-card">
+          <h4>Live Events & Broadcasts</h4>
+          <p>Sync run-sheets, coordinate camera operators, and log equipment checkout in real time.</p>
+        </div>
+        <div class="use-case-card">
+          <h4>Social Media & Design</h4>
+          <p>Streamline design requests. Collect assets, approve drafts, and schedule deployments seamlessly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Founder Vision Section — also anchored as #about for the navbar -->
+  <div id="about" style="position:relative; top:-80px; visibility:hidden; pointer-events:none;" aria-hidden="true"></div>
+  <section class="founder-section" id="founder-section">
+    <div class="founder-container">
+      <div class="founder-tag">Founder Vision</div>
+      <h2>Built By Someone Who Lives The Chaos</h2>
+      <div class="founder-content">
+        <p>MediaHive wasn't created in a boardroom.</p>
+        <p>It was built inside a busy media department managing events, deadlines, photography, videography, design requests, approvals, live streams, reports, and constant communication.</p>
+        <p>Every feature exists because a real problem needed a real solution.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 7: SHOWCASE SECTION -->
+  <section class="showcase-section" id="showcase-section">
+    <!-- Digital Serenity Background Elements Removed for Global Unified Background -->
+    <div class="floating-element-animate" style="top: 15%; left: 25%; animation-delay: 0.7s;"></div>
+    <div class="floating-element-animate" style="top: 85%; left: 75%; animation-delay: 1.2s;"></div>
+
+    <div class="showcase-container">
+      <div class="showcase-text" id="showcase-text">
+        <h2>One platform.<br>Every screen.</h2>
+        <p>Desktop. Tablet. Mobile. Web.<br>MediaHive works wherever you do.</p>
+      </div>
+
+      <!-- Device 3D Models — order: Mobile · Laptop · Tablet -->
+      <div class="showcase-devices" id="showcase-devices">
+        <!-- Ambient glow surface (CSS-rendered) -->
+        <div class="showcase-glow" aria-hidden="true"></div>
+
+        <div class="showcase-iphone" id="showcase-iphone">
+          <canvas id="showcase-iphone-canvas" style="width:100%;height:100%;display:block;"></canvas>
+          <span class="device-label">Mobile</span>
+        </div>
+        <div class="showcase-laptop" id="showcase-laptop">
+          <canvas id="showcase-laptop-canvas" style="width:100%;height:100%;display:block;"></canvas>
+          <span class="device-label">Desktop</span>
+        </div>
+        <div class="showcase-ipad" id="showcase-ipad">
+          <canvas id="showcase-ipad-canvas" style="width:100%;height:100%;display:block;"></canvas>
+          <span class="device-label">Tablet</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Fade out grid to match the tools section -->
+    <div style="
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%;
+      height: 150px;
+      background: linear-gradient(to bottom, transparent, #050319);
+      z-index: 2;
+      pointer-events: none;">
+    </div>
+  </section>
+
+  <!-- STEP 8: TOOLS MARQUEE SECTION -->
+  <section class="tools-marquee-section" id="ecosystem">
+    <div class="tools-header">
+      <h2>Integrations & Ecosystem</h2>
+      <p style="color: #8B949E; margin-top: 10px; font-size: 1.1rem; max-width: 600px; margin-inline: auto;">Built on a foundation of industry-leading technologies to deliver a seamless experience across desktop, web, and mobile.</p>
+    </div>
+    <div class="marquee-wrapper">
+      <div class="marquee-content">
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/nextdotjs/white" alt="Next.js"/><span>Next.js</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/react/white" alt="React"/><span>React</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/flutter/white" alt="Flutter"/><span>Flutter</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/tauri/white" alt="Tauri"/><span>Tauri</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/supabase/white" alt="Supabase"/><span>Supabase</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/firebase/white" alt="Firebase"/><span>Firebase</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/tailwindcss/white" alt="Tailwind CSS"/><span>Tailwind CSS</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/threedotjs/white" alt="Three.js"/><span>Three.js</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/greensock/white" alt="GSAP"/><span>GSAP</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/vite/white" alt="Vite"/><span>Vite</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/spacex/white" alt="Antigravity"/><span>Antigravity</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/codeforces/white" alt="Qoder"/><span>Qoder</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/ollama/white" alt="Ollama"/><span>Ollama</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/anthropic/white" alt="Claude"/><span>Claude</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/devdotto/white" alt="21st.dev"/><span>21st.dev</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/uikit/white" alt="Uiverse"/><span>Uiverse</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/openai/white" alt="ChatGPT"/><span>ChatGPT</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/googlegemini/white" alt="Gemini"/><span>Gemini</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/androidstudio/white" alt="Android Studio"/><span>Android Studio</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/google/white" alt="Google Labs"/><span>Google Labs</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/adobeaftereffects/white" alt="After Effects"/><span>After Effects</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/react/white" alt="React Bits"/><span>React Bits</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/awesomewm/white" alt="Aceternity UI"/><span>Aceternity UI</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/framer/white" alt="Framer"/><span>Framer</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/github/white" alt="GitHub"/><span>GitHub</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/vercel/white" alt="Vercel"/><span>Vercel</span></div>
+      </div>
+      <!-- Duplicate for infinite scroll -->
+      <div class="marquee-content" aria-hidden="true">
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/nextdotjs/white" alt="Next.js"/><span>Next.js</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/react/white" alt="React"/><span>React</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/flutter/white" alt="Flutter"/><span>Flutter</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/tauri/white" alt="Tauri"/><span>Tauri</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/supabase/white" alt="Supabase"/><span>Supabase</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/firebase/white" alt="Firebase"/><span>Firebase</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/tailwindcss/white" alt="Tailwind CSS"/><span>Tailwind CSS</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/threedotjs/white" alt="Three.js"/><span>Three.js</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/greensock/white" alt="GSAP"/><span>GSAP</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/vite/white" alt="Vite"/><span>Vite</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/spacex/white" alt="Antigravity"/><span>Antigravity</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/codeforces/white" alt="Qoder"/><span>Qoder</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/ollama/white" alt="Ollama"/><span>Ollama</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/anthropic/white" alt="Claude"/><span>Claude</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/devdotto/white" alt="21st.dev"/><span>21st.dev</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/uikit/white" alt="Uiverse"/><span>Uiverse</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/openai/white" alt="ChatGPT"/><span>ChatGPT</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/googlegemini/white" alt="Gemini"/><span>Gemini</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/androidstudio/white" alt="Android Studio"/><span>Android Studio</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/google/white" alt="Google Labs"/><span>Google Labs</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/adobeaftereffects/white" alt="After Effects"/><span>After Effects</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/react/white" alt="React Bits"/><span>React Bits</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/awesomewm/white" alt="Aceternity UI"/><span>Aceternity UI</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/framer/white" alt="Framer"/><span>Framer</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/github/white" alt="GitHub"/><span>GitHub</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/vercel/white" alt="Vercel"/><span>Vercel</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pre-Footer CTA -->
+  <section class="pre-footer-cta">
+    <div class="cta-content">
+      <h2>Ready to Organize Your Media Chaos?</h2>
+      <p>Join the future of media department management. Download the app or check out the source code.</p>
+      <div class="cta-buttons">
+        <a href="https://github.com/asnk633/MediaHive/releases" target="_blank" class="cta-btn primary">Download MediaHive</a>
+        <a href="https://github.com/asnk633/MediaHive" target="_blank" class="cta-btn secondary">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Expanded SaaS Footer -->
+  <footer class="footer-section">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <span class="logo-icon">
+            <img src="/Media Hive final logo.png?v=2" alt="MediaHive Logo" />
+          </span>
+          <img src="/Media Hive final brand name white.png?v=2" alt="MediaHive" class="logo-text-img" />
+        </div>
+        <p>Turning Media Chaos Into Organized Excellence.</p>
+        <div class="footer-social">
+          <a href="https://github.com/asnk633/MediaHive" target="_blank" aria-label="GitHub"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+        </div>
+      </div>
+      <div class="footer-links">
+        <div class="link-column">
+          <h4>Product</h4>
+          <a href="#features">Features</a>
+          <a href="#ecosystem">Ecosystem</a>
+          <a href="https://github.com/asnk633/MediaHive/releases" target="_blank">Download</a>
+        </div>
+        <div class="link-column">
+          <h4>Resources</h4>
+          <a href="https://github.com/asnk633/MediaHive" target="_blank">Documentation</a>
+          <a href="https://github.com/asnk633/MediaHive/issues" target="_blank">Issue Tracker</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 MediaHive. Open Source under MIT License.</p>
+    </div>
+  </footer>
+
+  <!-- Waitlist Modal -->
+  <div id="waitlist-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeWaitlist()">×</button>
+      <h2>Join the MediaHive Waitlist</h2>
+      <p>Get early access to the ultimate media department OS before our public launch.</p>
+      <form class="waitlist-form" onsubmit="submitWaitlist(event)">
+        <input type="email" id="waitlist-email" placeholder="Enter your email address" required>
+        <button type="submit" class="cta-btn primary" style="width: 100%; border: none; cursor: pointer;">Request Access</button>
+      </form>
+      <div id="waitlist-success" style="display:none; color: #52C41A; margin-top: 15px; font-weight: 500;">
+        Thanks! We'll be in touch soon.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleMobileMenu() {
+      const overlay = document.getElementById('mobile-nav-overlay');
+      const hamburger = document.querySelector('.nav-hamburger-btn');
+      const isOpen = overlay.classList.toggle('active');
+      if (hamburger) {
+        hamburger.setAttribute('aria-expanded', isOpen);
+      }
+      document.body.classList.toggle('menu-open', isOpen);
+    }
+
+    function closeMobileMenu() {
+      const overlay = document.getElementById('mobile-nav-overlay');
+      const hamburger = document.querySelector('.nav-hamburger-btn');
+      overlay.classList.remove('active');
+      if (hamburger) {
+        hamburger.setAttribute('aria-expanded', 'false');
+      }
+      document.body.classList.remove('menu-open');
+    }
+
+    // Attach listeners on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const hamburger = document.querySelector('.nav-hamburger-btn');
+      const closeBtn = document.querySelector('.nav-close-btn');
+      if (hamburger) {
+        hamburger.addEventListener('click', toggleMobileMenu);
+      }
+      if (closeBtn) {
+        closeBtn.addEventListener('click', closeMobileMenu);
+      }
+    });
+
+    function openWaitlist() {
+      const modal = document.getElementById('waitlist-modal');
+      modal.classList.add('active');
+    }
+    function closeWaitlist() {
+      const modal = document.getElementById('waitlist-modal');
+      modal.classList.remove('active');
+    }
+    function submitWaitlist(e) {
+      e.preventDefault();
+      document.querySelector('.waitlist-form').style.display = 'none';
+      document.getElementById('waitlist-success').style.display = 'block';
+    }
+    // Close on overlay click
+    document.getElementById('waitlist-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeWaitlist();
+      }
+    });
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════
+       SCROLL DEBUG HUD  —  Press [S] to toggle
+       Shows: scrollY px · progress % · section name
+       ═══════════════════════════════════════════════════ -->
+  <script>
+    (function () {
+      /* ── Build the HUD DOM ── */
+      const hud = document.createElement('div');
+      hud.id = 'scroll-hud';
+      hud.innerHTML = `
+        <div id="shud-bar"></div>
+        <div id="shud-body">
+          <span id="shud-px">0 px</span>
+          <span id="shud-sep">·</span>
+          <span id="shud-pct">0%</span>
+          <span id="shud-sep2">·</span>
+          <span id="shud-section">—</span>
+        </div>
+        <div id="shud-hint">S = toggle</div>
+      `;
+      Object.assign(hud.style, {
+        position: 'fixed',
+        bottom: '18px',
+        right: '18px',
+        zIndex: '99999',
+        background: 'rgba(5,3,25,0.82)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        border: '1px solid rgba(255,255,255,0.12)',
+        borderRadius: '10px',
+        padding: '0',
+        fontFamily: "'Inter', monospace",
+        fontSize: '12px',
+        color: '#e2e8f0',
+        minWidth: '200px',
+        overflow: 'hidden',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
+        userSelect: 'none',
+        transition: 'opacity .2s, transform .2s',
+        pointerEvents: 'none',
+      });
+
+      /* progress bar */
+      const bar = hud.querySelector('#shud-bar');
+      Object.assign(bar.style, {
+        height: '3px',
+        background: 'linear-gradient(90deg, #6C3EF4, #38bdf8)',
+        width: '0%',
+        transition: 'width .1s linear',
+        borderRadius: '10px 10px 0 0',
+      });
+
+      /* body row */
+      const body = hud.querySelector('#shud-body');
+      Object.assign(body.style, {
+        display: 'flex', alignItems: 'center', gap: '6px',
+        padding: '8px 12px 4px',
+      });
+      ['#shud-sep','#shud-sep2'].forEach(sel => {
+        Object.assign(hud.querySelector(sel).style, { opacity: '.35' });
+      });
+      Object.assign(hud.querySelector('#shud-px').style, {
+        fontWeight: '600', color: '#818cf8', letterSpacing: '.02em',
+      });
+      Object.assign(hud.querySelector('#shud-pct').style, {
+        fontWeight: '600', color: '#38bdf8',
+      });
+      Object.assign(hud.querySelector('#shud-section').style, {
+        color: 'rgba(255,255,255,.5)', fontSize: '11px',
+        maxWidth: '90px', overflow: 'hidden',
+        textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+      });
+
+      /* hint */
+      const hint = hud.querySelector('#shud-hint');
+      Object.assign(hint.style, {
+        padding: '0 12px 6px',
+        fontSize: '10px',
+        color: 'rgba(255,255,255,.2)',
+        letterSpacing: '.04em',
+      });
+
+      document.body.appendChild(hud);
+
+      /* ── Section registry (auto-built from id/data-section attrs) ── */
+      const SECTIONS = [
+        { id: 'hero-photo-wrapper',    label: 'Hero' },
+        { id: 'features',              label: 'Features' },
+        { id: 'ecosystem',             label: 'Ecosystem' },
+        { id: 'about',                 label: 'About' },
+        { id: 'stats-section',         label: 'Stats' },
+        { id: 'scroll-wrapper',        label: 'Scroll' },
+      ];
+
+      function getSection(scrollY) {
+        let current = '—';
+        for (const s of SECTIONS) {
+          const el = document.getElementById(s.id);
+          if (el && el.getBoundingClientRect().top <= 80) current = s.label;
+        }
+        return current;
+      }
+
+      /* ── RAF update loop ── */
+      let visible = false;
+      let raf;
+
+      // Hide HUD by default to save CPU/GPU cycles
+      hud.style.opacity = '0';
+      hud.style.transform = 'translateY(6px)';
+
+      function update() {
+        if (!visible) return;
+        const scrollY = window.lenis ? window.lenis.scroll : window.scrollY;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = maxScroll > 0 ? (scrollY / maxScroll * 100) : 0;
+
+        bar.style.width = pct.toFixed(1) + '%';
+        hud.querySelector('#shud-px').textContent  = Math.round(scrollY) + ' px';
+        hud.querySelector('#shud-pct').textContent = pct.toFixed(1) + '%';
+        hud.querySelector('#shud-section').textContent = getSection(scrollY);
+
+        raf = requestAnimationFrame(update);
+      }
+
+      /* ── [S] key toggle ── */
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 's' || e.key === 'S') {
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+          visible = !visible;
+          hud.style.opacity = visible ? '1' : '0';
+          hud.style.transform = visible ? 'none' : 'translateY(6px)';
+          if (visible) {
+            update();
+          } else {
+            cancelAnimationFrame(raf);
+          }
+        }
+      });
+
+      /* ── [I] key toggle for Impeccable live tool ── */
+      let impeccableVisible = true;
+      const styleEl = document.createElement('style');
+      styleEl.innerHTML = `
+        .impeccable-hidden [id^="impeccable-live"] {
+          display: none !important;
+        }
+      `;
+      document.head.appendChild(styleEl);
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'i' || e.key === 'I') {
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+          impeccableVisible = !impeccableVisible;
+          if (impeccableVisible) {
+            document.body.classList.remove('impeccable-hidden');
+          } else {
+            document.body.classList.add('impeccable-hidden');
+          }
+        }
+      });
+    })();
+  </script>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>

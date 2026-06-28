@@ -11,11 +11,12 @@ export function getDriveImageUrl(url: string | undefined | null, file_id?: strin
         return url;
     }
 
+    const resolveId = (id: string) =>
+        // Use sz=s1000 for thumbnail cases, sz=s800 for non-thumbnail
+        `https://drive.google.com/thumbnail?id=${id}&sz=${thumbnail ? 's1000' : 's800'}`;
+
     if (file_id && file_id.trim()) {
-        if (thumbnail) {
-            return `https://drive.google.com/thumbnail?id=${file_id}&sz=s1000`;
-        }
-        return `https://thaiba-garden-media-manager.vercel.app/api/drive/image/${file_id}`;
+        return resolveId(file_id.trim());
     }
 
     if (!url) return '';
@@ -26,10 +27,7 @@ export function getDriveImageUrl(url: string | undefined | null, file_id?: strin
 
         if (idMatch && idMatch[1]) {
             const extractedId = idMatch[1];
-            if (thumbnail) {
-                return `https://drive.google.com/thumbnail?id=${extractedId}&sz=s1000`;
-            }
-            return `https://thaiba-garden-media-manager.vercel.app/api/drive/image/${extractedId}`;
+            return resolveId(extractedId);
         }
     } catch (e) {
         console.warn('Failed to parse Drive URL:', url);

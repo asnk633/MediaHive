@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { tenants } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 
@@ -31,6 +31,8 @@ export async function GET(
         { status: 400 }
       );
     }
+
+    const db = await getDb();
 
     // 1. Fetch tenant
     const [tenant] = await db
@@ -99,6 +101,8 @@ export async function PUT(
         { status: 400 }
       );
     }
+
+    const db = await getDb();
 
     // Check if domain already exists for another tenant
     const [existingTenant] = await db
@@ -183,6 +187,8 @@ export async function DELETE(
         { status: 400 }
       );
     }
+
+    const db = await getDb();
 
     // Delete tenant
     const result = await db

@@ -267,7 +267,7 @@ export default function DesktopSideNav() {
                             {!isCollapsed && (
                                 <div className="flex flex-col overflow-hidden text-left ml-4">
                                     <span className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors tracking-tight leading-none mb-1">
-                                        {user?.name || 'Authorized User'}
+                                        {user?.name || user?.email?.split('@')[0] || 'User'}
                                     </span>
                                     <div className="flex items-center">
                                         <span className="text-[10px] text-foreground/80 font-black uppercase tracking-[0.2em] leading-none">
@@ -288,7 +288,7 @@ export default function DesktopSideNav() {
                     <div className="relative px-5 py-6 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent">
                         <div className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.25em] mb-2.5">Active Session</div>
                         <div className="flex flex-col gap-0.5">
-                            <div className="text-sm font-bold text-foreground tracking-tight truncate">{user?.name || 'Authorized User'}</div>
+                                    <div className="text-sm font-bold text-foreground tracking-tight truncate">{user?.name || user?.email?.split('@')[0] || 'User'}</div>
                             <div className="text-[11px] text-foreground/80 font-medium truncate">{user?.email}</div>
                         </div>
                     </div>

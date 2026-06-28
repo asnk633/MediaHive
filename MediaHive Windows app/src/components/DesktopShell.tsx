@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useIsTauri } from "@/lib/hooks/useIsTauri";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,6 +13,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContextProvider";
+import { useWindow } from "@/contexts/WindowContext";
 
 /** Live clock hook — updates every second */
 function useClock() {
@@ -43,8 +45,10 @@ export default function DesktopShell({ children }: DesktopShellProps) {
   const { user, logout } = useAuth();
   const clock = useClock();
 
+  const { isMaximized, isDesktop: isDesktopApp } = useWindow();
+
   const sidebarW    = sidebarExpanded ? SIDEBAR_EXPANDED_W : SIDEBAR_COLLAPSED_W;
-  const contentLeft = SIDEBAR_GAP + sidebarW + SIDEBAR_GAP;
+  const sidebarGap  = isMaximized ? 12 : SIDEBAR_GAP;
 
   const getInitials = (name: string) => {
     if (!name) return "MH";
@@ -107,7 +111,15 @@ export default function DesktopShell({ children }: DesktopShellProps) {
   const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
   return (
-    <div className="relative w-full h-full overflow-hidden select-none" style={{ backgroundColor: "#080810", color: "#f1f5f9" }}>
+    <div 
+      className={`desktop-shell-root relative w-full h-full overflow-hidden select-none ${isDesktopApp ? "desktop-app pt-9" : ""}`} 
+      style={{ 
+        backgroundColor: "#080810", 
+        color: "#f1f5f9",
+        "--sidebar-width": `${sidebarW}px`,
+        "--sidebar-gap": `${sidebarGap}px`
+      } as React.CSSProperties}
+    >
 
       {/* Aurora drift blobs */}
       <div className="aurora-container-global">
@@ -122,10 +134,8 @@ export default function DesktopShell({ children }: DesktopShellProps) {
       <div className="scanline-overlay-global" />
 
       {/* ── Floating Sidebar ──────────────────────────────────────────── */}
-      <motion.aside
+      <div
         className="sidebar-shell sidebar-shell-depth sidebar-shell-floating flex flex-col"
-        animate={{ width: sidebarW }}
-        transition={{ type: "tween", ease, duration: 0.45 }}
         style={{ zIndex: 20 }}
       >
 
@@ -393,13 +403,11 @@ export default function DesktopShell({ children }: DesktopShellProps) {
             </AnimatePresence>
           </motion.button>
         </div>
-      </motion.aside>
+      </div>
 
       {/* ── Main workspace ─────────────────────────────────────────────── */}
-      <motion.div
-        className="absolute top-0 right-0 bottom-0 flex flex-col overflow-hidden"
-        animate={{ left: contentLeft }}
-        transition={{ type: "tween", ease, duration: 0.45 }}
+      <div
+        className="main-workspace-shell absolute top-0 right-0 bottom-0 flex flex-col overflow-hidden"
         style={{ zIndex: 10 }}
       >
         {/* Context breadcrumb header */}
@@ -449,7 +457,7 @@ export default function DesktopShell({ children }: DesktopShellProps) {
             {children}
           </motion.main>
         </AnimatePresence>
-      </motion.div>
+      </div>
 
     </div>
   );

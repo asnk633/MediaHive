@@ -1,16 +1,16 @@
-# Graph Report - MediaHive Windows app  (2026-06-13)
+# Graph Report - MediaHive Windows app  (2026-06-28)
 
 ## Corpus Check
-- 334 files · ~236,206 words
+- 345 files · ~246,465 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 6099 nodes · 6361 edges · 558 communities (517 shown, 41 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.8)
+- 6116 nodes · 6856 edges · 531 communities (501 shown, 30 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4a7087a8`
+- Built from commit: `2b72951d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -28,7 +28,9 @@
 - [[_COMMUNITY_Community 10|Community 10]]
 - [[_COMMUNITY_Community 11|Community 11]]
 - [[_COMMUNITY_Community 12|Community 12]]
+- [[_COMMUNITY_Community 13|Community 13]]
 - [[_COMMUNITY_Community 14|Community 14]]
+- [[_COMMUNITY_Community 15|Community 15]]
 - [[_COMMUNITY_Community 16|Community 16]]
 - [[_COMMUNITY_Community 17|Community 17]]
 - [[_COMMUNITY_Community 18|Community 18]]
@@ -39,14 +41,23 @@
 - [[_COMMUNITY_Community 23|Community 23]]
 - [[_COMMUNITY_Community 24|Community 24]]
 - [[_COMMUNITY_Community 25|Community 25]]
+- [[_COMMUNITY_Community 26|Community 26]]
 - [[_COMMUNITY_Community 27|Community 27]]
 - [[_COMMUNITY_Community 28|Community 28]]
+- [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
+- [[_COMMUNITY_Community 31|Community 31]]
+- [[_COMMUNITY_Community 34|Community 34]]
+- [[_COMMUNITY_Community 35|Community 35]]
+- [[_COMMUNITY_Community 36|Community 36]]
 - [[_COMMUNITY_Community 37|Community 37]]
 - [[_COMMUNITY_Community 38|Community 38]]
 - [[_COMMUNITY_Community 39|Community 39]]
 - [[_COMMUNITY_Community 40|Community 40]]
+- [[_COMMUNITY_Community 41|Community 41]]
 - [[_COMMUNITY_Community 42|Community 42]]
+- [[_COMMUNITY_Community 43|Community 43]]
+- [[_COMMUNITY_Community 44|Community 44]]
 - [[_COMMUNITY_Community 45|Community 45]]
 - [[_COMMUNITY_Community 46|Community 46]]
 - [[_COMMUNITY_Community 47|Community 47]]
@@ -59,6 +70,7 @@
 - [[_COMMUNITY_Community 54|Community 54]]
 - [[_COMMUNITY_Community 55|Community 55]]
 - [[_COMMUNITY_Community 56|Community 56]]
+- [[_COMMUNITY_Community 57|Community 57]]
 - [[_COMMUNITY_Community 58|Community 58]]
 - [[_COMMUNITY_Community 59|Community 59]]
 - [[_COMMUNITY_Community 60|Community 60]]
@@ -96,7 +108,6 @@
 - [[_COMMUNITY_Community 92|Community 92]]
 - [[_COMMUNITY_Community 93|Community 93]]
 - [[_COMMUNITY_Community 94|Community 94]]
-- [[_COMMUNITY_Community 95|Community 95]]
 - [[_COMMUNITY_Community 96|Community 96]]
 - [[_COMMUNITY_Community 97|Community 97]]
 - [[_COMMUNITY_Community 98|Community 98]]
@@ -485,15 +496,11 @@
 - [[_COMMUNITY_Community 481|Community 481]]
 - [[_COMMUNITY_Community 482|Community 482]]
 - [[_COMMUNITY_Community 483|Community 483]]
-- [[_COMMUNITY_Community 484|Community 484]]
 - [[_COMMUNITY_Community 485|Community 485]]
-- [[_COMMUNITY_Community 486|Community 486]]
-- [[_COMMUNITY_Community 487|Community 487]]
 - [[_COMMUNITY_Community 488|Community 488]]
 - [[_COMMUNITY_Community 489|Community 489]]
 - [[_COMMUNITY_Community 490|Community 490]]
 - [[_COMMUNITY_Community 491|Community 491]]
-- [[_COMMUNITY_Community 492|Community 492]]
 - [[_COMMUNITY_Community 493|Community 493]]
 - [[_COMMUNITY_Community 494|Community 494]]
 - [[_COMMUNITY_Community 495|Community 495]]
@@ -502,16 +509,10 @@
 - [[_COMMUNITY_Community 498|Community 498]]
 - [[_COMMUNITY_Community 499|Community 499]]
 - [[_COMMUNITY_Community 500|Community 500]]
-- [[_COMMUNITY_Community 501|Community 501]]
 - [[_COMMUNITY_Community 502|Community 502]]
 - [[_COMMUNITY_Community 503|Community 503]]
-- [[_COMMUNITY_Community 504|Community 504]]
-- [[_COMMUNITY_Community 505|Community 505]]
-- [[_COMMUNITY_Community 506|Community 506]]
 - [[_COMMUNITY_Community 507|Community 507]]
-- [[_COMMUNITY_Community 508|Community 508]]
 - [[_COMMUNITY_Community 509|Community 509]]
-- [[_COMMUNITY_Community 510|Community 510]]
 - [[_COMMUNITY_Community 511|Community 511]]
 - [[_COMMUNITY_Community 512|Community 512]]
 - [[_COMMUNITY_Community 513|Community 513]]
@@ -524,26 +525,8 @@
 - [[_COMMUNITY_Community 520|Community 520]]
 - [[_COMMUNITY_Community 521|Community 521]]
 - [[_COMMUNITY_Community 522|Community 522]]
-- [[_COMMUNITY_Community 523|Community 523]]
-- [[_COMMUNITY_Community 524|Community 524]]
-- [[_COMMUNITY_Community 525|Community 525]]
-- [[_COMMUNITY_Community 526|Community 526]]
-- [[_COMMUNITY_Community 527|Community 527]]
-- [[_COMMUNITY_Community 528|Community 528]]
-- [[_COMMUNITY_Community 529|Community 529]]
-- [[_COMMUNITY_Community 530|Community 530]]
 - [[_COMMUNITY_Community 531|Community 531]]
-- [[_COMMUNITY_Community 532|Community 532]]
-- [[_COMMUNITY_Community 533|Community 533]]
-- [[_COMMUNITY_Community 534|Community 534]]
 - [[_COMMUNITY_Community 535|Community 535]]
-- [[_COMMUNITY_Community 536|Community 536]]
-- [[_COMMUNITY_Community 537|Community 537]]
-- [[_COMMUNITY_Community 538|Community 538]]
-- [[_COMMUNITY_Community 539|Community 539]]
-- [[_COMMUNITY_Community 540|Community 540]]
-- [[_COMMUNITY_Community 541|Community 541]]
-- [[_COMMUNITY_Community 542|Community 542]]
 - [[_COMMUNITY_Community 543|Community 543]]
 - [[_COMMUNITY_Community 544|Community 544]]
 - [[_COMMUNITY_Community 545|Community 545]]
@@ -561,37 +544,40 @@
 - [[_COMMUNITY_Community 557|Community 557]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `useAuth()` - 47 edges
-2. `supabase` - 29 edges
+1. `useAuth()` - 80 edges
+2. `supabase` - 54 edges
 3. `Agent Types Reference` - 23 edges
-4. `GitHub Code Review Skill` - 22 edges
-5. `cn()` - 20 edges
+4. `GitHub Code Review Skill` - 23 edges
+5. `GitHub Multi-Repository Coordination Skill` - 20 edges
 6. `JsonFileBackend` - 19 edges
 7. `swarm-hooks.sh script` - 19 edges
-8. `GitHub Multi-Repository Coordination Skill` - 19 edges
-9. `LearningService` - 18 edges
-10. `AgentDB Vector Search` - 17 edges
+8. `LearningService` - 18 edges
+9. `AgentDB Vector Search` - 18 edges
+10. `code:typescript (const adapter = await createAgentDBAdapter({)` - 18 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `cn()` --calls--> `clsx`  [INFERRED]
-  src/lib/utils.ts → package.json
-- `DownloadsPage()` --calls--> `useAuth()`  [EXTRACTED]
-  src/app/downloads/page.tsx → src/contexts/AuthContextProvider.tsx
-- `InventoryPage()` --calls--> `useAuth()`  [EXTRACTED]
-  src/app/inventory/page.tsx → src/contexts/AuthContextProvider.tsx
-- `MediaPage()` --calls--> `useAuth()`  [EXTRACTED]
-  src/app/media/page.tsx → src/contexts/AuthContextProvider.tsx
+- `VoicePlayer()` --calls--> `formatTime()`  [INFERRED]
+  src/components/chat/VoicePlayer.tsx → src/app/calendar/page.tsx
 - `ProfilePage()` --calls--> `getInitials()`  [INFERRED]
   src/app/profile/page.tsx → src/app/tasks/page.tsx
+- `SettingsPage()` --calls--> `getInitials()`  [INFERRED]
+  src/app/settings/page.tsx → src/app/tasks/page.tsx
+- `DesktopShell()` --calls--> `getInitials()`  [INFERRED]
+  src/components/DesktopShell.tsx → src/app/tasks/page.tsx
+- `TasksContent()` --calls--> `useAuth()`  [EXTRACTED]
+  src/app/tasks/page.tsx → src/contexts/AuthContextProvider.tsx
 
-## Communities (558 total, 41 thin omitted)
+## Import Cycles
+- None detected.
+
+## Communities (531 total, 30 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.10
-Nodes (19): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+11 more)
+Cohesion: 0.04
+Nodes (46): dependencies, @base-ui/react, class-variance-authority, clsx, framer-motion, lucide-react, next, @radix-ui/react-dialog (+38 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.20
+Cohesion: 0.25
 Nodes (6): AnimationConfig, EtheralShadow(), EtheralShadowProps, mapRange(), NoiseConfig, useInstanceId()
 
 ### Community 2 - "Community 2"
@@ -599,44 +585,44 @@ Cohesion: 0.09
 Nodes (21): aliases, components, hooks, lib, ui, utils, iconLibrary, menuAccent (+13 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.05
-Nodes (37): dependencies, @base-ui/react, class-variance-authority, clsx, framer-motion, lucide-react, next, @radix-ui/react-dialog (+29 more)
+Cohesion: 0.10
+Nodes (19): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+11 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.08
-Nodes (14): MediaCardProps, MetricPodProps, STATUS_CONFIG, StatusKey, TaskRowProps, ScheduleItem(), ScheduleItemProps, ScheduleSkeleton() (+6 more)
+Cohesion: 0.07
+Nodes (26): Dashboard(), FilmFrameCorners(), MediaCardProps, MetricPodProps, STATUS_CONFIG, StatusKey, TaskRowProps, TimelineDivider() (+18 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.13
-Nodes (10): SettingsPage(), getInitials(), KANBAN_COLS, PRIORITY_BG, PRIORITY_COLORS, STATUS_COLORS, TabType, Task (+2 more)
+Cohesion: 0.05
+Nodes (44): 1. gh-coordinator, 1. Intelligent CI with Swarms, 2. Multi-Language Detection, 2. pr-manager, 3. Adaptive Security Scanning, 3. issue-tracker, 4. release-manager, 4. Self-Healing Pipeline (+36 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.12
-Nodes (17): 1. Intelligent CI with Swarms, 2. Multi-Language Detection, 3. Adaptive Security Scanning, 4. Self-Healing Pipeline, 5. Progressive Deployment, 6. Performance Regression Detection, 7. PR Validation Swarm, 8. Intelligent Release (+9 more)
+Cohesion: 0.40
+Nodes (5): code:bash (# Initialize AgentDB for ReasoningBank), code:bash (# Automatic migration with validation), Initialize ReasoningBank Database, Migrate from Legacy ReasoningBank, Quick Start with CLI
 
 ### Community 7 - "Community 7"
-Cohesion: 0.03
-Nodes (32): ANCHOR_MAP, buttonParticles, CardId, ClayHexBubbleProps, clothVariants, ConnectionLinesProps, FLOATING_ICONS, FloatingIconConfig (+24 more)
+Cohesion: 0.04
+Nodes (24): ANCHOR_MAP, CardId, ClayHexBubbleProps, clothVariants, ConnectionLinesProps, FloatingPropProps, HEX_MODULES, HexConfig (+16 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.40
+Cohesion: 0.47
 Nodes (4): code:bash (npm run dev), Deploy on Vercel, Getting Started, Learn More
 
 ### Community 9 - "Community 9"
-Cohesion: 0.08
-Nodes (24): 1. Project Overview, 2. Tech Stack & Libraries, 3. Backend & API Connections, 4. Key Directory Structure, 5. Common Workflows & Known Quirks, Backend-as-a-Service (BaaS), code:sql (CREATE OR REPLACE FUNCTION public.get_user_tenant_id()), code:block2 (MediaHive Windows app/) (+16 more)
+Cohesion: 0.07
+Nodes (26): 1. Project Overview, 2. Tech Stack & Libraries, 3. Backend & API Connections, 4. Key Directory Structure, 5. Common Workflows & Known Quirks, 6. Changelog, Backend-as-a-Service (BaaS), Core Desktop Shell (+18 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.04
-Nodes (48): Avatar group hover, Card resize, code:css (:root {), code:html (<div class="t-dropdown" data-origin="top-left">), code:css (.t-dropdown {), code:js (function closeDropdown(el) {), code:html (<div class="t-modal" role="dialog">Modal content</div>), code:css (.t-modal {) (+40 more)
+Cohesion: 0.08
+Nodes (24): Card resize, code:css (:root {), code:html (<div class="t-page-slide" data-page="1">), code:html (<div class="t-resize">Content</div>), code:css (.t-page-slide {), code:js (slider.setAttribute("data-page", String(n));), code:css (.t-resize {), code:html (<div class="t-error-wrap">) (+16 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.04
-Nodes (48): 1. Session Memory, 2. Long-Term Memory, 3. Pattern Learning, Advanced Patterns, AgentDB Memory Patterns, Available Algorithms (9 Total), Best Practices, CLI Operations (+40 more)
+Cohesion: 0.18
+Nodes (9): AgentDB Memory Patterns, Best Practices, code:typescript (import { createAgentDBAdapter, migrateToAgentDB } from 'agen), Integration with ReasoningBank, Learn More, Performance Characteristics, Prerequisites, Reasoning Agents (4 Modules) (+1 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.07
-Nodes (29): Buttons, code:css (.button {), code:css (.view-enter {), code:css (.item {), code:tsx (const listVariants = {), code:tsx (<AnimatePresence mode="popLayout">), code:css (@media (hover: hover) and (pointer: fine) {), code:css (.box:hover .box-inner {) (+21 more)
+Nodes (28): Buttons, code:css (.button {), code:css (.view-enter {), code:css (.item {), code:tsx (const listVariants = {), code:tsx (<AnimatePresence mode="popLayout">), code:css (.box:hover .box-inner {), code:css (@media (hover: hover) and (pointer: fine) {) (+20 more)
 
 ### Community 14 - "Community 14"
 Cohesion: 0.13
@@ -645,6 +631,18 @@ Nodes (14): 1. Should this animate at all?, 2. What is the purpose?, 3. What eas
 ### Community 16 - "Community 16"
 Cohesion: 0.13
 Nodes (14): Boundary damping, code:ts (function onPointerUp(e: PointerEvent) {), code:ts (function applyDamping(offset: number, max: number): number {), code:ts (function onPointerDown(e: PointerEvent) {), code:ts (let activeTouchId: number | null = null;), code:ts (function applyFriction(delta: number, isAtBoundary: boolean)), code:ts (function handleSwipeEnd(direction: "left" | "right", distanc), Contents (+6 more)
+
+### Community 17 - "Community 17"
+Cohesion: 0.15
+Nodes (12): box1Variants, box2Variants, box3Variants, boxTransition, FLOATING_ICONS, FloatingIconConfig, GithubIcon(), GoogleIcon() (+4 more)
+
+### Community 18 - "Community 18"
+Cohesion: 0.18
+Nodes (11): code:typescript (class StartupBenchmarks {), code:typescript (class MemoryBenchmarks {), code:typescript (class SwarmBenchmarks {), code:typescript (class AttentionBenchmarks {), code:typescript (class SONABenchmarks {), Comprehensive Benchmark Suite, Flash Attention Benchmarks, Memory Operation Benchmarks (+3 more)
+
+### Community 19 - "Community 19"
+Cohesion: 0.22
+Nodes (9): Basic initialization, code:bash (npx claude-flow swarm init), code:bash (npx claude-flow swarm init --topology mesh --max-agents 5 --), code:bash (npx claude-flow swarm init --topology hierarchical --max-age), code:bash (npx claude-flow swarm init --topology star --github --memory), Examples, GitHub-focused swarm, Hierarchical for development (+1 more)
 
 ### Community 20 - "Community 20"
 Cohesion: 0.13
@@ -659,56 +657,76 @@ Cohesion: 0.14
 Nodes (13): clip-path for Animation, code:css (/* Fully hidden from right */), code:css (.reveal {), code:css (.tabs-active-overlay {), code:css (.delete-overlay {), code:tsx ("use client";), code:css (.comparison-top {), Comparison sliders (+5 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.14
-Nodes (19): GroupIconUploadModal(), GroupIconUploadModalProps, MediaCaptureModalProps, cn(), BackgroundGradientAnimation(), Button(), buttonVariants, Dialog() (+11 more)
+Cohesion: 0.12
+Nodes (25): GroupIconUploadModal(), GroupIconUploadModalProps, getRoomIconStyle(), GroupInfoSidebar(), MediaCaptureModalProps, cn(), CreateEventModalProps, CreateInventoryModalProps (+17 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.15
-Nodes (12): code:tsx (import { AnimatePresence, motion } from "motion/react"), code:css (.icon {), code:css (@keyframes enter {), code:tsx (<div className="animate-enter animate-enter-section" style={), code:tsx ({"Track expenses, build habits".split(" ").map((word, i) => ), code:tsx (<motion.div), code:tsx (<motion.div), Contents (+4 more)
+Cohesion: 0.17
+Nodes (11): code:tsx (import { AnimatePresence, motion } from "motion/react"), code:css (.icon {), code:css (@keyframes enter {), code:tsx (<div className="animate-enter animate-enter-section" style={), code:tsx ({"Track expenses, build habits".split(" ").map((word, i) => ), code:tsx (<motion.div), Contents, Contextual Animations (+3 more)
 
 ### Community 25 - "Community 25"
 Cohesion: 0.17
 Nodes (11): code:js ({ type: "spring", duration: 0.5, bounce: 0.2 }), code:tsx (// Spring reverses smoothly from current position), code:tsx (import { useSpring } from "framer-motion";), code:tsx (<motion.div), Configuration presets, Interruptibility advantage, Snap instead of spring, Spring Animations (+3 more)
 
 ### Community 27 - "Community 27"
-Cohesion: 0.33
+Cohesion: 0.22
 Nodes (5): Animation Review Format, Before/After/Why table, Component design principles, Debugging animations, Review checklist
 
 ### Community 28 - "Community 28"
-Cohesion: 0.29
-Nodes (7): code:yaml (# Automatically select relevant tests), code:yaml (# Generate test matrix from code analysis), code:bash (# Determine optimal parallelization), Dynamic Test Matrix, 🧪 Dynamic Test Strategies, Intelligent Parallelization, Smart Test Selection
+Cohesion: 0.22
+Nodes (9): Basic GitHub swarm, code:bash (npx claude-flow github swarm --repository owner/repo), code:bash (npx claude-flow github swarm -r owner/repo -f maintenance --), code:bash (npx claude-flow github swarm -r owner/repo -f development --), code:bash (npx claude-flow github swarm -r owner/repo -a 8 -f triage --), Development swarm with PR automation, Examples, Full-featured triage swarm (+1 more)
+
+### Community 30 - "Community 30"
+Cohesion: 0.22
+Nodes (9): Basic post-edit hook, code:bash (npx claude-flow hook post-edit --file "src/components/Button), code:bash (npx claude-flow hook post-edit -f "api/auth.js" --memory-key), code:bash (npx claude-flow hook post-edit -f "config/webpack.js" --auto), code:bash (npx claude-flow hook post-edit -f "utils/helpers.ts" --train), Examples, Format and validate, Neural training (+1 more)
+
+### Community 37 - "Community 37"
+Cohesion: 0.22
+Nodes (9): Basic post-task hook, code:bash (npx claude-flow hook post-task --task-id "auth-implementatio), code:bash (npx claude-flow hook post-task -t "api-refactor" --analyze-p), code:bash (npx claude-flow hook post-task -t "bug-fix-123" --store-deci), code:bash (npx claude-flow hook post-task -t "minor-update" --analyze-p), Examples, Memory storage, Quick cleanup (+1 more)
 
 ### Community 38 - "Community 38"
-Cohesion: 0.12
-Nodes (17): 1. gh-coordinator, 2. pr-manager, 3. issue-tracker, 4. release-manager, 5. repo-architect, 6. code-reviewer, 7. ci-orchestrator, 8. security-guardian (+9 more)
+Cohesion: 0.11
+Nodes (11): ChatWindow(), getRoomIconStyle(), MediaCaptureModal(), VoicePlayer(), VoicePlayerProps, VoiceRecorder(), VoiceRecorderProps, getLastReadTimestamps() (+3 more)
 
 ### Community 40 - "Community 40"
-Cohesion: 0.10
-Nodes (23): ActivityLog, ActivityPage(), AdminPage(), Dashboard(), CampaignsPage(), ChatPage(), AuthContext, AuthContextType (+15 more)
+Cohesion: 0.09
+Nodes (35): ActivityLog, ActivityPage(), AdminPage(), CampaignsPage(), ChatPage(), AuthContext, AuthContextType, AuthUser (+27 more)
+
+### Community 41 - "Community 41"
+Cohesion: 0.22
+Nodes (9): Basic pre-edit hook, code:bash (npx claude-flow hook pre-edit --file "src/auth/login.js"), code:bash (npx claude-flow hook pre-edit -f "config/database.js" --vali), code:bash (npx claude-flow hook pre-edit -f "api/users.ts" --auto-assig), code:bash (npx claude-flow hook pre-edit -f "production.env" --backup-f), Examples, Manual agent assignment, Safe editing with backup (+1 more)
 
 ### Community 42 - "Community 42"
-Cohesion: 0.17
-Nodes (8): MetricPod(), MetricPodProps, STATUS_CONFIG, StatusKey, RequestItem, RequestsWidget(), GlowingEffect(), GlowingEffectProps
+Cohesion: 0.22
+Nodes (9): Basic pre-task hook, code:bash (npx claude-flow hook pre-task --description "Implement user ), code:bash (npx claude-flow hook pre-task -d "Continue API development" ), code:bash (npx claude-flow hook pre-task -d "Debug issue #123" --auto-s), code:bash (npx claude-flow hook pre-task -d "Refactor codebase" --optim), Examples, Full optimization, Manual agent control (+1 more)
+
+### Community 43 - "Community 43"
+Cohesion: 0.22
+Nodes (9): Basic session end, code:bash (npx claude-flow hook session-end --session-id "dev-session-2), code:bash (npx claude-flow hook session-end -s "feature-auth" --export-), code:bash (npx claude-flow hook session-end -s "quick-fix" --save-state), code:bash (npx claude-flow hook session-end -s "major-refactor" --save-), Complete persistence, Examples, Quick close (+1 more)
+
+### Community 44 - "Community 44"
+Cohesion: 0.29
+Nodes (8): 1. Store Configurations Securely, 2. Use OIDC Authentication, 3. Implement Least-Privilege, 4. Audit Swarm Operations, code:yaml (- name: Setup Swarm), code:yaml (permissions:), code:yaml (- name: Audit Swarm Actions), 🔒 Security Best Practices
 
 ### Community 45 - "Community 45"
-Cohesion: 0.21
-Nodes (6): logEvent(), logger, LogLevel, SENSITIVE_FIELDS, SystemEvent, SystemLogger
+Cohesion: 0.53
+Nodes (6): 1. PatternMatcher, 2. ContextSynthesizer, 3. MemoryOptimizer, 4. ExperienceCurator, code:typescript (const result = await rb.retrieveWithReasoning(queryEmbedding), Integration with Reasoning Agents
 
 ### Community 46 - "Community 46"
-Cohesion: 0.11
-Nodes (13): geistMono, geistSans, metadata, outfit, AuthGuard(), PUBLIC_ROUTES, DesktopShell(), DesktopShellProps (+5 more)
+Cohesion: 0.10
+Nodes (18): geistMono, geistSans, metadata, outfit, AuthGuard(), PUBLIC_ROUTES, DesktopShell(), DesktopShellProps (+10 more)
 
 ### Community 47 - "Community 47"
 Cohesion: 0.29
 Nodes (6): ChatMessage, ChatMessageType, ChatParticipant, ChatParticipantRole, ChatRoom, ChatRoomWithParticipants
 
 ### Community 48 - "Community 48"
-Cohesion: 0.29
-Nodes (7): BORDER_COLORS, buildCalendarDays(), CalendarEvent, CalendarPage(), EVENT_COLORS, MONTH_NAMES, Toast
+Cohesion: 0.38
+Nodes (8): BORDER_COLORS, buildCalendarDays(), CalendarEvent, CalendarPage(), EVENT_COLORS, formatTime(), MONTH_NAMES, Toast
 
 ### Community 49 - "Community 49"
-Cohesion: 0.80
-Nodes (4): createImage(), getCroppedImg(), getRadianAngle(), rotateSize()
+Cohesion: 0.29
+Nodes (7): 1. Session Memory, 2. Long-Term Memory, 3. Pattern Learning, code:typescript (class SessionMemory {), code:typescript (// Store important facts), code:typescript (// Learn from successful interactions), Memory Patterns
 
 ### Community 50 - "Community 50"
 Cohesion: 0.04
@@ -722,9 +740,13 @@ Nodes (12): CONFIG, DATA_DIR, DB_PATH, __dirname, EmbeddingService, __filename, 
 Cohesion: 0.04
 Nodes (47): 1. Strategic Planning & Task Decomposition, 2. Agent Supervision & Delegation, 3. Coordination Protocol Management, 🧠 Advanced Attention Mechanisms (v3.0.0-alpha.1), Analyst Workers 📊, Architecture Overview, Best Practices, Code Workers 💻 (+39 more)
 
+### Community 53 - "Community 53"
+Cohesion: 0.29
+Nodes (7): CLI Operations, code:bash (# Query with vector embedding), code:bash (# Export vectors to file), code:bash (# Run performance benchmarks), Import/Export Data, Performance Benchmarks, Query Database
+
 ### Community 54 - "Community 54"
-Cohesion: 0.04
-Nodes (47): 1. PatternMatcher, 1. Trajectory Tracking, 2. ContextSynthesizer, 2. Verdict Judgment, 3. Memory Distillation, 3. MemoryOptimizer, 4. ExperienceCurator, Advanced Patterns (+39 more)
+Cohesion: 0.17
+Nodes (10): code:typescript (import { createAgentDBAdapter, computeEmbedding } from 'agen), Quick Start with API, code:typescript (import {), Learn More, Legacy API Compatibility, Performance Characteristics, Prerequisites, Quick Start with API (+2 more)
 
 ### Community 55 - "Community 55"
 Cohesion: 0.04
@@ -733,6 +755,10 @@ Nodes (46): 1. Real-Time Topology Optimization, 1. Topology Adaptation Engine, 2
 ### Community 56 - "Community 56"
 Cohesion: 0.04
 Nodes (46): 1. Task Management Domain, 2. Session Management Domain, 3. Health Monitoring Domain, Application Layer (Use Cases), Bounded Context Modules, Clean Architecture Layers, code:bash (# Initialize DDD architecture analysis), code:typescript (// core/application/use-cases/) (+38 more)
+
+### Community 57 - "Community 57"
+Cohesion: 0.29
+Nodes (7): code:bash (# Initialize vector database), code:bash (# Start MCP server (integrates with Claude Code)), code:bash (# Interactive plugin wizard), Create Learning Plugin, Initialize AgentDB, Quick Start with CLI, Start MCP Server for Claude Code
 
 ### Community 58 - "Community 58"
 Cohesion: 0.05
@@ -743,8 +769,8 @@ Cohesion: 0.05
 Nodes (40): Advanced Caching Strategy, Advanced Connection Pooling, code:bash (# Initialize MCP optimization analysis), code:typescript (// src/core/mcp/multi-level-cache.ts), code:typescript (const mcpDashboard = {), code:bash (# Full MCP server optimization), code:bash (# Connection pool optimization), code:block2 (Current MCP Issues:) (+32 more)
 
 ### Community 60 - "Community 60"
-Cohesion: 0.05
-Nodes (40): code:bash (# Initialize performance optimization), code:typescript (class PerformanceRegression {), code:typescript (class MemoryOptimization {), code:typescript (class CPUOptimization {), code:typescript (class PerformanceGates {), code:bash (# Full performance suite), code:block2 (┌─────────────────────────────────────────┐), code:block3 (┌─────────────────────────────────────────┐) (+32 more)
+Cohesion: 0.12
+Nodes (14): code:bash (# Initialize performance optimization), code:typescript (class PerformanceGates {), code:bash (# Full performance suite), Complete Performance Validation, Continuous Monitoring, Performance Gates, Primary Targets, Quick Start (+6 more)
 
 ### Community 61 - "Community 61"
 Cohesion: 0.05
@@ -763,12 +789,12 @@ Cohesion: 0.05
 Nodes (35): 1. Requirements Document, 1. Requirements Gathering, 2. Constraint Analysis, 2. Data Model Specification, 3. API Specification, 3. Use Case Definition, 4. Acceptance Criteria, After Specification: Store Learning Patterns (+27 more)
 
 ### Community 65 - "Community 65"
-Cohesion: 0.06
+Cohesion: 0.05
 Nodes (35): 1. Mesh (Peer-to-Peer), 2. Hierarchical (Queen-Worker), 3. Adaptive (Dynamic), Adaptive Execution, Advanced Features, Best Practices, code:bash (# Initialize swarm), code:typescript (// Handle agent failures) (+27 more)
 
 ### Community 66 - "Community 66"
-Cohesion: 0.06
-Nodes (35): AgentDB Coordination, AgentDB Search Performance, agentic-flow@alpha Feature Integration, Backward Compatibility, Code Deduplication Strategy, code:bash (# Initialize deep integration), code:typescript (class RLIntegration {), code:typescript (const attentionBenchmark = {) (+27 more)
+Cohesion: 0.15
+Nodes (11): Backward Compatibility, code:bash (# Initialize deep integration), code:typescript (class RLIntegration {), code:typescript (class BackwardCompatibility {), Gradual Migration, Quick Start, Related V3 Skills, RL Algorithm Integration (+3 more)
 
 ### Community 67 - "Community 67"
 Cohesion: 0.06
@@ -807,7 +833,7 @@ Cohesion: 0.07
 Nodes (29): 1. Create Coordinated Issue with Swarm Tracking, 1. **Swarm-Coordinated Issue Management**, 2. **Automated Progress Tracking**, 2. Automated Progress Updates, 3. Multi-Issue Project Coordination, 3. **Smart Labeling and Organization**, 4. **Batch Issue Operations**, Automatic tracking of: (+21 more)
 
 ### Community 76 - "Community 76"
-Cohesion: 0.07
+Cohesion: 0.06
 Nodes (29): 1. Pattern Recognition, 2. Strategy Optimization, 3. Continuous Learning, Adaptive Agents, Advanced Usage, Best Practices, code:typescript (import { ReasoningBank } from 'agentic-flow/reasoningbank';), code:typescript (// Learn patterns from data) (+21 more)
 
 ### Community 77 - "Community 77"
@@ -823,16 +849,16 @@ Cohesion: 0.07
 Nodes (27): Batch Operations, branch-manager, ci-orchestrator, code-reviewer, code:bash (/github pr-manager "Review and merge feature/new-integration), code:bash (/github sync-coordinator "Synchronize claude-code-flow and r), code:bash (/github issue-tracker "Create and manage integration issues ), code:javascript ([Single Message with BatchTool]:) (+19 more)
 
 ### Community 80 - "Community 80"
-Cohesion: 0.07
-Nodes (26): Agent Types, Basic GitHub swarm, code:bash (npx claude-flow github swarm [options]), code:bash (npx claude-flow github swarm --repository owner/repo), code:bash (npx claude-flow github swarm -r owner/repo -f maintenance --), code:bash (npx claude-flow github swarm -r owner/repo -f development --), code:bash (npx claude-flow github swarm -r owner/repo -a 8 -f triage --), code:javascript (mcp__claude-flow__github_swarm {) (+18 more)
+Cohesion: 0.18
+Nodes (11): code:bash (npx claude-flow github swarm [options]), code:javascript (mcp__claude-flow__github_swarm {), github swarm, Integration with Claude Code, Issue Triage Workflow, Options, PR Enhancement Workflow, Repository Health Check (+3 more)
 
 ### Community 81 - "Community 81"
 Cohesion: 0.08
 Nodes (25): Agent Spawn Command, Agent Types (87 Available), code:bash (npx claude-flow agent spawn [options]), code:javascript (mcp__claude-flow__swarm_init({ topology: "hierarchical", max), code:block11 (Spawning coder agent: feature-bot), code:bash (npx claude-flow agent spawn -t coder      # Code implementat), code:bash (npx claude-flow agent spawn -t security-architect     # Secu), code:bash (npx claude-flow agent spawn -t hierarchical-coordinator  # Q) (+17 more)
 
 ### Community 82 - "Community 82"
-Cohesion: 0.08
-Nodes (25): Analyze specific swarm, Auto-fix detected issues, Automatic Fixes, Basic bottleneck detection, bottleneck detect, code:bash (npx claude-flow bottleneck detect [options]), code:bash (npx claude-flow bottleneck detect), code:bash (npx claude-flow bottleneck detect --swarm-id swarm-123) (+17 more)
+Cohesion: 0.05
+Nodes (33): Analyze specific swarm, Auto-fix detected issues, Automatic Fixes, Basic bottleneck detection, bottleneck detect, code:bash (npx claude-flow bottleneck detect [options]), code:bash (npx claude-flow bottleneck detect), code:bash (npx claude-flow bottleneck detect --swarm-id swarm-123) (+25 more)
 
 ### Community 83 - "Community 83"
 Cohesion: 0.08
@@ -859,32 +885,28 @@ Cohesion: 0.08
 Nodes (23): Backup project memory:, 🎯 Best Practices, 🧠 Claude-Flow Memory System, Cleanup Operations, code:bash (# Store with default namespace), code:bash (# Search across all namespaces), code:bash (# Show overall statistics), code:bash (# Export all memory) (+15 more)
 
 ### Community 89 - "Community 89"
-Cohesion: 0.08
-Nodes (23): Auto Formatting, Basic post-edit hook, code:bash (npx claude-flow hook post-edit [options]), code:bash (npx claude-flow hook post-edit --file "src/components/Button), code:bash (npx claude-flow hook post-edit -f "api/auth.js" --memory-key), code:bash (npx claude-flow hook post-edit -f "config/webpack.js" --auto), code:bash (npx claude-flow hook post-edit -f "utils/helpers.ts" --train), code:bash (# After editing files) (+15 more)
+Cohesion: 0.14
+Nodes (14): Auto Formatting, code:bash (npx claude-flow hook post-edit [options]), code:bash (# After editing files), code:json ({), Features, hook post-edit, Integration, Memory Storage (+6 more)
 
 ### Community 90 - "Community 90"
-Cohesion: 0.08
-Nodes (23): Basic post-task hook, code:bash (npx claude-flow hook post-task [options]), code:bash (npx claude-flow hook post-task --task-id "auth-implementatio), code:bash (npx claude-flow hook post-task -t "api-refactor" --analyze-p), code:bash (npx claude-flow hook post-task -t "bug-fix-123" --store-deci), code:bash (npx claude-flow hook post-task -t "minor-update" --analyze-p), code:bash (# In agent coordination), code:json ({) (+15 more)
+Cohesion: 0.13
+Nodes (14): code:bash (npx claude-flow hook post-task [options]), code:bash (# In agent coordination), code:json ({), Decision Storage, Features, hook post-task, Integration, Neural Learning (+6 more)
 
 ### Community 91 - "Community 91"
-Cohesion: 0.08
-Nodes (23): Auto Agent Assignment, Basic pre-edit hook, code:bash (npx claude-flow hook pre-edit [options]), code:bash (npx claude-flow hook pre-edit --file "src/auth/login.js"), code:bash (npx claude-flow hook pre-edit -f "config/database.js" --vali), code:bash (npx claude-flow hook pre-edit -f "api/users.ts" --auto-assig), code:bash (npx claude-flow hook pre-edit -f "production.env" --backup-f), code:bash (# Before editing files) (+15 more)
+Cohesion: 0.14
+Nodes (14): Auto Agent Assignment, code:bash (npx claude-flow hook pre-edit [options]), code:bash (# Before editing files), code:json ({), Conflict Detection, Features, File Backup, hook pre-edit (+6 more)
 
 ### Community 92 - "Community 92"
-Cohesion: 0.08
-Nodes (23): Auto Agent Assignment, Basic pre-task hook, code:bash (npx claude-flow hook pre-task [options]), code:bash (npx claude-flow hook pre-task --description "Implement user ), code:bash (npx claude-flow hook pre-task -d "Continue API development" ), code:bash (npx claude-flow hook pre-task -d "Debug issue #123" --auto-s), code:bash (npx claude-flow hook pre-task -d "Refactor codebase" --optim), code:bash (# In agent coordination) (+15 more)
+Cohesion: 0.14
+Nodes (14): Auto Agent Assignment, code:bash (npx claude-flow hook pre-task [options]), code:bash (# In agent coordination), code:json ({), Complexity Estimation, Features, hook pre-task, Integration (+6 more)
 
 ### Community 93 - "Community 93"
-Cohesion: 0.08
-Nodes (23): Basic session end, Cleanup Operations, code:bash (npx claude-flow hook session-end [options]), code:bash (npx claude-flow hook session-end --session-id "dev-session-2), code:bash (npx claude-flow hook session-end -s "feature-auth" --export-), code:bash (npx claude-flow hook session-end -s "quick-fix" --save-state), code:bash (npx claude-flow hook session-end -s "major-refactor" --save-), code:bash (# At session end) (+15 more)
+Cohesion: 0.14
+Nodes (14): Cleanup Operations, code:bash (npx claude-flow hook session-end [options]), code:bash (# At session end), code:json ({), Features, hook session-end, Integration, Metric Export (+6 more)
 
 ### Community 94 - "Community 94"
-Cohesion: 0.09
-Nodes (22): Agent Types Selected, Analysis only, auto agent, Balanced, Basic auto-spawning, code:bash (npx claude-flow auto agent [options]), code:bash (npx claude-flow auto agent --task "Build a REST API with aut), code:bash (npx claude-flow auto agent -t "Debug performance issue" --ma) (+14 more)
-
-### Community 95 - "Community 95"
-Cohesion: 0.09
-Nodes (17): formatTime(), RoomAvatar(), ChatWindow(), getRoomIconStyle(), getRoomIconStyle(), GroupInfoSidebar(), MediaCaptureModal(), VoicePlayer() (+9 more)
+Cohesion: 0.05
+Nodes (36): Agent Types Selected, Analysis only, auto agent, Balanced, Basic auto-spawning, code:bash (npx claude-flow auto agent [options]), code:bash (npx claude-flow auto agent --task "Build a REST API with aut), code:bash (npx claude-flow auto agent -t "Debug performance issue" --ma) (+28 more)
 
 ### Community 96 - "Community 96"
 Cohesion: 0.09
@@ -899,16 +921,16 @@ Cohesion: 0.22
 Nodes (22): swarm-hooks.sh script, accept_handoff(), broadcast_context(), broadcast_pattern(), complete_handoff(), get_agents(), get_consensus_status(), get_messages() (+14 more)
 
 ### Community 99 - "Community 99"
-Cohesion: 0.09
-Nodes (22): code:bash (# Initialize memory unification), code:block2 (┌─────────────────────────────────────────┐), code:typescript (class UnifiedMemoryService implements IMemoryBackend {), code:typescript (class HNSWIndexer {), code:typescript (// AgentDB adapter setup), code:typescript (// SQLite → AgentDB), code:typescript (class SONAMemoryIntegration {), HNSW Vector Search (+14 more)
+Cohesion: 0.18
+Nodes (9): code:bash (# Initialize memory unification), code:typescript (class SONAMemoryIntegration {), Learning Pattern Storage, Performance Targets, Quick Start, SONA Integration, Success Metrics, V3 Memory Unification (+1 more)
 
 ### Community 100 - "Community 100"
-Cohesion: 0.09
-Nodes (21): Basic initialization, code:bash (npx claude-flow swarm init [options]), code:bash (npx claude-flow swarm init), code:bash (npx claude-flow swarm init --topology mesh --max-agents 5 --), code:bash (npx claude-flow swarm init --topology hierarchical --max-age), code:bash (npx claude-flow swarm init --topology star --github --memory), code:javascript (mcp__claude-flow__swarm_init { topology: "hierarchical", max), Examples (+13 more)
+Cohesion: 0.18
+Nodes (10): code:javascript (mcp__claude-flow__swarm_init { topology: "hierarchical", max), Hierarchical, Integration with Claude Code, Mesh, Options, Ring, See Also, Star (+2 more)
 
 ### Community 101 - "Community 101"
-Cohesion: 0.10
-Nodes (19): 1. Initialize with Hooks, 2. Test Hook Functionality, 3. Customize Hooks, Auto-Format on Save, Automatic Testing, code:bash (npx claude-flow init --hooks), code:bash (# Test pre-edit hook), code:json ({) (+11 more)
+Cohesion: 0.14
+Nodes (16): 1. Initialize with Hooks, 2. Test Hook Functionality, 3. Customize Hooks, Auto-Format on Save, Automatic Testing, code:bash (npx claude-flow init --hooks), code:bash (# Test pre-edit hook), code:bash (# Enable debug output) (+8 more)
 
 ### Community 102 - "Community 102"
 Cohesion: 0.10
@@ -935,7 +957,7 @@ Cohesion: 0.11
 Nodes (18): Available Tools, code:block1 (<use_mcp_tool>), code:block2 (<access_mcp_resource>), code:javascript (mcp__claude-flow__sparc_mode {), code:bash (# Use when running from terminal or MCP tools unavailable), code:bash (# If claude-flow is installed locally), code:javascript (// Store mode-specific context), code:bash (# Store mode-specific context) (+10 more)
 
 ### Community 108 - "Community 108"
-Cohesion: 0.11
+Cohesion: 0.10
 Nodes (18): Activation, Agent Roles, Agent Spawning with MCP, Analysis and Validation, code:javascript (// Initialize research swarm), code:javascript (// Spawn research agents), code:javascript (// Parallel information collection), code:javascript (// Pattern recognition in findings) (+10 more)
 
 ### Community 109 - "Community 109"
@@ -943,7 +965,7 @@ Cohesion: 0.11
 Nodes (18): Activation, Agent Roles, Agent Spawning with MCP, code:javascript (// Initialize testing swarm), code:javascript (// Spawn testing agents), code:javascript (// Quality assessment), code:javascript (// Parallel test execution), code:javascript (// Run performance benchmarks) (+10 more)
 
 ### Community 110 - "Community 110"
-Cohesion: 0.11
+Cohesion: 0.16
 Nodes (18): Advanced usage, Answer a few questions, code:block12, code:block13 (Expected output:), code:block14, code:block15, code:block16, Commands (+10 more)
 
 ### Community 111 - "Community 111"
@@ -955,8 +977,8 @@ Cohesion: 0.11
 Nodes (19): 2. Project Board Automation, Auto-Assignment, Board Mapping Configuration, Bulk Operations, code:bash (# Get project details), code:yaml (# .github/board-sync.yml), code:bash (# Sync swarm tasks with project cards), code:bash (# List issues with label) (+11 more)
 
 ### Community 113 - "Community 113"
-Cohesion: 0.11
-Nodes (19): code:bash (# Session setup), code:block29 (👥 Starting pair programming for authentication feature...), code:bash (# Session setup), code:block31 (👥 Starting debugging session...), code:bash (# Session setup), code:block33 (👥 TDD Session: Shopping Cart Feature), code:bash (# Session setup), code:block35 (👥 Refactoring Session: Modernizing UserService) (+11 more)
+Cohesion: 0.20
+Nodes (14): code:block29 (👥 Starting pair programming for authentication feature...), code:block31 (👥 Starting debugging session...), code:block33 (👥 TDD Session: Shopping Cart Feature), code:block35 (👥 Refactoring Session: Modernizing UserService), code:bash (# Session setup), code:block37 (👥 Performance Optimization Session), code:block39 (👥 API Development Session), Example 1: Feature Implementation (+6 more)
 
 ### Community 114 - "Community 114"
 Cohesion: 0.11
@@ -971,8 +993,8 @@ Cohesion: 0.11
 Nodes (17): Adding New Helpers, Available Helpers, Claude Flow V3 Helpers, code:bash (# Initialize V3 development environment), code:bash (.claude/helpers/v3.sh help           # Show all commands), code:bash (# Usage examples:), code:json ({), Configuration Integration (+9 more)
 
 ### Community 117 - "Community 117"
-Cohesion: 0.12
-Nodes (16): AgentDB Vector Search, code:bash (# Start AgentDB MCP server for Claude Code), code:bash (# Run comprehensive benchmarks), code:bash (# Cosine similarity (default, best for most use cases)), code:bash (# Get comprehensive stats), code:typescript (import { createAgentDBAdapter, computeEmbedding } from 'agen), Database Statistics, Distance Metrics (+8 more)
+Cohesion: 0.14
+Nodes (12): AgentDB Vector Search, code:bash (# Start AgentDB MCP server for Claude Code), code:bash (# Run comprehensive benchmarks), code:bash (# Cosine similarity (default, best for most use cases)), Distance Metrics, Learn More, MCP Server Integration, Performance Benchmarks (+4 more)
 
 ### Community 118 - "Community 118"
 Cohesion: 0.12
@@ -1039,7 +1061,7 @@ Cohesion: 0.12
 Nodes (16): Activation, Agent Roles, Agent Spawning with MCP, code:javascript (// Initialize optimization swarm), code:javascript (// Spawn optimization agents), code:javascript (// Analyze bottlenecks), code:javascript (// Optimize topology), code:javascript (// Performance report) (+8 more)
 
 ### Community 134 - "Community 134"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (16): 1. Initialize Development Framework, 2. Define Development Perspectives, 3. Coordinate Implementation, 4. Monitor Progress, CLI Usage, code:block1 (Tool: mcp__claude-flow__swarm_init), code:block2 (Tool: mcp__claude-flow__agent_spawn), code:block3 (Tool: mcp__claude-flow__agent_spawn) (+8 more)
 
 ### Community 135 - "Community 135"
@@ -1055,8 +1077,8 @@ Cohesion: 0.12
 Nodes (17): AI Partner Commands, Code Commands, code:block14 (/explain [--level basic|detailed|expert]), code:block15 (/test [--watch] [--coverage] [--only <pattern>]), code:block16 (/review [--scope current|file|changes] [--strict]), code:block17 (/goto <file>[:line[:column]]), code:block18 (/diff [--staged] [--file <file>]), code:block19 (/agent [switch|info|config] [<agent-name>]) (+9 more)
 
 ### Community 138 - "Community 138"
-Cohesion: 0.12
-Nodes (15): Agent Status Command, Basic Info, code:bash (npx claude-flow agent status <agent-id>), code:bash (# Get status by ID), code:block3 (+--------------------------------------------------+), code:json ({), Configuration (when applicable), Detailed Information (+7 more)
+Cohesion: 0.13
+Nodes (13): Agent Status Command, Basic Info, code:bash (npx claude-flow agent status <agent-id>), code:bash (# Get status by ID), code:block3 (+--------------------------------------------------+), Configuration (when applicable), Detailed Information, Examples (+5 more)
 
 ### Community 139 - "Community 139"
 Cohesion: 0.12
@@ -1067,8 +1089,8 @@ Cohesion: 0.12
 Nodes (15): 1. Initialize Research Framework, 2. Define Research Perspectives, 3. Execute Coordinated Research, 4. Store Research Findings, CLI Usage, code:block1 (Tool: mcp__claude-flow__swarm_init), code:block2 (Tool: mcp__claude-flow__agent_spawn), code:block3 (Tool: mcp__claude-flow__agent_spawn) (+7 more)
 
 ### Community 141 - "Community 141"
-Cohesion: 0.12
-Nodes (15): Auto-Review on PR Creation, 🤖 Automated Workflows, Best Practices, code:markdown (<!-- In PR comment -->), code:javascript (// webhook-handler.js), code:yaml (# .github/workflows/auto-review.yml), code:bash (# Initialize review swarm with GitHub CLI integration), 🚀 Core Features (+7 more)
+Cohesion: 0.14
+Nodes (12): Auto-Review on PR Creation, 🤖 Automated Workflows, Best Practices, code:yaml (# .github/workflows/auto-review.yml), code:bash (# Initialize review swarm with GitHub CLI integration), 🚀 Core Features, GitHub Code Review Skill, 📄 License (+4 more)
 
 ### Community 142 - "Community 142"
 Cohesion: 0.12
@@ -1091,7 +1113,7 @@ Cohesion: 0.13
 Nodes (14): Activation, Agent Roles, Agent Spawning with MCP, Analysis Operations, Analysis Swarm Strategy, code:javascript (// Initialize analysis swarm), code:javascript (// Spawn analysis agents), code:javascript (// Run performance analysis) (+6 more)
 
 ### Community 147 - "Community 147"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (14): Activation, Agent Roles, Agent Spawning with MCP, Best Practices, code:javascript (// Initialize development swarm), code:javascript (// Spawn development agents), code:javascript (// Check swarm status), code:javascript (// Enable fault tolerance) (+6 more)
 
 ### Community 148 - "Community 148"
@@ -1100,19 +1122,19 @@ Nodes (14): 📋 Agent Types by Task, code:javascript (// Spawn ALL agents IN BA
 
 ### Community 149 - "Community 149"
 Cohesion: 0.13
-Nodes (14): 1. Release Planning & Version Management, 2. Automated Testing & Validation, 3. Build & Deployment Orchestration, 4. Documentation & Communication, Appendix: Release Checklist Template, Core Capabilities, Documentation, GitHub Release Management Skill (+6 more)
+Nodes (13): Appendix: Release Checklist Template, Documentation, Expected Performance, GitHub Release Management Skill, Optimization Tips, Performance Metrics & Benchmarks, Post-Release Checklist, Pre-Release Checklist (+5 more)
 
 ### Community 150 - "Community 150"
-Cohesion: 0.13
-Nodes (15): Architecture Review Agent, code:bash (# Architecture review), code:javascript ({), code:bash (# Style enforcement with auto-fix), code:javascript ({), code:bash (# Get changed files from PR), code:javascript ({), code:markdown (🔒 **Security Issue: [Type]**) (+7 more)
+Cohesion: 0.17
+Nodes (16): Architecture Review Agent, code:bash (# Architecture review), code:bash (# Style enforcement with auto-fix), code:bash (# Get changed files from PR), code:markdown (🔒 **Security Issue: [Type]**), code:block7, code:bash (# Run performance analysis), Performance Review Agent (+8 more)
 
 ### Community 151 - "Community 151"
 Cohesion: 0.13
 Nodes (15): 4. Advanced Coordination, code:bash (# Sync across multiple boards), code:bash (# Handle issue dependencies), code:bash (# Coordinate epic-level swarms), code:bash (# Handle issues across repositories), code:bash (# Distribute work among team), code:bash (# Generate standup reports), code:bash (# Coordinate reviews via board) (+7 more)
 
 ### Community 152 - "Community 152"
-Cohesion: 0.13
-Nodes (15): Best Practices, Code Practices, code:bash (# Refactoring template), code:bash (export CLAUDE_PAIR_MODE=driver), code:json ({), Command History, Command Shortcuts, Complete Guide (+7 more)
+Cohesion: 0.14
+Nodes (14): Best Practices, Code Practices, code:bash (# Refactoring template), code:bash (export CLAUDE_PAIR_MODE=driver), Command History, Command Shortcuts, Complete Guide, Environment Variables (+6 more)
 
 ### Community 153 - "Community 153"
 Cohesion: 0.43
@@ -1127,16 +1149,16 @@ Cohesion: 0.14
 Nodes (14): Automated Hotfix Process, code:javascript ([Single Message - Multi-Package Release]:), code:bash (# Synchronize releases across repositories), code:javascript ([Single Message - Cross-Repo Release]:), code:bash (# Fast-track critical bug fix), code:javascript ([Single Message - Emergency Hotfix]:), Coordinated Multi-Repo Release, Cross-Repo Dependency Management (+6 more)
 
 ### Community 156 - "Community 156"
-Cohesion: 0.14
-Nodes (14): Available Modes, code:bash (claude-flow pair --start \), code:bash (claude-flow pair --start \), code:bash (claude-flow pair --start \), code:bash (claude-flow pair --start \), code:bash (claude-flow pair --start --mode driver), code:block6 (/suggest     - Get implementation suggestions), code:bash (claude-flow pair --start --mode navigator) (+6 more)
+Cohesion: 0.18
+Nodes (11): Available Modes, code:bash (claude-flow pair --start \), code:bash (claude-flow pair --start --mode driver), code:block6 (/suggest     - Get implementation suggestions), code:bash (claude-flow pair --start --mode navigator), code:block8 (/implement   - Direct implementation), code:bash (# Default 10-minute intervals), Driver Mode (+3 more)
 
 ### Community 157 - "Community 157"
-Cohesion: 0.14
-Nodes (14): code:block38, code:markdown (---), code:block40, code:block41, code:markdown (---), code:block43, code:block44, code:block45 (+6 more)
+Cohesion: 0.17
+Nodes (12): code:block38, code:block40, code:block41, code:block43, code:block44, code:block45, code:block46, code:block47 (+4 more)
 
 ### Community 158 - "Community 158"
-Cohesion: 0.14
-Nodes (14): code:bash (claude-flow stream-chain pipeline analysis), code:bash (claude-flow stream-chain pipeline refactor --timeout 60 --ve), code:bash (claude-flow stream-chain pipeline test --debug), code:bash (claude-flow stream-chain pipeline optimize --timeout 90 --ve), code:bash (claude-flow stream-chain pipeline <type> [options]), Comprehensive Optimization, Debug Test Generation, Extended Refactoring (+6 more)
+Cohesion: 0.25
+Nodes (8): code:bash (claude-flow stream-chain pipeline refactor --timeout 60 --ve), code:bash (claude-flow stream-chain pipeline test --debug), code:bash (claude-flow stream-chain pipeline optimize --timeout 90 --ve), Comprehensive Optimization, Debug Test Generation, Extended Refactoring, Pipeline Examples, Quick Analysis
 
 ### Community 159 - "Community 159"
 Cohesion: 0.15
@@ -1219,60 +1241,60 @@ Cohesion: 0.49
 Nodes (12): daemon-manager.sh script, error(), is_running(), log(), restart_all(), show_status(), start_all(), start_metrics_daemon() (+4 more)
 
 ### Community 179 - "Community 179"
-Cohesion: 0.15
-Nodes (12): Additional Resources, code:bash (# 1. Create feature issue with swarm coordination), code:bash (# Issue Management), Complete Workflow Example, Full-Stack Feature Development, GitHub Project Management, Integration with Other Skills, Overview (+4 more)
+Cohesion: 0.18
+Nodes (9): Additional Resources, code:bash (# Issue Management), GitHub Project Management, Integration with Other Skills, Overview, Quick Reference Commands, Seamless Integration With:, Security Considerations (read first) (+1 more)
 
 ### Community 180 - "Community 180"
-Cohesion: 0.15
-Nodes (13): 1. Cross-Repository Swarm Orchestration, 3. Repository Architecture, code:javascript (// Create standardized repository template), code:javascript (// Synchronize structure across repositories), code:javascript (// Auto-discover related repositories with gh CLI), code:javascript (// Execute synchronized changes across repositories), code:javascript (// Analyze and optimize repository structure), Cross-Repository Standardization (+5 more)
+Cohesion: 0.29
+Nodes (7): 3. Repository Architecture, code:javascript (// Create standardized repository template), code:javascript (// Synchronize structure across repositories), code:javascript (// Analyze and optimize repository structure), Cross-Repository Standardization, Structure Analysis, Template Creation
 
 ### Community 181 - "Community 181"
 Cohesion: 0.15
 Nodes (13): 1. Changelog Requirements, 1. Comprehensive CI/CD Pipeline, 1. Regular Release Cadence, 2. Feature Freeze Strategy, 2. Progressive Deployment, 2. Release Notes Content, 3. API Documentation, 3. Monitoring & Observability (+5 more)
 
 ### Community 182 - "Community 182"
-Cohesion: 0.15
-Nodes (13): Analysis and Research Modes, `analyzer`, Available Modes, code:javascript (mcp__claude-flow__sparc_mode {), Creative and Support Modes, `debugger`, `designer`, `documenter` (+5 more)
+Cohesion: 0.29
+Nodes (7): Creative and Support Modes, `debugger`, `designer`, `documenter`, `innovator`, `memory-manager`, `tester`
 
 ### Community 183 - "Community 183"
-Cohesion: 0.15
-Nodes (13): Advanced Techniques, code:javascript (// Setup fault tolerance for all agents), code:javascript (// Cross-session persistence), code:javascript (// Train neural patterns from successful workflows), code:javascript (// Create reusable workflow), code:javascript (// Topology optimization), code:javascript (// Real-time swarm monitoring), Error Handling and Fault Tolerance (+5 more)
+Cohesion: 0.18
+Nodes (11): Advanced Techniques, code:javascript (// Setup fault tolerance for all agents), code:javascript (// Cross-session persistence), code:javascript (// Train neural patterns from successful workflows), code:javascript (// Create reusable workflow), code:javascript (// Topology optimization), Error Handling and Fault Tolerance, Memory and State Management (+3 more)
 
 ### Community 184 - "Community 184"
-Cohesion: 0.17
-Nodes (12): 3. SARSA, 4. Actor-Critic, 5. Active Learning, 6. Adversarial Training, 7. Curriculum Learning, 8. Federated Learning, 9. Multi-Task Learning, Available Learning Algorithms (9 Total) (+4 more)
+Cohesion: 0.20
+Nodes (10): 1. Decision Transformer (Recommended), 4. Actor-Critic, 5. Active Learning, 6. Adversarial Training, 7. Curriculum Learning, 8. Federated Learning, 9. Multi-Task Learning, Available Learning Algorithms (9 Total) (+2 more)
 
 ### Community 185 - "Community 185"
-Cohesion: 0.17
+Cohesion: 0.18
 Nodes (11): Available Hooks, Benefits, Claude Code Hooks for claude-flow, code:json ({), Configuration, MCP Integration Hooks, Post-Operation Hooks, Pre-Operation Hooks (+3 more)
 
 ### Community 186 - "Community 186"
-Cohesion: 0.17
-Nodes (11): Core Capabilities, GitHub Multi-Repository Coordination Skill, 🔗 Integration Management, Integration Points, 🔄 Multi-Repository Swarm Coordination, Overview, 📦 Package Synchronization, Related Commands (+3 more)
+Cohesion: 0.12
+Nodes (14): Architecture Health Metrics, Automated Reporting, code:yaml (# .swarm/multi-repo.yml), Configuration, GitHub Multi-Repository Coordination Skill, Integration Points, Metrics and Reporting, Multi-Repo Config File (+6 more)
 
 ### Community 187 - "Community 187"
 Cohesion: 0.17
 Nodes (12): 1. Multi-Agent Review System, 2. Specialized Review Agents, 3. Review Configuration, Architecture Agent, code:bash (# Initialize code review swarm with gh CLI), code:bash (# Security-focused review with gh CLI), code:bash (# Performance analysis), code:bash (# Architecture review) (+4 more)
 
 ### Community 188 - "Community 188"
-Cohesion: 0.17
-Nodes (12): Agent Coordination Workflow, Agent Workflow Example, Benefits, Best Practices, code:bash (# Agent 1: Backend Developer), code:bash (# Agent 2: Test Engineer (receives notification)), code:bash (# Enable debug output), Complete Guide (+4 more)
+Cohesion: 0.13
+Nodes (15): Agent Coordination Workflow, Agent Workflow Example, Benefits, Best Practices, code:javascript (mcp__claude-flow__memory_usage {), code:bash (# Agent 1: Backend Developer), code:bash (# Agent 2: Test Engineer (receives notification)), code:bash (# Enable debug output) (+7 more)
 
 ### Community 189 - "Community 189"
-Cohesion: 0.17
-Nodes (12): Advanced Features, code:json ({), code:block48 (/custom tdd), code:block49 (/test && /commit && /push), code:bash (# Start with recording), code:bash (claude-flow pair --start --git --auto-commit), code:bash (claude-flow pair --start --ci --non-interactive), code:bash (claude-flow pair --start --ide vscode) (+4 more)
+Cohesion: 0.18
+Nodes (11): Advanced Features, code:block48 (/custom tdd), code:block49 (/test && /commit && /push), code:bash (# Start with recording), code:bash (claude-flow pair --start --git --auto-commit), code:bash (claude-flow pair --start --ci --non-interactive), code:bash (claude-flow pair --start --ide vscode), Command Chaining (+3 more)
 
 ### Community 190 - "Community 190"
-Cohesion: 0.17
-Nodes (12): Basic Configuration, Built-in Agents, CLI Configuration, code:json ({), code:json ({), code:json ({), code:bash (# Set configuration), code:bash (# Create profile) (+4 more)
+Cohesion: 0.11
+Nodes (25): 2. Q-Learning, code:json ({), code:bash (npx agentdb@latest create-plugin -t q-learning -n q-agent), Advanced Configuration, Automatic Testing, Basic Configuration, Block Response, code:json ({) (+17 more)
 
 ### Community 191 - "Community 191"
-Cohesion: 0.18
-Nodes (10): AgentDB Advanced Features, code:typescript (// Without MMR: Similar results may be redundant), code:typescript (const result = await adapter.retrieveWithReasoning(queryEmbe), code:bash (# AgentDB configuration), Context Synthesis, Environment Variables, Learn More, MMR (Maximal Marginal Relevance) (+2 more)
+Cohesion: 0.04
+Nodes (47): Advanced Filtering, AgentDB Advanced Features, Basic Hybrid Search, CLI Advanced Operations, code:typescript (const result = await adapter.retrieveWithReasoning(queryEmbe), code:typescript (// Separate databases for different domains), code:typescript (// Shard by domain for horizontal scaling), code:typescript (// Without MMR: Similar results may be redundant) (+39 more)
 
 ### Community 192 - "Community 192"
-Cohesion: 0.18
-Nodes (10): AgentDB Learning Plugins, CLI Operations, code:typescript (// Train learning model), code:bash (# Create plugin), code:typescript (import { createAgentDBAdapter } from 'agentic-flow/reasoning), Integration with Reasoning Agents, Learn More, Prerequisites (+2 more)
+Cohesion: 0.13
+Nodes (13): AgentDB Learning Plugins, Batch Training, CLI Operations, code:typescript (// Collect batch of experiences), code:typescript (// Train incrementally as new data arrives), code:typescript (// Train learning model), code:bash (# Create plugin), Incremental Learning (+5 more)
 
 ### Community 193 - "Community 193"
 Cohesion: 0.18
@@ -1287,7 +1309,7 @@ Cohesion: 0.18
 Nodes (10): code:json ({"task": "Implement authentication system", "strategy": "par), Coordinate Task Execution, Description, Details, Example Usage, Important Reminders, 🎯 Key Principle, MCP Tool Usage in Claude Code (+2 more)
 
 ### Community 196 - "Community 196"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): code:json ({"type": "researcher", "name": "Literature Analysis", "capab), Create Cognitive Patterns, Description, Details, Example Usage, Important Reminders, 🎯 Key Principle, MCP Tool Usage in Claude Code (+2 more)
 
 ### Community 197 - "Community 197"
@@ -1299,8 +1321,8 @@ Cohesion: 0.18
 Nodes (10): code:json ({), Description, Details, Example Usage, Important Reminders, 🎯 Key Principle, List Active Patterns, MCP Tool Usage in Claude Code (+2 more)
 
 ### Community 199 - "Community 199"
-Cohesion: 0.18
-Nodes (10): Check Coordination Status, code:json ({), Description, Details, Example Usage, Important Reminders, 🎯 Key Principle, MCP Tool Usage in Claude Code (+2 more)
+Cohesion: 0.29
+Nodes (7): 1. Trajectory Tracking, 2. Verdict Judgment, 3. Memory Distillation, code:typescript (// Record trajectory (sequence of actions)), code:typescript (// Retrieve similar past trajectories), code:typescript (// Get all experiences in domain), Core ReasoningBank Concepts
 
 ### Community 200 - "Community 200"
 Cohesion: 0.18
@@ -1316,7 +1338,7 @@ Nodes (3): sync-v3-metrics.sh script, log(), sync_metrics()
 
 ### Community 203 - "Community 203"
 Cohesion: 0.18
-Nodes (10): code:json ({), code:bash (claude-flow stream-chain pipeline security), Conclusion, Configuration Format, Custom Pipeline Definitions, Execute Custom Pipeline, Overview, Performance Characteristics (+2 more)
+Nodes (9): code:bash (claude-flow stream-chain pipeline security), Conclusion, Configuration Format, Custom Pipeline Definitions, Execute Custom Pipeline, Overview, Performance Characteristics, Related Skills (+1 more)
 
 ### Community 204 - "Community 204"
 Cohesion: 0.18
@@ -1331,8 +1353,8 @@ Cohesion: 0.18
 Nodes (11): Build Agent, Changelog Agent, code:bash (# Generate intelligent changelog with gh CLI), code:bash (# Determine next version), code:bash (# Coordinate multi-platform builds), code:bash (# Pre-release testing), code:bash (# Multi-target deployment), Deploy Agent (+3 more)
 
 ### Community 207 - "Community 207"
-Cohesion: 0.18
-Nodes (11): Advanced Features, Automated Optimization, code:bash (# Predict potential failures), code:bash (# Get workflow recommendations), code:bash (# Continuously optimize workflows), code:javascript (// action.yml), 🎯 Custom Actions Development, Custom Swarm Action Template (+3 more)
+Cohesion: 0.15
+Nodes (13): code:bash (# Node 1 (192.168.1.10)), Enable QUIC Sync, Multi-Node Deployment, QUIC Configuration, QUIC Synchronization, What is QUIC Sync?, Quick Start with API, code:typescript (import { createAgentDBAdapter } from 'agentic-flow/reasoning) (+5 more)
 
 ### Community 208 - "Community 208"
 Cohesion: 0.18
@@ -1343,15 +1365,15 @@ Cohesion: 0.18
 Nodes (11): 1. Memory Integration, 2. Parallel Operations, 3. Hook Integration, 4. Test Coverage, 5. Documentation, 6. File Organization, Best Practices, code:javascript (// Store architectural decisions) (+3 more)
 
 ### Community 210 - "Community 210"
-Cohesion: 0.18
-Nodes (11): code:javascript (// Initialize hierarchical swarm), code:javascript (mcp__claude-flow__swarm_init {), code:javascript (mcp__claude-flow__workflow_create {), code:javascript (mcp__claude-flow__task_orchestrate {), code:javascript (mcp__claude-flow__swarm_init {), Orchestration Patterns, Pattern 1: Hierarchical Coordination, Pattern 2: Mesh Coordination (+3 more)
+Cohesion: 0.22
+Nodes (10): code:javascript (// Initialize hierarchical swarm), code:javascript (mcp__claude-flow__workflow_create {), code:javascript (mcp__claude-flow__task_orchestrate {), code:javascript (mcp__claude-flow__swarm_init {), Orchestration Patterns, Pattern 1: Hierarchical Coordination, Pattern 2: Mesh Coordination, Pattern 3: Sequential Pipeline (+2 more)
 
 ### Community 211 - "Community 211"
-Cohesion: 0.18
-Nodes (11): 1. Clear and Specific Prompts, 2. Logical Progression, 3. Appropriate Timeouts, 4. Verification Steps, 5. Iterative Refinement, Best Practices, code:bash ("Analyze authentication.js for SQL injection vulnerabilities), code:bash ("Check security") (+3 more)
+Cohesion: 0.22
+Nodes (9): 1. Clear and Specific Prompts, 2. Logical Progression, 3. Appropriate Timeouts, 4. Verification Steps, 5. Iterative Refinement, Best Practices, code:bash ("Analyze authentication.js for SQL injection vulnerabilities), code:bash ("Check security") (+1 more)
 
 ### Community 212 - "Community 212"
-Cohesion: 0.20
+Cohesion: 0.22
 Nodes (9): Adaptive, agent-coordination, Best Practices, code:bash (npx claude-flow swarm init --topology hierarchical), code:bash (npx claude-flow swarm init --topology mesh), code:bash (npx claude-flow swarm init --topology adaptive), Coordination Patterns, Hierarchical (+1 more)
 
 ### Community 213 - "Community 213"
@@ -1363,11 +1385,11 @@ Cohesion: 0.49
 Nodes (8): swarm-monitor.sh script, check_once(), error(), log(), monitor_continuous(), success(), update_activity_metrics(), warn()
 
 ### Community 215 - "Community 215"
-Cohesion: 0.13
-Nodes (14): code:bash (# Start with a simple workflow), code:bash (# Optimize existing workflow), code:bash (#!/bin/bash), Common Commands, GitHub Workflow Automation Skill, Initialize GitHub Workflow Automation, Integration Checklist, Overview (+6 more)
+Cohesion: 0.18
+Nodes (9): code:bash (#!/bin/bash), GitHub Workflow Automation Skill, Integration Checklist, Overview, Quick Setup Script, Related Skills, ✅ Setup Verification, Support & Documentation (+1 more)
 
 ### Community 216 - "Community 216"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (9): Adding a new guard, CI Guards — what's actually shipped (current state), code:bash (# Tool-description discoverability audit (ADR-112)), code:bash (# View current truth scores), Prerequisites, Quick Start, Run the guards locally, Verification & Quality Assurance Skill (+1 more)
 
 ### Community 217 - "Community 217"
@@ -1375,16 +1397,16 @@ Cohesion: 0.20
 Nodes (10): Basic Version Bump, code:bash (# Get last release tag), code:bash (# Update package.json version), code:bash (# Build and publish npm package), code:javascript (// Simple release preparation in Claude Code), Create Release Draft, Essential Release Commands, Progressive Disclosure: Level 1 - Basic Usage (+2 more)
 
 ### Community 218 - "Community 218"
-Cohesion: 0.07
-Nodes (28): 1. Cache Swarm Dependencies, 1. Store Configurations Securely, 1. Use Reusable Workflows, 2. Implement Proper Caching, 2. Use Appropriate Runner Sizes, 2. Use OIDC Authentication, 3. Implement Early Termination, 3. Implement Least-Privilege (+20 more)
+Cohesion: 0.13
+Nodes (17): 1. Cache Swarm Dependencies, 1. Use Reusable Workflows, 2. Implement Proper Caching, 2. Use Appropriate Runner Sizes, 3. Implement Early Termination, 3. Set Appropriate Timeouts, 4. Optimize Parallel Execution, 4. Use Workflow Dependencies (+9 more)
 
 ### Community 219 - "Community 219"
 Cohesion: 0.20
 Nodes (10): code:yaml (- name: Debug Swarm), code:bash (# Profile workflow performance), code:bash (# Analyze failed runs), code:bash (# Download and analyze logs), Debug Mode, 🐛 Debug Tools, Debugging & Troubleshooting, Failure Analysis (+2 more)
 
 ### Community 220 - "Community 220"
-Cohesion: 0.20
-Nodes (10): Available Hooks, code:bash (Features:), code:bash (Features:), code:bash (npx claude-flow hook memory-sync --namespace <ns>), code:bash (npx claude-flow hook pre-edit [options]), code:bash (npx claude-flow hook pre-bash --command <cmd>), code:bash (npx claude-flow hook pre-task [options]), code:bash (npx claude-flow hook pre-search --query <query>) (+2 more)
+Cohesion: 0.15
+Nodes (11): JSON Output, Check Coordination Status, code:json ({), Description, Details, Example Usage, Important Reminders, 🎯 Key Principle (+3 more)
 
 ### Community 221 - "Community 221"
 Cohesion: 0.20
@@ -1399,20 +1421,20 @@ Cohesion: 0.20
 Nodes (10): `confirm_cost`, `create_project`, `get_cost`, `get_organization`, `get_project`, `list_organizations`, `list_projects`, `pause_project` (+2 more)
 
 ### Community 224 - "Community 224"
-Cohesion: 0.22
-Nodes (9): code:bash (# CLI), code:bash (# CLI), code:bash (# CLI), code:typescript (// Implement custom distance function), Cosine Similarity (Default), Custom Distance Metrics, Distance Metrics, Dot Product (+1 more)
+Cohesion: 0.29
+Nodes (7): 2. Package Synchronization, code:javascript (// Synchronize package dependencies and versions), code:javascript (// Synchronize CLAUDE.md files across packages), code:javascript (// Coordinate feature implementation across packages), Cross-Package Integration, Documentation Synchronization, Version Alignment
 
 ### Community 225 - "Community 225"
-Cohesion: 0.22
-Nodes (9): 1. Binary Quantization (32x Reduction), 2. Scalar Quantization (4x Reduction), 3. Product Quantization (8-16x Reduction), 4. No Quantization (Full Precision), code:typescript (const adapter = await createAgentDBAdapter({), code:typescript (const adapter = await createAgentDBAdapter({), code:typescript (const adapter = await createAgentDBAdapter({), code:typescript (const adapter = await createAgentDBAdapter({) (+1 more)
+Cohesion: 0.23
+Nodes (14): formatDate(), getInitials(), isToday(), KANBAN_COLS, mapStatus(), PRIORITY_BG, PRIORITY_COLORS, StatCard() (+6 more)
 
 ### Community 226 - "Community 226"
-Cohesion: 0.22
-Nodes (9): code:typescript (const adapter = await createAgentDBAdapter({), code:typescript (const adapter = await createAgentDBAdapter({), code:typescript (const adapter = await createAgentDBAdapter({), code:typescript (const adapter = await createAgentDBAdapter({), Optimization Recipes, Recipe 1: Maximum Speed (Sacrifice Accuracy), Recipe 2: Balanced Performance, Recipe 3: Maximum Accuracy (+1 more)
+Cohesion: 0.16
+Nodes (20): 1. Binary Quantization (32x Reduction), 2. Scalar Quantization (4x Reduction), 3. Product Quantization (8-16x Reduction), 4. No Quantization (Full Precision), code:typescript (const adapter = await createAgentDBAdapter({), Large Scale (100K-1M vectors), Massive Scale (>1M vectors), Medium Scale (10K-100K vectors) (+12 more)
 
 ### Community 227 - "Community 227"
-Cohesion: 0.22
-Nodes (9): code:typescript (const adapter = await createAgentDBAdapter({), code:typescript (const adapter = await createAgentDBAdapter({), code:typescript (const adapter = await createAgentDBAdapter({), code:typescript (const adapter = await createAgentDBAdapter({), Large Scale (100K-1M vectors), Massive Scale (>1M vectors), Medium Scale (10K-100K vectors), Scaling Strategies (+1 more)
+Cohesion: 0.18
+Nodes (9): BookingItem, CATEGORIES, CheckoutRequest, EquipmentItem, FALLBACK_ITEMS, FALLBACK_REQUESTS, filteredItems, InventoryPage() (+1 more)
 
 ### Community 228 - "Community 228"
 Cohesion: 0.22
@@ -1435,15 +1457,15 @@ Cohesion: 0.22
 Nodes (5): AGENT_CAPABILITIES, COMPILED_PATTERNS, result, task, TASK_PATTERNS
 
 ### Community 233 - "Community 233"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (8): Basic Hook Usage, code:bash (# Initialize with default hooks configuration), code:bash (# Pre-task hook (auto-spawns agents)), Hooks Automation, Initialize Hooks System, Prerequisites, Quick Start, What This Skill Does
 
 ### Community 234 - "Community 234"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (8): Basic Session, code:bash (# Start simple pair programming), code:bash (# Test-driven development), Pair Programming, Prerequisites, Quick Start, TDD Session, What This Skill Does
 
 ### Community 235 - "Community 235"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (8): Advanced Swarm Orchestration, Agent Strategies, Common Issues, Core Concepts, References, Related Skills, Swarm Topologies, Troubleshooting
 
 ### Community 236 - "Community 236"
@@ -1471,48 +1493,48 @@ Cohesion: 0.22
 Nodes (9): code:bash (# Debug build failures), code:bash (# Run tests with detailed output), code:bash (# Immediate rollback to previous version), code:bash (# Check and resolve version conflicts), Issue: Deployment Rollback Needed, Issue: Failed Release Build, Issue: Test Failures in CI, Issue: Version Conflicts (+1 more)
 
 ### Community 242 - "Community 242"
-Cohesion: 0.19
-Nodes (8): springValues, TiltedCardProps, DownloadsPage(), MediaPage(), Toast, ToastType, AnimatedList(), AnimatedListProps
+Cohesion: 0.21
+Nodes (12): RoomAvatar(), springValues, TiltedCard(), TiltedCardProps, DownloadsPage(), FileGridCard(), getDriveImageUrl(), MediaPage() (+4 more)
 
 ### Community 243 - "Community 243"
-Cohesion: 0.20
-Nodes (10): code:bash (# Analyze workflow performance), code:bash (# Optimize GitHub Actions costs), code:bash (# Identify failure patterns), code:bash (# Optimize resource usage), Core Capabilities, Cost Optimization, Failure Pattern Analysis, 📊 Monitoring & Analytics (+2 more)
+Cohesion: 0.18
+Nodes (11): Advanced Features, code:yaml (# Automatically select relevant tests), code:yaml (# Generate test matrix from code analysis), code:bash (# Determine optimal parallelization), code:javascript (// action.yml), 🎯 Custom Actions Development, Custom Swarm Action Template, Dynamic Test Matrix (+3 more)
 
 ### Community 244 - "Community 244"
 Cohesion: 0.22
 Nodes (9): 📦 Batch Operations, code:javascript (// Step 1: Initialize swarm coordination), code:bash (# Pre-task: Setup GitHub context), code:javascript (// Single message with all GitHub operations), GitHub Hooks Integration, Initialize GitHub Swarm, Integration with Claude-Flow, Parallel GitHub CLI Commands (+1 more)
 
 ### Community 245 - "Community 245"
-Cohesion: 0.22
-Nodes (9): Advanced Configuration, Automatic Testing, Basic Configuration, code:json ({), code:json ({), code:json ({), code:json ({), Configuration (+1 more)
+Cohesion: 0.40
+Nodes (5): Batch Insert (500x Faster), Batch Operations, Batch Retrieval, code:typescript (// ❌ SLOW: Individual inserts), code:typescript (// Retrieve multiple queries efficiently)
 
 ### Community 246 - "Community 246"
-Cohesion: 0.22
-Nodes (9): code:markdown (---), code:yaml (---), code:yaml (---), Complete Specification, Field Requirements, Recommended 4-Level Structure, 📝 SKILL.md Content Structure, YAML Formatting Rules (+1 more)
+Cohesion: 0.20
+Nodes (12): code:markdown (# In SKILL.md), code:yaml (---), code:markdown (# API Builder), Complete Specification, Field Requirements, Level 1: Metadata (Name + Description), Level 2: SKILL.md Body, Level 3+: Referenced Files (+4 more)
 
 ### Community 247 - "Community 247"
-Cohesion: 0.22
-Nodes (9): Advanced Features, code:javascript (// Train patterns from successful workflows), code:javascript (// Save session state), code:javascript (// Analyze repository), code:javascript (// Real-time swarm monitoring), Cross-Session Memory, GitHub Integration, Neural Pattern Training (+1 more)
+Cohesion: 0.20
+Nodes (10): Advanced Features, code:javascript (// Train patterns from successful workflows), code:javascript (// Save session state), code:javascript (// Analyze repository), Cross-Session Memory, GitHub Integration, Neural Pattern Training, Performance Monitoring (+2 more)
 
 ### Community 248 - "Community 248"
-Cohesion: 0.22
-Nodes (9): `architect`, code:javascript (mcp__claude-flow__sparc_mode {), code:javascript (mcp__claude-flow__sparc_mode {), code:javascript (mcp__claude-flow__sparc_mode {), code:javascript (mcp__claude-flow__sparc_mode {), `coder`, Development Modes, `reviewer` (+1 more)
+Cohesion: 0.31
+Nodes (10): Advanced Use Cases, Basic Development Chain, Code Migration Workflow, Code Refactoring Chain, code:bash (claude-flow stream-chain run \), Data Processing Pipeline, Data Transformation Pipeline, Examples (+2 more)
 
 ### Community 249 - "Community 249"
 Cohesion: 0.22
 Nodes (9): code:bash (# Step 1: Research and planning), code:bash (# Step 1: Analyze issue), code:bash (# Step 1: Profile performance), code:bash (# Execute full development pipeline), Common Workflows, Workflow 1: Feature Development, Workflow 2: Bug Investigation, Workflow 3: Performance Optimization (+1 more)
 
 ### Community 250 - "Community 250"
-Cohesion: 0.22
-Nodes (9): 1. Analysis Pipeline, 2. Refactor Pipeline, 3. Test Pipeline, 4. Optimize Pipeline, Available Pipelines, code:bash (claude-flow stream-chain pipeline analysis), code:bash (claude-flow stream-chain pipeline refactor), code:bash (claude-flow stream-chain pipeline test) (+1 more)
+Cohesion: 0.15
+Nodes (13): 1. Analysis Pipeline, 2. Refactor Pipeline, 3. Test Pipeline, 4. Optimize Pipeline, Available Pipelines, code:bash (claude-flow stream-chain pipeline refactor), code:bash (claude-flow stream-chain pipeline test), code:bash (claude-flow stream-chain pipeline optimize) (+5 more)
 
 ### Community 251 - "Community 251"
-Cohesion: 0.22
-Nodes (9): Advanced Use Cases, Code Migration Workflow, code:bash (claude-flow stream-chain run \), code:bash (claude-flow stream-chain run \), code:bash (claude-flow stream-chain run \), code:bash (claude-flow stream-chain pipeline analysis), Data Transformation Pipeline, Multi-Agent Coordination (+1 more)
+Cohesion: 0.15
+Nodes (13): 1. Cross-Repository Swarm Orchestration, 4. Orchestration Workflows, code:javascript (// Update dependencies across all repositories), code:javascript (// Coordinate large-scale refactoring), code:javascript (// Coordinate security patches), code:javascript (// Auto-discover related repositories with gh CLI), code:javascript (// Execute synchronized changes across repositories), Dependency Management (+5 more)
 
 ### Community 252 - "Community 252"
-Cohesion: 0.22
-Nodes (9): Basic Development Chain, Code Refactoring Chain, code:bash (claude-flow stream-chain run \), code:bash (claude-flow stream-chain run \), code:bash (claude-flow stream-chain run \), code:bash (claude-flow stream-chain run \), Data Processing Pipeline, Examples (+1 more)
+Cohesion: 0.33
+Nodes (6): code:bash (claude-flow stream-chain run <prompt1> <prompt2> [...] [opti), code:block4 (Step 1: "Write a sorting function"), Custom Chains (`run`), How Context Flows, Options, Syntax
 
 ### Community 253 - "Community 253"
 Cohesion: 0.22
@@ -1535,8 +1557,8 @@ Cohesion: 0.22
 Nodes (9): Additional Resources, Best Practices, code:bash (# Launch dashboard on default port (3000)), Complete Guide, Exit Codes, Interactive Dashboard, Launch Dashboard, Performance Metrics (+1 more)
 
 ### Community 258 - "Community 258"
-Cohesion: 0.25
-Nodes (8): code:typescript (import { createAgentDBAdapter } from 'agentic-flow/reasoning), code:typescript (const adapter = await createAgentDBAdapter({), code:bash (# Node 1 (192.168.1.10)), Enable QUIC Sync, Multi-Node Deployment, QUIC Configuration, QUIC Synchronization, What is QUIC Sync?
+Cohesion: 0.50
+Nodes (4): Available Algorithms (9 Total), code:bash (# List available plugins), Learning Plugins, List and Manage Plugins
 
 ### Community 259 - "Community 259"
 Cohesion: 0.25
@@ -1555,11 +1577,11 @@ Cohesion: 0.25
 Nodes (7): 1. Decentralized Coordination, 2. Fault Tolerance & Resilience, 3. Collective Intelligence, code:block1 (🌐 MESH TOPOLOGY), Core Principles, Mesh Network Swarm Coordinator, Network Architecture
 
 ### Community 263 - "Community 263"
-Cohesion: 0.25
+Cohesion: 0.29
 Nodes (7): 1. Issue Templates, 2. Label Strategy, 3. Comment Etiquette, Best Practices, Overview, Security & Permissions, Swarm Issue - Issue-Based Swarm Coordination
 
 ### Community 264 - "Community 264"
-Cohesion: 0.25
+Cohesion: 0.29
 Nodes (7): code:javascript (// webhook-handler.js), Integration with Claude Code, Overview, Security Considerations, Setup Webhook Handler, Swarm PR - Managing Swarms through Pull Requests, Webhook Integration
 
 ### Community 265 - "Community 265"
@@ -1571,7 +1593,7 @@ Cohesion: 0.57
 Nodes (7): worker-manager.sh script, force_all(), log(), run_all_workers(), run_daemon(), run_worker(), status_all()
 
 ### Community 267 - "Community 267"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (7): Core Philosophy, Key Principles, Overview, Performance Benefits, SPARC Methodology - Comprehensive Development Framework, Support and Resources, Table of Contents
 
 ### Community 268 - "Community 268"
@@ -1587,12 +1609,12 @@ Cohesion: 0.25
 Nodes (8): code:yaml (name: Full-Stack CI/CD with Swarms), code:yaml (name: Monorepo Coordination), code:bash (# Synchronize multiple repositories), 🚀 Complete Workflows, Example 1: Full-Stack Application CI/CD, Example 2: Monorepo Management, Example 3: Multi-Repo Synchronization, Real-World Examples
 
 ### Community 271 - "Community 271"
-Cohesion: 0.25
-Nodes (8): code:block23, code:markdown (## Step-by-Step Guide), code:markdown (## Advanced Configuration), code:markdown (---), Most common use case (80% of users), Skill Builder Templates, Template 1: Basic Skill (Minimal), ✅ Validation Checklist
+Cohesion: 0.22
+Nodes (9): code:markdown (---), code:block49, code:block51, - Contribution guidelines, Example 1: Simple Documentation Skill, Example 2: Code Generation Skill, Examples from the Wild, Install prerequisites (+1 more)
 
 ### Community 272 - "Community 272"
-Cohesion: 0.25
-Nodes (8): code:markdown (See [Advanced Configuration](docs/ADVANCED.md) for complex s), code:markdown (Use the template located at `resources/templates/api-templat), code:markdown (## Example Configuration), code:block36, 🔗 File References and Navigation, Inline File Content, Markdown Links, Relative File Paths
+Cohesion: 0.13
+Nodes (15): code:block23, code:markdown (## Step-by-Step Guide), code:markdown (## Advanced Configuration), code:markdown (See [Advanced Configuration](docs/ADVANCED.md) for complex s), code:markdown (Use the template located at `resources/templates/api-templat), code:markdown (## Example Configuration), code:block36, 🔗 File References and Navigation (+7 more)
 
 ### Community 273 - "Community 273"
 Cohesion: 0.25
@@ -1611,16 +1633,16 @@ Cohesion: 0.25
 Nodes (8): code:bash (# View current truth scores (default: table format)), code:bash (# Table format (default)), code:bash (# Watch mode with live updates), code:block6 (📊 Truth Metrics Dashboard), Metrics Explained, Truth Score Dashboard, Truth Scoring System, View Truth Metrics
 
 ### Community 277 - "Community 277"
-Cohesion: 0.29
-Nodes (7): Advanced Filtering, Basic Hybrid Search, code:typescript (const result = await adapter.retrieveWithReasoning(queryEmbe), code:typescript (// Store documents with metadata), code:typescript (// Complex metadata queries), Hybrid Search (Vector + Metadata), Weighted Hybrid Search
+Cohesion: 0.31
+Nodes (6): AuthErrorContent(), AuthErrorPage(), useIsTauri(), getMonitorW(), LoginPage(), useWindowWidth()
 
 ### Community 278 - "Community 278"
-Cohesion: 0.29
-Nodes (7): code:typescript (// Singleton pattern for shared adapter), code:typescript (async function safeRetrieve(queryEmbedding: number[], option), code:typescript (// Performance monitoring), Connection Pooling, Error Handling, Monitoring and Logging, Production Patterns
+Cohesion: 0.50
+Nodes (4): Advanced Features, Caching, HNSW Indexing, MMR (Maximal Marginal Relevance)
 
 ### Community 279 - "Community 279"
-Cohesion: 0.29
-Nodes (7): code:bash (# Check firewall allows UDP port 4433), code:typescript (// Relax filters), code:typescript (// Disable automatic optimization), Issue: Hybrid search returns no results, Issue: Memory consolidation too aggressive, Issue: QUIC sync not working, Troubleshooting
+Cohesion: 0.40
+Nodes (5): Core Capabilities, 🔗 Integration Management, 🔄 Multi-Repository Swarm Coordination, 📦 Package Synchronization, 🏗️ Repository Architecture
 
 ### Community 280 - "Community 280"
 Cohesion: 0.29
@@ -1643,8 +1665,8 @@ Cohesion: 0.29
 Nodes (7): Automatic Consolidation, code:typescript (// Enable automatic pattern consolidation), code:typescript (// Manually trigger optimization), code:typescript (// Prune low-confidence patterns), Manual Optimization, Memory Optimization, Pruning Strategies
 
 ### Community 285 - "Community 285"
-Cohesion: 0.29
-Nodes (7): code:bash (# Check database size), code:typescript (// Increase cache size), code:typescript (// Disable or use lighter quantization), Issue: High memory usage, Issue: Low accuracy, Issue: Slow search performance, Troubleshooting
+Cohesion: 0.40
+Nodes (5): code:typescript (// Increase cache size), code:typescript (// Disable or use lighter quantization), Issue: Low accuracy, Issue: Slow search performance, Troubleshooting
 
 ### Community 286 - "Community 286"
 Cohesion: 0.29
@@ -1652,14 +1674,14 @@ Nodes (7): 1. Vector Storage, 2. Similarity Search, 3. Hybrid Search (Vector + M
 
 ### Community 287 - "Community 287"
 Cohesion: 0.29
-Nodes (7): Binary Quantization (32x reduction), code:typescript (const adapter = await createAgentDBAdapter({), code:typescript (const adapter = await createAgentDBAdapter({), code:typescript (const adapter = await createAgentDBAdapter({), Product Quantization (8-16x reduction), Quantization Options, Scalar Quantization (4x reduction)
+Nodes (7): code:bash (# Check source database exists), code:typescript (// Enable context synthesis for better quality), code:typescript (// Enable automatic optimization), Issue: Low confidence scores, Issue: Memory growing too large, Issue: Migration fails, Troubleshooting
 
 ### Community 288 - "Community 288"
 Cohesion: 0.29
 Nodes (7): code:bash (# Initialize with default dimensions (1536 for OpenAI ada-00), code:bash (# Basic similarity search), code:bash (# Export vectors to JSON), Import/Export Vectors, Initialize Vector Database, Query Vector Database, Quick Start with CLI
 
 ### Community 289 - "Community 289"
-Cohesion: 0.29
+Cohesion: 0.24
 Nodes (6): agent-spawning, Best Practices, code:javascript (// Spawn ALL agents in ONE message), code:javascript (mcp__claude-flow__swarm_init { topology: "mesh" }), MCP Coordination Setup (Optional), Using Claude Code's Task Tool
 
 ### Community 290 - "Community 290"
@@ -1667,20 +1689,20 @@ Cohesion: 0.29
 Nodes (6): Agents Commands, Available Commands, code:bash (# Spawn a coder agent), Quick Start, Reference, V3 Agent Categories
 
 ### Community 291 - "Community 291"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow analysis performance-report [options]), code:bash (# Generate HTML report), Examples, Options, performance-report, Usage
+Cohesion: 0.22
+Nodes (9): Code Deduplication Strategy, code:block2 (┌─────────────────────────────────────────┐), Current Overlap → Integration, Legacy Systems → AgentDB, Systems to Unify, code:block3 (┌─────────────────────────────────────────┐), Flash Attention Revolution, Performance Target Matrix (+1 more)
 
 ### Community 292 - "Community 292"
 Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow automation smart-spawn [options]), code:bash (# Smart spawn with analysis), Examples, Options, smart-spawn, Usage
+Nodes (7): code:bash (# Enable HNSW indexing and caching), Issue: Memory growing too large, Issue: Migration from legacy ReasoningBank, Issue: Slow search performance, Troubleshooting, code:bash (# Check database size), Issue: High memory usage
 
 ### Community 293 - "Community 293"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow automation workflow-select [options]), code:bash (# Select workflow for task), Examples, Options, Usage, workflow-select
+Cohesion: 0.33
+Nodes (6): Agent Types, Documentation Agent, Issue Triager, PR Reviewer, Security Agent, Test Agent
 
 ### Community 294 - "Community 294"
-Cohesion: 0.29
-Nodes (6): agent-spawn, code:bash (npx claude-flow agent spawn [options]), code:bash (# Spawn coder agent), Examples, Options, Usage
+Cohesion: 0.17
+Nodes (8): agent-spawn, code:bash (npx claude-flow agent spawn [options]), code:bash (# Spawn coder agent), Examples, Options, Usage, Available Commands, Coordination Commands
 
 ### Community 295 - "Community 295"
 Cohesion: 0.29
@@ -1691,7 +1713,7 @@ Cohesion: 0.29
 Nodes (6): code-review, code:bash (npx claude-flow github code-review [options]), code:bash (# Review PR), Examples, Options, Usage
 
 ### Community 297 - "Community 297"
-Cohesion: 0.29
+Cohesion: 0.33
 Nodes (6): 1. Review Configuration, 2. Comment Quality, 3. Performance, Best Practices, Code Review Swarm - Automated Code Review with AI Agents, Overview
 
 ### Community 298 - "Community 298"
@@ -1699,7 +1721,7 @@ Cohesion: 0.29
 Nodes (6): code:bash (npx claude-flow github issue-triage [options]), code:bash (# Triage issues), Examples, issue-triage, Options, Usage
 
 ### Community 299 - "Community 299"
-Cohesion: 0.29
+Cohesion: 0.33
 Nodes (6): 1. Repository Organization, 2. Communication, 3. Security, Best Practices, Multi-Repo Swarm - Cross-Repository Swarm Orchestration, Overview
 
 ### Community 300 - "Community 300"
@@ -1707,7 +1729,7 @@ Cohesion: 0.29
 Nodes (6): code:bash (npx claude-flow github pr-enhance [options]), code:bash (# Enhance PR), Examples, Options, pr-enhance, Usage
 
 ### Community 301 - "Community 301"
-Cohesion: 0.29
+Cohesion: 0.33
 Nodes (6): 1. Board Organization, 2. Data Integrity, 3. Team Adoption, Best Practices, Overview, Project Board Sync - GitHub Projects Integration
 
 ### Community 302 - "Community 302"
@@ -1715,76 +1737,76 @@ Cohesion: 0.29
 Nodes (6): code:bash (npx claude-flow github repo-analyze [options]), code:bash (# Basic analysis), Examples, Options, repo-analyze, Usage
 
 ### Community 303 - "Community 303"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow hive-mind init [options]), code:bash (npx claude-flow hive-mind init), Examples, hive-mind-init, Options, Usage
+Cohesion: 0.04
+Nodes (36): code:bash (npx claude-flow hive-mind [subcommand] [options]), code:bash (# Initialize hive mind), code:bash (npx claude-flow hive-mind hive-mind-consensus [options]), hive-mind-consensus, Examples, hive-mind, code:bash (npx claude-flow hive-mind init [options]), code:bash (npx claude-flow hive-mind init) (+28 more)
 
 ### Community 304 - "Community 304"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow hive-mind [subcommand] [options]), code:bash (# Initialize hive mind), Examples, hive-mind, Subcommands, Usage
+Cohesion: 0.40
+Nodes (5): Configuration Issues, Poor Performance, Session Disconnected, Session Won't Start, Troubleshooting
 
 ### Community 305 - "Community 305"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow hive-mind spawn <objective> [options]), code:bash (npx claude-flow hive-mind spawn "Build API"), Examples, hive-mind-spawn, Options, Usage
+Cohesion: 0.40
+Nodes (5): Advanced Patterns, code:typescript (// Organize memory in hierarchy), code:typescript (// Periodically consolidate memories), Hierarchical Memory, Memory Consolidation
 
 ### Community 306 - "Community 306"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow memory persist [options]), code:bash (# Export memory), Examples, memory-persist, Options, Usage
+Cohesion: 0.08
+Nodes (20): code:bash (npx claude-flow memory persist [options]), code:bash (# Export memory), Examples, memory-persist, Options, Usage, code:bash (npx claude-flow memory search [options]), code:bash (# Search memory) (+12 more)
 
 ### Community 307 - "Community 307"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow memory search [options]), code:bash (# Search memory), Examples, memory-search, Options, Usage
+Cohesion: 0.50
+Nodes (4): Avatar group hover, code:html (<div class="t-avatar-group">), code:css (.t-avatar-group {), code:js (const group = document.querySelector(".t-avatar-group");)
 
 ### Community 308 - "Community 308"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow memory usage [options]), code:bash (# Store memory), Examples, memory-usage, Options, Usage
+Cohesion: 0.40
+Nodes (5): 1. Release Planning & Version Management, 2. Automated Testing & Validation, 3. Build & Deployment Orchestration, 4. Documentation & Communication, Core Capabilities
 
 ### Community 309 - "Community 309"
-Cohesion: 0.29
-Nodes (6): agent-metrics, code:bash (npx claude-flow agent metrics [options]), code:bash (# All agents metrics), Examples, Options, Usage
+Cohesion: 0.21
+Nodes (6): logEvent(), logger, LogLevel, SENSITIVE_FIELDS, SystemEvent, SystemLogger
 
 ### Community 310 - "Community 310"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow monitoring real-time-view [options]), code:bash (# Start real-time view), Examples, Options, real-time-view, Usage
+Cohesion: 0.40
+Nodes (5): Advanced Patterns, code:typescript (// Low-level: Specific implementation), code:typescript (// Learn from backend optimization), Hierarchical Memory, Multi-Domain Learning
 
 ### Community 311 - "Community 311"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow swarm monitor [options]), code:bash (# Start monitoring), Examples, Options, swarm-monitor, Usage
+Cohesion: 0.08
+Nodes (20): agent-metrics, code:bash (npx claude-flow agent metrics [options]), code:bash (# All agents metrics), Examples, Options, Usage, Available Commands, Monitoring Commands (+12 more)
 
 ### Community 312 - "Community 312"
-Cohesion: 0.29
-Nodes (6): cache-manage, code:bash (npx claude-flow optimization cache-manage [options]), code:bash (# View cache stats), Examples, Options, Usage
+Cohesion: 0.08
+Nodes (20): cache-manage, code:bash (npx claude-flow optimization cache-manage [options]), code:bash (# View cache stats), Examples, Options, Usage, code:bash (npx claude-flow optimization parallel-execute [options]), code:bash (# Execute task list) (+12 more)
 
 ### Community 313 - "Community 313"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow optimization parallel-execute [options]), code:bash (# Execute task list), Examples, Options, parallel-execute, Usage
+Cohesion: 0.40
+Nodes (5): CLI Operations, code:bash (# Export trajectories and patterns), code:bash (# Migrate from legacy ReasoningBank), Database Management, Migration
 
 ### Community 314 - "Community 314"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow optimization topology-optimize [options]), code:bash (# Analyze and suggest), Examples, Options, topology-optimize, Usage
+Cohesion: 0.40
+Nodes (5): code:typescript (class UnifiedMemoryService implements IMemoryBackend {), code:typescript (class HNSWIndexer {), HNSW Vector Search, Implementation Architecture, Unified Memory Service
 
 ### Community 315 - "Community 315"
 Cohesion: 0.29
 Nodes (6): Available Commands, Available Tools, Custom Instructions, Role Definition, 🔐 Supabase Admin, Supabase MCP
 
 ### Community 316 - "Community 316"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow swarm init [options]), code:bash (npx claude-flow swarm init --topology mesh), Examples, Options, swarm-init, Usage
+Cohesion: 0.22
+Nodes (7): code:bash (npx claude-flow swarm init [options]), Usage, code:bash (npx claude-flow swarm init --topology mesh), Examples, Options, swarm-init, Usage
 
 ### Community 317 - "Community 317"
 Cohesion: 0.29
 Nodes (6): code:bash (npx claude-flow swarm spawn [options]), code:bash (npx claude-flow swarm spawn --type coder --count 3), Examples, Options, swarm-spawn, Usage
 
 ### Community 318 - "Community 318"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow workflow create [options]), code:bash (# Create workflow), Examples, Options, Usage, workflow-create
+Cohesion: 0.08
+Nodes (20): Available Commands, Workflows Commands, code:bash (npx claude-flow workflow create [options]), code:bash (# Create workflow), Examples, Options, Usage, workflow-create (+12 more)
 
 ### Community 319 - "Community 319"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow workflow execute [options]), code:bash (# Execute workflow), Examples, Options, Usage, workflow-execute
+Cohesion: 0.40
+Nodes (5): code:typescript (// AgentDB adapter setup), code:typescript (// SQLite → AgentDB), Migration Strategy, Phase 1: Foundation, Phase 2: Data Migration
 
 ### Community 320 - "Community 320"
-Cohesion: 0.29
-Nodes (6): code:bash (npx claude-flow workflow export [options]), code:bash (# Export workflow), Examples, Options, Usage, workflow-export
+Cohesion: 0.40
+Nodes (5): code:typescript (class PerformanceRegression {), code:typescript (class PerformanceMonitor {), Continuous Regression Detection, Performance Monitoring Dashboard, Real-time Metrics
 
 ### Community 321 - "Community 321"
 Cohesion: 0.29
@@ -1803,7 +1825,7 @@ Cohesion: 0.29
 Nodes (5): commands, fs, path, SESSION_DIR, SESSION_FILE
 
 ### Community 325 - "Community 325"
-Cohesion: 0.29
+Cohesion: 0.25
 Nodes (6): code:bash (# Initialize core implementation), Quick Start, Related V3 Skills, Success Metrics, V3 Core Implementation, What This Skill Does
 
 ### Community 326 - "Community 326"
@@ -1811,8 +1833,8 @@ Cohesion: 0.29
 Nodes (7): Automated PR Fixes, 🔧 CI/CD Integration, code:yaml (# .github/workflows/build-and-review.yml), code:bash (# Auto-fix common issues), code:bash (# Post swarm progress to PR using gh CLI), Integration with Build Pipeline, Progress Updates to PR
 
 ### Community 327 - "Community 327"
-Cohesion: 0.29
-Nodes (7): code:bash (# Create swarm from PR description using gh CLI), code:json ({), code:bash (# Automatic topology selection based on PR complexity), Create Swarm from PR, Label-Based Agent Assignment, 🔄 PR-Based Swarm Management, Topology Selection by PR Size
+Cohesion: 0.50
+Nodes (4): code:html (<span class="t-text-swap">Processing...</span>), code:css (.t-text-swap {), code:js (function swapText(el, newText) {), Text state swap
 
 ### Community 328 - "Community 328"
 Cohesion: 0.29
@@ -1839,20 +1861,20 @@ Cohesion: 0.29
 Nodes (7): 1. Distributed Task Queue, 2. Cross-Repo Testing, 3. Monorepo Migration, Advanced Features, code:bash (npx claude-flow skill run github-multi-repo queue \), code:bash (npx claude-flow skill run github-multi-repo test \), code:bash (npx claude-flow skill run github-multi-repo to-monorepo \)
 
 ### Community 334 - "Community 334"
-Cohesion: 0.29
-Nodes (7): 1. Eventually Consistent, 2. Strong Consistency, 3. Hybrid Approach, code:javascript ({), code:javascript ({), code:javascript ({), Synchronization Patterns
+Cohesion: 0.50
+Nodes (4): code:html (<div class="t-dropdown" data-origin="top-left">), code:css (.t-dropdown {), code:js (function closeDropdown(el) {), Menu dropdown
 
 ### Community 335 - "Community 335"
 Cohesion: 0.29
 Nodes (7): 1. Microservices Coordination, 2. Library Updates, 3. Organization-Wide Changes, code:bash (npx claude-flow skill run github-multi-repo microservices \), code:bash (npx claude-flow skill run github-multi-repo lib-update \), code:bash (npx claude-flow skill run github-multi-repo org-policy \), Use Cases
 
 ### Community 336 - "Community 336"
-Cohesion: 0.29
-Nodes (7): 2. Package Synchronization, code:javascript (// Synchronize package dependencies and versions), code:javascript (// Synchronize CLAUDE.md files across packages), code:javascript (// Coordinate feature implementation across packages), Cross-Package Integration, Documentation Synchronization, Version Alignment
+Cohesion: 0.50
+Nodes (4): code:html (<div class="t-success" data-state="out">), code:css (.t-success {), code:js (function playSuccess(el) {), Success celebration
 
 ### Community 337 - "Community 337"
-Cohesion: 0.29
-Nodes (7): 4. Orchestration Workflows, code:javascript (// Update dependencies across all repositories), code:javascript (// Coordinate large-scale refactoring), code:javascript (// Coordinate security patches), Dependency Management, Refactoring Operations, Security Updates
+Cohesion: 0.50
+Nodes (4): code:yaml (# .github/review-swarm.yml), Configuration File, Custom Review Triggers, ⚙️ Review Configuration
 
 ### Community 338 - "Community 338"
 Cohesion: 0.29
@@ -2059,16 +2081,16 @@ Cohesion: 0.29
 Nodes (7): code:bash (# Analyze workflow performance), code:bash (# Optimize GitHub Actions costs), code:bash (# Identify failure patterns), Cost Optimization, Failure Patterns, Monitoring & Insights, Workflow Analytics
 
 ### Community 389 - "Community 389"
-Cohesion: 0.40
-Nodes (5): code:bash (# Get comprehensive stats), code:typescript (const stats = await adapter.getStats();), Database Statistics, Performance Monitoring, Runtime Metrics
+Cohesion: 0.33
+Nodes (6): code:typescript (const stats = await adapter.getStats();), Database Statistics, Performance Monitoring, Runtime Metrics, code:bash (# Get comprehensive stats), Database Statistics
 
 ### Community 390 - "Community 390"
-Cohesion: 0.29
-Nodes (7): Block Response, code:json ({), code:json ({), code:json ({), Continue Response, Hook Response Format, Warning Response
+Cohesion: 0.50
+Nodes (4): code:javascript ([Single Message - Parallel Execution]:), Example: Complete PR Management, 🔗 Integration with Claude Code, Workflow Pattern
 
 ### Community 391 - "Community 391"
-Cohesion: 0.29
-Nodes (7): code:javascript (// Hook command), code:javascript (// Hook command), code:javascript (// Hook command), MCP Tool Integration, Post-Edit Hook with Memory Storage, Pre-Task Hook with Agent Spawning, Session End Hook with State Persistence
+Cohesion: 0.60
+Nodes (5): code:javascript (// Hook command), MCP Tool Integration, Post-Edit Hook with Memory Storage, Pre-Task Hook with Agent Spawning, Session End Hook with State Persistence
 
 ### Community 392 - "Community 392"
 Cohesion: 0.29
@@ -2087,8 +2109,8 @@ Cohesion: 0.29
 Nodes (7): Advanced Topics, code:block53, code:block54, Community, Learn More, Official Resources, - src/components/MyComponent/index.ts
 
 ### Community 396 - "Community 396"
-Cohesion: 0.29
-Nodes (7): code:markdown (# In SKILL.md), code:yaml (---), code:markdown (# API Builder), Level 1: Metadata (Name + Description), Level 2: SKILL.md Body, Level 3+: Referenced Files, 🎯 Progressive Disclosure Architecture
+Cohesion: 0.40
+Nodes (5): code:typescript (class MemoryOptimization {), code:typescript (class CPUOptimization {), CPU Optimization, Memory Optimization, Optimization Strategies
 
 ### Community 397 - "Community 397"
 Cohesion: 0.29
@@ -2151,24 +2173,24 @@ Cohesion: 0.29
 Nodes (7): Advanced Workflows, code:bash (# Watch directory for changes), code:bash (# Export to Prometheus), code:bash (# Install pre-commit hook), Continuous Verification, Monitoring Integration, Pre-commit Hooks
 
 ### Community 412 - "Community 412"
-Cohesion: 0.33
-Nodes (5): AgentDB Performance Optimization, Learn More, Performance Benchmarks, Prerequisites, What This Skill Does
+Cohesion: 0.13
+Nodes (13): AgentDB Performance Optimization, Automatic HNSW, Caching Strategies, code:typescript (// Cache automatically evicts least-recently-used patterns), code:typescript (// Advanced HNSW configuration), HNSW Indexing, HNSW Parameters, In-Memory Pattern Cache (+5 more)
 
 ### Community 413 - "Community 413"
-Cohesion: 0.33
-Nodes (5): code:yaml (# .github/release-swarm.yml), Overview, Release Config File, Release Configuration, Release Swarm - Intelligent Release Automation
+Cohesion: 0.22
+Nodes (9): 1. Release Planning, 2. Automation, 3. Documentation, Best Practices, code:yaml (# .github/release-swarm.yml), Overview, Release Config File, Release Configuration (+1 more)
 
 ### Community 414 - "Community 414"
-Cohesion: 0.33
-Nodes (5): code:javascript (// action.yml), Custom Actions, Overview, Swarm Action Development, Workflow Automation - GitHub Actions Integration
+Cohesion: 0.22
+Nodes (9): 1. Workflow Organization, 2. Security, 3. Performance, Best Practices, code:javascript (// action.yml), Custom Actions, Overview, Swarm Action Development (+1 more)
 
 ### Community 415 - "Community 415"
 Cohesion: 0.33
 Nodes (6): 4-Step Intelligence Pipeline, code:bash (# Store pattern), Memory Commands, Memory & Intelligence, RuVector Intelligence System, Self-Learning Memory (ADR-049)
 
 ### Community 416 - "Community 416"
-Cohesion: 0.33
-Nodes (6): code:bash (# Initialize), Consensus Mechanisms, Hive-Mind Commands, Hive-Mind Consensus, Queen Types, Worker Types (8)
+Cohesion: 0.20
+Nodes (10): Advanced Commands (14), CLI Commands, code:bash (# Initialize), Consensus Mechanisms, Core Commands (12), Example Commands, Hive-Mind Commands, Hive-Mind Consensus (+2 more)
 
 ### Community 417 - "Community 417"
 Cohesion: 0.33
@@ -2203,8 +2225,8 @@ Cohesion: 0.33
 Nodes (6): code:bash (# 1. Create skill directory (MUST be at top level, NOT in su), Creating Your First Skill, Prerequisites, Quick Start, Skill Builder, What This Skill Does
 
 ### Community 425 - "Community 425"
-Cohesion: 0.33
-Nodes (6): `batch-executor`, code:javascript (mcp__claude-flow__sparc_mode {), Core Orchestration Modes, `orchestrator`, `swarm-coordinator`, `workflow-manager`
+Cohesion: 0.17
+Nodes (16): Analysis and Research Modes, `analyzer`, `architect`, Available Modes, `batch-executor`, code:javascript (mcp__claude-flow__sparc_mode {), `coder`, Core Orchestration Modes (+8 more)
 
 ### Community 426 - "Community 426"
 Cohesion: 0.33
@@ -2215,8 +2237,8 @@ Cohesion: 0.33
 Nodes (6): `apply_migration`, Database Operations, `execute_sql`, `list_extensions`, `list_migrations`, `list_tables`
 
 ### Community 428 - "Community 428"
-Cohesion: 0.33
-Nodes (6): code:bash (claude-flow stream-chain run <prompt1> <prompt2> [...] [opti), code:block4 (Step 1: "Write a sorting function"), Custom Chains (`run`), How Context Flows, Options, Syntax
+Cohesion: 0.22
+Nodes (9): AgentDB Coordination, agentic-flow@alpha Feature Integration, code:typescript (class SONAIntegration {), code:typescript (class FlashAttentionIntegration {), code:typescript (class AgentDBIntegration {), code:typescript (class MCPToolsIntegration {), Flash Attention Integration, MCP Tools Integration (+1 more)
 
 ### Community 429 - "Community 429"
 Cohesion: 0.33
@@ -2235,40 +2257,40 @@ Cohesion: 0.33
 Nodes (6): Architecture, CLI Fallback, code:javascript (// Initialize testing swarm with star topology), code:bash (# Quick testing swarm), Pattern 3: Testing Swarm, Purpose
 
 ### Community 433 - "Community 433"
-Cohesion: 0.33
-Nodes (6): code:json ({), code:bash (# Strict mode (99% accuracy required)), code:json ({), Configuration, Default Configuration, Threshold Configuration
+Cohesion: 0.50
+Nodes (4): code:html (<div class="t-modal" role="dialog">Modal content</div>), code:css (.t-modal {), code:js (function closeModal(el) {), Modal dialog
 
 ### Community 434 - "Community 434"
-Cohesion: 0.40
-Nodes (5): CLI Advanced Operations, code:bash (# Export with compression), code:bash (# Vacuum database (reclaim space)), Database Import/Export, Database Optimization
+Cohesion: 0.29
+Nodes (7): Automated Optimization, code:bash (# Predict potential failures), code:bash (# Get workflow recommendations), code:bash (# Continuously optimize workflows), 🔮 Predictive Analysis, Predictive Failures, Workflow Recommendations
 
 ### Community 435 - "Community 435"
-Cohesion: 0.40
-Nodes (5): code:typescript (// Separate databases for different domains), code:typescript (// Shard by domain for horizontal scaling), Database Sharding, Multi-Database Management, Multiple Databases
+Cohesion: 0.33
+Nodes (6): code:bash (# Create swarm from PR description using gh CLI), code:bash (# Automatic topology selection based on PR complexity), Create Swarm from PR, Label-Based Agent Assignment, 🔄 PR-Based Swarm Management, Topology Selection by PR Size
 
 ### Community 436 - "Community 436"
-Cohesion: 0.40
-Nodes (5): Batch Training, code:typescript (// Collect batch of experiences), code:typescript (// Train incrementally as new data arrives), Incremental Learning, Performance Optimization
+Cohesion: 0.50
+Nodes (4): code:html (<span class="t-digits">), code:css (.t-digits {), code:js (function updateDigits(container, newValue) {), Number pop-in
 
 ### Community 437 - "Community 437"
 Cohesion: 0.40
-Nodes (5): Automatic HNSW, code:typescript (const adapter = await createAgentDBAdapter({), code:typescript (// Advanced HNSW configuration), HNSW Indexing, HNSW Parameters
+Nodes (5): code:bash (# Start with a simple workflow), code:bash (# Optimize existing workflow), Common Commands, Initialize GitHub Workflow Automation, Quick Start
 
 ### Community 438 - "Community 438"
-Cohesion: 0.40
-Nodes (5): Batch Insert (500x Faster), Batch Operations, Batch Retrieval, code:typescript (// ❌ SLOW: Individual inserts), code:typescript (// Retrieve multiple queries efficiently)
+Cohesion: 0.29
+Nodes (7): code:typescript (import { Agent as AgenticFlowAgent } from 'agentic-flow@alph), code:typescript (class SystemMigration {), code:typescript (class CodeCleanup {), Migration Implementation, Phase 1: Adapter Layer, Phase 2: System Migration, Phase 3: Cleanup
 
 ### Community 439 - "Community 439"
-Cohesion: 0.40
-Nodes (5): Caching Strategies, code:typescript (// Cache automatically evicts least-recently-used patterns), code:typescript (const adapter = await createAgentDBAdapter({), In-Memory Pattern Cache, LRU Cache Behavior
+Cohesion: 0.80
+Nodes (4): createImage(), getCroppedImg(), getRadianAngle(), rotateSize()
 
 ### Community 440 - "Community 440"
 Cohesion: 0.40
-Nodes (5): code:bash (# Comprehensive performance benchmarking), code:typescript (import { createAgentDBAdapter } from 'agentic-flow/reasoning), Enable Optimizations, Quick Start, Run Performance Benchmarks
+Nodes (5): code:bash (npx claude-flow hook pre-edit [options]), code:bash (npx claude-flow hook pre-bash --command <cmd>), code:bash (npx claude-flow hook pre-task [options]), code:bash (npx claude-flow hook pre-search --query <query>), Pre-Operation Hooks
 
 ### Community 441 - "Community 441"
-Cohesion: 0.14
-Nodes (9): BookingItem, CATEGORIES, CheckoutRequest, EquipmentItem, FALLBACK_ITEMS, FALLBACK_REQUESTS, filteredItems, InventoryPage() (+1 more)
+Cohesion: 0.40
+Nodes (5): code:yaml (# .github/release-deployment.yml), code:bash (# Deploy with progressive rollout), Execute Staged Deployment, Progressive Deployment Strategy, Staged Rollout Configuration
 
 ### Community 442 - "Community 442"
 Cohesion: 0.40
@@ -2276,7 +2298,7 @@ Nodes (5): Advanced Usage, Batch Operations, code:typescript (// Build RAG pipel
 
 ### Community 443 - "Community 443"
 Cohesion: 0.40
-Nodes (5): Advanced Commands (14), CLI Commands, code:bash (# Initialize), Core Commands (12), Example Commands
+Nodes (5): code:bash (claude-flow stream-chain pipeline analysis), Execute a Pipeline, Quality Assurance Chain, Quick Start, Run a Custom Chain
 
 ### Community 444 - "Community 444"
 Cohesion: 0.40
@@ -2300,7 +2322,7 @@ Nodes (5): code:bash (# Initialize review swarm for PR), code:bash (# Get PR con
 
 ### Community 449 - "Community 449"
 Cohesion: 0.40
-Nodes (5): code:yaml (# .github/review-swarm.yml), code:javascript ({), Configuration File, Custom Review Triggers, ⚙️ Review Configuration
+Nodes (5): Hook Timeouts, Hooks Not Executing, Memory Issues, Performance Problems, Troubleshooting
 
 ### Community 450 - "Community 450"
 Cohesion: 0.40
@@ -2327,8 +2349,8 @@ Cohesion: 0.40
 Nodes (5): Architecture Patterns, code:block25 (ruv-FANN/), code:block26 (.claude/), Command Structure, Monorepo Structure
 
 ### Community 456 - "Community 456"
-Cohesion: 0.40
-Nodes (5): code:yaml (# .swarm/multi-repo.yml), code:javascript ({), Configuration, Multi-Repo Config File, Repository Roles
+Cohesion: 0.50
+Nodes (4): 📖 Additional Resources, Documentation, Related Skills, Support
 
 ### Community 457 - "Community 457"
 Cohesion: 0.40
@@ -2361,10 +2383,6 @@ Nodes (5): Board Integration Workflow, code:yaml (# .github/workflows/issue-swar
 ### Community 464 - "Community 464"
 Cohesion: 0.40
 Nodes (5): code:bash (# Plan and create a release), code:bash (# Initialize release swarm), Full Automated Release, Quick Start, Simple Release Flow
-
-### Community 465 - "Community 465"
-Cohesion: 0.40
-Nodes (5): code:yaml (# .github/release-deployment.yml), code:bash (# Deploy with progressive rollout), Execute Staged Deployment, Progressive Deployment Strategy, Staged Rollout Configuration
 
 ### Community 466 - "Community 466"
 Cohesion: 0.40
@@ -2414,45 +2432,25 @@ Nodes (5): code:yaml (# Generate test matrix from code analysis), code:bash (# D
 Cohesion: 0.40
 Nodes (5): code:yaml (- name: Debug Swarm), code:bash (# Profile workflow performance), Debug Mode, Debugging & Troubleshooting, Performance Profiling
 
-### Community 478 - "Community 478"
-Cohesion: 0.33
-Nodes (5): avatarColors, ROLES, Toast, UserItem, UsersPage()
-
 ### Community 479 - "Community 479"
-Cohesion: 0.40
-Nodes (5): code:bash (npx claude-flow hook post-search --query <query> --results <), code:bash (npx claude-flow hook post-edit [options]), code:bash (npx claude-flow hook post-bash --command <cmd>), code:bash (npx claude-flow hook post-task [options]), Post-Operation Hooks
-
-### Community 480 - "Community 480"
-Cohesion: 0.40
-Nodes (5): code:bash (npx claude-flow hook mcp-initialized --swarm-id <id>), code:bash (npx claude-flow hook agent-spawned --agent-id <id> --type <t), code:bash (npx claude-flow hook task-orchestrated --task-id <id>), code:bash (npx claude-flow hook neural-trained --pattern <name>), MCP Integration Hooks
+Cohesion: 0.11
+Nodes (19): Available Hooks, code:bash (npx claude-flow hook post-search --query <query> --results <), code:bash (npx claude-flow hook mcp-initialized --swarm-id <id>), code:bash (npx claude-flow hook agent-spawned --agent-id <id> --type <t), code:bash (npx claude-flow hook task-orchestrated --task-id <id>), code:bash (npx claude-flow hook neural-trained --pattern <name>), code:bash (Features:), code:bash (npx claude-flow hook memory-sync --namespace <ns>) (+11 more)
 
 ### Community 481 - "Community 481"
 Cohesion: 0.40
-Nodes (5): code:bash (npx claude-flow hook session-start --session-id <id>), code:bash (npx claude-flow hook session-restore --session-id <id>), code:bash (npx claude-flow hook session-end [options]), code:bash (npx claude-flow hook notify --message <msg>), Session Hooks
+Nodes (5): AgentDB Search Performance, code:typescript (const attentionBenchmark = {), code:typescript (const searchBenchmark = {), Flash Attention Targets, Performance Integration
 
 ### Community 482 - "Community 482"
-Cohesion: 0.40
-Nodes (5): code:javascript (mcp__claude-flow__memory_usage {), code:javascript (mcp__claude-flow__memory_usage {), code:javascript (mcp__claude-flow__memory_usage {), Memory Coordination Protocol, Three-Phase Memory Protocol
+Cohesion: 0.67
+Nodes (3): code:markdown (<!-- In PR comment -->), code:javascript (// webhook-handler.js), 🎬 PR Comment Commands
 
 ### Community 483 - "Community 483"
-Cohesion: 0.40
-Nodes (5): code:javascript (// .claude/hooks/custom-quality-check.js), code:json ({), Custom Hook Creation, Custom Hook Template, Register Custom Hook
-
-### Community 484 - "Community 484"
-Cohesion: 0.40
-Nodes (5): Hook Timeouts, Hooks Not Executing, Memory Issues, Performance Problems, Troubleshooting
+Cohesion: 0.29
+Nodes (7): 3. SARSA, code:bash (npx agentdb@latest create-plugin -t sarsa -n sarsa-agent), code:javascript (// .claude/hooks/custom-quality-check.js), code:json ({), Custom Hook Creation, Custom Hook Template, Register Custom Hook
 
 ### Community 485 - "Community 485"
 Cohesion: 0.40
 Nodes (5): code:bash (# Basic start), code:bash (# Check status), Session Control Commands, Session Management, Starting Sessions
-
-### Community 486 - "Community 486"
-Cohesion: 0.40
-Nodes (5): Configuration Issues, Poor Performance, Session Disconnected, Session Won't Start, Troubleshooting
-
-### Community 487 - "Community 487"
-Cohesion: 0.40
-Nodes (5): code:block49, code:markdown (---), Example 1: Simple Documentation Skill, Examples from the Wild, Install prerequisites
 
 ### Community 488 - "Community 488"
 Cohesion: 0.40
@@ -2469,10 +2467,6 @@ Nodes (5): code:javascript (// Store mode-specific context), code:bash (# Store 
 ### Community 491 - "Community 491"
 Cohesion: 0.40
 Nodes (5): `generate_typescript_types`, `get_anon_key`, `get_logs`, `get_project_url`, Monitoring & Utilities
-
-### Community 492 - "Community 492"
-Cohesion: 0.40
-Nodes (5): code:bash (claude-flow stream-chain run \), code:bash (claude-flow stream-chain pipeline analysis), Execute a Pipeline, Quick Start, Run a Custom Chain
 
 ### Community 493 - "Community 493"
 Cohesion: 0.40
@@ -2506,10 +2500,6 @@ Nodes (5): code:typescript (// src/core/domains/task-management/entities/task.en
 Cohesion: 0.40
 Nodes (5): code:bash (# Get detailed breakdown), code:bash (# Check git status), code:bash (# Increase timeout), Common Issues, Troubleshooting
 
-### Community 501 - "Community 501"
-Cohesion: 0.50
-Nodes (4): Advanced Features, Caching, HNSW Indexing, MMR (Maximal Marginal Relevance)
-
 ### Community 502 - "Community 502"
 Cohesion: 0.83
 Nodes (3): health-monitor.sh script, check_health(), should_run()
@@ -2518,33 +2508,9 @@ Nodes (3): health-monitor.sh script, check_health(), should_run()
 Cohesion: 0.83
 Nodes (3): pattern-consolidator.sh script, consolidate_patterns(), should_run()
 
-### Community 504 - "Community 504"
-Cohesion: 0.50
-Nodes (4): 📖 Additional Resources, Documentation, Related Skills, Support
-
-### Community 505 - "Community 505"
-Cohesion: 0.50
-Nodes (4): code:javascript ([Single Message - Parallel Execution]:), Example: Complete PR Management, 🔗 Integration with Claude Code, Workflow Pattern
-
-### Community 506 - "Community 506"
-Cohesion: 0.50
-Nodes (4): Architecture Health Metrics, Automated Reporting, Metrics and Reporting, Sync Quality Metrics
-
 ### Community 507 - "Community 507"
-Cohesion: 0.50
-Nodes (4): Expected Performance, Optimization Tips, Performance Metrics & Benchmarks, Success Metrics
-
-### Community 508 - "Community 508"
-Cohesion: 0.50
-Nodes (4): 1. Release Planning, 2. Automation, 3. Documentation, Best Practices
-
-### Community 509 - "Community 509"
-Cohesion: 0.50
-Nodes (4): 1. Workflow Organization, 2. Security, 3. Performance, Best Practices
-
-### Community 510 - "Community 510"
-Cohesion: 0.50
-Nodes (4): code:block51, code:markdown (---), - Contribution guidelines, Example 2: Code Generation Skill
+Cohesion: 0.67
+Nodes (3): code:bash (# 1. Create feature issue with swarm coordination), Complete Workflow Example, Full-Stack Feature Development
 
 ### Community 511 - "Community 511"
 Cohesion: 0.50
@@ -2566,13 +2532,9 @@ Nodes (4): Automatic Rollback, code:bash (# Rollback to last known good state), 
 Cohesion: 0.50
 Nodes (4): code:bash (# JSON report), code:bash (# Last 24 hours), Generate Reports, Verification Reports
 
-### Community 516 - "Community 516"
-Cohesion: 0.67
-Nodes (3): 1. Decision Transformer (Recommended), code:bash (npx agentdb@latest create-plugin -t decision-transformer -n ), code:json ({)
-
-### Community 517 - "Community 517"
-Cohesion: 0.67
-Nodes (3): 2. Q-Learning, code:bash (npx agentdb@latest create-plugin -t q-learning -n q-agent), code:json ({)
+### Community 535 - "Community 535"
+Cohesion: 0.12
+Nodes (10): Available Commands, Swarm Commands, code:bash (npx claude-flow swarm swarm-analysis [options]), swarm-analysis, code:bash (npx claude-flow swarm swarm-background [options]), swarm-background, code:bash (npx claude-flow swarm swarm-monitor [options]), swarm-monitor (+2 more)
 
 ### Community 544 - "Community 544"
 Cohesion: 0.67
@@ -2599,24 +2561,24 @@ Cohesion: 0.67
 Nodes (3): code:typescript (// src/core/domains/task-management/services/task-scheduling), Domain Services, Task Scheduling Service
 
 ## Knowledge Gaps
-- **2886 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+2881 more)
+- **2728 isolated node(s):** `ADRS`, `__filename`, `__dirname`, `PROJECT_ROOT`, `DATA_DIR` (+2723 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **41 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **30 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `Community 23` to `Community 1`, `Community 3`?**
-  _High betweenness centrality (0.001) - this node is a cross-community bridge._
-- **Why does `clsx` connect `Community 3` to `Community 23`?**
-  _High betweenness centrality (0.001) - this node is a cross-community bridge._
-- **What connects `$schema`, `style`, `rsc` to the rest of the system?**
-  _2886 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `code:json ({)` connect `Community 190` to `Community 203`, `Community 435`, `Community 189`, `Community 184`, `Community 152`?**
+  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+- **Why does `AgentDB Learning Plugins` connect `Community 192` to `Community 280`, `Community 207`, `Community 184`, `Community 281`, `Community 282`, `Community 283`?**
+  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **What connects `ADRS`, `__filename`, `__dirname` to the rest of the system?**
+  _2728 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.1 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0425531914893617 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._
 - **Should `Community 3` be split into smaller, more focused modules?**
-  _Cohesion score 0.05263157894736842 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1 - nodes in this community are weakly interconnected._
 - **Should `Community 4` be split into smaller, more focused modules?**
-  _Cohesion score 0.08045977011494253 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07400555041628122 - nodes in this community are weakly interconnected._

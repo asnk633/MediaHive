@@ -95,7 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               name: profile.name || profile.full_name || googleName,
               role: (profile.role || "member").toLowerCase() as any,
               institution_id: profile.institution_id,
-              tenant_id: profile.tenantId || profile.tenant_id,
+              tenant_id: profile.tenant_id,
               department_id: profile.department_id,
               avatar_url: getDriveImageUrl(profile.avatar_url, profile.avatar_drive_id, true) || googleAvatar
             });
@@ -167,7 +167,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 name: profile.name || profile.full_name || googleName,
                 role: (profile.role || "member").toLowerCase() as any,
                 institution_id: profile.institution_id,
-                tenant_id: profile.tenantId || profile.tenant_id,
+                tenant_id: profile.tenant_id,
                 department_id: profile.department_id,
                 avatar_url: getDriveImageUrl(profile.avatar_url, profile.avatar_drive_id, true) || googleAvatar
               });
@@ -234,9 +234,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     setLoading(true);
-    await supabase.auth.signOut();
-    setUser(null);
-    setLoading(false);
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error("[Auth] signOut failed, clearing local session:", err);
+      // Fallback: clear local session even if network is offline
+      await supabase.auth.signOut({ scope: 'local' });
+    } finally {
+      setUser(null);
+      setLoading(false);
+    }
   };
 
   return (

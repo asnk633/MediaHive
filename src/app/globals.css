@@ -123,7 +123,7 @@
   }
 
   /* Click Certainty: Min Target Size */
-  button, [role="button"], a {
+  button, [role="button"], .sidebar-item, .nav-link, .tab-link, .breadcrumb-link {
     min-width: 44px;
     min-height: 44px;
     display: inline-flex;

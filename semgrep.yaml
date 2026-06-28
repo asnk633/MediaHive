@@ -1,0 +1,51 @@
+rules:
+  - id: react-dangerouslysetinnerhtml
+    patterns:
+      - pattern: <$EL dangerouslySetInnerHTML={{...}} />
+    message: "Using dangerouslySetInnerHTML can lead to XSS vulnerabilities if the input is not sanitized."
+    languages:
+      - javascript
+      - typescript
+    severity: WARNING
+  - id: supabase-anon-key-leak
+    patterns:
+      - pattern: const $KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    message: "Potential leak of Supabase anonymous or service role key in codebase."
+    languages:
+      - javascript
+      - typescript
+    severity: ERROR
+  - id: react-missing-key-prop
+    patterns:
+      - pattern: |
+          $ARR.map(($ITEM) => (
+            <$EL ...>...</$EL>
+          ))
+      - pattern-not-inside: |
+          $ARR.map(($ITEM) => (
+            <$EL key={...} ...>...</$EL>
+          ))
+    message: "Missing 'key' prop in mapped React element, leading to potential performance/state bugs."
+    languages:
+      - javascript
+      - typescript
+    severity: WARNING
+  - id: nextjs-unhandled-api-error
+    patterns:
+      - pattern: |
+          export async function $METHOD(req: Request) {
+            ...
+            return NextResponse.json({ ... })
+          }
+      - pattern-not-inside: |
+          export async function $METHOD(req: Request) {
+            try {
+              ...
+            } catch ($E) {
+              ...
+            }
+          }
+    message: "API Route missing top-level try/catch block, leading to unhandled server errors."
+    languages:
+      - typescript
+    severity: WARNING

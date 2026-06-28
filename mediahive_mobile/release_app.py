@@ -42,12 +42,11 @@ if not SUPABASE_SERVICE_KEY:
     print("[WARNING] SUPABASE_SERVICE_ROLE_KEY not found in ../.env.local. Supabase sync will be skipped.")
 
 RELEASE_NOTES = (
-    "🚀 MediaHive v1.2.5-beta+62001 — Auth, NFC & Reminder Fixes\n\n"
-    "• Google Sign-In Hang Fix: Mapped signature/keystore errors and added defensive 15s timeouts with widget mount checks.\n"
-    "• NFC Double-Scan Lock: Implemented scanning lock and GoRouter interception to prevent accidental confirm checkout pages.\n"
-    "• Manual Sign-Out: Centralized sign-out to suppress false session-expiration warnings.\n"
-    "• Attendance Reminders: Revamped scheduling clock & daily record counts to alert only if attendance was forgotten.\n"
-    "• WebView & Layout Fixes: Resolved UI resize loops and layout thrashing in web clients.\n"
+    "🚀 MediaHive v1.2.5-beta+64002 — Auth & Active Session Query Fixes\n\n"
+    "• Infinite Sign-Out Loop Fix: Resolved recursive loop during session recovery by adding manual sign-out tracking and checking transitions.\n"
+    "• FCM Token De-registration Fix: Guarded token deregistration from running when a user is already signed out, preventing connection timeout errors.\n"
+    "• Active Session Query Fix: Added order and limit constraints to prevent PostgrestException 406 when duplicate active records exist.\n"
+    "• Unified Refactoring & Accessibility: Modularized shell/dashboard/inventory/tasks screens and polished WCAG semantics/ink ripples.\n"
 )
 
 # ─── 1. PARSE VERSION ─────────────────────────────────────────────────────────

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import '../design_tokens.dart';
+import 'package:mediahive_mobile/core/design_tokens.dart';
 
 class AppColors {
   // ─── Dark Theme Base (FinTech Plataforma Financeira) ────────────────────────────────
-  static const Color backgroundPrimary    = Color(0xFF000000);   // Pure Black
-  static const Color backgroundSecondary  = Color(0xFF1A1A1A);   // Dark Grey
-  static const Color surface              = Color(0xFF1E1E1E);   // Dark card surface
+  static const Color backgroundPrimary    = DesignTokens.backgroundPrimary;
+  static const Color backgroundSecondary  = DesignTokens.backgroundSecondary;
+  static const Color surface              = DesignTokens.surface;
   static const Color surfaceElevated      = Color(0xFF252525);   // Elevated surface
   static const Color charcoal             = Color(0xFF333333);   // Charcoal
-  static const Color border               = Color(0x26FFD700);   // Gold @ 15%
-  static const Color borderStrong         = Color(0x4DFFD700);   // Gold @ 30%
+  static const Color border               = DesignTokens.border;
+  static const Color borderStrong         = DesignTokens.borderStrong;
 
   // ─── Light / Spatial UI (VisionOS) Palette ─────────────────────────────────
   static const Color lightBackground      = DesignTokens.lightBackground;
@@ -23,8 +23,8 @@ class AppColors {
   static const Color lightTextMuted       = DesignTokens.lightTextMuted;
 
   // ─── Brand Identity ─────────────────────────────────────────────────────────────
-  static const Color honey                = Color(0xFFFFD700);   // Gold — dark-theme primary
-  static const Color softGold             = Color(0xFFC9A84C);   // Soft Gold — secondary
+  static const Color honey                = DesignTokens.honey;
+  static const Color softGold             = DesignTokens.softGold;
   static const Color lightHoney           = DesignTokens.lightHoney; // vivid VisionOS blue
 
   // ─── Text ──────────────────────────────────────────────────────────────────
@@ -33,9 +33,9 @@ class AppColors {
   static const Color textMuted            = Color(0xFF7A7A7A);
 
   // ─── Status ────────────────────────────────────────────────────────────────
-  static const Color success              = Color(0xFF10B981);
-  static const Color warning              = Color(0xFFF59E0B);
-  static const Color error               = Color(0xFFEF4444);
+  static const Color success              = DesignTokens.success;
+  static const Color warning              = DesignTokens.warning;
+  static const Color error               = DesignTokens.danger;
   static const Color info                 = Color(0xFF2997FF);
 
   // ─── Gradients ─────────────────────────────────────────────────────────────

@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../../core/theme_provider.dart';
 import '../../../../../core/services/auth_service.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_input.dart';
+import 'package:mediahive_mobile/shared/widgets/mh_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -18,7 +20,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
-  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -242,25 +243,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 32),
               
-              _buildCustomInput(
-                colors: colors,
+              MhInput(
                 label: 'EMAIL ADDRESS',
                 controller: _emailController,
-                icon: LucideIcons.mail,
+                prefixIcon: LucideIcons.mail,
                 hint: 'user@email.com',
               ),
               const SizedBox(height: 24),
-              _buildCustomInput(
-                colors: colors,
+              MhInput(
                 label: 'PASSWORD',
                 controller: _passwordController,
-                icon: LucideIcons.lock,
+                prefixIcon: LucideIcons.lock,
                 hint: '••••••••',
                 isPassword: true,
-                obscureText: _obscurePassword,
-                onToggleVisibility: () {
-                  setState(() => _obscurePassword = !_obscurePassword);
-                },
               ),
               const SizedBox(height: 12),
               Align(
@@ -285,37 +280,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 28),
               
-              SizedBox(
+              MhButton(
+                label: 'SIGN IN',
+                onTap: _handleSignIn,
+                isLoading: _isLoading,
+                type: MhButtonType.primary,
                 width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _handleSignIn,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isDark ? const Color(0xFFFFB300) : const Color(0xFF006EE6),
-                    foregroundColor: isDark ? Colors.black : Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: _isLoading
-                    ? SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2, 
-                          color: isDark ? Colors.black : Colors.white,
-                        ),
-                      )
-                    : const Text(
-                        'SIGN IN',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.5,
-                          fontSize: 14,
-                        ),
-                      ),
-                ),
+                height: 52.0,
               ),
               const SizedBox(height: 24),
               Row(
@@ -347,111 +318,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ],
               ),
               const SizedBox(height: 24),
-              SizedBox(
+              MhButton(
+                label: 'CONTINUE WITH GOOGLE',
+                onTap: _handleGoogleSignIn,
+                isLoading: _isLoading,
+                type: MhButtonType.outline,
                 width: double.infinity,
-                height: 56,
-                child: OutlinedButton(
-                  onPressed: _isLoading ? null : _handleGoogleSignIn,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: colors.textPrimary,
-                    backgroundColor: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.black.withValues(alpha: 0.03),
-                    side: BorderSide(
-                      color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/google_logo.png',
-                        height: 22,
-                        width: 22,
-                      ),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'CONTINUE WITH GOOGLE',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.5,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                height: 52.0,
               ),
             ],
           ),
         ),
       ),
     ).animate().fadeIn(delay: 500.ms).scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1));
-  }
-
-  Widget _buildCustomInput({
-    required ThemeColors colors,
-    required String label,
-    required TextEditingController controller,
-    required IconData icon,
-    required String hint,
-    bool isPassword = false,
-    bool obscureText = false,
-    VoidCallback? onToggleVisibility,
-  }) {
-    final isDark = colors.isDark;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w900,
-            color: colors.textSecondary.withValues(alpha: 0.5),
-            letterSpacing: 1.5,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Container(
-          decoration: BoxDecoration(
-            color: isDark ? Colors.black.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.05)),
-          ),
-          child: TextField(
-            controller: controller,
-            obscureText: isPassword ? obscureText : false,
-            style: TextStyle(color: colors.textPrimary, fontSize: 15),
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.3)),
-              prefixIcon: Icon(
-                icon, 
-                size: 20, 
-                color: isDark ? const Color(0xFFFFD700) : const Color(0xFF006EE6),
-              ),
-              suffixIcon: isPassword
-                  ? IconButton(
-                      icon: Icon(
-                        obscureText ? LucideIcons.eyeOff : LucideIcons.eye,
-                        color: colors.textSecondary.withValues(alpha: 0.5),
-                        size: 20,
-                      ),
-                      onPressed: onToggleVisibility,
-                    )
-                  : null,
-              border: InputBorder.none, filled: false,
-              contentPadding: isPassword 
-                  ? const EdgeInsets.only(left: 20, right: 10, top: 16, bottom: 16)
-                  : const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            ),
-          ),
-        ),
-      ],
-    );
   }
 
   Widget _buildFooter(ThemeColors colors) {

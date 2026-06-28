@@ -1,14 +1,22 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../core/providers/user_provider.dart';
 import '../../../../../core/services/sync_service.dart';
 import '../../../../../core/services/realtime_service.dart';
-import '../../data/datasources/task_local_datasource.dart';
-import '../../data/repositories/supabase_task_repository.dart';
-import '../../domain/models/task.dart';
-import '../../domain/repositories/task_repository.dart';
+import 'package:mediahive_mobile/features/tasks/data/datasources/task_local_datasource.dart';
+import 'package:mediahive_mobile/features/tasks/data/repositories/supabase_task_repository.dart';
+import 'package:mediahive_mobile/features/tasks/domain/models/task.dart';
+import 'package:mediahive_mobile/features/tasks/domain/repositories/task_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'tasks_provider.g.dart';
+
+final tasksTabProvider = StateProvider<int>((ref) => 0);
+final tasksStatusFilterProvider = StateProvider<String>((ref) => 'ALL');
+final tasksSearchQueryProvider = StateProvider<String>((ref) => '');
+final tasksSortOrderProvider = StateProvider<String>((ref) => 'DEFAULT');
+final tasksDeptFilterProvider = StateProvider<String?>((ref) => null);
+final tasksInstFilterProvider = StateProvider<String?>((ref) => null);
 
 @riverpod
 TaskRepository taskRepository(TaskRepositoryRef ref) {

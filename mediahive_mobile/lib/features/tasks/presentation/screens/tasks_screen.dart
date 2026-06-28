@@ -6,25 +6,20 @@ import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../core/services/network_service.dart';
 import '../../../../../core/services/analytics_service.dart';
-import '../providers/tasks_provider.dart';
-import '../../domain/models/task.dart';
-import '../../../../core/providers/user_provider.dart';
+import 'package:mediahive_mobile/features/tasks/presentation/providers/tasks_provider.dart';
+import 'package:mediahive_mobile/features/tasks/presentation/widgets/task_board_tabs.dart';
+import 'package:mediahive_mobile/features/tasks/presentation/widgets/task_filter_bar.dart';
+import 'package:mediahive_mobile/features/tasks/presentation/widgets/task_item_tile.dart';
+import 'package:mediahive_mobile/features/tasks/domain/models/task.dart';
+import 'package:mediahive_mobile/core/providers/user_provider.dart';
 import 'package:intl/intl.dart';
-import '../../data/datasources/task_local_datasource.dart';
+import 'package:mediahive_mobile/features/tasks/data/datasources/task_local_datasource.dart';
 import '../../../../../shared/widgets/mh_button.dart';
 import '../../../../../shared/widgets/mh_empty_state.dart';
 import '../../../../../shared/widgets/mh_refresh_indicator.dart';
 import '../../../../../core/testing/chaos_controller.dart';
-import '../../../../shared/widgets/mh_loading.dart';
-import '../../../../core/theme_provider.dart';
-import '../../../../core/theme/elastic_scroll_physics.dart';
-
-final tasksTabProvider = StateProvider<int>((ref) => 0);
-final tasksStatusFilterProvider = StateProvider<String>((ref) => 'ALL');
-final tasksSearchQueryProvider = StateProvider<String>((ref) => '');
-final tasksSortOrderProvider = StateProvider<String>((ref) => 'DEFAULT'); // DEFAULT | STATUS_ASC | STATUS_DESC | DATE_ASC | DATE_DESC
-final tasksDeptFilterProvider = StateProvider<String?>((ref) => null);
-final tasksInstFilterProvider = StateProvider<String?>((ref) => null);
+import 'package:mediahive_mobile/shared/widgets/mh_loading.dart';
+import 'package:mediahive_mobile/core/theme_provider.dart';
 
 class TasksScreen extends ConsumerWidget {
   const TasksScreen({super.key});
@@ -94,11 +89,12 @@ class TasksScreen extends ConsumerWidget {
         const SizedBox(height: AppSpacing.s),
         _buildStatGrid(tasks, colors),
         const SizedBox(height: AppSpacing.m),
-        _buildTabs(ref, activeTab, colors),
+        TaskBoardTabs(activeTab: activeTab),
         const SizedBox(height: AppSpacing.m),
-        _buildSearchAndControls(context, ref, colors),
-        const SizedBox(height: AppSpacing.s),
-        _buildStatusFilters(ref, colors),
+        TaskFilterBar(
+          onSortTap: () => _showSortSheet(context, ref, colors),
+          onFilterTap: () => _showFilterSheet(context, ref, colors),
+        ),
         const SizedBox(height: AppSpacing.m),
         _buildTaskList(context, ref, tasks, activeTab, fullName, isOffline, colors),
       ],
@@ -349,288 +345,7 @@ class TasksScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTabs(WidgetRef ref, int activeTab, ThemeColors colors) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: colors.surface.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.border),
-      ),
-      child: Row(
-        children: [
-          _buildTab(ref, 'TODAY', 0, activeTab == 0, colors),
-          _buildTab(ref, 'ALL', 1, activeTab == 1, colors),
-          _buildTab(ref, 'REQUESTS', 2, activeTab == 2, colors),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildTab(WidgetRef ref, String title, int index, bool isActive, ThemeColors colors) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => ref.read(tasksTabProvider.notifier).state = index,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: isActive ? colors.honey : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: isActive ? [
-              BoxShadow(
-                color: colors.honey.withValues(alpha: 0.3),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              )
-            ] : null,
-          ),
-          child: Center(
-            child: Text(
-              title,
-              style: AppTypography.caption.copyWith(
-                fontWeight: FontWeight.w900,
-                fontSize: 10,
-                letterSpacing: 1.0,
-                color: isActive ? Colors.black : colors.textSecondary,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-  
-  // ─── Search + Sort + Filter (single row) ─────────────────────────────────
-  Widget _buildSearchAndControls(BuildContext context, WidgetRef ref, ThemeColors colors) {
-    final query = ref.watch(tasksSearchQueryProvider);
-    final sortOrder = ref.watch(tasksSortOrderProvider);
-    final deptFilter = ref.watch(tasksDeptFilterProvider);
-    final instFilter = ref.watch(tasksInstFilterProvider);
-    final hasActiveFilters = deptFilter != null || instFilter != null;
-    final isSorted = sortOrder != 'DEFAULT';
-
-    return Row(
-      children: [
-        // ── Expandable search field ──
-        Expanded(
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeInOut,
-            constraints: const BoxConstraints(minHeight: 44),
-            decoration: BoxDecoration(
-              color: colors.isDark
-                  ? colors.surface.withValues(alpha: 0.6)
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: query.isNotEmpty
-                    ? colors.honey.withValues(alpha: 0.6)
-                    : colors.border.withValues(alpha: 0.3),
-                width: query.isNotEmpty ? 1.5 : 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: colors.border.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: TextField(
-              onChanged: (v) =>
-                  ref.read(tasksSearchQueryProvider.notifier).state = v.trim(),
-              style: AppTypography.bodyM.copyWith(
-                color: colors.textPrimary,
-                fontSize: 12,
-              ),
-              decoration: InputDecoration(
-                hintText: 'Search tasks, assignees…',
-                hintStyle: AppTypography.bodyM.copyWith(
-                  color: colors.textSecondary.withValues(alpha: 0.4),
-                  fontSize: 12,
-                ),
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.only(left: 12, right: 6),
-                  child: Icon(
-                    LucideIcons.search,
-                    size: 15,
-                    color: query.isNotEmpty
-                        ? colors.honey
-                        : colors.textSecondary.withValues(alpha: 0.45),
-                  ),
-                ),
-                prefixIconConstraints: const BoxConstraints(minWidth: 36),
-                suffixIcon: query.isNotEmpty
-                    ? GestureDetector(
-                        onTap: () => ref
-                            .read(tasksSearchQueryProvider.notifier)
-                            .state = '',
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Icon(
-                            LucideIcons.x,
-                            size: 13,
-                            color: colors.textSecondary.withValues(alpha: 0.55),
-                          ),
-                        ),
-                      )
-                    : null,
-                border: InputBorder.none, filled: false,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 4, vertical: 11),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        // ── Sort button ──
-        _buildIconControlButton(
-          icon: LucideIcons.arrowUpDown,
-          isActive: isSorted,
-          colors: colors,
-          onTap: () => _showSortSheet(context, ref, colors),
-          badge: isSorted ? _sortShortLabel(sortOrder) : null,
-        ),
-        const SizedBox(width: 8),
-        // ── Filter button ──
-        _buildIconControlButton(
-          icon: LucideIcons.slidersHorizontal,
-          isActive: hasActiveFilters,
-          colors: colors,
-          onTap: () => _showFilterSheet(context, ref, colors),
-          badge: hasActiveFilters
-              ? '${(deptFilter != null ? 1 : 0) + (instFilter != null ? 1 : 0)}'
-              : null,
-        ),
-      ],
-    );
-  }
-
-  /// Square icon-only control button with optional active dot/badge.
-  Widget _buildIconControlButton({
-    required IconData icon,
-    required bool isActive,
-    required ThemeColors colors,
-    required VoidCallback onTap,
-    String? badge,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          color: isActive
-              ? colors.honey.withValues(alpha: 0.12)
-              : colors.isDark
-                  ? colors.surface.withValues(alpha: 0.6)
-                  : Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isActive
-                ? colors.honey.withValues(alpha: 0.6)
-                : colors.border.withValues(alpha: 0.3),
-            width: isActive ? 1.5 : 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: colors.border.withValues(alpha: 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isActive
-                  ? colors.honey
-                  : colors.textSecondary.withValues(alpha: 0.6),
-            ),
-            if (badge != null)
-              Positioned(
-                top: 7,
-                right: 7,
-                child: Container(
-                  width: 14,
-                  height: 14,
-                  decoration: BoxDecoration(
-                    color: colors.honey,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      badge,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 8,
-                        fontWeight: FontWeight.w900,
-                        height: 1,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _sortShortLabel(String sortOrder) {
-    switch (sortOrder) {
-      case 'STATUS_ASC': return 'S↑';
-      case 'STATUS_DESC': return 'S↓';
-      case 'DATE_ASC': return 'D↑';
-      case 'DATE_DESC': return 'D↓';
-      default: return '';
-    }
-  }
-
-  // ─── Status Filter Pills ──────────────────────────────────────────────────
-  Widget _buildStatusFilters(WidgetRef ref, ThemeColors colors) {
-    final selectedStatus = ref.watch(tasksStatusFilterProvider);
-    final statuses = ['ALL', 'TO DO', 'IN PROGRESS', 'REVIEW', 'DONE'];
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const ElasticScrollPhysics(),
-      child: Row(
-        children: statuses.map((status) {
-          final isSelected = selectedStatus == status;
-          return GestureDetector(
-            onTap: () => ref.read(tasksStatusFilterProvider.notifier).state = status,
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected ? colors.honey.withValues(alpha: 0.1) : colors.surface.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: isSelected ? colors.honey : colors.border.withValues(alpha: 0.5),
-                  width: isSelected ? 1.5 : 1,
-                ),
-              ),
-              child: Text(
-                status,
-                style: TextStyle(
-                  color: isSelected ? colors.honey : colors.textSecondary.withValues(alpha: 0.7),
-                  fontSize: 9,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.0,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
 
   // ─── Sort Bottom Sheet ────────────────────────────────────────────────────
   void _showSortSheet(BuildContext context, WidgetRef ref, ThemeColors colors) {
@@ -872,25 +587,117 @@ class TasksScreen extends ConsumerWidget {
         if (overdue.isNotEmpty) ...[
           _buildSectionLabel('OVERDUE', colors.error),
           const SizedBox(height: 12),
-          ...overdue.map((task) => _buildTaskItem(context, ref, task, isOffline, colors)),
+          ...overdue.map((task) => TaskItemTile(
+              task: task,
+              isOffline: isOffline,
+              onTap: () => context.push('/task-details', extra: task),
+              onLongPress: () {
+                final canDelete = _canEditDelete(ref, task);
+                if (!canDelete) return;
+                _showTaskActionSheet(context, ref, task, canDelete, colors);
+              },
+              onDeleted: () => ref.read(tasksListProvider.notifier).deleteTask(task.id),
+              onLeadingTap: () {
+                if (!_canUpdateStatus(ref, task)) return;
+                final isDone = task.status.toString().toLowerCase() == 'done';
+                if (isDone) return;
+                final profile = ref.read(currentUserProfileProvider).valueOrNull;
+                final fullName = profile?['full_name'] as String?;
+                final updatedTask = task.copyWith(status: 'done', completedByName: fullName);
+                ref.read(tasksListProvider.notifier).updateTask(updatedTask);
+              },
+              onStatusTap: () {
+                if (!_canUpdateStatus(ref, task)) return;
+                _showStatusPicker(context, ref, task, colors);
+              },
+            )),
           const SizedBox(height: 24),
         ],
         if (dueToday.isNotEmpty) ...[
           _buildSectionLabel('TODAY', colors.honey),
           const SizedBox(height: 12),
-          ...dueToday.map((task) => _buildTaskItem(context, ref, task, isOffline, colors)),
+          ...dueToday.map((task) => TaskItemTile(
+              task: task,
+              isOffline: isOffline,
+              onTap: () => context.push('/task-details', extra: task),
+              onLongPress: () {
+                final canDelete = _canEditDelete(ref, task);
+                if (!canDelete) return;
+                _showTaskActionSheet(context, ref, task, canDelete, colors);
+              },
+              onDeleted: () => ref.read(tasksListProvider.notifier).deleteTask(task.id),
+              onLeadingTap: () {
+                if (!_canUpdateStatus(ref, task)) return;
+                final isDone = task.status.toString().toLowerCase() == 'done';
+                if (isDone) return;
+                final profile = ref.read(currentUserProfileProvider).valueOrNull;
+                final fullName = profile?['full_name'] as String?;
+                final updatedTask = task.copyWith(status: 'done', completedByName: fullName);
+                ref.read(tasksListProvider.notifier).updateTask(updatedTask);
+              },
+              onStatusTap: () {
+                if (!_canUpdateStatus(ref, task)) return;
+                _showStatusPicker(context, ref, task, colors);
+              },
+            )),
           const SizedBox(height: 24),
         ],
         if (others.isNotEmpty) ...[
           _buildSectionLabel(overdue.isEmpty && dueToday.isEmpty ? 'TASKS' : 'UPCOMING', colors.textSecondary),
           const SizedBox(height: 12),
-          ...others.map((task) => _buildTaskItem(context, ref, task, isOffline, colors)),
+          ...others.map((task) => TaskItemTile(
+              task: task,
+              isOffline: isOffline,
+              onTap: () => context.push('/task-details', extra: task),
+              onLongPress: () {
+                final canDelete = _canEditDelete(ref, task);
+                if (!canDelete) return;
+                _showTaskActionSheet(context, ref, task, canDelete, colors);
+              },
+              onDeleted: () => ref.read(tasksListProvider.notifier).deleteTask(task.id),
+              onLeadingTap: () {
+                if (!_canUpdateStatus(ref, task)) return;
+                final isDone = task.status.toString().toLowerCase() == 'done';
+                if (isDone) return;
+                final profile = ref.read(currentUserProfileProvider).valueOrNull;
+                final fullName = profile?['full_name'] as String?;
+                final updatedTask = task.copyWith(status: 'done', completedByName: fullName);
+                ref.read(tasksListProvider.notifier).updateTask(updatedTask);
+              },
+              onStatusTap: () {
+                if (!_canUpdateStatus(ref, task)) return;
+                _showStatusPicker(context, ref, task, colors);
+              },
+            )),
           const SizedBox(height: 24),
         ],
         if (completed.isNotEmpty) ...[
           _buildSectionLabel('COMPLETED', colors.emerald),
           const SizedBox(height: 12),
-          ...completed.map((task) => _buildTaskItem(context, ref, task, isOffline, colors)),
+          ...completed.map((task) => TaskItemTile(
+              task: task,
+              isOffline: isOffline,
+              onTap: () => context.push('/task-details', extra: task),
+              onLongPress: () {
+                final canDelete = _canEditDelete(ref, task);
+                if (!canDelete) return;
+                _showTaskActionSheet(context, ref, task, canDelete, colors);
+              },
+              onDeleted: () => ref.read(tasksListProvider.notifier).deleteTask(task.id),
+              onLeadingTap: () {
+                if (!_canUpdateStatus(ref, task)) return;
+                final isDone = task.status.toString().toLowerCase() == 'done';
+                if (isDone) return;
+                final profile = ref.read(currentUserProfileProvider).valueOrNull;
+                final fullName = profile?['full_name'] as String?;
+                final updatedTask = task.copyWith(status: 'done', completedByName: fullName);
+                ref.read(tasksListProvider.notifier).updateTask(updatedTask);
+              },
+              onStatusTap: () {
+                if (!_canUpdateStatus(ref, task)) return;
+                _showStatusPicker(context, ref, task, colors);
+              },
+            )),
         ],
       ],
     );
@@ -914,303 +721,7 @@ class TasksScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTaskItem(BuildContext context, WidgetRef ref, Task task, bool isOffline, ThemeColors colors) {
-    final isDone = task.status.toString().toLowerCase() == 'done';
-    
-    // Urgency Logic
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    DateTime? dueDate;
-    try {
-      dueDate = DateTime.parse(task.dueDate);
-    } catch (_) {}
-    
-    final isOverdue = !isDone && dueDate != null && dueDate.isBefore(today);
-    final isDueToday = !isDone && dueDate != null && 
-                       dueDate.year == today.year && 
-                       dueDate.month == today.month && 
-                       dueDate.day == today.day;
 
-    Color dismissColor;
-    final p = task.priority.toLowerCase();
-    if (p == 'low') {
-      dismissColor = Colors.grey.shade600;
-    } else if (p == 'high') {
-      dismissColor = Colors.amber.shade700;
-    } else if (p == 'urgent') {
-      dismissColor = Colors.red.shade700;
-    } else {
-      dismissColor = colors.error;
-    }
-
-    return Dismissible(
-      key: Key(task.id),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        decoration: BoxDecoration(
-          color: dismissColor,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: const Icon(LucideIcons.trash2, color: Colors.white),
-      ),
-      onDismissed: (direction) {
-        ref.read(tasksListProvider.notifier).deleteTask(task.id);
-      },
-      child: GestureDetector(
-        onTap: () => context.push('/task-details', extra: task),
-        onLongPress: () {
-          final canDelete = _canEditDelete(ref, task);
-          if (!canDelete) return; // Prevent action sheet if no permissions
-          
-          _showTaskActionSheet(context, ref, task, canDelete, colors);
-        },
-        child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 300),
-        opacity: isDone ? 0.6 : 1.0,
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: colors.isDark 
-                ? colors.surface 
-                : (isDone ? colors.surface.withValues(alpha: 0.5) : Colors.white),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isOverdue 
-                  ? colors.error.withValues(alpha: 0.5) 
-                  : (isDone 
-                      ? colors.emerald.withValues(alpha: 0.2) 
-                      : colors.border.withValues(alpha: colors.isDark ? 0.5 : 0.12)),
-              width: isOverdue ? 1.5 : 1,
-            ),
-            boxShadow: [
-              if (isOverdue)
-                BoxShadow(
-                  color: colors.error.withValues(alpha: 0.1),
-                  blurRadius: 15,
-                  spreadRadius: 2,
-                ),
-              if (!isDone && !isOverdue)
-                BoxShadow(
-                  color: colors.border.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-            ],
-          ),
-          child: Row(
-            children: [
-              _buildTaskLeading(context, ref, task, isOffline, colors, isOverdue: isOverdue),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            task.title,
-                            style: AppTypography.bodyM.copyWith(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 14,
-                              decoration: isDone ? TextDecoration.lineThrough : null,
-                              color: isOverdue ? colors.error : (isDone ? colors.textSecondary : colors.textPrimary),
-                            ),
-                          ),
-                        ),
-                        if (task.isBlocked)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: Icon(LucideIcons.lock, size: 12, color: colors.error),
-                          ),
-                        if (task.requiresReview)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: Icon(LucideIcons.eye, size: 12, color: colors.honey),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Icon(LucideIcons.user, size: 10, color: colors.textSecondary.withValues(alpha: 0.4)),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            '${task.requester ?? 'System'} → ${task.assignee ?? 'Unassigned'}',
-                            style: AppTypography.caption.copyWith(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w600,
-                              color: colors.textSecondary.withValues(alpha: 0.6),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 6,
-                      children: [
-                        Semantics(
-                          label: 'Priority: ${task.priority}',
-                          child: _buildMiniTag(
-                            context,
-                            _getPriorityIcon(task.priority),
-                            task.priority.toUpperCase(),
-                            _getPriorityColor(task.priority, colors),
-                          ),
-                        ),
-                        Semantics(
-                          label: 'Due Date: ${_formatDate(task.dueDate)}',
-                          child: _buildMiniTag(
-                            context,
-                            LucideIcons.calendar,
-                            _formatDate(task.dueDate),
-                            colors.textSecondary.withValues(alpha: 0.6),
-                          ),
-                        ),
-                        if (task.department != null && task.department!.trim().isNotEmpty)
-                          Semantics(
-                            label: 'Department: ${task.department}',
-                            child: _buildMiniTag(
-                              context,
-                              LucideIcons.building2,
-                              task.department!.toUpperCase(),
-                              colors.indigo.withValues(alpha: 0.8),
-                            ),
-                          ),
-                        if (isDone && (task.completedByName != null || task.completionDate != null))
-                          Semantics(
-                            label: _formatCompletionInfo(task),
-                            child: _buildMiniTag(
-                              context,
-                              LucideIcons.checkCircle2,
-                              _formatCompletionInfo(task),
-                              colors.emerald.withValues(alpha: 0.9),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              _buildStatusChip(context, ref, task, isOffline, colors),
-            ],
-          ),
-        ),
-      ),
-    ));
-  }
-  String _formatCompletionInfo(Task task) {
-    String name = task.completedByName ?? '';
-    if (name.trim().isEmpty) {
-      name = task.assignee ?? '';
-    }
-    if (name.trim().toLowerCase() == 'unassigned') {
-      name = '';
-    }
-    final namePart = name.isNotEmpty ? ' by $name' : '';
-    
-    String timePart = '';
-    if (task.completionDate != null) {
-      try {
-        final dt = DateTime.parse(task.completionDate!).toLocal();
-        timePart = ' at ${DateFormat('MMM d, h:mm a').format(dt)}';
-      } catch (_) {}
-    }
-    return 'Completed$namePart$timePart';
-  }
-
-  Widget _buildTaskLeading(BuildContext context, WidgetRef ref, Task task, bool isOffline, ThemeColors colors, {bool isOverdue = false}) {
-    final isDone = task.status.toString().toLowerCase() == 'done';
-    final color = isDone ? colors.emerald : (isOverdue ? colors.error : _getStatusColor(task.status, colors));
-    
-    return GestureDetector(
-      onTap: (isDone || !_canUpdateStatus(ref, task)) ? null : () {
-        final profile = ref.read(currentUserProfileProvider).valueOrNull;
-        final fullName = profile?['full_name'] as String?;
-        final updatedTask = task.copyWith(status: 'done', completedByName: fullName);
-        ref.read(tasksListProvider.notifier).updateTask(updatedTask);
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: 24,
-        height: 24,
-        decoration: BoxDecoration(
-          color: isDone ? colors.emerald.withValues(alpha: 0.1) : Colors.transparent,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: isDone 
-                ? colors.emerald 
-                : (isOverdue ? colors.error : colors.border.withValues(alpha: 0.8)),
-            width: 1.5,
-          ),
-        ),
-        child: Center(
-          child: isDone
-              ? Icon(LucideIcons.check, size: 14, color: colors.emerald)
-              : (isOverdue 
-                  ? Icon(LucideIcons.alertTriangle, size: 10, color: colors.error)
-                  : null),
-        ),
-      ),
-    );
-  }
-
-  Color _getStatusColor(String status, ThemeColors colors) {
-    final normalizedStatus = status.toLowerCase();
-    if (normalizedStatus == 'done') return colors.emerald;
-    if (normalizedStatus == 'in_progress') return colors.indigo;
-    if (normalizedStatus == 'review') return colors.honey;
-    return colors.textSecondary;
-  }
-
-  Widget _buildStatusChip(BuildContext context, WidgetRef ref, Task task, bool isOffline, ThemeColors colors) {
-    final status = task.status;
-    final normalizedStatus = status.toLowerCase();
-    Color color = colors.textSecondary;
-    String label = status.toUpperCase();
-
-    if (normalizedStatus == 'done') color = colors.emerald;
-    if (normalizedStatus == 'in_progress') color = colors.indigo;
-    if (normalizedStatus == 'review') color = colors.honey;
-    if (normalizedStatus == 'todo' || normalizedStatus == 'to do') {
-      color = colors.textSecondary;
-      label = 'TODO';
-    }
-
-    return GestureDetector(
-      onTap: (!_canUpdateStatus(ref, task)) ? null : () => _showStatusPicker(context, ref, task, colors),
-      child: Semantics(
-        label: 'Status: $label',
-        button: !(!_canUpdateStatus(ref, task)),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: isOffline ? 0.05 : 0.1),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: color.withValues(alpha: isOffline ? 0.1 : 0.3)),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isOffline ? color.withValues(alpha: 0.5) : color,
-              fontSize: 9,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   void _showStatusPicker(BuildContext context, WidgetRef ref, Task task, ThemeColors colors) {
     // Values use canonical lowercase form matching DB schema
@@ -1295,61 +806,7 @@ class TasksScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMiniTag(BuildContext context, IconData icon, String label, Color color) {
-    return Container(
-      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 120),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 10, color: color),
-          const SizedBox(width: 4),
-          Flexible(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontSize: 9,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  IconData _getPriorityIcon(String priority) {
-    final p = priority.toLowerCase();
-    if (p == 'urgent' || p == 'high') return LucideIcons.alertTriangle;
-    if (p == 'medium') return LucideIcons.gauge;
-    return LucideIcons.chevronDown;
-  }
-
-  Color _getPriorityColor(String priority, ThemeColors colors) {
-    final p = priority.toLowerCase();
-    if (p == 'urgent') return colors.error;
-    if (p == 'high') return colors.error;
-    if (p == 'medium') return colors.honey;
-    return colors.emerald;
-  }
-
-  String _formatDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return 'No Date';
-    try {
-      final date = DateTime.parse(dateStr);
-      return DateFormat('dd-MM-yyyy').format(date);
-    } catch (e) {
-      return dateStr;
-    }
-  }
 
   bool _canUpdateStatus(WidgetRef ref, Task task) {
     final profile = ref.read(currentUserProfileProvider).valueOrNull;

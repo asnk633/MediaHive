@@ -21,6 +21,7 @@ type AuthContextType = {
     recoveryMode: boolean;
     setRecoveryMode: (mode: boolean) => void;
     login: (email: string, password: string) => Promise<void>;
+    loginWithGoogle: () => Promise<void>;
     signup: (email: string, password: string, metadata?: Record<string, any>) => Promise<void>;
     logout: () => Promise<void>;
     signOut: () => Promise<void>;
@@ -415,6 +416,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const loginWithGoogle = async () => {
+        setLoading(true);
+
+        // This is the Vercel/browser build — Tauri context never exists here.
+        // The desktop app has its own AuthContextProvider with the Tauri opener logic.
+        console.log("Browser: Initiating Google Login flow.");
+        let redirectTo = typeof window !== "undefined" ? window.location.origin : undefined;
+        if (typeof window !== "undefined") {
+            const params = new URLSearchParams(window.location.search);
+            console.log(`Browser: Current search params are: ${params.toString()}`);
+            if (params.get("source") === "tauri") {
+                redirectTo = `${window.location.origin}/auth/callback?source=tauri`;
+            }
+        }
+
+        console.log(`Browser: Supabase OAuth redirectTo set to: ${redirectTo}`);
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+                redirectTo,
+                queryParams: {
+                    prompt: "select_account"
+                }
+            }
+        });
+        if (error) {
+            console.error(`Browser: Supabase OAuth signInWithOAuth error: ${error.message}`);
+            setLoading(false);
+            throw error;
+        }
+    };
+
     const signup = async (email: string, password: string, metadata?: Record<string, any>) => {
         console.log("[SUPABASE TRACE] signUp start for:", email);
         const { error } = await Promise.race([
@@ -633,6 +666,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             recoveryMode,
             setRecoveryMode,
             login,
+            loginWithGoogle,
             signup,
             logout,
             signOut,

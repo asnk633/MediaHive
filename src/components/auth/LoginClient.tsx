@@ -32,7 +32,7 @@ export default function LoginClient() {
     const [resetSuccess, setResetSuccess] = useState(false);
     const [isRecoveryMode, setIsRecoveryMode] = useState(false);
     const [resetError, setResetError] = useState<string | null>(null);
-    const { user, loading: authLoading, login } = useAuth();
+    const { user, loading: authLoading, login, loginWithGoogle } = useAuth();
 
     // Check for recovery mode on mount
     React.useEffect(() => {
@@ -51,6 +51,20 @@ export default function LoginClient() {
             }
         }
     }, []);
+
+    // Auto-trigger Google Sign-in if source=tauri and trigger=google
+    React.useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('source') === 'tauri' && params.get('trigger') === 'google') {
+                console.log('[LOGIN] Auto-triggering Google Sign-in for Tauri...');
+                loginWithGoogle().catch(err => {
+                    console.error('[LOGIN] Auto-trigger Google Sign-in failed:', err);
+                    setError(err.message || 'Auto-login failed.');
+                });
+            }
+        }
+    }, [loginWithGoogle]);
 
     // Redirect to /home if already authenticated (handles playwright_test_auth bypass and normal auth)
     React.useEffect(() => {
@@ -417,6 +431,38 @@ export default function LoginClient() {
                                     className="w-full h-12 bg-primary hover:bg-primary/90 text-foreground font-bold rounded-full shadow-lg transition-all flex items-center justify-center text-sm"
                                 >
                                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Login'}
+                                </button>
+
+                                <div className="relative flex py-2 items-center">
+                                    <div className="flex-grow border-t border-foreground/10"></div>
+                                    <span className="flex-shrink mx-4 text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Or continue with</span>
+                                    <div className="flex-grow border-t border-foreground/10"></div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={loginWithGoogle}
+                                    className="w-full h-12 bg-foreground/5 hover:bg-foreground/10 border border-foreground/10 text-foreground font-bold rounded-full transition-all flex items-center justify-center gap-3 text-sm"
+                                >
+                                    <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            fill="#ea4335"
+                                            d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.58 14.94 1 12 1 7.6 1 3.8 3.55 1.9 7.28l3.77 2.92C6.55 7.42 9.04 5.04 12 5.04z"
+                                        />
+                                        <path
+                                            fill="#4285f4"
+                                            d="M23.49 12.27c0-.82-.07-1.6-.22-2.36H12v4.51h6.44c-.28 1.48-1.11 2.73-2.36 3.58l3.66 2.84c2.14-1.98 3.39-4.89 3.39-8.57z"
+                                        />
+                                        <path
+                                            fill="#fbbc05"
+                                            d="M5.67 14.72c-.24-.72-.37-1.48-.37-2.27s.13-1.55.37-2.27L1.9 7.26C1.04 8.97.55 10.92.55 12.45s.49 3.48 1.35 5.19l3.77-2.92z"
+                                        />
+                                        <path
+                                            fill="#34a853"
+                                            d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.66-2.84c-1.01.68-2.31 1.09-3.9 1.09-3.06 0-5.65-2.08-6.58-4.88L1.05 16.3C3.04 20.25 7.18 23 12 23z"
+                                        />
+                                    </svg>
+                                    <span>Sign in with Google</span>
                                 </button>
 
                                 <div className="text-center pt-2">

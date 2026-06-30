@@ -53,7 +53,7 @@
       "endpoints": [
         "https://github.com/asnk633/MediaHive/releases/latest/download/latest.json"
       ],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc4MDU4MTk0RkE2QjFFNzEKUldSeEhtdjZsSUVGZU1sVWswbzBNOWRPd3FteUZ6SjJrZTZ4d1RvaHFUeW5mWHBKbldjZ1ZWUysK"
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEFFQTk4MTMxMzU1QkFFNkMKUldSc3JsczFNWUdwcnI2RVFUMkdKdkFwd2FweGNsN0xmVjFGaVpJQXVGL2MvZkhObGs4eXJZT1kK"
     },
     "deep-link": {
       "desktop": {

@@ -9,15 +9,11 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
+  // Always set turbopack.root so Next.js doesn't auto-detect the wrong
+  // workspace root when multiple pnpm-lock.yaml files exist in CI.
+  turbopack: {
+    root: path.resolve(__dirname, ".."),
   },
 };
-
-if (process.env.NODE_ENV === "development") {
-  nextConfig.turbopack = {
-    root: path.resolve(__dirname, ".."),
-  };
-}
 
 export default nextConfig;

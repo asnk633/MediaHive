@@ -4,6 +4,7 @@ use tauri::{
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     Listener, Manager,
 };
+use tauri_plugin_deep_link::DeepLinkExt;
 
 pub struct AppState {
     pub is_quitting: AtomicBool,
@@ -26,6 +27,8 @@ pub fn run() {
             Some(vec!["--autostart"]),
         ))
         .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_snap_layout::init().button_id("titlebar-maximize").build())
         .manage(AppState {
             is_quitting: AtomicBool::new(false),
         })
@@ -40,6 +43,9 @@ pub fn run() {
             _ => {}
         })
         .setup(|app| {
+            #[cfg(desktop)]
+            let _ = app.deep_link().register("mediahive");
+
             let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
             let toggle_i =
                 MenuItem::with_id(app, "toggle", "Show/Hide Workspace", true, None::<&str>)?;

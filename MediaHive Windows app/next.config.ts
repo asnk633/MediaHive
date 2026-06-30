@@ -12,9 +12,12 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  turbopack: {
-    root: path.resolve(__dirname, ".."),
-  },
 };
+
+if (process.env.NODE_ENV === "development") {
+  nextConfig.turbopack = {
+    root: path.resolve(__dirname, ".."),
+  };
+}
 
 export default nextConfig;

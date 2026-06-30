@@ -54,10 +54,12 @@ jobs:
 
       - name: Install Frontend Dependencies
         working-directory: "MediaHive Windows app"
+        shell: bash
         run: pnpm install --no-frozen-lockfile
 
       - name: Build Next.js Frontend
         working-directory: "MediaHive Windows app"
+        shell: bash
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

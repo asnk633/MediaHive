@@ -1,15 +1,15 @@
 'use client'
-import useTheme from '@/lib/useTheme';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function ThemeToggle() {
-  const { theme, toggle } = useTheme();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <button
       aria-pressed={theme === 'dark'}
       aria-label="Toggle theme"
-      onClick={toggle}
-      className="p-2 rounded"
+      onClick={toggleTheme}
+      className="p-2 rounded hover:bg-muted"
     >
       {theme === 'dark' ? '🌙' : '☀️'}
     </button>

@@ -27,7 +27,7 @@ export default function ProfilePage() {
       {/* 1. Header */}
       <header className="flex items-center justify-between border-b border-white/5 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-sm text-teal-400 font-medium tracking-wider uppercase mb-1">
+          <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium tracking-wider uppercase mb-1">
             <Sparkles size={14} />
             User Profile
           </div>
@@ -52,10 +52,10 @@ export default function ProfilePage() {
         className="bg-zinc-900/20 border border-white/5 rounded-2xl p-8 backdrop-blur-md flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden"
       >
         {/* Background glow hit */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-teal-500/5 to-indigo-500/5 blur-2xl"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--accent)]/5 blur-2xl"></div>
 
         <div className="relative">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-teal-500/20 to-indigo-500/20 border border-teal-500/20 flex items-center justify-center text-2xl font-bold text-teal-400 shadow-[0_0_20px_rgba(20,184,166,0.15)]">
+          <div className="w-20 h-20 rounded-full bg-[var(--accent-wash)] border border-[var(--accent)]/20 flex items-center justify-center text-2xl font-bold text-[var(--accent)]">
             {getInitials(displayName)}
           </div>
           <Circle size={12} className="absolute bottom-1 right-1 fill-emerald-500 stroke-zinc-950 text-emerald-500" />
@@ -67,7 +67,7 @@ export default function ProfilePage() {
           ) : (
             <>
               <h2 className="text-xl font-bold text-white m-0">{displayName}</h2>
-              <div className="text-xs text-teal-400 font-semibold mt-1 capitalize">{displayRole}</div>
+              <div className="text-xs text-[var(--accent)] font-semibold mt-1 capitalize">{displayRole}</div>
               
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-4 pt-4 border-t border-white/5 text-xs text-zinc-400">
                 <div className="flex items-center justify-center sm:justify-start gap-1.5">

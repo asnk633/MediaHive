@@ -79,7 +79,7 @@ function FileGridCard({ file, formatSize, getFileIcon }: { file: any, formatSize
           <div className="w-full h-full bg-zinc-900/30 border border-white/5 hover:border-white/10 p-5 rounded-2xl flex flex-col justify-between backdrop-blur-md relative overflow-hidden group/card text-left">
             {/* Top row */}
             <div className="flex items-start justify-between gap-2 z-10">
-              <div className="p-2.5 rounded-xl bg-zinc-800/60 border border-white/5 text-teal-400">
+              <div className="p-2.5 rounded-xl bg-zinc-800/60 border border-white/5 text-[var(--accent)]">
                 <FileIcon size={16} />
               </div>
               <span className="text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
@@ -99,7 +99,7 @@ function FileGridCard({ file, formatSize, getFileIcon }: { file: any, formatSize
                 />
                 {isVideo && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover/card:bg-black/10 transition-colors">
-                    <div className="bg-black/60 rounded-full p-2 text-white border border-white/10 group-hover/card:bg-teal-500 group-hover/card:border-teal-400 transition-colors">
+                    <div className="bg-black/60 rounded-full p-2 text-white border border-white/10 group-hover/card:bg-[var(--accent)] group-hover/card:border-[var(--accent-hover)] transition-colors">
                       <Play size={12} className="fill-white" />
                     </div>
                   </div>
@@ -140,7 +140,7 @@ function FileGridCard({ file, formatSize, getFileIcon }: { file: any, formatSize
               {file.downloadLink && (
                 <a
                   href={file.downloadLink}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] font-bold text-teal-400 bg-teal-500/5 hover:bg-teal-500/10 rounded-lg border border-teal-500/10 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] font-bold text-[var(--accent)] bg-[var(--accent-wash)] hover:bg-[var(--accent)]/20 rounded-lg border border-[var(--accent)]/20 transition-colors"
                 >
                   <Download size={10} /> Get File
                 </a>
@@ -281,7 +281,7 @@ export default function DownloadsPage() {
       {/* Header */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-sm text-teal-400 font-medium tracking-wider uppercase mb-1">
+          <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium tracking-wider uppercase mb-1">
             <Sparkles size={14} />
             Offline Manager
           </div>
@@ -291,7 +291,7 @@ export default function DownloadsPage() {
           </p>
         </div>
 
-        <button onClick={fetchFiles} className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-teal-500/10 hover:shadow-teal-500/20 active:scale-95 transition-all cursor-pointer">
+        <button onClick={fetchFiles} className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 text-sm font-semibold px-4 py-2 rounded-full active:scale-95 transition-all cursor-pointer">
           <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
           <span>{loading ? "Syncing..." : "Sync Now"}</span>
         </button>
@@ -305,7 +305,7 @@ export default function DownloadsPage() {
               <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Active Download Queue</span>
               <h3 className="text-sm font-bold text-zinc-200 mt-1 m-0">Asset B-Roll Pack v3.zip</h3>
             </div>
-            <span className="text-xs font-semibold text-teal-400">45% Complete</span>
+             <span className="text-xs font-semibold text-[var(--accent)]">45% Complete</span>
           </div>
 
           {/* Progress bar */}
@@ -314,7 +314,7 @@ export default function DownloadsPage() {
               initial={{ width: 0 }}
               animate={{ width: "45%" }}
               transition={{ duration: 1 }}
-              className="h-full bg-gradient-to-r from-teal-500 to-indigo-500 rounded-full"
+              className="h-full bg-[var(--accent)] rounded-full"
             />
           </div>
 
@@ -361,7 +361,7 @@ export default function DownloadsPage() {
                 onClick={() => setCategory(cat.id as any)}
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap transition-all border border-transparent cursor-pointer ${
                   category === cat.id
-                    ? "bg-zinc-800/60 text-teal-400 border-white/5"
+                    ? "active-tab-capsule border border-[var(--accent)]/20"
                     : "text-zinc-500 hover:text-zinc-300"
                 }`}
               >
@@ -376,7 +376,7 @@ export default function DownloadsPage() {
               onClick={() => setViewMode("list")}
               className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                 viewMode === "list"
-                  ? "bg-zinc-800/60 text-teal-400"
+                  ? "active-tab-capsule"
                   : "text-zinc-500 hover:text-zinc-300"
               }`}
               title="List View (L)"
@@ -387,7 +387,7 @@ export default function DownloadsPage() {
               onClick={() => setViewMode("grid")}
               className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                 viewMode === "grid"
-                  ? "bg-zinc-800/60 text-teal-400"
+                  ? "active-tab-capsule"
                   : "text-zinc-500 hover:text-zinc-300"
               }`}
               title="Grid View (G)"
@@ -416,7 +416,7 @@ export default function DownloadsPage() {
                   return (
                     <div key={file.id} className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-900/30 border border-white/5 hover:border-white/10 transition-colors cursor-pointer group">
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="p-2 rounded-lg bg-zinc-800/50 border border-white/5 text-teal-400 shrink-0">
+                        <div className="p-2 rounded-lg bg-zinc-800/50 border border-white/5 text-[var(--accent)] shrink-0">
                           <FileIcon size={14} />
                         </div>
                         <div className="min-w-0">
@@ -446,7 +446,7 @@ export default function DownloadsPage() {
                           {file.downloadLink && (
                             <a
                               href={file.downloadLink}
-                              className="p-1.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 hover:text-teal-300 transition-colors"
+                              className="p-1.5 rounded-md bg-[var(--accent-wash)] text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-colors"
                               title="Download"
                             >
                               <Download size={12} />

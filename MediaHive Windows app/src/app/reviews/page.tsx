@@ -33,11 +33,11 @@ export default function ReviewsPage() {
 
         {/* Status Counters */}
         <div className="flex items-center gap-3">
-          <div className="glass-card px-3 py-1.5 rounded-xl flex items-center gap-2 text-xs font-semibold">
+          <div className="studio-card px-3 py-1.5 rounded-xl flex items-center gap-2 text-xs font-semibold">
             <Clock size={13} className="text-indigo-400" />
             <span className="text-zinc-300">{reviews.length} Pending</span>
           </div>
-          <div className="glass-card px-3 py-1.5 rounded-xl flex items-center gap-2 text-xs font-semibold">
+          <div className="studio-card px-3 py-1.5 rounded-xl flex items-center gap-2 text-xs font-semibold">
             <CheckCircle2 size={13} className="text-teal-400" />
             <span className="text-zinc-300">3 Done</span>
           </div>
@@ -71,7 +71,7 @@ export default function ReviewsPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
                     key={rev.id}
-                    className="glass-card rounded-2xl p-5 flex flex-col sm:flex-row gap-5 hover:border-indigo-500/30 hover:shadow-[0_8px_32px_-8px_rgba(79,70,229,0.2)] transition-all group relative overflow-hidden"
+                    className="studio-card rounded-2xl p-5 flex flex-col sm:flex-row gap-5 hover:border-indigo-500/30 hover:shadow-[0_8px_32px_-8px_rgba(79,70,229,0.2)] transition-all group relative overflow-hidden"
                   >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 blur-[50px] rounded-full pointer-events-none transition-all group-hover:bg-teal-500/20" />
                     {/* Media Thumbnail */}
@@ -128,7 +128,7 @@ export default function ReviewsPage() {
         </div>
 
         {/* Right Pane: Recent Activity Logs */}
-        <div className="glass-panel rounded-2xl p-5 flex flex-col gap-4 lg:sticky lg:top-6 relative overflow-hidden">
+        <div className="studio-panel rounded-2xl p-5 flex flex-col gap-4 lg:sticky lg:top-6 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[50px] rounded-full pointer-events-none" />
           <div className="flex items-center justify-between border-b border-white/5 pb-2 relative z-10">
             <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider m-0">Recent Approvals</h3>
@@ -136,7 +136,7 @@ export default function ReviewsPage() {
 
           <div className="flex flex-col gap-3 relative z-10">
             {recentApprovals.map((app, idx) => (
-              <div key={idx} className="glass-card p-3 rounded-xl flex items-center justify-between gap-3 relative z-10">
+              <div key={idx} className="studio-card p-3 rounded-xl flex items-center justify-between gap-3 relative z-10">
                 <div className="min-w-0">
                   <div className="text-xs font-semibold text-zinc-200 truncate">{app.title}</div>
                   <span className="text-[9px] text-zinc-500 mt-1 block">{app.time}</span>
@@ -155,3 +155,4 @@ export default function ReviewsPage() {
     </div>
   );
 }
+

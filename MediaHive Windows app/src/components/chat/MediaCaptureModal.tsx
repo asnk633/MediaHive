@@ -95,8 +95,8 @@ export const MediaCaptureModal: React.FC<MediaCaptureModalProps> = ({
                 <div className="p-5 border-b border-white/[0.05] bg-black/20 flex items-center justify-between">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-3 text-sm font-semibold tracking-wider uppercase typo-label">
-                            <div className="p-2 bg-emerald-500/10 rounded-lg">
-                                <Camera className="w-4 h-4 text-emerald-400" />
+                            <div className="p-2 bg-[var(--accent)]/15 rounded-lg">
+                                <Camera className="w-4 h-4 text-[var(--accent)]" />
                             </div>
                             Take Picture
                         </DialogTitle>
@@ -132,7 +132,7 @@ export const MediaCaptureModal: React.FC<MediaCaptureModalProps> = ({
                           </div>
                         ) : isLoading ? (
                           <div className="flex flex-col items-center gap-3">
-                              <div className="w-6 h-6 border-2 border-white/20 border-t-emerald-400 rounded-full animate-spin" />
+                              <div className="w-6 h-6 border-2 border-white/20 border-t-[var(--accent)] rounded-full animate-spin" />
                               <p className="text-[10px] text-white/30 tracking-widest uppercase typo-mono">Starting Lens...</p>
                           </div>
                         ) : (
@@ -157,7 +157,7 @@ export const MediaCaptureModal: React.FC<MediaCaptureModalProps> = ({
                             </Button>
                             <Button 
                                 onClick={handleCapture}
-                                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-600/20 rounded-xl h-10 transition-all active:scale-[0.98] text-xs flex items-center justify-center gap-2"
+                                className="flex-1 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 font-semibold rounded-full h-10 transition-all active:scale-[0.98] text-xs flex items-center justify-center gap-2"
                             >
                                 <Camera className="w-4 h-4" />
                                 Snap Photo

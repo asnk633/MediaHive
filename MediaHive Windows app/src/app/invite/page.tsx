@@ -170,7 +170,7 @@ function InviteContent() {
         initial={{ opacity: 0, scale: 0.95, y: 20 }} 
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="w-full max-w-md glass-panel rounded-[2rem] shadow-2xl p-8 relative z-10 overflow-hidden"
+        className="w-full max-w-md studio-panel rounded-[2rem] shadow-2xl p-8 relative z-10 overflow-hidden"
       >
         <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none" />
         <div className="flex justify-center mb-6">
@@ -246,3 +246,4 @@ export default function InvitePage() {
     </Suspense>
   );
 }
+

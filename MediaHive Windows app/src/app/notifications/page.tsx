@@ -109,7 +109,7 @@ export default function NotificationsPage() {
       {/* Header */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-sm text-teal-400 font-medium tracking-wider uppercase mb-1">
+          <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium tracking-wider uppercase mb-1">
             <Sparkles size={14} />
             Workspace Inbox
           </div>
@@ -124,7 +124,7 @@ export default function NotificationsPage() {
             onClick={markAllRead}
             className="flex items-center gap-2 bg-zinc-900/50 hover:bg-zinc-800 border border-white/5 text-zinc-300 text-sm font-semibold px-4 py-2 rounded-xl transition-all cursor-pointer"
           >
-            <Check size={16} className="text-teal-400" />
+            <Check size={16} className="text-[var(--accent)]" />
             <span>Mark all read</span>
           </button>
         )}
@@ -143,14 +143,14 @@ export default function NotificationsPage() {
                 onClick={() => setActiveTab(tab)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
                   activeTab === tab 
-                    ? "bg-gradient-to-r from-teal-500 to-indigo-600 text-white" 
+                    ? "active-tab-capsule border border-[var(--accent)]/20" 
                     : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
                 }`}
               >
                 <span>{tab}</span>
                 {count > 0 && (
                   <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${
-                    activeTab === tab ? "bg-white/20 text-white" : "bg-zinc-800 text-zinc-400"
+                    activeTab === tab ? "bg-white/20 text-[var(--accent)]" : "bg-zinc-800 text-zinc-400"
                   }`}>
                     {count}
                   </span>
@@ -161,7 +161,7 @@ export default function NotificationsPage() {
         </div>
 
         <div className="text-xs text-zinc-500 font-semibold">
-          Unread Alerts: <span className="text-teal-400">{unreadCount}</span>
+          Unread Alerts: <span className="text-[var(--accent)]">{unreadCount}</span>
         </div>
       </div>
 
@@ -186,7 +186,7 @@ export default function NotificationsPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className={`flex items-start justify-between gap-4 p-4 rounded-2xl border transition-all ${
                   item.unread 
-                    ? "bg-gradient-to-r from-teal-500/5 to-indigo-500/5 border-teal-500/20" 
+                    ? "bg-[var(--accent-wash)] border-[var(--accent)]/20" 
                     : "bg-zinc-900/10 border-white/5 hover:bg-zinc-900/20"
                 }`}
               >
@@ -195,12 +195,12 @@ export default function NotificationsPage() {
                   {/* Styled Icon */}
                   <div className={`p-2.5 rounded-xl border flex-shrink-0 ${
                     item.type === "mention" 
-                      ? "bg-teal-500/10 border-teal-500/20 text-teal-400" 
+                      ? "bg-[var(--accent-wash)] border-[var(--accent)]/20 text-[var(--accent)]" 
                       : item.type === "task"
-                      ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400"
+                      ? "bg-[var(--accent-wash)] border-[var(--accent)]/20 text-[var(--accent)]"
                       : item.type === "system"
                       ? "bg-red-500/10 border-red-500/20 text-red-400"
-                      : "bg-amber-500/10 border-amber-500/20 text-amber-400"
+                      : "bg-[var(--accent-wash)] border-[var(--accent)]/20 text-[var(--accent)]"
                   }`}>
                     {item.type === "mention" && <MessageSquare size={16} />}
                     {item.type === "task" && <Calendar size={16} />}
@@ -215,7 +215,7 @@ export default function NotificationsPage() {
                         {item.title}
                       </h4>
                       {item.unread && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-teal-400"></span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
                       )}
                     </div>
                     <p className="text-xs text-zinc-400 leading-relaxed m-0">
@@ -225,7 +225,7 @@ export default function NotificationsPage() {
                     {/* Optional metadata pills */}
                     {item.meta && (
                       <div className="flex items-center gap-2 mt-1.5">
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-teal-400 bg-teal-950/40 border border-teal-900/30 px-2 py-0.5 rounded">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-[var(--accent)] bg-[var(--accent-wash)] border border-[var(--accent)]/20 px-2 py-0.5 rounded">
                           {item.meta.targetName}
                         </span>
                       </div>
@@ -244,7 +244,7 @@ export default function NotificationsPage() {
                       <button 
                         onClick={() => markAsRead(item.id)}
                         title="Mark as read"
-                        className="p-1.5 rounded-lg bg-zinc-950/40 border border-white/5 text-zinc-500 hover:text-teal-400 transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg bg-zinc-950/40 border border-white/5 text-zinc-500 hover:text-[var(--accent)] transition-colors cursor-pointer"
                       >
                         <Check size={13} />
                       </button>

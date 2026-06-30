@@ -1,10 +1,12 @@
 "use client";
 import { isTauri } from '@tauri-apps/api/core';
+import { useRouter } from "next/navigation";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import DesktopShell from "@/components/DesktopShell";
-import { useMouseLight } from "@/lib/hooks/useMouseLight";
+import { logDiagnostic } from "@/lib/diagnostic";
+import { useWindow } from "@/contexts/WindowContext";
 import Titlebar from "./Titlebar";
 import UpdatePrompt from "./UpdatePrompt";
 
@@ -12,81 +14,125 @@ const NO_SHELL_ROUTES = [
   "/login",
   "/signup",
   "/forgot-password",
+  "/auth/error",
+  "/auth/callback",
 ];
 
-/**
- * ShellWrapper — conditionally renders DesktopShell.
- * Auth/public pages (like /login) render their children directly
- * without the sidebar/shell chrome so the login page gets a
- * full-screen canvas to work with.
- */
 export default function ShellWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const hideShell = NO_SHELL_ROUTES.includes(pathname);
-
-  // Mount mouse light listener globally on shell-activated pages
-  useMouseLight();
+  const { isDesktop } = useWindow();
+  const router = useRouter();
 
   // Handle Tauri deep-links
   useEffect(() => {
     let unlisten: (() => void) | undefined;
     let cancelled = false;
-    let retries = 0;
 
     const checkTauriAndSetup = () => {
       if (cancelled) return;
       if (isTauri()) {
         setupDeepLink();
-      } else if (retries < 40) {
-        retries++;
+      } else if (!cancelled) {
         setTimeout(checkTauriAndSetup, 50);
       }
     };
     checkTauriAndSetup();
-    
+
     async function setupDeepLink() {
       try {
+        logDiagnostic("Tauri app: Initializing deep link listener...", "tauri");
         const { onOpenUrl } = await import('@tauri-apps/plugin-deep-link');
-        unlisten = await onOpenUrl((urls) => {
-          console.log('Deep link received:', urls);
-          // E.g. mediahive://chat/123 -> push /chat/123
+        const startupTime = Date.now();
+        
+        const u = await onOpenUrl(async (urls) => {
+          if (cancelled) return;
           for (const url of urls) {
             try {
-              const parsed = new URL(url);
-              if (parsed.protocol === "mediahive:") {
-                // If the host is empty, pathname contains the route.
-                // e.g. mediahive://chat/123 -> host="" pathname="//chat/123"
-                // or mediahive://host/chat/123
-                const route = parsed.pathname.replace(/^\/+/, '/') + parsed.search + parsed.hash;
-                // Just redirecting for now
-                window.location.href = route;
+              const parsedUrl = new URL(url);
+              if (!isValidDeepLink(parsedUrl)) continue;
+
+              logDiagnostic(`Tauri app: Deep link received URL: ${url}`, "tauri");
+              
+              if (parsedUrl.protocol === "mediahive:") {
+                // If it's within 2 seconds of startup and is an error URL, ignore it
+                const isStartup = Date.now() - startupTime < 2000;
+                const isErrorRoute = parsedUrl.host === "auth" && parsedUrl.pathname.includes("error");
+                const hasErrorQuery = parsedUrl.search.includes("error=");
+                
+                if (isStartup && (isErrorRoute || hasErrorQuery)) {
+                  logDiagnostic(`[DeepLink] Ignoring cached error deep-link received on startup: ${url}`, "tauri");
+                  continue;
+                }
+
+                // Intercept token-forwarding login deep-links
+                const hash = parsedUrl.hash;
+                if (parsedUrl.host === "login" && hash) {
+                  const hashParams = new URLSearchParams(hash.substring(1));
+                  const accessToken = hashParams.get("access_token");
+                  const refreshToken = hashParams.get("refresh_token");
+
+                  if (accessToken && refreshToken) {
+                    logDiagnostic("[DeepLink] Extracted session tokens from deep link. Setting session in Tauri...", "tauri");
+                    const { supabase } = await import("@/lib/supabaseClient");
+                    const { error } = await supabase.auth.setSession({
+                      access_token: accessToken,
+                      refresh_token: refreshToken,
+                    });
+
+                    if (error) {
+                      logDiagnostic(`[DeepLink] Failed to set session in Supabase: ${error.message}`, "tauri");
+                      router.push(`/auth/error?error=${encodeURIComponent(error.message)}`);
+                    } else {
+                      logDiagnostic("[DeepLink] Session set successfully inside Tauri webview! Loading dashboard...", "tauri");
+                      router.push("/");
+                    }
+                    continue;
+                  } else {
+                    logDiagnostic("[DeepLink] Warning: login host matched but tokens are missing in hash.", "tauri");
+                  }
+                }
+
+                const route = parsedUrl.pathname + parsedUrl.search + hash;
+
+                logDiagnostic(`[DeepLink] Routing Tauri app to: ${route}`, "tauri");
+                router.push(route);
+              } else {
+                logDiagnostic(`Tauri app: Ignoring non-mediahive link protocol: ${parsedUrl.protocol}`, "tauri");
               }
-            } catch (err) {
+            } catch (err: any) {
+              logDiagnostic(`Tauri app: Failed to parse deep link url: ${err.message || err}`, "tauri");
               console.error("Failed to parse deep link url", url, err);
             }
           }
         });
-      } catch (err) {
+
+        if (cancelled) {
+          u();
+        } else {
+          unlisten = u;
+        }
+      } catch (err: any) {
+        logDiagnostic(`Tauri app: Failed to set up deep linking: ${err.message || err}`, "tauri");
         console.warn("Failed to set up deep linking:", err);
       }
     }
+
     return () => {
       cancelled = true;
       if (unlisten) unlisten();
     };
-  }, []);
+  }, [router]);
 
   // Register global shortcut
   useEffect(() => {
     let mounted = true;
-    let retries = 0;
 
     const checkTauriAndSetup = () => {
       if (!mounted) return;
       if (isTauri()) {
         setupShortcut();
-      } else if (retries < 40) {
-        retries++;
+      } else {
         setTimeout(checkTauriAndSetup, 50);
       }
     };
@@ -126,21 +172,32 @@ export default function ShellWrapper({ children }: { children: React.ReactNode }
     };
   }, []);
 
+  function isValidDeepLink(url: URL) {
+    const pathParts = url.pathname.split('/').filter(part => part !== '');
+    if (pathParts.length > 1 && pathParts[0] === '') pathParts.shift();
+    
+    if (url.protocol.startsWith('javascript:')) return false;
+    if (pathParts.includes('//') || pathParts.includes('/..')) return false;
+
+    url.pathname = '/' + pathParts.join('/');
+    return true;
+  }
+
   if (hideShell) {
     return (
-      <>
+      <div className={isDesktop ? "desktop-app w-full h-full relative" : "w-full h-full relative"}>
         <Titlebar />
         {children}
         <UpdatePrompt />
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className={isDesktop ? "desktop-app w-full h-full relative" : "w-full h-full relative"}>
       <Titlebar />
       <DesktopShell>{children}</DesktopShell>
       <UpdatePrompt />
-    </>
+    </div>
   );
 }

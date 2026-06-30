@@ -111,9 +111,9 @@ export function FileUploadModal({ isOpen, onClose }: FileUploadModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="glass-panel border-white/10 max-w-md w-full text-zinc-100 p-6 shadow-2xl">
+      <DialogContent className="studio-panel border-white/10 max-w-md w-full text-[var(--text-primary)] p-6 shadow-2xl !flex !flex-col !gap-4 max-h-[90vh] overflow-y-auto !h-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold tracking-wide text-white">
+          <DialogTitle className="text-xl font-bold tracking-wide text-[var(--text-primary)]">
             Upload Document
           </DialogTitle>
           <DialogDescription className="sr-only">
@@ -130,10 +130,10 @@ export function FileUploadModal({ isOpen, onClose }: FileUploadModalProps) {
 
         {success ? (
           <div className="flex flex-col items-center justify-center py-8 gap-3 text-center">
-            <div className="w-12 h-12 rounded-full bg-teal-500/20 border border-teal-500/30 flex items-center justify-center text-teal-400">
+            <div className="w-12 h-12 rounded-full bg-[var(--accent)]/15 border border-[var(--accent)]/30 flex items-center justify-center text-[var(--accent)]">
               <Check size={24} strokeWidth={2.5} />
             </div>
-            <span className="text-sm font-semibold text-teal-300">File uploaded successfully!</span>
+            <span className="text-sm font-semibold text-[var(--accent)]">File uploaded successfully!</span>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
@@ -141,7 +141,7 @@ export function FileUploadModal({ isOpen, onClose }: FileUploadModalProps) {
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className="flex flex-col items-center justify-center border border-dashed border-white/10 hover:border-teal-500/30 hover:bg-white/[0.02] cursor-pointer rounded-2xl p-8 gap-3 transition-all relative overflow-hidden"
+              className="flex flex-col items-center justify-center border border-dashed border-[var(--border)] hover:border-[var(--accent)]/30 hover:bg-[var(--bg-tertiary)]/20 cursor-pointer rounded-2xl p-8 gap-3 transition-all relative overflow-hidden"
             >
               <input
                 ref={fileInputRef}
@@ -153,28 +153,28 @@ export function FileUploadModal({ isOpen, onClose }: FileUploadModalProps) {
 
               {selectedFile ? (
                 <>
-                  <div className="w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
+                  <div className="w-12 h-12 rounded-xl bg-[var(--accent-wash)] border border-[var(--accent)]/20 flex items-center justify-center text-[var(--accent)]">
                     <FileIcon size={22} />
                   </div>
                   <div className="flex flex-col items-center text-center max-w-full">
-                    <span className="text-xs font-semibold text-zinc-200 truncate max-w-[200px]">
+                    <span className="text-xs font-semibold text-[var(--text-primary)] truncate max-w-[200px]">
                       {selectedFile.name}
                     </span>
-                    <span className="text-[10px] text-zinc-500 mt-0.5">
+                    <span className="text-[10px] text-[var(--text-secondary)] mt-0.5">
                       {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                     </span>
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400">
+                  <div className="w-12 h-12 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border)] flex items-center justify-center text-[var(--text-secondary)]">
                     <UploadCloud size={22} />
                   </div>
                   <div className="flex flex-col items-center text-center">
-                    <span className="text-xs font-semibold text-zinc-300">
+                    <span className="text-xs font-semibold text-[var(--text-primary)]">
                       Drag & drop file, or browse
                     </span>
-                    <span className="text-[10px] text-zinc-500 mt-1">
+                    <span className="text-[10px] text-[var(--text-secondary)] mt-1">
                       Max file size: 100MB
                     </span>
                   </div>
@@ -184,7 +184,7 @@ export function FileUploadModal({ isOpen, onClose }: FileUploadModalProps) {
 
             {selectedFile && (
               <div className="flex flex-col gap-1.5 animate-in fade-in duration-200">
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                   File Display Name *
                 </label>
                 <input
@@ -194,20 +194,20 @@ export function FileUploadModal({ isOpen, onClose }: FileUploadModalProps) {
                   onChange={(e) => setCustomName(e.target.value)}
                   placeholder="Enter custom file display name"
                   disabled={saving}
-                  className="glass-form-input placeholder:text-zinc-500 w-full"
+                  className="glass-form-input placeholder:text-[var(--text-tertiary)] w-full"
                 />
               </div>
             )}
 
             {saving && (
               <div className="flex flex-col gap-2 mt-2">
-                <div className="flex items-center justify-between text-xs text-zinc-400">
+                <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
                   <span>Uploading file metadata...</span>
                   <span>{progress}%</span>
                 </div>
-                <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                <div className="w-full h-1 bg-[var(--border)] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-teal-500 to-indigo-500 transition-all duration-300"
+                    className="h-full bg-[var(--accent)] transition-all duration-300"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -217,7 +217,7 @@ export function FileUploadModal({ isOpen, onClose }: FileUploadModalProps) {
             <button
               type="submit"
               disabled={saving || !selectedFile || !customName.trim()}
-              className="mt-2 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold py-3 rounded-xl shadow-lg shadow-teal-500/20 active:scale-[0.98] transition-all cursor-pointer"
+              className="mt-2 w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--bg-primary)] text-sm font-semibold py-2.5 rounded-full active:scale-[0.98] transition-all cursor-pointer"
             >
               {saving ? (
                 <>
@@ -234,3 +234,4 @@ export function FileUploadModal({ isOpen, onClose }: FileUploadModalProps) {
     </Dialog>
   );
 }
+

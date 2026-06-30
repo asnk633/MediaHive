@@ -7,13 +7,16 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMo
 import {
   CheckSquare, Activity, Film, FolderOpen, MessageSquare,
   Calendar, ShieldCheck, Bell, Mail, Lock, Eye, EyeOff,
-  Loader2, AlertCircle, CheckCircle2, ArrowRight, Database, Cpu, Settings, Cloud, Users, User
+  Loader2, AlertCircle, CheckCircle2, ArrowRight, ArrowLeft, Database, Cpu, Settings, Cloud, Users, User, Terminal
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { supabase } from "@/lib/supabaseClient";
+import { logDiagnostic } from "@/lib/diagnostic";
 import { UnifiedStars } from "@/components/ui/unified-stars";
 import { EtheralShadow } from "@/components/ui/etheral-shadow";
 import { getDriveImageUrl } from "@/lib/driveUtils";
+import TelemetryModal from "@/components/TelemetryModal";
+
 
 
 // Inline Custom SVGs for Google and GitHub
@@ -66,8 +69,8 @@ const FLOATING_ICONS: FloatingIconConfig[] = [
     label: "Tasks",
     stat: "3 due today",
     icon: CheckSquare,
-    color: "#14b8a6", // Teal
-    rgb: "20,184,166",
+    color: "#d99b16", // Honey Yellow
+    rgb: "217,155,22",
     angle: 3.7, // Top-Left-Center (pushed upwards/rightwards)
     baseRadius: 680,
     isLeft: true
@@ -291,8 +294,8 @@ const FLOATING_ICONS: FloatingIconConfig[] = [
     label: "Background Node 5",
     stat: "",
     icon: CheckSquare,
-    color: "#14b8a6",
-    rgb: "20,184,166",
+    color: "#d99b16",
+    rgb: "217,155,22",
     angle: 5.3,
     baseRadius: 740,
     isLeft: false,
@@ -639,9 +642,6 @@ const Icon = ({
             {/* Text container */}
             <div className="bg-[#0b0c10]/95 border border-zinc-800 text-white rounded-lg px-2.5 py-1.5 shadow-2xl flex flex-col items-center">
               <span className="text-[10px] font-extrabold tracking-wider uppercase" style={{ color: iconData.color }}>{iconData.label}</span>
-              {iconData.stat && (
-                <span className="text-[9px] text-zinc-400 font-medium tracking-wide mt-0.5">{iconData.stat}</span>
-              )}
             </div>
           </motion.div>
         )}
@@ -676,6 +676,7 @@ export default function LoginPage() {
   const { login, loginWithGoogle } = useAuth();
 
   const [mounted, setMounted] = useState(false);
+  const [isTelemetryOpen, setIsTelemetryOpen] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [userCoins, setUserCoins] = useState<FloatingIconConfig[]>([]);
 
@@ -721,7 +722,7 @@ export default function LoginPage() {
         if (cancelled) return;
         if (data) {
           const profileColors = [
-            { color: "#14b8a6", rgb: "20,184,166" }, // Teal
+            { color: "#d99b16", rgb: "217,155,22" }, // Honey Yellow
             { color: "#06b6d4", rgb: "6,182,212" }, // Cyan
             { color: "#6366f1", rgb: "99,102,241" }, // Indigo
             { color: "#a855f7", rgb: "168,85,247" }, // Purple
@@ -796,6 +797,27 @@ export default function LoginPage() {
   // Mount Hydration Guard
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const isSourceTauri = params.get("source") === "tauri";
+      const isTriggerGoogle = params.get("trigger") === "google";
+      
+      logDiagnostic(`Browser: Loaded login page. Query params: ${params.toString()}, isSourceTauri=${isSourceTauri}, isTriggerGoogle=${isTriggerGoogle}`, "browser");
+      
+      if (isTriggerGoogle) {
+        logDiagnostic("Browser: trigger=google detected on mount. Cleaning URL and calling handleGoogleLogin().", "browser");
+        // Clean only the trigger parameter to preserve source=tauri
+        params.delete("trigger");
+        const search = params.toString();
+        const newUrl = window.location.pathname + (search ? `?${search}` : "") + window.location.hash;
+        logDiagnostic(`Browser: Cleaned URL history state to: ${newUrl}`, "browser");
+        window.history.replaceState({}, document.title, newUrl);
+        handleGoogleLogin();
+      }
+    }
   }, []);
 
   // Window size tracking for adaptive scaling
@@ -1043,7 +1065,7 @@ export default function LoginPage() {
         <EtheralShadow
           className="w-full h-full"
           sizing="fill"
-          color="rgba(20, 184, 166, 0.22)" // Teal accent shadow overlay
+          color="rgba(217, 155, 22, 0.22)" // Honey Yellow accent shadow overlay
           animation={{ scale: 70, speed: 85 }}
           noise={{ opacity: 0.12, scale: 1.2 }}
         >
@@ -1052,6 +1074,11 @@ export default function LoginPage() {
             onMouseLeave={handleMouseLeave}
             className="w-full h-full flex relative overflow-hidden"
           >
+          {/* Unified Space Background (single canvas, optimized and baked opacity) */}
+          <div className="absolute inset-0 pointer-events-none z-0">
+            <UnifiedStars />
+          </div>
+
           {/* Parallax space lines / grid background */}
           <div 
             className="absolute inset-0 opacity-[0.02] pointer-events-none z-1"
@@ -1208,7 +1235,7 @@ export default function LoginPage() {
                 }}
                 className="absolute top-14 left-6 z-40 flex items-center gap-1.5 px-3 py-2 rounded-lg border border-zinc-800 bg-zinc-950/60 text-[10px] font-bold text-zinc-400 uppercase tracking-widest hover:text-white hover:border-zinc-700 transition-colors cursor-pointer"
               >
-                <span>←</span>
+                <ArrowLeft size={12} className="shrink-0" />
                 <span>Back</span>
               </button>
             )}
@@ -1266,8 +1293,8 @@ export default function LoginPage() {
                         ease: "linear",
                       }}
                       style={{
-                        width: Math.max(50, 110 * scaleFactor),
-                        height: Math.max(50, 110 * scaleFactor),
+                        width: Math.max(70, 160 * scaleFactor),
+                        height: Math.max(70, 160 * scaleFactor),
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -1317,7 +1344,7 @@ export default function LoginPage() {
                         setAuthMode("gate");
                         setError(null);
                       }}
-                      className="relative group overflow-hidden rounded-full px-8 py-3.5 font-semibold tracking-wide text-white shadow-[0_0_40px_-10px_rgba(20,184,166,0.3)] transition-all duration-500 hover:shadow-[0_0_60px_-15px_rgba(20,184,166,0.5)] border border-teal-500/20 hover:border-teal-400/40 bg-teal-500/10 backdrop-blur-md flex items-center justify-center"
+                      className="relative group overflow-hidden rounded-full px-8 py-3.5 font-semibold tracking-wide text-white shadow-[0_0_40px_-10px_rgba(217,155,22,0.3)] transition-all duration-500 hover:shadow-[0_0_60px_-15px_rgba(217,155,22,0.5)] border border-amber-500/20 hover:border-amber-400/40 bg-amber-500/10 backdrop-blur-md flex items-center justify-center"
                       style={{
                         fontSize: `${Math.max(12, 16 * scaleFactor)}px`,
                         minWidth: `${Math.max(160, 220 * scaleFactor)}px`
@@ -1325,12 +1352,12 @@ export default function LoginPage() {
                     >
                       <span className="relative z-10 flex items-center gap-2">
                         Enter Workspace
-                        <svg className="w-5 h-5 text-teal-300 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-5 h-5 text-amber-300 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
                       </span>
                       {/* Button inner glow and hover effects */}
-                      <div className="absolute inset-0 z-0 bg-gradient-to-r from-teal-500/0 via-teal-400/10 to-teal-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute inset-0 z-0 bg-gradient-to-r from-amber-500/0 via-amber-400/10 to-amber-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     </motion.button>
                   </div>
                 </motion.div>
@@ -1359,13 +1386,8 @@ export default function LoginPage() {
                 className="h-full flex items-center justify-center p-6 lg:p-12 absolute right-0 top-0 bg-[#040406] border-l border-zinc-900/60 overflow-y-auto"
               >
                 {/* Subtle mobile ambient glows */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(20,184,166,0.04),transparent_60%)] pointer-events-none z-0" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(217,155,22,0.04),transparent_60%)] pointer-events-none z-0" />
                 
-                {/* Unified Space Background (single canvas, optimized and baked opacity) */}
-                <div className="absolute inset-0 pointer-events-none z-0">
-                  <UnifiedStars />
-                </div>
-
                 {/* Paper Stack Wrapper — cloth physics via keyframes, no ghost DOM layers */}
                 <div className="relative w-full max-w-sm z-10" style={{ perspective: "1200px", perspectiveOrigin: "50% 50%" }}>
 
@@ -1374,7 +1396,7 @@ export default function LoginPage() {
                   >
                     {/* Concentric Circles Stacked in the Top-Right Corner */}
                     
-                    {/* Box 3: Reset Password (Sky Gradient) */}
+                    {/* Box 3: Reset Password (Orange to Dark Red/Brown Gradient) */}
                     <motion.div
                       variants={box3Variants}
                       animate={authMode === "forgot" ? "expanded" : "collapsed"}
@@ -1383,8 +1405,8 @@ export default function LoginPage() {
                       style={{
                         position: "absolute",
                         zIndex: authMode === "forgot" ? 30 : 18,
-                        background: "linear-gradient(-45deg, #0ea5e9 0%, #1e3a8a 100%)",
-                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 20px rgba(14,165,233,0.1)",
+                        background: "linear-gradient(-45deg, #ea580c 0%, #431407 100%)",
+                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 20px rgba(234,88,12,0.1)",
                         cursor: authMode === "gate" ? "pointer" : "default",
                       }}
                       className="border border-white/10"
@@ -1407,7 +1429,7 @@ export default function LoginPage() {
                             }}
                             className="absolute top-6 left-6 flex items-center gap-1 text-[10px] font-bold text-white/75 hover:text-white uppercase tracking-wider bg-white/10 hover:bg-white/15 px-2.5 py-1.5 rounded-lg border border-white/10 transition-colors"
                           >
-                            <span>←</span> <span>Back</span>
+                            <ArrowLeft size={12} className="shrink-0" /> <span>Back</span>
                           </button>
 
                           <div className="flex flex-col gap-1.5 pt-12">
@@ -1445,7 +1467,7 @@ export default function LoginPage() {
                                   required
                                   value={email}
                                   onChange={(e) => setEmail(e.target.value)}
-                                  placeholder="you@mediahive.io"
+                                  placeholder="you@thaibagarden.com"
                                   className="w-full rounded-xl px-4 py-3 pl-11 text-xs text-white placeholder:text-white/40 bg-black/20 border border-white/10 focus:outline-none focus:border-white focus:ring-4 focus:ring-white/5 transition-all shadow-sm font-medium"
                                 />
                               </div>
@@ -1484,7 +1506,7 @@ export default function LoginPage() {
                       )}
                     </motion.div>
 
-                    {/* Box 2: Sign Up (Indigo Gradient) */}
+                    {/* Box 2: Sign Up (Amber to Dark Brown Gradient) */}
                     <motion.div
                       variants={box2Variants}
                       animate={authMode === "signup" ? "expanded" : "collapsed"}
@@ -1493,8 +1515,8 @@ export default function LoginPage() {
                       style={{
                         position: "absolute",
                         zIndex: authMode === "signup" ? 30 : 19,
-                        background: "linear-gradient(-45deg, #4f46e5 0%, #312e81 100%)",
-                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 20px rgba(79,70,229,0.1)",
+                        background: "linear-gradient(-45deg, #f59e0b 0%, #78350f 100%)",
+                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 20px rgba(245,158,11,0.1)",
                         cursor: authMode === "gate" ? "pointer" : "default",
                       }}
                       className="border border-white/10"
@@ -1516,7 +1538,7 @@ export default function LoginPage() {
                             }}
                             className="absolute top-6 left-6 flex items-center gap-1 text-[10px] font-bold text-white/75 hover:text-white uppercase tracking-wider bg-white/10 hover:bg-white/15 px-2.5 py-1.5 rounded-lg border border-white/10 transition-colors"
                           >
-                            <span>←</span> <span>Back</span>
+                            <ArrowLeft size={12} className="shrink-0" /> <span>Back</span>
                           </button>
 
                           <div className="flex flex-col gap-1.5 pt-10">
@@ -1524,7 +1546,7 @@ export default function LoginPage() {
                               Create Account
                             </h2>
                             <p className="text-white/70 text-[10px] font-bold uppercase tracking-wider m-0">
-                              Setup your developer profile node
+                              Setup your user profile
                             </p>
                           </div>
 
@@ -1547,7 +1569,7 @@ export default function LoginPage() {
                                   required
                                   value={fullName}
                                   onChange={(e) => setFullName(e.target.value)}
-                                  placeholder="Alex Mercer"
+                                  placeholder="Shukoor Rahman"
                                   className="w-full rounded-xl px-4 py-2.5 pl-11 text-xs text-white placeholder:text-white/40 bg-black/20 border border-white/10 focus:outline-none focus:border-white focus:ring-4 focus:ring-white/5 transition-all shadow-sm font-medium"
                                 />
                               </div>
@@ -1565,7 +1587,7 @@ export default function LoginPage() {
                                   autoComplete="email"
                                   value={email}
                                   onChange={(e) => setEmail(e.target.value)}
-                                  placeholder="you@mediahive.io"
+                                  placeholder="you@thaibagarden.com"
                                   className="w-full rounded-xl px-4 py-2.5 pl-11 text-xs text-white placeholder:text-white/40 bg-black/20 border border-white/10 focus:outline-none focus:border-white focus:ring-4 focus:ring-white/5 transition-all shadow-sm font-medium"
                                 />
                               </div>
@@ -1582,7 +1604,7 @@ export default function LoginPage() {
                                   required
                                   value={password}
                                   onChange={(e) => setPassword(e.target.value)}
-                                  placeholder="••••••••••••"
+                                  placeholder=""
                                   className="w-full rounded-xl px-4 py-2.5 pl-11 pr-10 text-xs text-white placeholder:text-white/40 bg-black/20 border border-white/10 focus:outline-none focus:border-white focus:ring-4 focus:ring-white/5 transition-all shadow-sm font-medium"
                                 />
                                 <button
@@ -1606,7 +1628,7 @@ export default function LoginPage() {
                                   required
                                   value={confirmPassword}
                                   onChange={(e) => setConfirmPassword(e.target.value)}
-                                  placeholder="••••••••••••"
+                                  placeholder=""
                                   className="w-full rounded-xl px-4 py-2.5 pl-11 pr-10 text-xs text-white placeholder:text-white/40 bg-black/20 border border-white/10 focus:outline-none focus:border-white focus:ring-4 focus:ring-white/5 transition-all shadow-sm font-medium"
                                 />
                               </div>
@@ -1624,7 +1646,7 @@ export default function LoginPage() {
                                 </>
                               ) : (
                                 <>
-                                  <span>Register Node</span>
+                                  <span>Register User</span>
                                   <ArrowRight size={13} />
                                 </>
                               )}
@@ -1645,7 +1667,7 @@ export default function LoginPage() {
                       )}
                     </motion.div>
 
-                    {/* Box 1: Sign In (Teal Gradient) */}
+                    {/* Box 1: Sign In (Honey Yellow to Amber Gradient) */}
                     <motion.div
                       variants={box1Variants}
                       animate={authMode === "login" ? "expanded" : "collapsed"}
@@ -1654,8 +1676,8 @@ export default function LoginPage() {
                       style={{
                         position: "absolute",
                         zIndex: authMode === "login" ? 30 : 20,
-                        background: "linear-gradient(-45deg, #0d9488 0%, #115e59 100%)",
-                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 20px rgba(20,184,166,0.1)",
+                        background: "linear-gradient(-45deg, #d99b16 0%, #b45309 100%)",
+                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 20px rgba(217,155,22,0.1)",
                         cursor: authMode === "gate" ? "pointer" : "default",
                       }}
                       className="border border-white/10"
@@ -1677,7 +1699,7 @@ export default function LoginPage() {
                             }}
                             className="absolute top-6 left-6 flex items-center gap-1 text-[10px] font-bold text-white/75 hover:text-white uppercase tracking-wider bg-white/10 hover:bg-white/15 px-2.5 py-1.5 rounded-lg border border-white/10 transition-colors"
                           >
-                            <span>←</span> <span>Back</span>
+                            <ArrowLeft size={12} className="shrink-0" /> <span>Back</span>
                           </button>
 
                           <div className="flex flex-col gap-1.5 pt-10">
@@ -1709,7 +1731,7 @@ export default function LoginPage() {
                                   autoComplete="email"
                                   value={email}
                                   onChange={(e) => setEmail(e.target.value)}
-                                  placeholder="you@mediahive.io"
+                                  placeholder="you@thaibagarden.com"
                                   className="w-full rounded-xl px-4 py-2.5 pl-11 text-xs text-white placeholder:text-white/40 bg-black/20 border border-white/10 focus:outline-none focus:border-white focus:ring-4 focus:ring-white/5 transition-all shadow-sm font-medium"
                                 />
                               </div>
@@ -1736,7 +1758,7 @@ export default function LoginPage() {
                                   autoComplete="current-password"
                                   value={password}
                                   onChange={(e) => setPassword(e.target.value)}
-                                  placeholder="••••••••••••"
+                                  placeholder=""
                                   className="w-full rounded-xl px-4 py-2.5 pl-11 pr-10 text-xs text-white placeholder:text-white/40 bg-black/20 border border-white/10 focus:outline-none focus:border-white focus:ring-4 focus:ring-white/5 transition-all shadow-sm font-medium"
                                 />
                                 <button
@@ -1839,7 +1861,7 @@ export default function LoginPage() {
                           <button
                             type="button"
                             onClick={() => { setAuthMode("login"); setError(null); }}
-                            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#14b8a6] to-[#0d9488] hover:brightness-110 text-white font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-[#14b8a6]/10 hover:shadow-[#14b8a6]/20 cursor-pointer active:scale-[0.98]"
+                            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#d99b16] to-[#b45309] hover:brightness-110 text-white font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-[#d99b16]/10 hover:shadow-[#d99b16]/20 cursor-pointer active:scale-[0.98]"
                           >
                             <span>Yes, Sign In</span>
                             <ArrowRight size={13} />
@@ -1878,6 +1900,17 @@ export default function LoginPage() {
           </div>
         </EtheralShadow>
       </div>
+
+      {/* Telemetry Log Trigger (Floating Pill Button) */}
+      <button
+        onClick={() => setIsTelemetryOpen(true)}
+        className="fixed bottom-4 right-4 z-[9999] p-2.5 rounded-full border border-white/10 bg-black/40 hover:bg-black/60 text-zinc-400 hover:text-white hover:border-amber-500/30 transition-all duration-200 shadow-lg cursor-pointer"
+        title="View Telemetry Logs"
+      >
+        <Terminal className="w-4 h-4 text-amber-500/80 hover:text-amber-400" />
+      </button>
+
+      <TelemetryModal isOpen={isTelemetryOpen} onClose={() => setIsTelemetryOpen(false)} />
     </div>
   );
 }

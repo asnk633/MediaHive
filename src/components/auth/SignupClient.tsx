@@ -104,23 +104,17 @@ export default function SignupClient() {
         }
     };
 
-    const bgGradient = theme === 'luminous'
-        ? "bg-gradient-to-br from-[#f8fafc] via-[#f1f5f9] to-[#e2e8f0] text-slate-800"
-        : theme === 'golden'
-        ? "bg-gradient-to-br from-[#02040a] via-[#0a0a05] to-[#151100]"
-        : "bg-gradient-to-br from-[#050816] via-[#0B1026] to-[#1A1443]";
+    const bgGradient = theme === 'light'
+        ? "bg-slate-50 text-slate-900"
+        : "bg-slate-950 text-slate-50";
 
-    const hazeGlow1 = theme === 'luminous'
-        ? "bg-sky-400/15"
-        : theme === 'golden'
-        ? "bg-amber-500/10"
-        : "bg-indigo-500/20";
+    const hazeGlow1 = theme === 'light'
+        ? "bg-blue-500/5"
+        : "bg-blue-500/10";
 
-    const hazeGlow2 = theme === 'luminous'
-        ? "bg-indigo-400/15"
-        : theme === 'golden'
-        ? "bg-amber-600/5"
-        : "bg-purple-500/20";
+    const hazeGlow2 = theme === 'light'
+        ? "bg-indigo-500/5"
+        : "bg-indigo-500/10";
 
     if (success) {
         return (
@@ -170,7 +164,7 @@ export default function SignupClient() {
 
                 <div className="text-center mb-8 space-y-0.5 px-4">
                     <img 
-                        src={theme === 'luminous' ? '/brand-name-dark.png' : '/brand-name-light.png'}
+                        src={theme === 'light' ? '/brand-name-dark.png' : '/brand-name-light.png'}
                         alt="MediaHive"
                         className="w-72 md:w-96 h-auto object-contain drop-shadow-md mx-auto -mt-20 md:-mt-32 -mb-[80px] md:-mb-[120px]"
                     />

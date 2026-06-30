@@ -4,7 +4,6 @@ import React, { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { AlertCircle, ArrowRight, Loader2 } from "lucide-react";
-import { EtheralShadow } from "@/components/ui/etheral-shadow";
 import { useIsTauri } from "@/lib/hooks/useIsTauri";
 import { useWindow } from "@/contexts/WindowContext";
 
@@ -61,92 +60,72 @@ function AuthErrorContent() {
           <rect width="100%" height="100%" filter="url(#noiseFilter)" />
         </svg>
 
-        {/* Outer Interaction Wrapper with Ethereal Shadow */}
-        <EtheralShadow
-          className="w-full h-full"
-          sizing="fill"
-          color="rgba(20, 184, 166, 0.22)" // Teal accent shadow overlay
-          animation={{ scale: 70, speed: 85 }}
-          noise={{ opacity: 0.12, scale: 1.2 }}
-        >
-          <div className="w-full h-full flex flex-col items-center justify-center relative z-10 p-6">
-            
-            {/* MediaHive Branding Header */}
-            <div className="flex flex-col items-center text-center mb-8 pointer-events-none">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{
-                  duration: 150,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-                className="w-24 h-24 mb-4 flex items-center justify-center filter drop-shadow-[0_0_10px_rgba(255,255,255,0.15)]"
-              >
-                <img
-                  src="/media-app-logo-luminous.png"
-                  alt="MediaHive Logo"
-                  className="w-full h-full object-contain brightness-0 invert opacity-80"
-                />
-              </motion.div>
-              <h1 className="font-extrabold tracking-widest text-white uppercase text-2xl m-0 leading-tight">
-                MediaHive
-              </h1>
-              <p className="text-zinc-500 text-[9px] font-bold uppercase tracking-[0.25em] m-0 mt-2">
-                THE CENTRAL HUB FOR THAIBA GARDEN MEDIA & IT
-              </p>
+        <div className="w-full h-full flex flex-col items-center justify-center relative z-10 p-6 bg-[var(--bg-primary)]">
+          
+          {/* MediaHive Branding Header */}
+          <div className="flex flex-col items-center text-center mb-8 pointer-events-none">
+            <div className="w-16 h-16 mb-4 flex items-center justify-center">
+              <img
+                src="/media-app-logo-luminous.png"
+                alt="MediaHive Logo"
+                className="w-full h-full object-contain brightness-0 invert opacity-80"
+              />
             </div>
-
-            {/* Error Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 15, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 100, damping: 15 }}
-              className="w-full max-w-sm rounded-2xl bg-zinc-950/75 border border-zinc-800/80 shadow-2xl backdrop-blur-xl p-8 relative overflow-hidden"
-            >
-              {/* Subtle background glow */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 blur-[80px] rounded-full pointer-events-none" />
-
-              <div className="flex flex-col items-center text-center gap-6">
-                
-                {/* Warning Icon Container */}
-                <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center shadow-lg shadow-red-500/5">
-                  <AlertCircle size={28} className="text-red-400" />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-lg font-black tracking-tight text-white uppercase m-0">
-                    {errorTitle}
-                  </h2>
-                  <p className="text-zinc-400 text-xs leading-relaxed font-medium m-0 px-2">
-                    {errorDescription}
-                  </p>
-                </div>
-
-                {/* Actions */}
-                <div className="w-full flex flex-col gap-3 mt-2">
-                  <button
-                    type="button"
-                    onClick={() => router.push("/login")}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 to-violet-600 hover:brightness-110 text-white font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-500/10 hover:shadow-indigo-500/20 cursor-pointer active:scale-[0.98]"
-                  >
-                    <span>Request New Link</span>
-                    <ArrowRight size={13} />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => router.push("/login")}
-                    className="w-full text-[11px] text-zinc-400 hover:text-white font-bold transition-all cursor-pointer text-center py-2"
-                  >
-                    Back to Login
-                  </button>
-                </div>
-
-              </div>
-            </motion.div>
-
+            <h1 className="font-extrabold tracking-widest text-[var(--text-primary)] uppercase text-xl m-0 leading-tight">
+              MediaHive
+            </h1>
+            <p className="text-[var(--text-tertiary)] text-[9px] font-bold uppercase tracking-[0.25em] m-0 mt-2">
+              THE CENTRAL HUB FOR THAIBA GARDEN MEDIA & IT
+            </p>
           </div>
-        </EtheralShadow>
+
+          {/* Error Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 15, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 100, damping: 15 }}
+            className="w-full max-w-sm rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)] p-8 relative overflow-hidden shadow-sm"
+          >
+            <div className="flex flex-col items-center text-center gap-6">
+              
+              {/* Warning Icon Container */}
+              <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center shadow-lg shadow-red-500/5">
+                <AlertCircle size={28} className="text-red-400" />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <h2 className="text-lg font-bold text-[var(--text-primary)] uppercase m-0">
+                  {errorTitle}
+                </h2>
+                <p className="text-[var(--text-secondary)] text-xs leading-relaxed font-medium m-0 px-2">
+                  {errorDescription}
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="w-full flex flex-col gap-3 mt-2">
+                <button
+                  type="button"
+                  onClick={() => router.push("/login")}
+                  className="w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm py-2 rounded-md transition-colors cursor-pointer"
+                >
+                  <span>Request New Link</span>
+                  <ArrowRight size={14} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => router.push("/login")}
+                  className="w-full text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold transition-all cursor-pointer text-center py-2"
+                >
+                  Back to Login
+                </button>
+              </div>
+
+            </div>
+          </motion.div>
+
+        </div>
       </div>
     </div>
   );
@@ -157,7 +136,7 @@ export default function AuthErrorPage() {
     <Suspense
       fallback={
         <div className="w-full h-full bg-[#030305] flex items-center justify-center">
-          <Loader2 className="animate-spin text-teal-500" size={32} />
+          <Loader2 className="animate-spin text-[var(--accent)]" size={32} />
         </div>
       }
     >

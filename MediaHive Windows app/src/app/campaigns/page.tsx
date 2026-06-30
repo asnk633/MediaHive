@@ -114,7 +114,7 @@ export default function CampaignsPage() {
       {/* Header */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-sm text-teal-400 font-medium tracking-wider uppercase mb-1">
+          <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium tracking-wider uppercase mb-1">
             <Sparkles size={14} />
             Campaign Tracker
           </div>
@@ -126,7 +126,7 @@ export default function CampaignsPage() {
 
         <button 
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-teal-500/10 hover:shadow-teal-500/20 active:scale-95 transition-all cursor-pointer"
+          className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 text-sm font-semibold px-4 py-2 rounded-full active:scale-95 transition-all cursor-pointer"
         >
           <Plus size={16} />
           <span>New Campaign</span>
@@ -141,7 +141,7 @@ export default function CampaignsPage() {
           <motion.div
             whileHover={{ scale: 1.005 }}
             key={camp.id}
-            className="glass-card rounded-2xl p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:border-white/10 transition-all cursor-pointer group"
+            className="studio-card rounded-2xl p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:border-white/10 transition-all cursor-pointer group"
           >
             {/* Title & Status */}
             <div className="flex-1 min-w-0">
@@ -173,7 +173,7 @@ export default function CampaignsPage() {
               </div>
               <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
                 <div 
-                  className={`h-full rounded-full bg-gradient-to-r from-teal-500 to-indigo-500`}
+                  className="h-full rounded-full bg-[var(--accent)]"
                   style={{ width: `${camp.progress || 0}%` }}
                 ></div>
               </div>
@@ -186,7 +186,7 @@ export default function CampaignsPage() {
                 <Calendar size={13} className="text-zinc-600" />
                 <span>Launch: {camp.end_date ? new Date(camp.end_date).toLocaleDateString() : "TBD"}</span>
               </div>
-              <ArrowUpRight size={16} className="text-zinc-500 group-hover:text-teal-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              <ArrowUpRight size={16} className="text-zinc-500 group-hover:text-[var(--accent)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </div>
 
           </motion.div>
@@ -206,9 +206,9 @@ export default function CampaignsPage() {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-md glass-panel rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+              className="relative w-full max-w-md studio-panel rounded-2xl shadow-2xl overflow-hidden flex flex-col"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)]/5 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between p-5 border-b border-white/5 relative z-10">
                 <h2 className="text-lg font-bold text-white m-0">New Campaign</h2>
                 <button onClick={() => setShowModal(false)} className="text-zinc-500 hover:text-white transition-colors cursor-pointer p-1">
@@ -223,7 +223,7 @@ export default function CampaignsPage() {
                     type="text" required
                     value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
                     placeholder="e.g. Summer Release 2026"
-                    className="bg-zinc-950/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500/50 transition-colors"
+                    className="bg-zinc-950/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--accent)] transition-colors"
                   />
                 </div>
 
@@ -232,7 +232,7 @@ export default function CampaignsPage() {
                   <textarea 
                     value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})}
                     placeholder="Brief overview of the campaign goals..." rows={3}
-                    className="bg-zinc-950/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500/50 transition-colors resize-none"
+                    className="bg-zinc-950/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--accent)] transition-colors resize-none"
                   />
                 </div>
 
@@ -241,7 +241,7 @@ export default function CampaignsPage() {
                     <label className="text-xs font-semibold text-zinc-400">Phase</label>
                     <select 
                       value={formData.phase} onChange={(e) => setFormData({...formData, phase: e.target.value})}
-                      className="bg-zinc-950/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500/50 transition-colors"
+                      className="bg-zinc-950/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--accent)] transition-colors"
                     >
                       <option value="Planning">Planning</option>
                       <option value="Active">Active</option>
@@ -254,7 +254,7 @@ export default function CampaignsPage() {
                     <input 
                       type="date"
                       value={formData.end_date} onChange={(e) => setFormData({...formData, end_date: e.target.value})}
-                      className="bg-zinc-950/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500/50 transition-colors [color-scheme:dark]"
+                      className="bg-zinc-950/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--accent)] transition-colors [color-scheme:dark]"
                     />
                   </div>
                 </div>
@@ -268,7 +268,7 @@ export default function CampaignsPage() {
                   </button>
                   <button 
                     type="submit" disabled={submitting}
-                    className="bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 text-white px-5 py-2 rounded-lg text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all"
+                    className="bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 px-5 py-2 rounded-full text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all animate-none"
                   >
                     {submitting ? "Creating..." : "Create Campaign"}
                   </button>
@@ -282,3 +282,4 @@ export default function CampaignsPage() {
     </div>
   );
 }
+

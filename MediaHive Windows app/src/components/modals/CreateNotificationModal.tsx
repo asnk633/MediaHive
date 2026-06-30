@@ -93,9 +93,9 @@ export function CreateNotificationModal({ isOpen, onClose }: CreateNotificationM
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="glass-panel border-white/10 max-w-md w-full text-zinc-100 p-6 shadow-2xl">
+      <DialogContent className="studio-panel border-white/10 max-w-md w-full text-[var(--text-primary)] p-6 shadow-2xl !flex !flex-col !gap-4 max-h-[90vh] overflow-y-auto !h-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold tracking-wide text-white">
+          <DialogTitle className="text-xl font-bold tracking-wide text-[var(--text-primary)]">
             Broadcast Notification
           </DialogTitle>
           <DialogDescription className="sr-only">
@@ -112,15 +112,15 @@ export function CreateNotificationModal({ isOpen, onClose }: CreateNotificationM
 
         {success ? (
           <div className="flex flex-col items-center justify-center py-8 gap-3 text-center">
-            <div className="w-12 h-12 rounded-full bg-teal-500/20 border border-teal-500/30 flex items-center justify-center text-teal-400">
+            <div className="w-12 h-12 rounded-full bg-[var(--accent)]/15 border border-[var(--accent)]/30 flex items-center justify-center text-[var(--accent)]">
               <Check size={24} strokeWidth={2.5} />
             </div>
-            <span className="text-sm font-semibold text-teal-300">Broadcast sent successfully!</span>
+            <span className="text-sm font-semibold text-[var(--accent)]">Broadcast sent successfully!</span>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+              <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                 Broadcast Title *
               </label>
               <input
@@ -130,12 +130,12 @@ export function CreateNotificationModal({ isOpen, onClose }: CreateNotificationM
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                 placeholder="Alert title (e.g., Maintenance Window)"
                 disabled={saving}
-                className="glass-form-input placeholder:text-zinc-500 w-full"
+                className="glass-form-input placeholder:text-[var(--text-tertiary)] w-full"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+              <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                 Message Content *
               </label>
               <textarea
@@ -145,13 +145,13 @@ export function CreateNotificationModal({ isOpen, onClose }: CreateNotificationM
                 placeholder="Enter alert message details for recipients..."
                 rows={3}
                 disabled={saving}
-                className="glass-form-input placeholder:text-zinc-500 w-full resize-none"
+                className="glass-form-input placeholder:text-[var(--text-tertiary)] w-full resize-none"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                   Alert Type
                 </label>
                 <select
@@ -160,15 +160,15 @@ export function CreateNotificationModal({ isOpen, onClose }: CreateNotificationM
                   disabled={saving}
                   className="glass-form-input cursor-pointer w-full"
                 >
-                  <option className="bg-zinc-950 text-white" value="System">System</option>
-                  <option className="bg-zinc-950 text-white" value="Alert">Alert</option>
-                  <option className="bg-zinc-950 text-white" value="Info">Info</option>
-                  <option className="bg-zinc-950 text-white" value="Warning">Warning</option>
+                  <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="System">System</option>
+                  <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="Alert">Alert</option>
+                  <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="Info">Info</option>
+                  <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="Warning">Warning</option>
                 </select>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                   Target Audience
                 </label>
                 <select
@@ -177,11 +177,11 @@ export function CreateNotificationModal({ isOpen, onClose }: CreateNotificationM
                   disabled={saving}
                   className="glass-form-input cursor-pointer w-full"
                 >
-                  <option className="bg-zinc-950 text-white" value="All">All Workspace Users</option>
-                  <option className="bg-zinc-950 text-white" value="Admin">Admins Only</option>
-                  <option className="bg-zinc-950 text-white" value="Manager">Managers Only</option>
-                  <option className="bg-zinc-950 text-white" value="Team">Team Members Only</option>
-                  <option className="bg-zinc-950 text-white" value="Member">Guests Only</option>
+                  <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="All">All Workspace Users</option>
+                  <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="Admin">Admins Only</option>
+                  <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="Manager">Managers Only</option>
+                  <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="Team">Team Members Only</option>
+                  <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="Member">Guests Only</option>
                 </select>
               </div>
             </div>
@@ -189,7 +189,7 @@ export function CreateNotificationModal({ isOpen, onClose }: CreateNotificationM
             <button
               type="submit"
               disabled={saving || !form.title.trim() || !form.message.trim()}
-              className="mt-2 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold py-3 rounded-xl shadow-lg shadow-teal-500/20 active:scale-[0.98] transition-all cursor-pointer"
+              className="mt-2 w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--bg-primary)] text-sm font-semibold py-2.5 rounded-full active:scale-[0.98] transition-all cursor-pointer"
             >
               {saving ? (
                 <>
@@ -206,3 +206,4 @@ export function CreateNotificationModal({ isOpen, onClose }: CreateNotificationM
     </Dialog>
   );
 }
+

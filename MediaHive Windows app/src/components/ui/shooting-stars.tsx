@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useEffect, useRef } from "react";
 
 export const ShootingStars = () => {
@@ -92,32 +92,10 @@ export const ShootingStars = () => {
 
     let shootingStars = Array.from({ length: 3 }, () => new ShootingStar());
 
-    let resizeObserver: ResizeObserver | null = null;
-
-    const resize = (width: number, height: number) => {
-      const dpr = window.devicePixelRatio || 1;
-      // Set the pixel buffer to the physical resolution
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      // Set the CSS display size to the layout size so the buffer renders at 1:1 visual scale
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      // Scale the drawing context so coordinates are in CSS pixels
-      ctx.scale(dpr, dpr);
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     };
-
-    if (canvas.parentElement) {
-      const rect = canvas.parentElement.getBoundingClientRect();
-      resize(rect.width, rect.height);
-
-      resizeObserver = new ResizeObserver((entries) => {
-        for (let entry of entries) {
-          const { width, height } = entry.contentRect;
-          resize(width, height);
-        }
-      });
-      resizeObserver.observe(canvas.parentElement);
-    }
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -130,12 +108,12 @@ export const ShootingStars = () => {
       animationFrameId = requestAnimationFrame(draw);
     };
 
+    window.addEventListener("resize", resize);
+    resize();
     draw();
 
     return () => {
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
+      window.removeEventListener("resize", resize);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);

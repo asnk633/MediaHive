@@ -37,7 +37,7 @@ export default function ReportsPage() {
         
         {/* Storage Growth SVG Chart */}
         <motion.div 
-          className="lg:col-span-2 glass-card rounded-2xl p-6 flex flex-col justify-between min-h-[300px] hover:border-indigo-500/30 transition-all group relative overflow-hidden"
+          className="lg:col-span-2 studio-card rounded-2xl p-6 flex flex-col justify-between min-h-[300px] hover:border-indigo-500/30 transition-all group relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none transition-all group-hover:bg-teal-500/20" />
           <div className="relative z-10 flex flex-col h-full justify-between">
@@ -71,7 +71,7 @@ export default function ReportsPage() {
         </motion.div>
 
         {/* Storage breakdown gauge card */}
-        <div className="glass-card rounded-2xl p-6 flex flex-col justify-between min-h-[300px] group relative overflow-hidden transition-all hover:border-indigo-500/30">
+        <div className="studio-card rounded-2xl p-6 flex flex-col justify-between min-h-[300px] group relative overflow-hidden transition-all hover:border-indigo-500/30">
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none transition-all group-hover:bg-indigo-500/20" />
           <div className="relative z-10 flex flex-col h-full justify-between">
           <div className="flex items-center justify-between mb-4">
@@ -125,7 +125,7 @@ export default function ReportsPage() {
         
         <div className="flex flex-col gap-2.5">
           {exports.map((exp, idx) => (
-            <div key={idx} className="flex items-center justify-between p-3.5 rounded-xl glass-card transition-all cursor-pointer group hover:shadow-[0_4px_20px_-4px_rgba(79,70,229,0.15)] hover:border-indigo-500/30 relative overflow-hidden">
+            <div key={idx} className="flex items-center justify-between p-3.5 rounded-xl studio-card transition-all cursor-pointer group hover:shadow-[0_4px_20px_-4px_rgba(79,70,229,0.15)] hover:border-indigo-500/30 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-teal-500/5 blur-[30px] rounded-full pointer-events-none transition-all group-hover:bg-teal-500/15" />
               <div className="flex items-center gap-3 relative z-10">
                 <div className="p-2 rounded-lg bg-zinc-800/50 border border-white/5 text-teal-400">
@@ -148,3 +148,4 @@ export default function ReportsPage() {
     </div>
   );
 }
+

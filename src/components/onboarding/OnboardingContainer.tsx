@@ -42,23 +42,17 @@ export function OnboardingContainer() {
 
     const TOTAL_STEPS = 3;
 
-    const bgGradient = theme === 'luminous'
-        ? "bg-gradient-to-br from-[#f8fafc] via-[#f1f5f9] to-[#e2e8f0] text-slate-800"
-        : theme === 'golden'
-        ? "bg-gradient-to-br from-[#02040a] via-[#0a0a05] to-[#151100]"
-        : "bg-gradient-to-br from-[#050816] via-[#0B1026] to-[#1A1443]";
+    const bgGradient = theme === 'light'
+        ? "bg-slate-50 text-slate-900"
+        : "bg-slate-950 text-slate-50";
 
-    const hazeGlow1 = theme === 'luminous'
-        ? "bg-sky-400/15"
-        : theme === 'golden'
-        ? "bg-amber-500/10"
-        : "bg-indigo-500/20";
+    const hazeGlow1 = theme === 'light'
+        ? "bg-blue-500/5"
+        : "bg-blue-500/10";
 
-    const hazeGlow2 = theme === 'luminous'
-        ? "bg-indigo-400/15"
-        : theme === 'golden'
-        ? "bg-amber-600/5"
-        : "bg-purple-500/20";
+    const hazeGlow2 = theme === 'light'
+        ? "bg-indigo-500/5"
+        : "bg-indigo-500/10";
 
     return (
         <main suppressHydrationWarning className={cn("fixed inset-0 overflow-hidden flex items-center justify-center p-6 sm:p-12 transition-all duration-500", bgGradient)}>
@@ -69,7 +63,7 @@ export function OnboardingContainer() {
             <div className={cn("absolute w-[700px] h-[700px] blur-[160px] rounded-full bottom-[-200px] right-[-200px] animate-[float_16s_ease-in-out_infinite_reverse] transition-colors duration-500", hazeGlow2)} />
 
             {/* Cinematic Focus Area */}
-            {theme !== 'luminous' && <div className="onboarding-vignette" />}
+            {theme === 'dark' && <div className="onboarding-vignette" />}
             
             {/* 3 — Subtle Film Grain Overlay */}
             <div 

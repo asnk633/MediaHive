@@ -214,7 +214,7 @@ export default function UsersPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.92, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-md glass-panel rounded-3xl shadow-2xl overflow-hidden relative"
+              className="w-full max-w-md studio-panel rounded-3xl shadow-2xl overflow-hidden relative"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 relative z-10">
@@ -317,7 +317,7 @@ export default function UsersPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.92, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-sm glass-panel rounded-3xl shadow-2xl overflow-hidden relative"
+              className="w-full max-w-sm studio-panel rounded-3xl shadow-2xl overflow-hidden relative"
             >
               <div className="absolute top-0 left-0 w-64 h-64 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 relative z-10">
@@ -378,7 +378,7 @@ export default function UsersPage() {
       </header>
 
       {/* Toolbar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-panel p-3 rounded-2xl relative overflow-hidden z-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 studio-panel p-3 rounded-2xl relative overflow-hidden z-10">
         <div className="relative w-full md:w-80 relative z-10">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 w-4 h-4" />
           <input
@@ -424,7 +424,7 @@ export default function UsersPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     key={u.id}
-                    className="glass-card rounded-2xl p-5 flex flex-col justify-between hover:border-white/10 transition-all"
+                    className="studio-card rounded-2xl p-5 flex flex-col justify-between hover:border-white/10 transition-all"
                   >
                     <div className="flex items-start gap-4">
                       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${u.avatarColor} flex items-center justify-center text-sm font-extrabold text-white shadow-lg flex-shrink-0`}>
@@ -478,7 +478,7 @@ export default function UsersPage() {
         </div>
 
         {/* Right Panel */}
-        <div className="glass-panel rounded-2xl p-5 flex flex-col gap-4 lg:sticky lg:top-6 relative overflow-hidden">
+        <div className="studio-panel rounded-2xl p-5 flex flex-col gap-4 lg:sticky lg:top-6 relative overflow-hidden">
           <div className="absolute bottom-0 right-0 w-64 h-64 bg-teal-500/5 blur-[80px] rounded-full pointer-events-none" />
           <div className="flex items-center justify-between border-b border-white/5 pb-2 relative z-10">
             <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider m-0 flex items-center gap-1.5">
@@ -520,3 +520,4 @@ export default function UsersPage() {
     </div>
   );
 }
+

@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { getDriveImageUrl } from "@/lib/driveUtils";
+import { logDiagnostic } from "@/lib/diagnostic";
 
 export interface AuthUser {
   uid: string;
@@ -67,9 +68,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         console.log("[Auth] checkSession: User ID:", session.user.id, "Email:", session.user.email);
+        
+        // Immediately set a fallback user to avoid safety timeouts and prevent premature redirects
+        const googleAvatar = session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || "";
+        const googleName = session.user.user_metadata?.full_name || session.user.user_metadata?.name || "User";
+        
+        if (mounted) {
+          console.log("[Auth] checkSession: Setting immediate fallback user from session metadata.");
+          setUser({
+            uid: session.user.id,
+            id: session.user.id,
+            email: session.user.email || "",
+            name: googleName,
+            role: "member",
+            avatar_url: googleAvatar
+          });
+        }
+
         console.log("[Auth] checkSession: Fetching profile from database...");
 
-        // Fetch profile
+        // Fetch profile asynchronously
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
           .select("*")
@@ -82,34 +100,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log("[Auth] checkSession: Profile query completed. Found profile:", profile ? "Yes" : "No");
         }
 
-        if (mounted) {
-          const googleAvatar = session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || "";
-          const googleName = session.user.user_metadata?.full_name || session.user.user_metadata?.name || "User";
-
-          if (profile) {
-            console.log("[Auth] checkSession: Setting user from profile:", profile.email, "Role:", profile.role);
-            setUser({
-              uid: session.user.id,
-              id: session.user.id,
-              email: profile.email || session.user.email || "",
-              name: profile.name || profile.full_name || googleName,
-              role: (profile.role || "member").toLowerCase() as any,
-              institution_id: profile.institution_id,
-              tenant_id: profile.tenant_id,
-              department_id: profile.department_id,
-              avatar_url: getDriveImageUrl(profile.avatar_url, profile.avatar_drive_id, true) || googleAvatar
-            });
-          } else {
-            console.log("[Auth] checkSession: No profile found. Setting fallback user using session details.");
-            setUser({
-              uid: session.user.id,
-              id: session.user.id,
-              email: session.user.email || "",
-              name: googleName,
-              role: "member",
-              avatar_url: googleAvatar
-            });
-          }
+        if (mounted && profile) {
+          console.log("[Auth] checkSession: Updating user from profile:", profile.email, "Role:", profile.role);
+          setUser({
+            uid: session.user.id,
+            id: session.user.id,
+            email: profile.email || session.user.email || "",
+            name: profile.name || profile.full_name || googleName,
+            role: (profile.role || "member").toLowerCase() as any,
+            institution_id: profile.institution_id,
+            tenant_id: profile.tenant_id,
+            department_id: profile.department_id,
+            avatar_url: getDriveImageUrl(profile.avatar_url, profile.avatar_drive_id, true) || googleAvatar
+          });
         }
       } catch (err) {
         console.error("[Auth] checkSession: Auth init failed with exception:", err);
@@ -141,6 +144,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
+        // Set fallback user immediately to keep UI responsive
+        const googleAvatar = session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || "";
+        const googleName = session.user.user_metadata?.full_name || session.user.user_metadata?.name || "User";
+
+        if (mounted) {
+          setUser({
+            uid: session.user.id,
+            id: session.user.id,
+            email: session.user.email || "",
+            name: googleName,
+            role: "member",
+            avatar_url: googleAvatar
+          });
+        }
+
         try {
           console.log("[Auth] onAuthStateChange: Fetching profile...");
           const { data: profile, error: profileError } = await supabase
@@ -155,32 +173,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.log("[Auth] onAuthStateChange: Profile fetched successfully:", profile ? "Yes" : "No");
           }
 
-          if (mounted) {
-            const googleAvatar = session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || "";
-            const googleName = session.user.user_metadata?.full_name || session.user.user_metadata?.name || "User";
-
-            if (profile) {
-              setUser({
-                uid: session.user.id,
-                id: session.user.id,
-                email: profile.email || session.user.email || "",
-                name: profile.name || profile.full_name || googleName,
-                role: (profile.role || "member").toLowerCase() as any,
-                institution_id: profile.institution_id,
-                tenant_id: profile.tenant_id,
-                department_id: profile.department_id,
-                avatar_url: getDriveImageUrl(profile.avatar_url, profile.avatar_drive_id, true) || googleAvatar
-              });
-            } else {
-              setUser({
-                uid: session.user.id,
-                id: session.user.id,
-                email: session.user.email || "",
-                name: googleName,
-                role: "member",
-                avatar_url: googleAvatar
-              });
-            }
+          if (mounted && profile) {
+            setUser({
+              uid: session.user.id,
+              id: session.user.id,
+              email: profile.email || session.user.email || "",
+              name: profile.name || profile.full_name || googleName,
+              role: (profile.role || "member").toLowerCase() as any,
+              institution_id: profile.institution_id,
+              tenant_id: profile.tenant_id,
+              department_id: profile.department_id,
+              avatar_url: getDriveImageUrl(profile.avatar_url, profile.avatar_drive_id, true) || googleAvatar
+            });
           }
         } catch (err) {
           console.error("[Auth] onAuthStateChange: Error processing auth change:", err);
@@ -217,16 +221,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithGoogle = async () => {
     setLoading(true);
+    const isTauriApp = typeof window !== 'undefined' && (!!(window as any).isTauri || !!(window as any).__TAURI_INTERNALS__);
+    
+    if (isTauriApp) {
+      logDiagnostic("Tauri app: Clicked 'Login with Google'. Launching system browser...", "tauri");
+      try {
+        const { openUrl } = await import("@tauri-apps/plugin-opener");
+        const targetUrl = "https://thaiba-garden-media-manager.vercel.app/login?source=tauri&trigger=google";
+        logDiagnostic(`Tauri app: Opening target URL: ${targetUrl}`, "tauri");
+        await openUrl(targetUrl);
+        logDiagnostic("Tauri app: Browser launch command executed successfully.", "tauri");
+      } catch (err: any) {
+        logDiagnostic(`Tauri app: Failed to open browser: ${err.message || err}`, "tauri");
+        console.error("Failed to open browser:", err);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    // Inside the browser:
+    logDiagnostic("Browser: Initiating Google Login flow.", "browser");
+    let redirectTo = typeof window !== "undefined" ? window.location.origin : undefined;
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      logDiagnostic(`Browser: Current search params are: ${params.toString()}`, "browser");
+      if (params.get("source") === "tauri") {
+        redirectTo = `${window.location.origin}/auth/callback?source=tauri`;
+      }
+    }
+
+    logDiagnostic(`Browser: Supabase OAuth redirectTo set to: ${redirectTo}`, "browser");
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
+        redirectTo,
         queryParams: {
           prompt: "select_account"
         }
       }
     });
     if (error) {
+      logDiagnostic(`Browser: Supabase OAuth signInWithOAuth error: ${error.message}`, "browser");
       setLoading(false);
       throw error;
     }

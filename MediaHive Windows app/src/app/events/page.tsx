@@ -163,7 +163,7 @@ export default function EventsPage() {
       {/* Header */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-sm text-teal-400 font-medium tracking-wider uppercase mb-1">
+          <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium tracking-wider uppercase mb-1">
             <Sparkles size={14} />
             Operations Schedule
           </div>
@@ -175,7 +175,7 @@ export default function EventsPage() {
 
         <button 
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-teal-500/10 hover:shadow-teal-500/20 active:scale-95 transition-all cursor-pointer"
+          className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 text-sm font-semibold px-4 py-2 rounded-full transition-all cursor-pointer"
         >
           <Plus size={16} />
           <span>New Event</span>
@@ -187,7 +187,7 @@ export default function EventsPage() {
         {loading ? (
           <div className="text-zinc-500 text-sm col-span-3">Loading events...</div>
         ) : displayEvents.length === 0 ? (
-          <div className="text-zinc-500 text-sm col-span-3 text-center py-10 glass-panel rounded-2xl">No events scheduled.</div>
+          <div className="text-zinc-500 text-sm col-span-3 text-center py-10 studio-panel rounded-2xl">No events scheduled.</div>
         ) : displayEvents.map((ev) => {
           // Normalize the data between real DB and fallback
           const title = ev.title;
@@ -202,17 +202,17 @@ export default function EventsPage() {
             <motion.div
               whileHover={{ y: -4 }}
               key={ev.id}
-              className="glass-card rounded-2xl p-6 flex flex-col justify-between min-h-[220px] cursor-pointer group hover:shadow-[0_8px_32px_-8px_rgba(79,70,229,0.2)] hover:border-indigo-500/30 transition-all relative overflow-hidden"
+              className="studio-card rounded-2xl p-6 flex flex-col justify-between min-h-[220px] cursor-pointer group hover:border-zinc-700 transition-all relative overflow-hidden"
             >
               {/* Ambient Background Glow */}
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-teal-500/10 to-indigo-500/10 blur-[40px] group-hover:from-teal-500/20 group-hover:to-indigo-500/20 transition-all"></div>
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[var(--accent)]/5 blur-[40px] group-hover:bg-[var(--accent)]/10 transition-all"></div>
 
               <div>
                 <div className="flex items-center justify-between">
                   <span className={`px-2 py-0.5 text-[9px] font-semibold border rounded-full ${
-                    category === "Shoot" ? "bg-teal-500/10 text-teal-400 border-teal-500/20" :
-                    category === "Pitch" ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" :
-                    "bg-purple-500/10 text-purple-400 border-purple-500/20"
+                    category === "Shoot" ? "bg-[var(--accent-wash)] text-[var(--accent)] border-[var(--accent)]/20" :
+                    category === "Pitch" ? "bg-zinc-800 text-zinc-300 border-zinc-700" :
+                    "bg-zinc-800 text-zinc-300 border-zinc-700"
                   }`}>
                     {category}
                   </span>
@@ -236,7 +236,7 @@ export default function EventsPage() {
                     <MapPin size={12} className="text-zinc-650" />
                     <span className="truncate max-w-[180px]">{location}</span>
                   </div>
-                  <div className="flex items-center gap-1 text-teal-400">
+                  <div className="flex items-center gap-1 text-[var(--accent)]">
                     <Users size={12} />
                     <span>{teamSize}</span>
                   </div>
@@ -260,9 +260,9 @@ export default function EventsPage() {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-md glass-panel rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+              className="relative w-full max-w-md studio-panel rounded-3xl shadow-2xl overflow-hidden flex flex-col"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)]/5 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 relative z-10">
                 <div>
                   <h2 className="text-base font-bold text-white m-0">New Event</h2>
@@ -280,7 +280,7 @@ export default function EventsPage() {
                     type="text" required
                     value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})}
                     placeholder="e.g. Q3 All Hands"
-                    className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/30 transition-all font-sans"
+                    className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-650 focus:outline-none focus:border-[var(--accent)]/55 focus:ring-1 focus:ring-[var(--accent)]/30 transition-all font-sans"
                   />
                 </div>
 
@@ -289,7 +289,7 @@ export default function EventsPage() {
                   <textarea 
                     value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})}
                     placeholder="Details about the event..." rows={2}
-                    className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/30 transition-all font-sans resize-none"
+                    className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-650 focus:outline-none focus:border-[var(--accent)]/55 focus:ring-1 focus:ring-[var(--accent)]/30 transition-all font-sans resize-none"
                   />
                 </div>
 
@@ -299,7 +299,7 @@ export default function EventsPage() {
                     <div className="relative">
                       <select 
                         value={formData.production_stage} onChange={(e) => setFormData({...formData, production_stage: e.target.value})}
-                        className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/30 transition-all font-sans appearance-none cursor-pointer"
+                        className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-[var(--accent)]/55 focus:ring-1 focus:ring-[var(--accent)]/30 transition-all font-sans appearance-none cursor-pointer"
                       >
                         <option className="bg-zinc-900" value="Shoot">Shoot</option>
                         <option className="bg-zinc-900" value="Pitch">Pitch</option>
@@ -315,7 +315,7 @@ export default function EventsPage() {
                       type="text"
                       value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})}
                       placeholder="e.g. Stage 4"
-                      className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/30 transition-all font-sans"
+                      className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-655 focus:outline-none focus:border-[var(--accent)]/55 focus:ring-1 focus:ring-[var(--accent)]/30 transition-all font-sans"
                     />
                   </div>
                 </div>
@@ -326,7 +326,7 @@ export default function EventsPage() {
                     <input 
                       type="datetime-local" required
                       value={formData.start_at} onChange={(e) => setFormData({...formData, start_at: e.target.value})}
-                      className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/30 transition-all font-sans [color-scheme:dark]"
+                      className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-[var(--accent)]/55 focus:ring-1 focus:ring-[var(--accent)]/30 transition-all font-sans [color-scheme:dark]"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -334,14 +334,14 @@ export default function EventsPage() {
                     <input 
                       type="datetime-local"
                       value={formData.end_at} onChange={(e) => setFormData({...formData, end_at: e.target.value})}
-                      className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/30 transition-all font-sans [color-scheme:dark]"
+                      className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-[var(--accent)]/55 focus:ring-1 focus:ring-[var(--accent)]/30 transition-all font-sans [color-scheme:dark]"
                     />
                   </div>
                 </div>
 
                 <button 
                   type="submit" disabled={submitting}
-                  className="mt-4 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 disabled:opacity-50 text-white text-sm font-bold px-4 py-3 rounded-xl shadow-lg shadow-teal-500/20 active:scale-[0.98] transition-all cursor-pointer"
+                  className="mt-4 w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-zinc-950 text-sm font-bold px-4 py-2.5 rounded-full transition-all cursor-pointer"
                 >
                   {submitting ? "Creating..." : "Create Event"}
                 </button>
@@ -354,3 +354,4 @@ export default function EventsPage() {
     </div>
   );
 }
+

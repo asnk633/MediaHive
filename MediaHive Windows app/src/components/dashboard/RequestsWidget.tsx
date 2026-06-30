@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContextProvider";
-import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 interface RequestItem {
   id: string;
@@ -195,22 +194,19 @@ export function RequestsWidget() {
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-panel bg-black/30 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-2xl p-6 flex flex-col gap-4 relative overflow-hidden group w-full"
+        className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg p-5 flex flex-col gap-4 relative overflow-hidden w-full"
       >
-        <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} />
-        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] rounded-full pointer-events-none" />
-        
-        <div className="flex items-center justify-between border-b border-white/5 pb-4 z-10">
+        <div className="flex items-center justify-between border-b border-[var(--border)] pb-4 z-10">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-white m-0">Tasks & Events requests</h2>
+              <h2 className="text-base font-semibold text-[var(--text-primary)] m-0">Tasks & Events requests</h2>
               {requests.length > 0 && (
-                <span className="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                <span className="bg-[var(--warning)]/10 text-[var(--warning)] border border-[var(--warning)]/20 text-[10px] font-bold px-2 py-0.5 rounded-full">
                   {requests.length} New
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-zinc-500 m-0 mt-0.5 uppercase tracking-wider font-semibold">
+            <p className="text-[11px] text-[var(--text-tertiary)] m-0 mt-0.5 uppercase tracking-wider font-bold">
               Pending submissions from team members
             </p>
           </div>
@@ -221,13 +217,13 @@ export function RequestsWidget() {
             <div className="text-sm text-zinc-500 flex flex-col items-center justify-center h-full">Loading requests...</div>
           ) : requests.length > 0 ? (
             requests.map(item => (
-              <div key={item.id + item.type} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3.5 rounded-xl bg-black/20 border border-white/5 hover:bg-white/5 transition-colors relative group">
+              <div key={item.id + item.type} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-md bg-[var(--bg-primary)] border border-[var(--border)] hover:bg-[var(--bg-tertiary)] hover:border-[var(--accent)] transition-colors relative group">
                 <div className="flex items-start gap-3 flex-1 min-w-0 pl-1">
-                  <div className={`mt-0.5 flex-shrink-0 w-8 h-8 rounded-full border flex items-center justify-center ${item.type === 'task' ? 'bg-teal-500/10 border-teal-500/30 text-teal-400' : 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400'}`}>
+                  <div className={`mt-0.5 flex-shrink-0 w-8 h-8 rounded-md border flex items-center justify-center ${item.type === 'task' ? 'bg-[var(--accent)]/10 border-[var(--accent)]/30 text-[var(--accent)]' : 'bg-violet-500/10 border-violet-500/30 text-violet-400'}`}>
                     {item.type === 'task' ? <CheckSquare size={14} /> : <Calendar size={14} />}
                   </div>
                   <div className="flex flex-col gap-1 min-w-0 w-full">
-                    <span className="text-sm font-medium text-zinc-200 truncate">{item.title}</span>
+                    <span className="text-sm font-medium text-[var(--text-primary)] truncate">{item.title}</span>
                     <span className="text-xs text-zinc-400 truncate max-w-[90%]">{item.description || "No description"}</span>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
@@ -267,36 +263,36 @@ export function RequestsWidget() {
         {activeItem && modalType && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-6"
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-6"
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-md glass-panel rounded-2xl shadow-2xl overflow-hidden relative p-6 bg-zinc-950 border border-white/10"
+              initial={{ scale: 0.97, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.97, opacity: 0 }}
+              className="w-full max-w-md bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg shadow-lg overflow-hidden relative p-6"
             >
-              <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
-                <h3 className="text-lg font-bold text-white capitalize">{modalType} Request</h3>
-                <button onClick={closeModal} className="text-zinc-500 hover:text-white"><X size={16} /></button>
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-[var(--border)]">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)] capitalize">{modalType} Request</h3>
+                <button onClick={closeModal} className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] cursor-pointer"><X size={14} /></button>
               </div>
 
               <div className="mb-4">
-                <span className="text-xs text-zinc-500 uppercase tracking-wider font-bold">{activeItem.type}</span>
-                <p className="text-sm font-medium text-zinc-200 mt-1">{activeItem.title}</p>
+                <span className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider font-bold">{activeItem.type}</span>
+                <p className="text-sm font-medium text-[var(--text-primary)] mt-1">{activeItem.title}</p>
               </div>
 
               {modalType === "edit" && (
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Title</label>
+                    <label className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Title</label>
                     <input 
                       value={editForm.title} onChange={e => setEditForm({ ...editForm, title: e.target.value })}
-                      className="bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500" 
+                      className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" 
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Description</label>
+                    <label className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Description</label>
                     <textarea 
                       value={editForm.description} onChange={e => setEditForm({ ...editForm, description: e.target.value })} rows={3}
-                      className="bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500 resize-none" 
+                      className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] resize-none" 
                     />
                   </div>
                 </div>
@@ -304,10 +300,10 @@ export function RequestsWidget() {
 
               {modalType === "approve" && activeItem.type === "task" && (
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Assign To</label>
+                  <label className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Assign To</label>
                   <select 
                     value={assigneeId} onChange={e => setAssigneeId(e.target.value)}
-                    className="bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                    className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
                   >
                     {profiles.map(p => (
                       <option key={p.id} value={p.id}>{p.full_name || p.email}</option>
@@ -318,25 +314,25 @@ export function RequestsWidget() {
 
               {modalType === "reject" && (
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Reason (Required)</label>
+                  <label className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Reason (Required)</label>
                   <textarea 
                     value={rejectReason} onChange={e => setRejectReason(e.target.value)} rows={3} placeholder="Please provide feedback to the creator..."
-                    className="bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500 resize-none" 
+                    className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] resize-none" 
                   />
                 </div>
               )}
 
               <div className="flex gap-3 mt-6">
-                <button onClick={closeModal} className="flex-1 py-2 rounded-lg border border-white/10 text-zinc-400 hover:text-white text-sm font-semibold transition-colors">
+                <button onClick={closeModal} className="flex-1 py-2 rounded-md border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-sm font-semibold transition-colors cursor-pointer">
                   Cancel
                 </button>
                 <button 
                   onClick={handleAction} 
                   disabled={submitting || (modalType === "reject" && !rejectReason.trim()) || (modalType === "edit" && !editForm.title.trim())}
-                  className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2 ${
-                    modalType === "approve" ? "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30" : 
-                    modalType === "reject" ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : 
-                    "bg-teal-500/20 text-teal-400 hover:bg-teal-500/30"
+                  className={`flex-1 py-2 rounded-md text-sm font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer ${
+                    modalType === "approve" ? "bg-[var(--success)] text-white hover:bg-[var(--success)]/90" : 
+                    modalType === "reject" ? "bg-[var(--danger)] text-white hover:bg-[var(--danger)]/90" : 
+                    "bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]"
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   {submitting && <Loader2 size={14} className="animate-spin" />}

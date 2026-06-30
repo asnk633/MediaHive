@@ -1,17 +1,19 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 export type StatusKey = "pending" | "working" | "completed" | "urgent";
 
 export const STATUS_CONFIG: Record<StatusKey, {
-  label: string; fill: string; text: string;
-  accent: string; glow: string; strip: string; scanTint: string;
+  label: string;
+  text: string;
+  border: string;
+  bg: string;
+  barColor: string;
 }> = {
-  urgent:    { label: "Urgent",    fill: "bg-rose-500",    text: "text-rose-400",    accent: "#f43f5e", glow: "rgba(244,63,94,0.22)",   strip: "rgba(244,63,94,0.9)",   scanTint: "rgba(244,63,94,0.04)" },
-  working:   { label: "Working",   fill: "bg-blue-500",    text: "text-blue-400",    accent: "#3b82f6", glow: "rgba(59,130,246,0.22)",  strip: "rgba(59,130,246,0.9)",  scanTint: "rgba(59,130,246,0.04)" },
-  pending:   { label: "Pending",   fill: "bg-amber-500",   text: "text-amber-400",   accent: "#f59e0b", glow: "rgba(245,158,11,0.22)",  strip: "rgba(245,158,11,0.9)",  scanTint: "rgba(245,158,11,0.04)" },
-  completed: { label: "Completed", fill: "bg-emerald-500", text: "text-emerald-400", accent: "#10b981", glow: "rgba(16,185,129,0.22)",  strip: "rgba(16,185,129,0.9)",  scanTint: "rgba(16,185,129,0.04)" },
+  urgent:    { label: "Urgent",    text: "text-[var(--danger)]",  border: "border-[var(--danger)]/30", bg: "bg-[var(--danger)]/10", barColor: "bg-[var(--danger)]" },
+  working:   { label: "Working",   text: "text-[var(--accent)]",  border: "border-[var(--accent)]/30", bg: "bg-[var(--accent)]/10", barColor: "bg-[var(--accent)]" },
+  pending:   { label: "Pending",   text: "text-[var(--warning)]", border: "border-[var(--warning)]/30", bg: "bg-[var(--warning)]/10", barColor: "bg-[var(--warning)]" },
+  completed: { label: "Completed", text: "text-[var(--success)]", border: "border-[var(--success)]/30", bg: "bg-[var(--success)]/10", barColor: "bg-[var(--success)]" },
 };
 
 export interface MetricPodProps {
@@ -27,75 +29,46 @@ export function MetricPod({ title, value, percentage, status, loading }: MetricP
 
   return (
     <div
-      className="glass-card-premium metric-pod-depth metric-pod-glass relative flex flex-col overflow-hidden group"
-      style={{ height: 204, padding: 0, borderTop: `2px solid ${cfg.strip}` }}
+      className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg relative flex flex-col justify-between overflow-hidden p-3 h-[120px] transition-colors duration-150 hover:border-[var(--accent)]"
     >
-      <GlowingEffect spread={50} glow proximity={80} inactiveZone={0.01} />
-
-      {/* Status-color ambient glow flood at top */}
-      <div
-        className="absolute top-0 left-0 right-0 h-28 pointer-events-none z-[1]"
-        style={{ background: `radial-gradient(ellipse 90% 120% at 20% -10%, ${cfg.glow} 0%, transparent 65%)` }}
-      />
-
-      {/* Horizontal scan-line texture for instrument depth */}
-      <div
-        className="absolute inset-0 pointer-events-none z-[1]"
-        style={{
-          backgroundImage: `repeating-linear-gradient(0deg, ${cfg.scanTint} 0px, ${cfg.scanTint} 1px, transparent 1px, transparent 5px)`,
-        }}
-      />
-
-      {/* Content layer */}
-      <div className="relative z-10 flex flex-col justify-between h-full" style={{ padding: "18px 20px 0 20px" }}>
-
-        {/* Title + status badge */}
-        <div className="flex items-center justify-between">
-          <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.2em]">{title}</span>
-          <span
-            className={`text-[9px] font-bold uppercase tracking-[0.12em] px-2 py-[3px] rounded-full ${cfg.text}`}
-            style={{ background: `${cfg.accent}18`, border: `1px solid ${cfg.accent}30` }}
-          >
-            {cfg.label}
-          </span>
-        </div>
-
-        {/* Big neon number */}
-        <div className="flex items-end gap-0 leading-none">
-          {loading
-            ? <div className="h-14 w-20 bg-white/5 rounded-xl animate-pulse" />
-            : (
-              <span
-                className="font-black tabular-nums select-none text-metric-hero"
-                style={{
-                  color: cfg.accent,
-                  textShadow: `0 0 30px ${cfg.glow}, 0 0 60px ${cfg.scanTint}`,
-                }}
-              >
-                {value}
-              </span>
-            )
-          }
-        </div>
-
-        {/* Completion label + percentage */}
-        <div className="flex items-center justify-between pb-[14px]">
-          <span className="text-[9px] text-zinc-600 uppercase tracking-[0.14em]">Completion</span>
-          {loading
-            ? <span className="inline-block h-3 w-8 bg-white/5 rounded animate-pulse" />
-            : <span className={`text-[11px] font-bold tabular-nums ${cfg.text}`}>{percentage}%</span>
-          }
-        </div>
+      {/* Title + status badge */}
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">{title}</span>
+        <span
+          className={`text-[9px] font-bold uppercase tracking-wider px-2 py-[2px] rounded border ${cfg.text} ${cfg.border} ${cfg.bg}`}
+        >
+          {cfg.label}
+        </span>
       </div>
 
-      {/* Flush bottom progress rail — no padding, bleeds to edges */}
-      <div className="absolute bottom-0 left-0 right-0 h-[5px] bg-white/[0.04]">
+      {/* Value */}
+      <div className="flex items-end leading-none my-1">
+        {loading ? (
+          <div className="h-6 w-12 bg-[var(--bg-tertiary)] rounded animate-pulse" />
+        ) : (
+          <span className="font-bold text-[22px] text-[var(--text-primary)] font-mono tabular-nums leading-none">
+            {value}
+          </span>
+        )}
+      </div>
+
+      {/* Completion */}
+      <div className="flex items-center justify-between text-[11px] mb-2">
+        <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider">Completion</span>
+        {loading ? (
+          <span className="h-3.5 w-6 bg-[var(--bg-tertiary)] rounded animate-pulse" />
+        ) : (
+          <span className={`font-semibold font-mono tabular-nums ${cfg.text}`}>{percentage}%</span>
+        )}
+      </div>
+
+      {/* Progress bar */}
+      <div className="w-full h-1 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
         <motion.div
-          className={`h-full ${cfg.fill}`}
+          className={`h-full ${cfg.barColor}`}
           initial={{ width: 0 }}
           animate={{ width: loading ? "0%" : `${percentage}%` }}
-          transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-          style={{ boxShadow: `0 0 8px ${cfg.accent}` }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         />
       </div>
     </div>

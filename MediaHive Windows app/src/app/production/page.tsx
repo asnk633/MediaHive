@@ -156,7 +156,7 @@ export default function ProductionPage() {
           <motion.div
             whileHover={{ y: -4 }}
             key={prod.id}
-            className="glass-card rounded-2xl p-6 flex flex-col justify-between min-h-[220px] cursor-pointer hover:border-indigo-500/30 hover:shadow-[0_8px_32px_-8px_rgba(79,70,229,0.2)] transition-all group relative overflow-hidden"
+            className="studio-card rounded-2xl p-6 flex flex-col justify-between min-h-[220px] cursor-pointer hover:border-indigo-500/30 hover:shadow-[0_8px_32px_-8px_rgba(79,70,229,0.2)] transition-all group relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 blur-[50px] rounded-full pointer-events-none transition-all group-hover:bg-teal-500/20" />
 
@@ -216,7 +216,7 @@ export default function ProductionPage() {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-md glass-panel rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+              className="relative w-full max-w-md studio-panel rounded-3xl shadow-2xl overflow-hidden flex flex-col"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 relative z-10">
@@ -308,3 +308,4 @@ export default function ProductionPage() {
     </div>
   );
 }
+

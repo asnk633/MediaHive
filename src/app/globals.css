@@ -1,297 +1,136 @@
-@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
-@import url('https://fonts.cdnfonts.com/css/sf-pro-text');
-
-@font-face {
-  font-family: 'BavistaSoulvare';
-  src: url('/BavistaSoulvare.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   !! DESIGN CHECKSUM V3 ENFORCEMENT (STRICT TIERS)                     !!
-   !! 1. CANVAS (Gradient) | 2. PANEL (Group) | 3. SURFACE (Active)     !!
-   !! NON-NEGOTIABLE. DO NOT OVERRIDE.                                  !!
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-*/
-
 @layer base {
   :root {
-    /* --- TIER 1: CANVAS (Background) --- */
-    /* Role: Spatial backdrop only. Never contain content directly. */
-    /* Polish: Clean Zinc Ramp (#1c1c1e -> #27272a). Removes muddy undertones. */
-    /* Lighter than Sidebar (#18181b) to preserve Anchor Law. */
-    --tier1-canvas: #000000;
-    --bg-root-fallback: #000000;
+    /* Flat Design Variables */
+    --background: #ffffff;
+    --foreground: #0f172a;
 
-    /* --- TIER 2: PANEL (Grouping Containers) --- */
-    /* Role: Grouping sections (Sidebar, Lists). Subtle depth. */
-    --tier2-panel: #0A0E21;
-    --shadow-tier2: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --popover-bg: #0A0E21;
+    --card: #ffffff;
+    --card-foreground: #0f172a;
 
-    /* --- TIER 3: SURFACE (Primary / Interactive) --- */
-    /* Role: Focus & Action (Stats, Key Widgets). "Lifted" look. */
-    /* MAX 5 PER SCREEN. */
-    --tier3-surface: linear-gradient(180deg, #323236 0%, #27272b 100%);
-    --shadow-tier3: 0 8px 24px rgba(0, 0, 0, 0.6);
-    --highlight-tier3: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    --popover: #ffffff;
+    --popover-foreground: #0f172a;
 
-    /* --- NAVIGATION ANCHOR --- */
-    /* Role: Visual anchor. Must be darker than canvas. */
-    --nav-sidebar: #0A0E21;
-    /* Deepest Zinc, almost black */
-    --sidebar-width: 240px;
-    --sidebar-collapsed-width: 72px;
-    --current-sidebar-width: var(--sidebar-width);
+    --primary: #2563eb;
+    --primary-foreground: #ffffff;
 
-    /* Typography */
-    --font-heading: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --font-body: 'SF Pro Text', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --font-sans: -apple-system, BlinkMacSystemFont, sans-serif;
+    --secondary: #f1f5f9;
+    --secondary-foreground: #0f172a;
 
-    /* Text Colors (Muted via opacity/color, not size) */
-    --text-primary: 255 255 255;
-    --text-secondary: #d4d4d8;         /* FIX: valid hex (was 212 212 216 = invalid CSS color) */
-    /* Zinc-300 (Higher contrast than Zinc-400) */
-    --text-muted: 161 161 170;
-    /* Zinc-400 (Higher contrast than Zinc-500) */
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
 
-    /* Direct-use color variables (valid CSS colors for components using var() directly) */
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #d4d4d8;
-    --color-text-muted: #a1a1aa;
-    --color-border: rgba(255, 255, 255, 0.08);
-    --color-bg-surface: rgba(255, 255, 255, 0.03);
-    --color-bg-subtle: rgba(255, 255, 255, 0.02);
+    --accent: #f1f5f9;
+    --accent-foreground: #0f172a;
 
-    /* Legacy theme variables referenced by some components */
-    --text: #ffffff;
-    --panel-strong: rgba(255, 255, 255, 0.08);
-    --bg-hover: rgba(255, 255, 255, 0.05);
-    --accent: #6366f1;
+    --border: #e2e8f0;
+    --input: #e2e8f0;
+    --ring: #2563eb;
 
-    /* Accent (Theme Dynamic) */
-    --accent-primary: #6366f1;
-    --accent-primary-rgb: 99, 102, 241;
-    --accent-primary-soft: rgba(99, 102, 241, 0.15);
-    --brand-title-color: #818cf8;
-    --brand-title-shadow: 0 0 12px rgba(129, 140, 248, 0.35);
-    --brand-logo-bg: #6366f1;
+    --radius: 0.5rem;
 
-    /* Theme Engine Variables (Default: Midnight) */
-    --app-bg: linear-gradient(180deg, #02040a 0%, #050816 40%, #0c0b25 100%);
-    --bg-glow-1: rgba(99, 102, 241, 0.12);
-    --bg-glow-2: rgba(59, 130, 246, 0.1);
-    --bg-glow-3: rgba(168, 85, 247, 0.08);
+    /* Font Variables */
+    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+
+    /* Tailwind Config Legacy Bridge (Light Mode) */
+    --bg-root-fallback: var(--background);
+    --text-primary: 15 23 42; /* #0f172a */
+    --text-secondary: 51 65 85; /* #334155 */
+    --text-muted: 100 116 139; /* #64748b */
+    --border-subtle: var(--border);
+    --popover-bg: var(--popover);
     
-    --glass-card-bg: rgba(2, 6, 23, 0.46);
-    --glass-card-border: rgba(255, 255, 255, 0.06);
-    --glass-card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --accent-primary: var(--primary);
+    --accent-primary-rgb: 37, 99, 235;
+    --accent-primary-soft: rgba(37, 99, 235, 0.1);
     
-    --glass-liquid-bg: rgba(2, 6, 23, 0.58);
-    --glass-liquid-border: rgba(255, 255, 255, 0.08);
-    --glass-liquid-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-
-    /* Borders (Low Contrast) */
-    --border-subtle: rgba(255, 255, 255, 0.08);
-
-    /* Globals */
-    --radius-md: 6px;
+    --tier1-canvas: var(--background);
+    --tier2-panel: var(--card);
+    --tier3-surface: var(--card);
+    --nav-sidebar: var(--background);
+    
+    --font-body: var(--font-sans);
+    --font-heading: var(--font-sans);
+    
+    --radius-md: var(--radius);
     --header-height: 52px;
-    --content-max-width: 1400px;
     --bottom-nav-height: 72px;
-    --fab-optical-offset: 1.5px;
+    
+    --glass-card-bg: var(--card);
+    --glass-card-border: var(--border);
+    --glass-card-shadow: none;
+    
+    --glass-liquid-bg: var(--card);
+    --glass-liquid-border: var(--border);
+    --glass-liquid-shadow: none;
   }
 
-  @media (min-resolution: 2dppx) {
-    :root {
-      --fab-optical-offset: 2px;
-    }
+  .dark {
+    /* Flat Design Variables (Dark) */
+    --background: #0f172a;
+    --foreground: #f8fafc;
+
+    --card: #1e293b;
+    --card-foreground: #f8fafc;
+
+    --popover: #1e293b;
+    --popover-foreground: #f8fafc;
+
+    --primary: #2563eb;
+    --primary-foreground: #ffffff;
+
+    --secondary: #334155;
+    --secondary-foreground: #f8fafc;
+
+    --muted: #334155;
+    --muted-foreground: #94a3b8;
+
+    --accent: #334155;
+    --accent-foreground: #f8fafc;
+
+    --border: #334155;
+    --input: #334155;
+    --ring: #38bdf8;
+
+    /* Tailwind Config Legacy Bridge (Dark Mode) */
+    --bg-root-fallback: var(--background);
+    --text-primary: 248 250 252; /* #f8fafc */
+    --text-secondary: 226 232 240; /* #e2e8f0 */
+    --text-muted: 148 163 184; /* #94a3b8 */
+    --border-subtle: var(--border);
+    --popover-bg: var(--popover);
+    
+    --accent-primary: var(--primary);
+    --accent-primary-rgb: 37, 99, 235;
+    --accent-primary-soft: rgba(37, 99, 235, 0.15);
+    
+    --tier1-canvas: var(--background);
+    --tier2-panel: var(--card);
+    --tier3-surface: var(--card);
+    --nav-sidebar: var(--background);
   }
-
-  /* Accessibility: Visible Keyboard Focus */
-  :focus-visible {
-    outline: 2px solid var(--accent-primary) !important;
-    outline-offset: 2px !important;
-  }
-
-  /* Click Certainty: Min Target Size */
-  button, [role="button"], .sidebar-item, .nav-link, .tab-link, .breadcrumb-link {
-    min-width: 44px;
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    opacity: 0.04;
-    pointer-events: none;
-    z-index: 9999;
-    background-image: url("/noise.png");
-  }
-
-  /* THEME OVERRIDES */
-  [data-theme="midnight"] {
-    --app-bg: linear-gradient(180deg, #02040a 0%, #050816 40%, #0c0b25 100%);
-    --bg-glow-1: rgba(99, 102, 241, 0.14);
-    --bg-glow-2: rgba(59, 130, 246, 0.12);
-    --bg-glow-3: rgba(168, 85, 247, 0.10);
-
-    --accent-primary: #6366f1;
-    --accent-primary-rgb: 99, 102, 241;
-    --accent-primary-soft: rgba(99, 102, 241, 0.15);
-    
-    --brand-title-color: #818cf8;
-    --brand-title-shadow: 0 0 12px rgba(129, 140, 248, 0.35);
-    --brand-logo-bg: #6366f1;
-
-    --card-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
-    --liquid-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
-    --active-pressed-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
-
-    /* Premium LIQUID GLASS visual styles */
-    --glass-card-bg: rgba(10, 12, 30, 0.42); /* Deep translucent midnight indigo */
-    --glass-card-border: rgba(99, 102, 241, 0.15); /* Specular indigo edge highlight */
-    /* Red-Cyan chromatic aberration specular edge shadow */
-    --glass-card-shadow: inset 1px 1px 0px rgba(239, 68, 68, 0.12), inset -1px -1px 0px rgba(6, 182, 212, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-
-    --glass-liquid-bg: rgba(15, 18, 42, 0.52);
-    --glass-liquid-border: rgba(99, 102, 241, 0.25);
-    --glass-liquid-shadow: inset 1px 1px 0px rgba(239, 68, 68, 0.18), inset -1px -1px 0px rgba(6, 182, 212, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 30px rgba(99, 102, 241, 0.1);
-
-    --text-primary: 255 255 255;
-    --text-secondary: #d4d4d8;         /* FIX: valid hex (was 212 212 216 = invalid CSS color) */
-    --text-muted: 161 161 170;
-    --border-subtle: rgba(255, 255, 255, 0.08);
-
-    /* Direct-use color variables (valid CSS colors for components using var() directly) */
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #d4d4d8;
-    --color-text-muted: #a1a1aa;
-    --color-border: rgba(255, 255, 255, 0.08);
-    --color-bg-surface: rgba(255, 255, 255, 0.03);
-    --color-bg-subtle: rgba(255, 255, 255, 0.02);
-
-    /* Legacy theme variables referenced by some components */
-    --text: #ffffff;
-    --panel-strong: rgba(255, 255, 255, 0.08);
-    --bg-hover: rgba(255, 255, 255, 0.05);
-    --accent: #6366f1;
-    --popover-bg: #0A0E21;
-  }
-
-  [data-theme="golden"] {
-    --app-bg: linear-gradient(180deg, #02040a 0%, #0a0a05 40%, #151100 100%);
-    --bg-glow-1: rgba(255, 184, 0, 0.12);
-    --bg-glow-2: rgba(251, 191, 36, 0.1);
-    --bg-glow-3: rgba(245, 158, 11, 0.08);
-    
-    --accent-primary: #FFB800;
-    --accent-primary-rgb: 255, 184, 0;
-    --accent-primary-soft: rgba(255, 184, 0, 0.15);
-    
-    --brand-title-color: #E59312;
-    --brand-title-shadow: 0 0 12px rgba(229, 147, 18, 0.3);
-    --brand-logo-bg: #E59312;
-
-    --card-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
-    --liquid-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
-    --active-pressed-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
-    
-    --glass-card-bg: rgba(26, 23, 14, 0.45);
-    --glass-card-border: rgba(255, 184, 0, 0.15);
-    --glass-card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    
-    --glass-liquid-bg: rgba(26, 23, 14, 0.65);
-    --glass-liquid-border: rgba(255, 184, 0, 0.22);
-    --glass-liquid-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
-
-    --text-primary: 255 255 255;
-    --text-secondary: #e4e4e7;
-    --text-muted: 161 161 170;
-    
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --popover-bg: #14120a;
-  }
-
-  [data-theme="luminous"] {
-    --app-bg: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 40%, #e2e8f0 100%);
-    --bg-glow-1: rgba(56, 189, 248, 0.2);
-    --bg-glow-2: rgba(14, 165, 233, 0.15);
-    --bg-glow-3: rgba(2, 132, 199, 0.1);
-    
-    --accent-primary: #0284c7;
-    --accent-primary-rgb: 2, 132, 199;
-    --accent-primary-soft: rgba(2, 132, 199, 0.15);
-    
-    --brand-title-color: #0284c7;
-    --brand-title-shadow: 0 0 12px rgba(2, 132, 199, 0.25);
-    --brand-logo-bg: #0284c7;
-
-    --card-shadow: 5px 5px 15px rgba(100, 116, 139, 0.08), -5px -5px 15px rgba(255, 255, 255, 0.95);
-    --liquid-shadow: 8px 8px 24px rgba(100, 116, 139, 0.12), -8px -8px 24px rgba(255, 255, 255, 0.98);
-    --active-pressed-shadow: inset 3px 3px 6px rgba(100, 116, 139, 0.08), inset -3px -3px 6px rgba(255, 255, 255, 0.9);
-    
-    --glass-card-bg: rgba(255, 255, 255, 0.7);
-    --glass-card-border: rgba(0, 0, 0, 0.05);
-    --glass-card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
-    
-    --glass-liquid-bg: rgba(255, 255, 255, 0.85);
-    --glass-liquid-border: rgba(0, 0, 0, 0.08);
-    --glass-liquid-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.7);
-
-    --text-primary: 15 23 42;
-    --text-secondary: 51 65 85;
-    --text-muted: 100 116 139;
-    
-    --border-subtle: rgba(0, 0, 0, 0.08);
-    --popover-bg: #ffffff;
-    --bg-root-fallback: #f8fafc;
-  }
-}
-
-/* Logo tinting per theme - filter shifts the golden PNG to match theme accent */
-[data-theme="midnight"] .theme-logo,
-:root:not([data-theme]) .theme-logo {
-  filter: none;
-}
-
-[data-theme="golden"] .theme-logo {
-  filter: none;
-}
-
-[data-theme="luminous"] .theme-logo {
-  filter: hue-rotate(190deg) saturate(80%) brightness(0.9);
 }
 
 @layer base {
   * {
-    border-color: var(--border-subtle);
+    border-color: var(--border);
   }
 
   html {
     overscroll-behavior: none;
     height: 100%;
     min-height: 100vh;
-    overflow: hidden;
-    background: transparent;
+    background-color: var(--background);
   }
 
   body {
-    background: transparent;
-    color: rgb(var(--text-primary));  /* FIX: was var(--text-primary) — space-separated values are invalid as CSS color, rgb() wrapper makes it valid */
-    font-family: var(--font-body);
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
     min-height: 100vh;
     width: 100%;
     display: flex;
@@ -301,7 +140,13 @@
     padding: 0;
   }
 
-  /* ROOT CANVAS ID (Phase 29.10 Final Lock +10% Premium) */
+  /* Click Focus Outline */
+  :focus-visible {
+    outline: 2px solid var(--primary) !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Root canvas backdrop is flat background color */
   #app-canvas {
     position: fixed;
     inset: 0;
@@ -309,82 +154,18 @@
     min-height: 100vh;
     width: 100vw;
     overflow: hidden;
-    background: var(--app-bg);
+    background-color: var(--background);
   }
 
-  #app-canvas::before {
-    content: "";
-    position: absolute;
-    inset: -20%;
-    width: 140%;
-    height: 140%;
-    z-index: -1;
-    background:
-      radial-gradient(1000px 600px at 50% 10%, var(--bg-glow-1), transparent 70%),
-      radial-gradient(1200px 800px at 10% 20%, var(--bg-glow-2), transparent 60%),
-      radial-gradient(800px 600px at 90% 80%, var(--bg-glow-3), transparent 65%);
-    background-size: cover;
-    animation: canvasDrift 80s ease-in-out infinite;
-    will-change: transform;
-    opacity: 0.8;
-    pointer-events: none;
-  }
-
-  @keyframes canvasDrift {
-    0%, 100% {
-      transform: translate(0, 0) scale(1) rotate(0deg);
-    }
-    33% {
-      transform: translate(-3%, -2%) scale(1.08) rotate(3deg);
-    }
-    66% {
-      transform: translate(2%, 3%) scale(0.95) rotate(-3deg);
-    }
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-heading);
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
     font-weight: 600;
     letter-spacing: -0.01em;
-  }
-
-  /* B-3 Reduced Motion */
-  @media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
   }
 }
 
 @layer utilities {
-  /* TIER UTILITIES */
-
-  /* .tier2-panel: Grouping containers */
-  .tier2-panel {
-    background-image: var(--tier2-panel);
-    box-shadow: var(--shadow-tier2);
-    border: 1px solid var(--border-subtle);
-  }
-
-  /* .tier3-surface: Primary interactive cards (Max 5) */
-  .tier3-surface {
-    background-image: var(--tier3-surface);
-    box-shadow: var(--highlight-tier3), var(--shadow-tier3);
-    /* Dual shadow for highlight + depth */
-    border: 1px solid var(--border-subtle);
-  }
-
-  /* Scrollbar - Dark & Subtle */
+  /* Scrollbar - Flat Subtle style */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -395,157 +176,54 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #3f3f46;
+    background: var(--border);
     border-radius: 99px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #52525b;
+    background: var(--muted-foreground);
   }
 
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
 
-  /* TIER: GLASS CARD (Standard) */
+  /* Flat cards mapping for legacy glass-card class references */
   .glass-card {
-    background: var(--glass-card-bg);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid var(--glass-card-border);
-    box-shadow:
-      var(--card-shadow),
-      var(--glass-card-shadow);
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
   }
 
-  /* TIER: GLASS LIQUID (High prominence, active state) */
+  /* Flat cards mapping for legacy glass-liquid class references */
   .glass-liquid {
-    background: var(--glass-liquid-bg);
-    backdrop-filter: blur(24px) saturate(140%);
-    -webkit-backdrop-filter: blur(24px) saturate(140%);
-    border: 1px solid var(--glass-liquid-border);
-    box-shadow:
-      var(--liquid-shadow),
-      var(--glass-liquid-shadow);
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
   }
 
-  /* TIER: GLASS MEDIUM (Sidebar / Navigation - Inherit Liquid) */
   .glass-medium {
-    @apply glass-liquid;
-  }
-  /* Card Elevation System */
-  .premium-card {
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 
-      0 10px 30px rgba(0,0,0,0.5),
-      inset 0 1px 0 rgba(255,255,255,0.05);
-    transition: all 200ms ease;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
   }
 
-  /* Layering (Production Determinism) */
+  .premium-card {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  /* Layering constants */
   .bottom-nav-container { z-index: 100 !important; }
   .fab { z-index: 110 !important; }
   .sync-indicator { z-index: 120 !important; }
   .modal-overlay { z-index: 200 !important; }
 
-  /* --- FINAL POLISH (Last 5%) --- */
-  
-  .fab {
-    /* Surface identity handled by child button (.fab-surface) */
-  }
-
-  .fab-surface {
-    background: radial-gradient(circle at 30% 30%, #7c8cff, #4f6bff);
-    box-shadow: 
-      0 8px 24px rgba(0, 0, 0, 0.5),
-      0 0 18px rgba(120, 140, 255, 0.25);
-  }
-
-  @keyframes fab-breathing {
-    0%, 100% {
-      transform: scale(1);
-      box-shadow: 0 6px 32px var(--fab-glow-color, rgba(129, 140, 248, 0.35));
-    }
-    50% {
-      transform: scale(1.04);
-      box-shadow: 0 0 24px var(--fab-glow-color, rgba(129, 140, 248, 0.45));
-    }
-  }
-
-  .animate-fab-breathing {
-    animation: fab-breathing 3.5s ease-in-out infinite;
-  }
-
-  @keyframes logo-breathing {
-    0%, 100% {
-      transform: scale(1);
-      opacity: 0.8;
-    }
-    50% {
-      transform: scale(1.1);
-      opacity: 1;
-    }
-  }
-
-  .animate-logo-breathing {
-    animation: logo-breathing 4s ease-in-out infinite;
-  }
-
-  @keyframes logo-rotate {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
-  .animate-logo-rotate {
-    animation: logo-rotate 25s linear infinite;
-  }
-
-  /* Intelligent Pause: Stop animation when user interacts */
-  .fab-surface:hover, 
-  .fab-surface:active,
-  .fab-surface.is-paused {
-    animation-play-state: paused !important;
-  }
-
-  /* Accessibility: Reduce Motion Compliance */
-  @media (prefers-reduced-motion: reduce) {
-    .animate-fab-breathing-slow,
-    .animate-fab-breathing-fast,
-    .animate-fab-breathing {
-      animation: none !important;
-    }
-
-    .fab, .fab-surface, .motion-div {
-      transition: none !important;
-    }
-  }
-
-  .fab::after {
-    content: "";
-    position: absolute;
-    bottom: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
-    height: 10px;
-    background: radial-gradient(
-      ellipse at center,
-      rgba(0,0,0,0.25),
-      transparent
-    );
-    filter: blur(6px);
-    z-index: -1;
-  }
-
+  /* Navigation Layout (Flat style) */
   .bottom-nav {
-    backdrop-filter: blur(18px) !important;
-    background: rgba(20, 24, 40, 0.6) !important;
+    background-color: var(--card) !important;
+    border-top: 1px solid var(--border) !important;
   }
 
   .bottom-nav-item {
@@ -555,8 +233,9 @@
 
   .bottom-nav-item.active {
     opacity: 1 !important;
-    color: var(--accent-primary) !important;
+    color: var(--primary) !important;
   }
+
   /* --- APPLE STYLE TOGGLE --- */
   .switch-apple {
     all: unset;
@@ -565,78 +244,41 @@
     width: 50px !important;
     height: 25px !important;
     border-radius: 50px !important;
-    background: linear-gradient(to bottom, #b3b3b3, #e6e6e6) !important;
+    background: var(--muted) !important;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
   }
 
   .switch-apple[data-state="checked"] {
-    background: linear-gradient(to bottom, #4cd964, #5de24e) !important;
+    background: var(--primary) !important;
   }
 
   .switch-apple-thumb {
     display: block;
-    width: 23px !important;
-    height: 23px !important;
+    width: 21px !important;
+    height: 21px !important;
     border-radius: 50% !important;
     background-color: #fff !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
     transition: all 0.3s ease !important;
-    transform: translateX(1px);
+    transform: translateX(2px);
     pointer-events: none;
   }
 
   .switch-apple-thumb[data-state="checked"] {
-    transform: translateX(25px);
+    transform: translateX(27px);
   }
 
-  /* ─── TYPOGRAPHIC SCALE — Proportional letter-spacing enforcement ─── */
-  /* T1: Display/Hero titles (≥24px). Tight tracking pulls large glyphs together. */
-  .typo-display { letter-spacing: -0.025em; /* tracking-tight */ }
-  /* T2: Section headers (18–22px). Slightly tighter than body. */
+  /* Typographic scale helpers */
+  .typo-display { letter-spacing: -0.025em; }
   .typo-heading { letter-spacing: -0.015em; }
-  /* T3: Body / paragraph text. Default browser tracking is optimal here. */
-  .typo-body { letter-spacing: 0em; /* tracking-normal */ }
-  /* T4: Uppercase category labels, badges, status pills. Wide tracking for readability. */
-  .typo-label { letter-spacing: 0.12em; /* ~tracking-widest */ }
-  /* T5: Monospace/technical data (IDs, codes). Fixed-width friendly. */
+  .typo-body { letter-spacing: 0em; }
+  .typo-label { letter-spacing: 0.12em; }
   .typo-mono { letter-spacing: 0.05em; font-feature-settings: 'tnum' 1; }
 }
 
-/* ==========================================================================
-   MIDNIGHT / DEFAULT THEME — Text colour class overrides
-   These fix Tailwind class names that have no generated CSS (not in config)
-   or CSS variables that resolve to invalid colour values on dark backgrounds.
-   ========================================================================== */
-
-/* .text-secondary is not in the Tailwind colour config → no style generated */
-[data-theme="midnight"] .text-secondary,
-:root:not([data-theme]) .text-secondary {
-  color: #d4d4d8;  /* Zinc-300 — light enough for dark backgrounds */
-}
-
-/* .text-text-secondary is not in the Tailwind colour config → no style generated */
-[data-theme="midnight"] .text-text-secondary,
-:root:not([data-theme]) .text-text-secondary {
-  color: #a1a1aa;  /* Zinc-400 — muted but readable on dark backgrounds */
-}
-
-/* .text-muted is not in the Tailwind colour config → no style generated */
-[data-theme="midnight"] .text-muted,
-:root:not([data-theme]) .text-muted {
-  color: #a1a1aa;  /* Zinc-400 — muted but readable on dark backgrounds */
-}
-
-/* .bg-glass is referenced by components but undefined — give it a glass surface */
-[data-theme="midnight"] .bg-glass,
-:root:not([data-theme]) .bg-glass {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-/* Redesigned Reports transition fade-in effect */
+/* Flat Entrance Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -652,44 +294,10 @@
   animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* GPU-accelerated skeleton shimmer — transform-only animation (no layout/paint) */
-@keyframes shimmer-slide {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-.skeleton-shimmer::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  /* Diagonal gradient: transparent → subtle highlight → transparent */
-  background: linear-gradient(
-    105deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.06) 50%,
-    transparent 70%
-  );
-  animation: shimmer-slide 1.5s ease-in-out infinite;
-  will-change: transform;
-  pointer-events: none;
-}
-
-/* Respect reduced motion for shimmer */
-@media (prefers-reduced-motion: reduce) {
-  .skeleton-shimmer::after {
-    animation: none !important;
-  }
-}
-
-/* Kanban card entrance animation — GPU-accelerated scale + opacity */
 @keyframes kanban-card-in {
   0% {
     opacity: 0;
-    transform: scale(0.92);
+    transform: scale(0.95);
   }
   100% {
     opacity: 1;
@@ -698,23 +306,12 @@
 }
 
 .animate-kanban-card-in {
-  animation: kanban-card-in 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: kanban-card-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .animate-fadeIn,
   .animate-kanban-card-in {
     animation: none !important;
   }
 }
-
-/* ─── TYPOGRAPHIC SCALE — Proportional letter-spacing enforcement ─── */
-/* T1: Display/Hero titles (≥24px). Tight tracking pulls large glyphs together. */
-.typo-display { letter-spacing: -0.025em; /* tracking-tight */ }
-/* T2: Section headers (18–22px). Slightly tighter than body. */
-.typo-heading { letter-spacing: -0.015em; }
-/* T3: Body / paragraph text. Default browser tracking is optimal here. */
-.typo-body { letter-spacing: 0em; /* tracking-normal */ }
-/* T4: Uppercase category labels, badges, status pills. Wide tracking for readability. */
-.typo-label { letter-spacing: 0.12em; /* ~tracking-widest */ }
-/* T5: Monospace/technical data (IDs, codes). Fixed-width friendly. */
-.typo-mono { letter-spacing: 0.05em; font-feature-settings: 'tnum' 1; }

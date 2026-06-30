@@ -204,7 +204,7 @@ export default function SettingsPage() {
       {/* 1. Header */}
       <header className="flex items-center justify-between border-b border-white/5 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-sm text-teal-400 font-medium tracking-wider uppercase mb-1">
+          <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium tracking-wider uppercase mb-1">
             <Sparkles size={14} />
             User Preferences
           </div>
@@ -219,8 +219,8 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
         
         {/* Left Tab Switcher */}
-        <div className="glass-panel p-3 rounded-2xl relative overflow-hidden flex flex-col gap-1.5 z-10">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 blur-[60px] rounded-full pointer-events-none" />
+        <div className="studio-panel p-3 rounded-2xl relative overflow-hidden flex flex-col gap-1.5 z-10">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--accent)]/5 blur-[60px] rounded-full pointer-events-none" />
           {tabs.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -230,11 +230,11 @@ export default function SettingsPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-left transition-all cursor-pointer ${
                   isActive
-                    ? "bg-gradient-to-br from-teal-500/10 to-indigo-500/10 text-teal-400 border border-teal-500/20 shadow-[0_0_12px_rgba(13,148,136,0.1)]"
+                    ? "active-tab-capsule"
                     : "bg-transparent text-zinc-400 border border-transparent hover:bg-white/5 hover:text-zinc-200"
                 }`}
               >
-                <Icon size={14} className={isActive ? "text-teal-400" : "text-zinc-500"} />
+                <Icon size={14} className={isActive ? "text-[var(--accent)]" : "text-zinc-500"} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -251,7 +251,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Right Active Panel */}
-        <div className="md:col-span-3 glass-panel p-6 rounded-2xl relative overflow-hidden min-h-[400px]">
+        <div className="md:col-span-3 studio-panel p-6 rounded-2xl relative overflow-hidden min-h-[400px]">
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[100px] rounded-full pointer-events-none" />
           <AnimatePresence mode="wait">
 
@@ -268,14 +268,14 @@ export default function SettingsPage() {
                 <h2 className="text-base font-bold text-white m-0 border-b border-white/5 pb-2">Profile Information</h2>
                 
                 {/* Profile Pic Card */}
-                <div className="flex items-center gap-4 p-4 rounded-xl glass-card w-fit relative z-10">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-teal-500/20 to-indigo-500/20 border border-teal-500/20 flex items-center justify-center text-lg font-bold text-teal-400 shadow-[0_0_16px_rgba(20,184,166,0.15)]">
+                <div className="flex items-center gap-4 p-4 rounded-xl studio-card w-fit relative z-10">
+                  <div className="w-14 h-14 rounded-full bg-[var(--bg-tertiary)] border border-[var(--accent)]/25 flex items-center justify-center text-lg font-bold text-[var(--accent)] shadow-none">
                     {getInitials(profileForm.name)}
                   </div>
                   <div>
                     <div className="text-xs font-bold text-zinc-200">{profileForm.name || "User"}</div>
                     <div className="text-[10px] text-zinc-500 mt-0.5 capitalize">{user?.role || "Member"}</div>
-                    <button type="button" className="text-[10px] text-teal-400 font-bold hover:text-teal-300 mt-2 block cursor-pointer">
+                    <button type="button" className="text-[10px] text-[var(--accent)] font-bold hover:text-[var(--accent-hover)] mt-2 block cursor-pointer">
                       Change Photo
                     </button>
                   </div>
@@ -288,7 +288,7 @@ export default function SettingsPage() {
                       type="text"
                       value={profileForm.name}
                       onChange={e => setProfileForm(f => ({ ...f, name: e.target.value }))}
-                      className="bg-zinc-950/40 border border-white/5 rounded-xl px-3.5 py-2 text-xs text-zinc-200 focus:outline-none focus:border-teal-500/50 transition-all font-sans"
+                      className="bg-zinc-950/40 border border-white/5 rounded-xl px-3.5 py-2 text-xs text-zinc-200 focus:outline-none focus:border-[var(--accent)]/55 transition-all font-sans"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -304,14 +304,14 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="flex justify-end">
-                  <button
-                    type="submit"
-                    disabled={savingProfile}
-                    className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 disabled:opacity-60 text-white text-sm font-semibold px-5 py-2 rounded-xl shadow-lg shadow-teal-500/10 transition-all cursor-pointer"
-                  >
-                    {savingProfile ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
-                    {savingProfile ? "Saving..." : "Save Profile"}
-                  </button>
+                      <button
+                        type="submit"
+                        disabled={savingProfile}
+                        className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-60 text-zinc-950 text-xs font-semibold px-5 py-2.5 rounded-full transition-all cursor-pointer"
+                      >
+                        {savingProfile ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
+                        {savingProfile ? "Saving..." : "Save Profile"}
+                      </button>
                 </div>
               </motion.form>
             )}
@@ -332,7 +332,7 @@ export default function SettingsPage() {
                     { key: "pushAlerts", title: "Push Alerts", desc: "Receive real-time banner notifications on task assignments." },
                     { key: "conflictWarnings", title: "Conflict Warnings", desc: "Get alerted when booking overlaps occur in campaigns." },
                   ].map(item => (
-                    <div key={item.key} className="flex items-center justify-between p-3.5 rounded-xl glass-card relative z-10 group hover:border-white/10 transition-colors">
+                    <div key={item.key} className="flex items-center justify-between p-3.5 rounded-xl studio-card relative z-10 group hover:border-white/10 transition-colors">
                       <div className="flex-1 pr-4">
                         <div className="text-xs font-bold text-zinc-200">{item.title}</div>
                         <p className="text-[10px] text-zinc-500 m-0 mt-0.5 leading-relaxed">{item.desc}</p>
@@ -340,9 +340,9 @@ export default function SettingsPage() {
                       <button
                         type="button"
                         onClick={() => setNotifSettings(s => ({ ...s, [item.key]: !s[item.key as keyof typeof s] }))}
-                        className={`w-9 h-5 rounded-full p-0.5 transition-all duration-200 cursor-pointer flex-shrink-0 ${notifSettings[item.key as keyof typeof notifSettings] ? "bg-teal-500" : "bg-zinc-800"}`}
+                        className={`w-9 h-5 rounded-full p-0.5 transition-all duration-200 cursor-pointer flex-shrink-0 ${notifSettings[item.key as keyof typeof notifSettings] ? "bg-[var(--accent)]" : "bg-zinc-800"}`}
                       >
-                        <div className={`w-4 h-4 rounded-full bg-white transition-transform ${notifSettings[item.key as keyof typeof notifSettings] ? "translate-x-4" : "translate-x-0"}`}></div>
+                        <div className={`w-4 h-4 rounded-full bg-zinc-950 transition-transform ${notifSettings[item.key as keyof typeof notifSettings] ? "translate-x-4" : "translate-x-0"}`}></div>
                       </button>
                     </div>
                   ))}
@@ -350,7 +350,7 @@ export default function SettingsPage() {
                 <div className="flex justify-end">
                   <button
                     onClick={() => showToast("success", "Notification preferences saved!")}
-                    className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-all cursor-pointer"
+                    className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 text-xs font-semibold px-5 py-2.5 rounded-full transition-all cursor-pointer"
                   >
                     <Save size={15} />
                     Save Preferences
@@ -378,7 +378,7 @@ export default function SettingsPage() {
                       value={passwordForm.newPassword}
                       onChange={e => setPasswordForm(f => ({ ...f, newPassword: e.target.value }))}
                       placeholder="••••••••••••"
-                      className="bg-zinc-950/40 border border-white/5 rounded-xl px-3.5 py-2 text-xs text-zinc-200 focus:outline-none focus:border-teal-500/50 transition-all font-sans"
+                      className="bg-zinc-950/40 border border-white/5 rounded-xl px-3.5 py-2 text-xs text-zinc-200 focus:outline-none focus:border-[var(--accent)]/55 transition-all font-sans"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -391,7 +391,7 @@ export default function SettingsPage() {
                       className={`bg-zinc-950/40 border rounded-xl px-3.5 py-2 text-xs text-zinc-200 focus:outline-none transition-all font-sans ${
                         passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword
                           ? "border-red-500/50 focus:border-red-500/70"
-                          : "border-white/5 focus:border-teal-500/50"
+                          : "border-white/5 focus:border-[var(--accent)]/55"
                       }`}
                     />
                     {passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword && (
@@ -403,7 +403,7 @@ export default function SettingsPage() {
                   <button
                     type="submit"
                     disabled={savingPassword || !passwordForm.newPassword}
-                    className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 disabled:opacity-60 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-all cursor-pointer"
+                    className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-60 text-zinc-950 text-xs font-semibold px-5 py-2.5 rounded-full transition-all cursor-pointer"
                   >
                     {savingPassword ? <Loader2 size={15} className="animate-spin" /> : <Shield size={15} />}
                     {savingPassword ? "Updating..." : "Update Password"}
@@ -422,7 +422,7 @@ export default function SettingsPage() {
                 className="flex flex-col gap-5"
               >
                 <h2 className="text-base font-bold text-white m-0 border-b border-white/5 pb-2">Local Storage</h2>
-                <div className="glass-card p-4 rounded-xl flex items-center justify-between relative z-10">
+                <div className="studio-card p-4 rounded-xl flex items-center justify-between relative z-10">
                   <div>
                     <div className="text-xs font-bold text-zinc-200">Local cache database</div>
                     <div className="text-[10px] text-zinc-500 mt-1">42.5 MB used for offline index.</div>
@@ -446,3 +446,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+

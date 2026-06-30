@@ -87,8 +87,8 @@ export const GroupIconUploadModal: React.FC<GroupIconUploadModalProps> = ({
                 <div className="p-6 border-b border-white/5 bg-zinc-900/50">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-3 text-lg font-semibold tracking-tight text-white">
-                            <div className="p-2 bg-indigo-500/10 rounded-lg">
-                                <ImageIcon className="w-5 h-5 text-indigo-400" />
+                            <div className="p-2 bg-[var(--accent-wash)] rounded-lg">
+                                <ImageIcon className="w-5 h-5 text-[var(--accent)]" />
                             </div>
                             Edit Group Icon Photo
                         </DialogTitle>
@@ -124,10 +124,10 @@ export const GroupIconUploadModal: React.FC<GroupIconUploadModalProps> = ({
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
                                 <Label className="text-sm font-semibold text-zinc-300 flex items-center gap-2.5">
-                                    <ZoomIn className="w-4 h-4 text-indigo-400" />
+                                    <ZoomIn className="w-4 h-4 text-[var(--accent)]" />
                                     Scale Image
                                 </Label>
-                                <span className="text-xs font-mono bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded-full border border-indigo-500/20">
+                                <span className="text-xs font-mono bg-[var(--accent-wash)] text-[var(--accent)] px-2 py-0.5 rounded-full border border-[var(--accent)]/20">
                                     {Math.round(zoom * 100)}%
                                 </span>
                             </div>
@@ -181,7 +181,7 @@ export const GroupIconUploadModal: React.FC<GroupIconUploadModalProps> = ({
                     </Button>
                     <Button
                         onClick={handleSave}
-                        className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-lg shadow-indigo-600/20 transition-all active:scale-[0.98]"
+                        className="flex-1 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 rounded-full font-bold shadow-none transition-all"
                         disabled={isUploading || !imageSrc}
                     >
                         {isUploading ? (

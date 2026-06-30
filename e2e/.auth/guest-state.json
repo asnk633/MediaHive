@@ -2,7 +2,7 @@
   "cookies": [],
   "origins": [
     {
-      "origin": "http://localhost:3005",
+      "origin": "http://localhost:3000",
       "localStorage": [
         {
           "name": "playwright_test_role",
@@ -19,10 +19,6 @@
         {
           "name": "mediahive_onboarding_complete",
           "value": "true"
-        },
-        {
-          "name": "mediahive-theme",
-          "value": "midnight"
         },
         {
           "name": "playwright_test_auth",

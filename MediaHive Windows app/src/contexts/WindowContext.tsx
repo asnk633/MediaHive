@@ -8,14 +8,19 @@ interface WindowContextProps {
   isDesktop: boolean;
 }
 
-const WindowContext = createContext<WindowContextProps>({
-  isMaximized: false,
-  isDesktop: false,
-});
+export const WindowContext = createContext<WindowContextProps | undefined>(undefined);
 
 export function WindowProvider({ children }: { children: React.ReactNode }) {
   const [isMaximized, setIsMaximized] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const detected = typeof window !== 'undefined' && (!!(window as any).__TAURI_INTERNALS__ || !!(window as any).__TAURI__ || !!(window as any).isTauri);
+    if (detected) {
+      setIsDesktop(true);
+      document.documentElement.classList.add("desktop-app");
+    }
+  }, []);
 
   // Manage window-resizing class on document root to disable layout transitions during resize/maximization
   useEffect(() => {
@@ -49,7 +54,8 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
 
     const checkTauri = () => {
       if (cancelled) return;
-      if (isTauri()) {
+      const detected = isTauri() || (typeof window !== 'undefined' && (!!(window as any).__TAURI_INTERNALS__ || !!(window as any).__TAURI__ || !!(window as any).isTauri));
+      if (detected) {
         setIsDesktop(true);
         import("@tauri-apps/api/window").then((windowModule) => {
           const appWindow = windowModule.getCurrentWindow();
@@ -71,21 +77,6 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
           }).then((u) => {
             if (cancelled) u();
             else unlistenUnmaximized = u;
-          });
-
-          appWindow.onResized(async () => {
-            if (cancelled) return;
-            const max = await appWindow.isMaximized();
-            setIsMaximized((prev) => {
-              if (prev !== max) return max;
-              return prev;
-            });
-          }).then((u) => {
-            if (cancelled) {
-              u();
-            } else {
-              unlistenFn = u;
-            }
           });
         }).catch(console.error);
       } else if (retries < 40) {
@@ -114,6 +105,16 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isMaximized]);
 
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      if (isDesktop) {
+        document.documentElement.classList.add("desktop-app");
+      } else {
+        document.documentElement.classList.remove("desktop-app");
+      }
+    }
+  }, [isDesktop]);
+
   return (
     <WindowContext.Provider value={{ isMaximized, isDesktop }}>
       {children}
@@ -121,4 +122,10 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useWindow = () => useContext(WindowContext);
+export const useWindow = () => {
+  const context = useContext(WindowContext);
+  if (context === undefined) {
+    throw new Error("useWindow must be used within a WindowProvider");
+  }
+  return context;
+};

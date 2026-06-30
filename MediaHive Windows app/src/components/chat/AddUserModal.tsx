@@ -8,12 +8,12 @@ import { supabase } from '@/lib/supabaseClient';
 
 const getUserGradient = (name: string = 'User') => {
   const gradients = [
-    'from-blue-500 to-indigo-500',
-    'from-teal-500 to-emerald-500',
-    'from-amber-500 to-orange-500',
-    'from-rose-500 to-pink-500',
-    'from-purple-500 to-fuchsia-500',
-    'from-sky-500 to-blue-500'
+    'from-amber-500 to-yellow-500 text-zinc-950',
+    'from-yellow-550 to-amber-600 text-zinc-950',
+    'from-amber-600 to-orange-550 text-zinc-950',
+    'from-rose-500 to-pink-500 text-white',
+    'from-purple-500 to-fuchsia-500 text-white',
+    'from-yellow-600 to-orange-660 text-zinc-950'
   ];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
@@ -137,7 +137,7 @@ export default function AddUserModal({ room, currentUser, allUsers, trigger }: a
       );
     }
     return (
-      <span className="text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 typo-mono shrink-0">
+      <span className="text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-[var(--accent-wash)] text-[var(--accent)] border border-[var(--accent)]/20 typo-mono shrink-0">
         Member
       </span>
     );
@@ -162,14 +162,14 @@ export default function AddUserModal({ room, currentUser, allUsers, trigger }: a
       <DialogContent className="sm:max-w-md bg-zinc-950 border border-white/5 text-zinc-100 p-6 flex flex-col max-h-[85vh] shadow-2xl">
         <DialogHeader className="shrink-0">
           <DialogTitle className="typo-heading text-lg text-white font-medium flex items-center gap-2">
-            <Sparkles className="h-4.5 w-4.5 text-indigo-400" />
+            <Sparkles className="h-4.5 w-4.5 text-[var(--accent)]" />
             Add to Chat
           </DialogTitle>
           <DialogDescription className="sr-only">
             Add team members to this chat room.
           </DialogDescription>
           <div className="text-xs text-zinc-400 mt-1.5 leading-relaxed bg-white/[0.01] border border-white/[0.03] p-2.5 rounded-xl flex gap-2 items-start">
-            <ShieldAlert className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
+            <ShieldAlert className="h-4 w-4 text-[var(--accent)] shrink-0 mt-0.5" />
             <span>
               Adding users immediately grants chat access. Managers receive an instant veto alert.
             </span>
@@ -184,7 +184,7 @@ export default function AddUserModal({ room, currentUser, allUsers, trigger }: a
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search by name or email..." 
-              className="w-full pl-9 pr-4 py-2 bg-black/40 border border-white/[0.06] rounded-xl text-xs text-white placeholder-white/20 focus:outline-none focus:border-indigo-500/30 transition-all font-light"
+              className="w-full pl-9 pr-4 py-2 bg-black/40 border border-white/[0.06] rounded-xl text-xs text-white placeholder-white/20 focus:outline-none focus:border-[var(--accent)]/30 transition-all font-light"
             />
           </div>
 
@@ -205,11 +205,11 @@ export default function AddUserModal({ room, currentUser, allUsers, trigger }: a
                     onClick={() => handleToggleUser(u.id)}
                     className={`w-full text-left px-3.5 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-3.5 border group cursor-pointer ${
                       isSelected 
-                        ? 'bg-indigo-600/[0.06] border-indigo-500/30 shadow-[0_0_18px_rgba(99,102,241,0.05)] text-white' 
+                        ? 'bg-[var(--accent-wash)] border-[var(--accent)]/20 shadow-none text-white' 
                         : 'bg-white/[0.01] hover:bg-white/[0.03] border-transparent text-white/80 hover:text-white'
                     }`}
                   >
-                    <div className={`h-8 w-8 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center text-white shrink-0 font-semibold text-[10px] tracking-wider shadow-inner shadow-white/10 group-hover:scale-105 transition-transform duration-300`}>
+                    <div className={`h-8 w-8 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center text-zinc-950 shrink-0 font-bold text-[10px] tracking-wider shadow-inner shadow-white/10 group-hover:scale-105 transition-transform duration-300`}>
                       {initials}
                     </div>
 
@@ -223,7 +223,7 @@ export default function AddUserModal({ room, currentUser, allUsers, trigger }: a
 
                     <div className={`h-4.5 w-4.5 rounded-full flex items-center justify-center border transition-all shrink-0 ${
                       isSelected 
-                        ? 'border-indigo-500 bg-indigo-500 text-white' 
+                        ? 'border-[var(--accent)] bg-[var(--accent)] text-zinc-950' 
                         : 'border-white/10 bg-black/10 group-hover:border-white/20'
                     }`}>
                       {isSelected && <Check className="h-3 w-3" strokeWidth={3} />}
@@ -250,7 +250,7 @@ export default function AddUserModal({ room, currentUser, allUsers, trigger }: a
           <Button 
             onClick={handleAddUser} 
             disabled={loading || selectedUserIds.length === 0}
-            className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-600/20 disabled:bg-indigo-950 disabled:text-indigo-400 h-10 px-4 flex items-center gap-1.5"
+            className="bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 rounded-full font-bold shadow-none disabled:opacity-50 disabled:bg-zinc-800 disabled:text-zinc-500 h-10 px-5 flex items-center gap-1.5"
           >
             {loading ? (
               'Adding...'

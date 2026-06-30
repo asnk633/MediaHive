@@ -82,7 +82,7 @@ export default function GovernancePage() {
       {/* Header */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
         <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-sm text-teal-400 font-medium tracking-wider uppercase mb-1">
+          <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium tracking-wider uppercase mb-1">
             <Sparkles size={14} />
             Compliance & Safety
           </div>
@@ -93,7 +93,7 @@ export default function GovernancePage() {
         </div>
         <button 
           onClick={() => setShowPolicyModal(true)}
-          className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-teal-500/10 hover:shadow-teal-500/20 active:scale-95 transition-all cursor-pointer">
+          className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 text-xs font-semibold px-4 py-2 rounded-full transition-all cursor-pointer">
           <Plus size={16} />
           <span>Add Policy</span>
         </button>
@@ -129,13 +129,13 @@ export default function GovernancePage() {
             <motion.div
               initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-md glass-panel rounded-3xl shadow-2xl overflow-hidden relative"
+              className="w-full max-w-md studio-panel rounded-3xl shadow-2xl overflow-hidden relative"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)]/5 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 relative z-10">
                 <div>
                   <h2 className="text-base font-bold text-white m-0">New Policy</h2>
-                  <p className="text-[11px] text-zinc-500 m-0 mt-0.5">Enforce a new governance rule</p>
+                  <p className="text-[11px] text-zinc-550 m-0 mt-0.5">Enforce a new governance rule</p>
                 </div>
                 <button onClick={() => setShowPolicyModal(false)} className="p-2 rounded-xl hover:bg-white/5 text-zinc-400 hover:text-white transition-colors cursor-pointer relative z-20">
                   <X size={16} />
@@ -146,22 +146,22 @@ export default function GovernancePage() {
                   <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Policy Name *</label>
                   <input required autoFocus type="text" value={policyForm.name} onChange={e => setPolicyForm(f => ({ ...f, name: e.target.value }))}
                     placeholder="e.g. Mandatory Review"
-                    className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/30 transition-all font-sans" />
+                    className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-650 focus:outline-none focus:border-[var(--accent)]/55 focus:ring-1 focus:ring-[var(--accent)]/30 transition-all font-sans" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Metric / Tag</label>
                   <input type="text" value={policyForm.metric} onChange={e => setPolicyForm(f => ({ ...f, metric: e.target.value }))}
                     placeholder="e.g. Compliance, Security"
-                    className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/30 transition-all font-sans" />
+                    className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-650 focus:outline-none focus:border-[var(--accent)]/55 focus:ring-1 focus:ring-[var(--accent)]/30 transition-all font-sans" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Description</label>
                   <textarea value={policyForm.description} onChange={e => setPolicyForm(f => ({ ...f, description: e.target.value }))}
                     rows={3} placeholder="What does this policy enforce?"
-                    className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/30 transition-all font-sans resize-none" />
+                    className="bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-650 focus:outline-none focus:border-[var(--accent)]/55 focus:ring-1 focus:ring-[var(--accent)]/30 transition-all font-sans resize-none" />
                 </div>
                 <button type="submit" disabled={addingPolicy || !policyForm.name.trim()}
-                  className="mt-4 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 disabled:opacity-50 text-white text-sm font-bold px-4 py-3 rounded-xl shadow-lg shadow-teal-500/20 active:scale-[0.98] transition-all cursor-pointer">
+                  className="mt-4 w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-zinc-950 text-xs font-bold px-4 py-3 rounded-full transition-all cursor-pointer">
                   {addingPolicy ? <Loader2 size={16} className="animate-spin" /> : <ShieldCheck size={16} />}
                   {addingPolicy ? "Adding..." : "Add Policy"}
                 </button>
@@ -178,7 +178,7 @@ export default function GovernancePage() {
         <div className="lg:col-span-2 flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider m-0">Active Policies</h3>
-            <button onClick={() => setShowPolicyModal(true)} className="text-zinc-500 hover:text-teal-400 transition-colors cursor-pointer" title="Add Policy">
+            <button onClick={() => setShowPolicyModal(true)} className="text-zinc-505 hover:text-[var(--accent)] transition-colors cursor-pointer" title="Add Policy">
               <Plus size={14} />
             </button>
           </div>
@@ -196,13 +196,13 @@ export default function GovernancePage() {
                 <motion.div
                   whileHover={{ y: -4 }}
                   key={idx}
-                  className="glass-card rounded-2xl p-6 flex flex-col justify-between min-h-[160px] cursor-pointer group hover:shadow-[0_8px_32px_-8px_rgba(79,70,229,0.2)] hover:border-indigo-500/30 transition-all relative overflow-hidden"
+                  className="studio-card rounded-2xl p-6 flex flex-col justify-between min-h-[160px] cursor-pointer group hover:border-zinc-700 transition-all relative overflow-hidden"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="p-2 rounded-xl bg-zinc-800/50 border border-white/5 text-teal-400">
+                    <div className="p-2 rounded-xl bg-zinc-800/50 border border-white/5 text-[var(--accent)]">
                       <Icon size={16} />
                     </div>
-                    <span className="text-[9px] font-bold text-teal-400 bg-teal-500/10 border border-teal-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    <span className="text-[9px] font-bold text-[var(--accent)] bg-[var(--accent-wash)] border border-[var(--accent)]/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
                       {pol.metric || "Active"}
                     </span>
                   </div>
@@ -218,8 +218,8 @@ export default function GovernancePage() {
         </div>
 
         {/* Right: Audit Logs */}
-        <div className="glass-panel rounded-2xl p-5 flex flex-col gap-4 lg:sticky lg:top-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[50px] rounded-full pointer-events-none" />
+        <div className="studio-panel rounded-2xl p-5 flex flex-col gap-4 lg:sticky lg:top-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--accent)]/5 blur-[50px] rounded-full pointer-events-none" />
           <div className="flex items-center justify-between border-b border-white/5 pb-2">
             <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider m-0">Compliance Audits</h3>
             <span className="text-[10px] text-zinc-500">Auto check log</span>
@@ -231,7 +231,7 @@ export default function GovernancePage() {
             ) : audits.length === 0 ? (
               <div className="text-xs text-zinc-500 py-2 text-center">No recent audit logs</div>
             ) : audits.map((aud, idx) => (
-              <div key={idx} className="glass-card p-3 rounded-xl flex items-center justify-between gap-3 relative z-10">
+              <div key={idx} className="studio-card p-3 rounded-xl flex items-center justify-between gap-3 relative z-10">
                 <div>
                   <div className="text-xs font-bold text-zinc-200">{aud.rule || aud.action || "System Event"}</div>
                   <span className="text-[9px] text-zinc-500 mt-1 block">By {aud.auditor || aud.actor_id || "System"} • {aud.date || new Date(aud.created_at).toLocaleString()}</span>
@@ -250,3 +250,4 @@ export default function GovernancePage() {
     </div>
   );
 }
+

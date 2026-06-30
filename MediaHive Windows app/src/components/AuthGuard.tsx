@@ -5,10 +5,9 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { EtheralShadow } from "@/components/ui/etheral-shadow";
 import { useWindow } from "@/contexts/WindowContext";
 
-const PUBLIC_ROUTES = ["/login", "/auth/error"];
+const PUBLIC_ROUTES = ["/login", "/auth/error", "/auth/callback"];
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -25,6 +24,14 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
       // Not authenticated → redirect to login
       router.replace("/login");
     } else if (user && isPublicRoute) {
+      // If we are in the browser and the URL search params contain source=tauri,
+      // or we are on the auth callback page, do not redirect to dashboard.
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("source") === "tauri" || pathname.startsWith("/auth/callback")) {
+          return;
+        }
+      }
       // Already authenticated → redirect away from login to dashboard
       router.replace("/");
     }
@@ -33,10 +40,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   // While resolving the session, show a full-screen loader
   if (loading) {
     return (
-      <div className="w-full h-full bg-[#030305] relative overflow-hidden">
+      <div className="w-full h-full bg-[var(--bg-primary)] relative overflow-hidden flex items-center justify-center">
         {/* Absolute-positioned card: top=36px clears the fixed Titlebar */}
         <div
-          className="login-page-frame absolute overflow-hidden border border-zinc-800/80 rounded-2xl shadow-2xl"
+          className="login-page-frame absolute overflow-hidden border border-[var(--border)] bg-[var(--bg-secondary)] rounded-lg shadow-sm flex items-center justify-center"
           style={{
             top: 36,
             left: isMaximized ? 0 : 16,
@@ -48,41 +55,22 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
             zIndex: 10,
           }}
         >
-          <EtheralShadow
-            className="w-full h-full"
-            sizing="fill"
-            color="rgba(20, 184, 166, 0.22)"
-            animation={{ scale: 70, speed: 85 }}
-            noise={{ opacity: 0.12, scale: 1.2 }}
-          >
-            <div className="w-full h-full flex flex-col items-center justify-center gap-6 relative z-10">
-              <div className="relative flex items-center justify-center w-28 h-28">
-                <div className="absolute inset-0 rounded-full bg-teal-500/10 blur-xl animate-pulse" />
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 25,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                  className="w-20 h-20 flex items-center justify-center"
-                >
-                  <img
-                    src="/media-app-logo-golden.png"
-                    alt="MediaHive Logo"
-                    className="w-full h-full object-contain"
-                  />
-                </motion.div>
-              </div>
-
-              <div className="flex flex-col items-center gap-2">
-                <Loader2 size={20} className="text-teal-500 animate-spin" />
-                <span className="text-zinc-400 text-[10px] font-bold tracking-[0.2em] uppercase">
-                  Synchronizing Workspace Node
-                </span>
-              </div>
+          <div className="w-full h-full flex flex-col items-center justify-center gap-6 relative z-10">
+            <div className="relative flex items-center justify-center w-16 h-16">
+              <img
+                src="/media-app-logo-luminous.png"
+                alt="MediaHive Logo"
+                className="w-12 h-12 object-contain brightness-0 invert opacity-80"
+              />
             </div>
-          </EtheralShadow>
+
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 size={18} className="text-[var(--accent)] animate-spin" />
+              <span className="text-[var(--text-tertiary)] text-[10px] font-bold tracking-wider uppercase font-mono">
+                Synchronizing Workspace Node
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     );

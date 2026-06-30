@@ -40,16 +40,16 @@ import { logger } from '@/lib/logger';
 
 // Helper to resolve the default gradient background
 const getRoomIconStyle = (iconUrl: string = '', roomName: string = 'Room') => {
-  return 'from-indigo-600 to-violet-600';
+  return 'from-amber-500 to-yellow-600';
 };
 
 // Senders initials gradients
 const getUserGradient = (name: string = 'User') => {
   const gradients = [
-    'from-blue-500 to-indigo-500',
-    'from-teal-500 to-emerald-500',
-    'from-amber-500 to-orange-500',
-    'from-rose-500 to-pink-500',
+  'from-amber-500 to-yellow-500 text-zinc-950',
+  'from-yellow-550 to-amber-600 text-zinc-950',
+  'from-amber-600 to-orange-550 text-zinc-950',
+  'from-yellow-600 to-orange-600 text-zinc-950',
     'from-purple-500 to-fuchsia-500',
     'from-sky-500 to-blue-500'
   ];
@@ -770,10 +770,10 @@ export default function ChatWindow({
           </div>
 
           <div className="flex flex-col gap-0.5">
-            <h2 className="font-semibold text-sm text-white tracking-wide typo-heading flex items-center gap-2 group-hover:text-indigo-300 transition-colors">
+            <h2 className="font-semibold text-sm text-white tracking-wide typo-heading flex items-center gap-2 group-hover:text-[var(--accent)] transition-colors">
               {room.name || 'Support Chat'}
               {room.isMediaTeamOnly && (
-                <span className="text-[9px] tracking-widest uppercase px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/25">
+                <span className="text-[9px] tracking-widest uppercase px-1.5 py-0.5 rounded bg-[var(--accent-wash)] text-[var(--accent)] border border-[var(--accent)]/20">
                   Staff
                 </span>
               )}
@@ -789,7 +789,7 @@ export default function ChatWindow({
           <Button
             variant="ghost"
             size="icon"
-            className={`h-8 w-8 rounded-lg transition-all cursor-pointer ${searchOpen ? 'bg-white/10 text-indigo-400' : 'text-white/70 hover:text-white hover:bg-white/[0.04]'}`}
+            className={`h-8 w-8 rounded-lg transition-all cursor-pointer ${searchOpen ? 'bg-white/10 text-[var(--accent)]' : 'text-white/70 hover:text-white hover:bg-white/[0.04]'}`}
             onClick={() => {
               setSearchOpen(!searchOpen);
               if (searchOpen) setSearchQuery('');
@@ -801,7 +801,7 @@ export default function ChatWindow({
           <Button
             variant="ghost"
             size="icon"
-            className={`h-8 w-8 rounded-lg transition-all cursor-pointer ${infoOpen ? 'bg-white/10 text-indigo-400' : 'text-white/70 hover:text-white hover:bg-white/[0.04]'}`}
+            className={`h-8 w-8 rounded-lg transition-all cursor-pointer ${infoOpen ? 'bg-white/10 text-[var(--accent)]' : 'text-white/70 hover:text-white hover:bg-white/[0.04]'}`}
             onClick={() => setInfoOpen(!infoOpen)}
           >
             <Info className="h-4.5 w-4.5" />
@@ -825,7 +825,7 @@ export default function ChatWindow({
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search messages in this channel..."
-                className="w-full bg-white/[0.02] border border-white/[0.06] focus:border-indigo-500/30 rounded-lg pl-8 pr-4 py-1 text-xs text-white placeholder-white/20 focus:outline-none transition-all font-light"
+                className="w-full bg-white/[0.02] border border-white/[0.06] focus:border-[var(--accent)]/30 rounded-lg pl-8 pr-4 py-1 text-xs text-white placeholder-white/20 focus:outline-none transition-all font-light"
               />
             </div>
             {searchQuery && (
@@ -865,13 +865,13 @@ export default function ChatWindow({
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12 gap-3 text-[#a1a1aa] text-xs relative z-10">
-            <Loader2 className="h-5 w-5 animate-spin text-indigo-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-[var(--accent)]" />
             Loading messages...
           </div>
         ) : displayMessages.length === 0 ? (
           <div className="text-center text-[#a1a1aa] text-xs py-24 flex flex-col items-center justify-center gap-3 relative z-10 animate-in fade-in zoom-in duration-300">
             <div className="p-4 rounded-full bg-white/[0.01] border border-white/5 shadow-inner">
-              <Sparkles className="h-6 w-6 text-indigo-400 animate-pulse" strokeWidth={1.2} />
+              <Sparkles className="h-6 w-6 text-[var(--accent)] animate-pulse" strokeWidth={1.2} />
             </div>
             <div>
               <p className="font-medium text-white mb-0.5">{searchQuery ? 'No matching text found' : 'This is the start of your secure chat'}</p>
@@ -981,7 +981,7 @@ export default function ChatWindow({
                                   <textarea
                                     value={editDraftText}
                                     onChange={e => setEditDraftText(e.target.value)}
-                                    className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-xs text-white resize-none focus:outline-none focus:border-indigo-500 font-light"
+                                    className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-xs text-white resize-none focus:outline-none focus:border-[var(--accent)] font-light"
                                     rows={2}
                                   />
                                   <div className="flex justify-end gap-2">
@@ -993,7 +993,7 @@ export default function ChatWindow({
                                     </button>
                                     <button 
                                       onClick={() => submitEditMessage(msg.id)}
-                                      className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-[10px] text-white font-semibold transition-colors cursor-pointer"
+                                      className="px-2.5 py-1 bg-[var(--accent)] hover:bg-[var(--accent-hover)] rounded-full text-[10px] text-zinc-950 font-bold transition-colors cursor-pointer"
                                     >
                                       Save
                                     </button>
@@ -1001,7 +1001,7 @@ export default function ChatWindow({
                                 </div>
                               ) : (
                                 msg.text && msg.media_type !== 'document' && msg.media_type !== 'image' && msg.media_type !== 'video' && msg.media_type !== 'voice' && (
-                                  <p className="text-xs leading-relaxed font-light whitespace-pre-wrap select-text selection:bg-indigo-500/35">
+                                  <p className="text-xs leading-relaxed font-light whitespace-pre-wrap select-text selection:bg-[var(--accent)]/30">
                                     {searchOpen && searchQuery ? highlightText(msg.text, searchQuery) : msg.text}
                                   </p>
                                 )
@@ -1049,7 +1049,7 @@ export default function ChatWindow({
                                       rel="noreferrer" 
                                       className="flex items-center gap-3 p-3 bg-black/20 hover:bg-black/30 border border-white/5 hover:border-white/10 rounded-xl max-w-xs transition-all group/doc"
                                     >
-                                      <div className="p-2.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 group-hover/doc:scale-105 transition-transform duration-300 shrink-0">
+                                      <div className="p-2.5 rounded-lg bg-[var(--accent-wash)] text-[var(--accent)] border border-[var(--accent)]/20 group-hover/doc:scale-105 transition-transform duration-300 shrink-0">
                                         <FileText className="h-4 w-4" />
                                       </div>
                                       <div className="flex-1 overflow-hidden text-left">
@@ -1206,7 +1206,7 @@ export default function ChatWindow({
               y: { duration: 0.2 }
             }}
             onClick={() => scrollToBottom('smooth', true)}
-            className="absolute bottom-28 left-1/2 p-3.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white z-50 border border-white/10 transition-colors cursor-pointer shrink-0"
+            className="absolute bottom-28 left-1/2 p-3.5 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 z-50 border border-white/10 transition-colors cursor-pointer shrink-0"
             title="Scroll to bottom"
           >
             <ArrowDown className="h-5 w-5" />
@@ -1224,9 +1224,9 @@ export default function ChatWindow({
               exit={{ opacity: 0, y: 10 }}
               className="max-w-4xl mx-auto mb-3"
             >
-              <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3 flex flex-col items-center justify-center gap-2">
-                <Loader2 className="h-4 w-4 text-indigo-400 animate-spin" />
-                <p className="text-xs text-indigo-300/80 font-medium tracking-wide">Opening secure developer support chat...</p>
+              <div className="bg-[var(--accent-wash)] border border-[var(--accent)]/20 rounded-xl px-4 py-3 flex flex-col items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 text-[var(--accent)] animate-spin" />
+                <p className="text-xs text-[var(--accent)]/80 font-medium tracking-wide">Opening secure developer support chat...</p>
               </div>
             </motion.div>
           )}
@@ -1353,12 +1353,12 @@ export default function ChatWindow({
                   type="button" 
                   variant="ghost" 
                   size="icon" 
-                  className={`h-9 w-9 rounded-full border transition-all duration-300 cursor-pointer ${attachmentMenuOpen ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-600/25' : 'bg-white/[0.03] hover:bg-white/[0.08] text-[#a1a1aa] hover:text-white border-white/[0.06]'}`}
+                  className={`h-9 w-9 rounded-full border transition-all duration-300 cursor-pointer ${attachmentMenuOpen ? 'bg-[var(--accent)] text-zinc-950 border-[var(--accent)] shadow-none' : 'bg-white/[0.03] hover:bg-white/[0.08] text-[#a1a1aa] hover:text-white border-white/[0.06]'}`}
                   onClick={() => setAttachmentMenuOpen(!attachmentMenuOpen)}
                   disabled={uploading || isInitializingSupport}
                 >
                   {uploading ? (
-                    <Loader2 className="h-4 w-4 text-indigo-400 animate-spin" />
+                    <Loader2 className="h-4 w-4 text-[var(--accent)] animate-spin" />
                   ) : (
                     <Plus className={`h-4 w-4 transition-transform duration-500 ease-in-out ${attachmentMenuOpen ? 'rotate-45' : ''}`} />
                   )}
@@ -1385,7 +1385,7 @@ export default function ChatWindow({
               <Button 
                 type="submit" 
                 size="icon" 
-                className="shrink-0 h-9 w-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/10 cursor-pointer disabled:bg-indigo-950 disabled:text-indigo-400 transition-all" 
+                className="shrink-0 h-9 w-9 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 cursor-pointer disabled:bg-zinc-800 disabled:text-zinc-500 disabled:opacity-50 transition-all" 
                 disabled={!inputText.trim() || uploading || isInitializingSupport}
               >
                 <SendIcon className="h-3.5 w-3.5" />

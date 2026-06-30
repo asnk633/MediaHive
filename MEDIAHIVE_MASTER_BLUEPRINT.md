@@ -131,6 +131,7 @@ graph TD
 ## 4. Unified Changelog
 | Date | Platform / Component | Description | Author |
 | :--- | :--- | :--- | :--- |
+| 2026-06-30 | Mobile / Startup | **Asynchronous Notification & FCM Initialization**: Modified `lib/main.dart` to initialize NotificationService and FCMService asynchronously (using `unawaited` and error logging) so they do not block the critical startup path of `runApp()`. This prevents the app from getting stuck on the splash screen on physical devices. Verified `flutter analyze` passes clean with 0 new issues. | AI Agent |
 | 2026-06-30 | Desktop / Release CI & Updater | **Fixed CI/CD Release Pipeline & Updater Artifacts**: Upgraded pnpm-setup to v4 in workflow. Removed invalid eslint config keys and conditionally configured turbopack root to compile Next.js cleanly on Windows runners. Swapped tauri-plugin-snap-layout from Git dependency to crates.io version to bypass Git clone access failures (exit code 128). Switched to passwordless updater signing keys to resolve decryption errors, and enabled createUpdaterArtifacts to compile setup.exe, signature, and latest.json. | AI Agent |
 | 2026-06-30 | Desktop / OS & Update System | **Windows 11 Snap Layouts & Native Self-Updater**: Replaced decorum with `tauri-plugin-snap-layout` for reliable hover layouts. Improved hit sensation by widening controls to 48px and increasing Titlebar height to 40px (updating `globals.css` offsets). Connected `SystemUpdatesPage` and `UpdatePrompt` to native `tauri-plugin-updater` to enable fully functional startup checks, downloads, and app restarts. | AI Agent |
 | 2026-06-30 | Desktop / OS Integration | **Windows 11 Snap Layouts integration**: Installed and integrated `tauri-plugin-decorum` v1.1.1. Configured Rust setup (`lib.rs` to register the plugin and trigger `create_overlay_titlebar()`) and capability permissions (`decorum:allow-show-snap-overlay` in `default.json`). This restores native Windows 11 snap layout flyout behavior on hover/click of the custom titlebar. | AI Agent |
@@ -325,11 +326,8 @@ graph TD
 | 2026-06-30 | Web & Desktop / UI Redesign | **Scaled Central Workspace Logo.** Increased the centerpiece logo (`/media-app-logo-golden.png`) dimensions from `110 * scaleFactor` to `160 * scaleFactor` to make it visually stand out as the hero element over standard rotating orbit coins. Verified build compiles successfully. | AI Agent |
 | 2026-06-30 | Database / Cleanup | **Purged Test & Guest Accounts from Supabase.** Executed SQL scripts to permanently delete 107 obsolete `guest_%@test.com` accounts and 79 test `testuser_%@example.com` accounts from the `auth.users` schema. Cascade constraints automatically cleaned the `public.profiles` table, leaving exactly 8 active real profile records. | AI Agent |
 | 2026-06-30 | Web & Desktop / UI Redesign | **Customized Input Placeholders & Refactored Button Labels.** Updated auth form fields in `src/app/login/page.tsx` replacing generic placeholder strings: set Full Name to 'Shukoor Rahman', set Email inputs to 'you@thaibagarden.com', and blanked out default password bullet masks. Re-labeled 'Register Node' and 'profile node' elements to 'Register User' and 'user profile' for cleaner accessibility terminology. Verified build. | AI Agent |
-
-
-
-
-
+| 2026-06-30 | Mobile / Startup Flow | **Asynchronous Push Notification & FCM Startup Polish:** Refactored `main.dart` to initialize push notification and FCM services asynchronously using non-blocking `unawaited` blocks. This ensures the app instantly renders past the native splash screen and remains responsive, even if FCM or Google Play Services connection hangs. Verified clean compilation with `flutter analyze`. | AI Agent |
+| 2026-06-30 | Desktop / Fixes | **Window Controls, Deep-Link & Hydration Polish (v0.1.4 release).** Bumped version to `0.1.4`. Refactored `useIsTauri.ts` to consume `WindowContext` safely. Updated `ShellWrapper.tsx` with Strict Mode deep-link listener cleanup, collapsed duplicate slashes, and Next.js `router.push` client-side navigation. Added head script to `layout.tsx` to set `desktop-app` class before hydration. Added transition overrides to `globals.css` for `window-resizing` class. | AI Agent |
 
 ## 5. Known Quirks
 

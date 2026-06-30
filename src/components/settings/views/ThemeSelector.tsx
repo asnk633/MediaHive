@@ -7,42 +7,29 @@ import { Check } from 'lucide-react';
 
 const themes = [
     {
-        id: 'midnight',
-        name: 'Midnight Indigo',
-        description: 'Deep dark slate with rich blue & purple accents.',
-        bgFrom: '#02040a',
-        bgTo: '#0c0b25',
-        accent: '#6366f1',
+        id: 'light',
+        name: 'Light Theme',
+        description: 'Clean flat light mode with high contrast text.',
+        bgFrom: '#ffffff',
+        bgTo: '#f1f5f9',
+        accent: '#2563eb',
         preview: [
-            { color: '#02040a', flex: 2 },
-            { color: '#1a1a3e', flex: 1.5 },
-            { color: '#6366f1', flex: 0.8 },
+            { color: '#ffffff', flex: 2 },
+            { color: '#f1f5f9', flex: 1.5 },
+            { color: '#2563eb', flex: 0.8 },
         ],
     },
     {
-        id: 'golden',
-        name: 'Golden Glass',
-        description: 'Warm amber canvas with glassmorphism & golden glow.',
-        bgFrom: '#02040a',
-        bgTo: '#151100',
-        accent: '#FFB800',
+        id: 'dark',
+        name: 'Dark Theme',
+        description: 'Restful dark mode for low-light environments.',
+        bgFrom: '#0f172a',
+        bgTo: '#1e293b',
+        accent: '#38bdf8',
         preview: [
-            { color: '#02040a', flex: 2 },
-            { color: '#1a1400', flex: 1.5 },
-            { color: '#FFB800', flex: 0.8 },
-        ],
-    },
-    {
-        id: 'luminous',
-        name: 'Luminous White',
-        description: 'Bright airy layout with vivid sky-blue accents.',
-        bgFrom: '#f8fafc',
-        bgTo: '#e2e8f0',
-        accent: '#0284c7',
-        preview: [
-            { color: '#f8fafc', flex: 2 },
-            { color: '#dbeafe', flex: 1.5 },
-            { color: '#0284c7', flex: 0.8 },
+            { color: '#0f172a', flex: 2 },
+            { color: '#1e293b', flex: 1.5 },
+            { color: '#38bdf8', flex: 0.8 },
         ],
     },
 ];
@@ -51,7 +38,7 @@ export const ThemeSelector = () => {
     const { theme, setTheme } = useTheme();
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {themes.map((t) => {
                 const isActive = theme === t.id;
                 return (
@@ -88,10 +75,9 @@ export const ThemeSelector = () => {
                                 </span>
                                 {isActive && (
                                     <div
-                                        className="w-4 h-4 rounded-full flex items-center justify-center"
-                                        style={{ backgroundColor: t.accent }}
+                                        className="w-4 h-4 rounded-full flex items-center justify-center bg-primary"
                                     >
-                                        <Check size={9} className="text-foreground" strokeWidth={3} />
+                                        <Check size={9} className="text-white" strokeWidth={3} />
                                     </div>
                                 )}
                             </div>

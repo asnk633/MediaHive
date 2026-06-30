@@ -86,7 +86,7 @@ export function CreateEventModal({ isOpen, onClose }: CreateEventModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="glass-panel border-white/10 max-w-md w-full text-zinc-100 p-6 shadow-2xl">
+      <DialogContent className="studio-panel border-white/10 max-w-md w-full text-zinc-100 p-6 shadow-2xl !flex !flex-col !gap-4 max-h-[90vh] overflow-y-auto !h-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold tracking-wide text-white">
             Schedule New Event
@@ -105,10 +105,10 @@ export function CreateEventModal({ isOpen, onClose }: CreateEventModalProps) {
 
         {success ? (
           <div className="flex flex-col items-center justify-center py-8 gap-3 text-center">
-            <div className="w-12 h-12 rounded-full bg-teal-500/20 border border-teal-500/30 flex items-center justify-center text-teal-400">
+            <div className="w-12 h-12 rounded-full bg-[var(--accent)]/15 border border-[var(--accent)]/30 flex items-center justify-center text-[var(--accent)]">
               <Check size={24} strokeWidth={2.5} />
             </div>
-            <span className="text-sm font-semibold text-teal-300">Event scheduled successfully!</span>
+            <span className="text-sm font-semibold text-[var(--accent)]">Event scheduled successfully!</span>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
@@ -204,7 +204,7 @@ export function CreateEventModal({ isOpen, onClose }: CreateEventModalProps) {
             <button
               type="submit"
               disabled={saving || !form.title.trim()}
-              className="mt-2 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold py-3 rounded-xl shadow-lg shadow-teal-500/20 active:scale-[0.98] transition-all cursor-pointer"
+              className="mt-2 w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed text-zinc-950 text-sm font-semibold py-2.5 rounded-full active:scale-[0.98] transition-all cursor-pointer"
             >
               {saving ? (
                 <>
@@ -221,3 +221,4 @@ export function CreateEventModal({ isOpen, onClose }: CreateEventModalProps) {
     </Dialog>
   );
 }
+

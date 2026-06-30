@@ -528,3 +528,11 @@ html.dark, html.dark body {
 .desktop-app .window-titlebar {
   display: flex !important;
 }
+
+/* Disable transitions and animations during window resizing to prevent lags and rendering stutters */
+.window-resizing *, 
+.window-resizing *::before, 
+.window-resizing *::after {
+  transition: none !important;
+  animation: none !important;
+}

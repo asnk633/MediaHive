@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useRef, useEffect } from "react";
 
 export const StarsBackground = () => {
@@ -12,19 +12,21 @@ export const StarsBackground = () => {
     if (!ctx) return;
 
     let animationFrameId: number;
-    let resizeObserver: ResizeObserver | null = null;
     let stars: { x: number; y: number; radius: number; vx: number; vy: number; alpha: number }[] = [];
 
-    let cssWidth = 0;
-    let cssHeight = 0;
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initStars();
+    };
 
     const initStars = () => {
       stars = [];
-      const numStars = (cssWidth * cssHeight) / 4000;
+      const numStars = (canvas.width * canvas.height) / 4000;
       for (let i = 0; i < numStars; i++) {
         stars.push({
-          x: Math.random() * cssWidth,
-          y: Math.random() * cssHeight,
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
           radius: Math.random() * 1.5,
           vx: Math.floor(Math.random() * 50) - 25,
           vy: Math.floor(Math.random() * 50) - 25,
@@ -33,36 +35,8 @@ export const StarsBackground = () => {
       }
     };
 
-    const resize = (width: number, height: number) => {
-      const dpr = window.devicePixelRatio || 1;
-      cssWidth = width;
-      cssHeight = height;
-      // Set the pixel buffer to physical resolution
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      // Set CSS display size so canvas renders at 1:1 visual scale
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      // Scale context so all drawing uses CSS pixel coordinates
-      ctx.scale(dpr, dpr);
-      initStars();
-    };
-
-    if (canvas.parentElement) {
-      const rect = canvas.parentElement.getBoundingClientRect();
-      resize(rect.width, rect.height);
-
-      resizeObserver = new ResizeObserver((entries) => {
-        for (let entry of entries) {
-          const { width, height } = entry.contentRect;
-          resize(width, height);
-        }
-      });
-      resizeObserver.observe(canvas.parentElement);
-    }
-
     const draw = () => {
-      ctx.clearRect(0, 0, cssWidth, cssHeight);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       for (let i = 0; i < stars.length; i++) {
         const star = stars[i];
@@ -75,20 +49,19 @@ export const StarsBackground = () => {
         star.x += star.vx / 1000;
         star.y += star.vy / 1000;
 
-        // Boundaries in CSS coordinates
-        if (star.x < 0 || star.x > cssWidth) star.vx = -star.vx;
-        if (star.y < 0 || star.y > cssHeight) star.vy = -star.vy;
+        if (star.x < 0 || star.x > canvas.width) star.vx = -star.vx;
+        if (star.y < 0 || star.y > canvas.height) star.vy = -star.vy;
       }
 
       animationFrameId = requestAnimationFrame(draw);
     };
 
+    window.addEventListener("resize", resize);
+    resize();
     draw();
 
     return () => {
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
+      window.removeEventListener("resize", resize);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);

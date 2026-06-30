@@ -8,8 +8,7 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { supabase } from "@/lib/supabaseClient";
-import { GlowingEffect } from "@/components/ui/glowing-effect";
-import { GooeyInput } from "@/components/ui/gooey-input";
+import { Input } from "@/components/ui/input";
 import { MasterCreateButton } from "@/components/ui/master-create-button";
 import { AnimatedList } from "@/components/ui/animated-list";
 import { RequestsWidget } from "@/components/dashboard/RequestsWidget";
@@ -32,7 +31,7 @@ const FilmFrameCorners = () => (
 const TimelineDivider = () => (
   <div className="relative flex items-center w-full select-none" aria-hidden>
     <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-    <div className="absolute right-8 w-2 h-2 rounded-full bg-teal-400 shadow-[0_0_10px_#14b8a6]" />
+    <div className="absolute right-8 w-2 h-2 rounded-full bg-[var(--accent)] shadow-[0_0_10px_rgba(217,155,22,0.5)]" />
   </div>
 );
 
@@ -147,17 +146,13 @@ export default function Dashboard() {
     <motion.div variants={container} initial="hidden" animate="show" className="flex flex-col gap-6 max-w-[1400px] mx-auto w-full pb-10">
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <motion.header variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6 dash-header-anchor">
+      <motion.header variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border)] pb-6 dash-header-anchor">
         <div>
-          <div className="flex items-center gap-1.5 text-[11px] text-teal-400 font-semibold tracking-wider uppercase mb-1">
-            <Sparkles size={11} />
-            Good {greetTime}
-          </div>
-          <h1 className="heading-lux text-3xl m-0 capitalize leading-none">{user?.name || "Welcome back"}</h1>
-          <p className="subtext-secondary m-0 mt-1">{tagline}</p>
+          <h1 className="text-[28px] font-bold text-[var(--text-primary)] m-0 leading-tight">Dashboard</h1>
+          <p className="text-sm text-[var(--text-secondary)] m-0 mt-1">Welcome back to your workspace portal</p>
         </div>
         <div className="flex items-center gap-3">
-          <GooeyInput className="w-64" />
+          <Input className="w-64" placeholder="Search workspace..." />
           <MasterCreateButton />
         </div>
       </motion.header>
@@ -176,15 +171,13 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 content-grid-surface">
 
         {/* Tasks in Queue — 2 cols */}
-        <motion.article variants={item} className="lg:col-span-2 glass-card-premium panel-accent-top p-6 flex flex-col gap-4 relative overflow-hidden group">
-          <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} />
-          <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 blur-[80px] rounded-full pointer-events-none" />
-          <div className="flex items-center justify-between border-b border-white/5 pb-4 relative z-10">
+        <motion.article variants={item} className="lg:col-span-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg p-6 flex flex-col gap-4 relative overflow-hidden group">
+          <div className="flex items-center justify-between border-b border-[var(--border)] pb-4 relative z-10">
             <div>
-              <h2 className="heading-lux text-lg m-0 tracking-tight">Tasks in Queue</h2>
-              <p className="text-[10px] text-zinc-500 m-0 mt-0.5 uppercase tracking-[0.14em] font-semibold">Your workspace backlog</p>
+              <h2 className="text-base font-semibold text-[var(--text-primary)] m-0">Tasks in Queue</h2>
+              <p className="text-[10px] text-[var(--text-tertiary)] m-0 mt-0.5 uppercase tracking-wider font-bold">Your workspace backlog</p>
             </div>
-            <Link href="/tasks" className="text-xs text-teal-400 hover:text-teal-300 font-medium">View All</Link>
+            <Link href="/tasks" className="text-xs text-[var(--accent)] hover:text-[var(--accent-hover)] font-medium">View All</Link>
           </div>
           <div className="flex flex-col gap-2.5 relative z-10">
             {loadingData
@@ -208,16 +201,15 @@ export default function Dashboard() {
         </motion.article>
 
         {/* My Requests — 1 col */}
-        <motion.article variants={item} className="lg:col-span-1 glass-card-premium p-6 flex flex-col justify-between relative overflow-hidden group">
-          <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} />
+        <motion.article variants={item} className="lg:col-span-1 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg p-6 flex flex-col justify-between relative overflow-hidden group">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <h3 className="heading-lux text-sm uppercase tracking-wider m-0">My Requests</h3>
-              <span className="text-[10px] text-zinc-500 font-semibold tracking-wider uppercase">Personal</span>
+              <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider m-0">My Requests</h3>
+              <span className="text-[10px] text-[var(--text-tertiary)] font-bold tracking-wider uppercase">Personal</span>
             </div>
             {loadingData
-              ? <div className="h-3.5 w-24 bg-white/5 rounded animate-pulse mt-1" />
-              : <p className="text-[13px] text-zinc-400 mt-1">{myReqTotal} Total Requests</p>
+              ? <div className="h-3.5 w-24 bg-[var(--bg-tertiary)] rounded animate-pulse mt-1" />
+              : <p className="text-[13px] text-[var(--text-secondary)] mt-1">{myReqTotal} Total Requests</p>
             }
             <div className="grid grid-cols-2 gap-3 mt-4">
               {[
@@ -226,27 +218,27 @@ export default function Dashboard() {
                 { label: "Completed",   val: myReqCompleted },
                 { label: "Total",       val: myReqTotal },
               ].map(({ label, val }) => (
-                <div key={label} className="bg-black/50 border border-white/[0.07] rounded-2xl p-3 flex flex-col items-center justify-center">
+                <div key={label} className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-md p-3 flex flex-col items-center justify-center">
                   {loadingData
-                    ? <div className="h-8 w-8 bg-white/5 rounded animate-pulse" />
-                    : <span className="heading-lux text-2xl">{val}</span>
+                    ? <div className="h-8 w-8 bg-[var(--bg-tertiary)] rounded animate-pulse" />
+                    : <span className="text-xl font-bold text-[var(--text-primary)] font-mono">{val}</span>
                   }
-                  <span className="text-[9px] text-zinc-500 uppercase tracking-[0.12em] font-bold mt-1">{label}</span>
+                  <span className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider font-bold mt-1">{label}</span>
                 </div>
               ))}
             </div>
           </div>
           <div className="mt-4">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[10px] text-zinc-400 font-medium">Request Progress</span>
+              <span className="text-[10px] text-[var(--text-secondary)] font-medium">Request Progress</span>
               {loadingData
-                ? <span className="inline-block h-3.5 w-8 bg-white/5 rounded animate-pulse" />
-                : <span className="text-xs font-bold text-teal-400">{myReqPct}%</span>
+                ? <span className="inline-block h-3.5 w-8 bg-[var(--bg-tertiary)] rounded animate-pulse" />
+                : <span className="text-xs font-bold text-[var(--accent)]">{myReqPct}%</span>
               }
             </div>
             <div className="lux-progress-track">
               <motion.div
-                className="lux-progress-fill bg-gradient-to-r from-teal-500 to-indigo-500"
+                className="lux-progress-fill bg-[var(--accent)]"
                 initial={{ width: 0 }}
                 animate={{ width: loadingData ? "0%" : `${myReqPct}%` }}
                 transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
@@ -256,12 +248,10 @@ export default function Dashboard() {
         </motion.article>
 
         {/* Upcoming Schedule — 2 cols */}
-        <motion.article variants={item} className="lg:col-span-2 glass-card-premium p-6 flex flex-col gap-4 relative overflow-hidden group">
-          <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/5 blur-[80px] rounded-full pointer-events-none" />
-          <div className="flex items-center justify-between border-b border-white/5 pb-4 relative z-10">
-            <h3 className="heading-lux text-lg m-0">Upcoming Schedule</h3>
-            <Calendar size={16} className="text-zinc-500" />
+        <motion.article variants={item} className="lg:col-span-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg p-6 flex flex-col gap-4 relative overflow-hidden group">
+          <div className="flex items-center justify-between border-b border-[var(--border)] pb-4 relative z-10">
+            <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider m-0">Upcoming Schedule</h3>
+            <Calendar size={14} className="text-[var(--text-secondary)]" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 relative z-10">
             {loadingData
@@ -275,35 +265,36 @@ export default function Dashboard() {
                       category={ev.type || "Event"}
                     />
                   ))
-                : <div className="col-span-2 text-[13px] text-zinc-600 italic text-center py-6">No upcoming events.</div>
+                : <div className="col-span-2 text-[13px] text-[var(--text-tertiary)] italic text-center py-6">No upcoming events.</div>
             }
           </div>
         </motion.article>
 
         {/* Live Campaign — 1 col */}
-        <motion.article variants={item} className="lg:col-span-1 glass-card-premium p-6 flex flex-col justify-between relative overflow-hidden group">
-          <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} />
-          <div className="flex items-center justify-between border-b border-white/5 pb-4">
-            <h3 className="heading-lux text-sm uppercase tracking-wider m-0">Live Campaign</h3>
-            {activeCampaign
-              ? <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Active</span>
-              : <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-zinc-500/10 text-zinc-400 border border-zinc-500/20">None</span>
-            }
+        <motion.article variants={item} className="lg:col-span-1 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg p-6 flex flex-col justify-between relative overflow-hidden group">
+          <div>
+            <div className="flex items-center justify-between border-b border-[var(--border)] pb-4 mb-3">
+              <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider m-0">Live Campaign</h3>
+              {activeCampaign
+                ? <span className="px-2 py-0.5 text-[9px] font-bold rounded-full bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20">Active</span>
+                : <span className="px-2 py-0.5 text-[9px] font-bold rounded-full bg-[var(--bg-tertiary)] text-[var(--text-tertiary)] border border-[var(--border)]">None</span>
+              }
+            </div>
+            <div className="flex-1 flex flex-col justify-center py-2">
+              {activeCampaign
+                ? <>
+                    <div className="font-bold text-[var(--text-primary)] text-sm truncate mb-1">{activeCampaign.name || "Untitled"}</div>
+                    <p className="text-xs text-[var(--text-secondary)] mb-4 line-clamp-3">{activeCampaign.description || "No description."}</p>
+                    <div className="w-full bg-[var(--bg-primary)] border border-[var(--border)] rounded-md p-3 flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-ping" />
+                      <span className="text-xs text-[var(--text-secondary)] font-medium">Monitoring</span>
+                    </div>
+                  </>
+                : <div className="flex items-center justify-center h-full text-xs text-[var(--text-tertiary)] py-4">No active campaigns found.</div>
+              }
+            </div>
           </div>
-          <div className="flex-1 flex flex-col justify-center py-4">
-            {activeCampaign
-              ? <>
-                  <div className="font-bold text-white text-lg truncate mb-2">{activeCampaign.name || "Untitled"}</div>
-                  <p className="text-sm text-zinc-400 mb-4 line-clamp-3">{activeCampaign.description || "No description."}</p>
-                  <div className="w-full bg-black/40 border border-white/5 rounded-xl p-3 flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-teal-500 animate-ping" />
-                    <span className="text-sm text-zinc-300 font-medium">Monitoring</span>
-                  </div>
-                </>
-              : <div className="flex items-center justify-center h-full text-sm text-zinc-500">No active campaigns found.</div>
-            }
-          </div>
-          <Link href="/campaigns" className="flex items-center justify-center gap-2 text-xs text-indigo-400 hover:text-indigo-300 font-medium mt-auto group bg-indigo-500/5 hover:bg-indigo-500/10 rounded-xl py-2.5 tracking-wide transition-colors">
+          <Link href="/campaigns" className="flex items-center justify-center gap-2 text-xs text-[var(--accent)] hover:text-[var(--accent-hover)] font-medium mt-4 group bg-[var(--bg-primary)] border border-[var(--border)] hover:bg-[var(--bg-tertiary)] rounded-md py-2 tracking-wide transition-colors cursor-pointer">
             Track Campaigns
             <ArrowUpRight size={13} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </Link>

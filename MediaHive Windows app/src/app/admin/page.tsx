@@ -38,7 +38,7 @@ export default function AdminPage() {
       desc: "Configure multi-tenant separation, domain rules, and branding setups.",
       metric: "2 Active Tenants",
       icon: Building2,
-      color: "text-teal-400",
+      color: "text-[var(--accent)]",
       href: "/admin"
     },
     {
@@ -46,7 +46,7 @@ export default function AdminPage() {
       desc: "Set access hierarchies, permissions matrices, and role policies.",
       metric: "14 Role Policies",
       icon: Shield,
-      color: "text-indigo-400",
+      color: "text-[var(--accent)]",
       href: "/governance"
     },
     {
@@ -88,7 +88,7 @@ export default function AdminPage() {
       
       {/* 1. Header */}
       <header className="flex flex-col gap-2 border-b border-white/5 pb-6">
-        <div className="flex items-center gap-2 text-sm text-teal-400 font-medium tracking-wider uppercase mb-1">
+        <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium tracking-wider uppercase mb-1">
           <Shield size={14} />
           Control Panel
         </div>
@@ -99,17 +99,17 @@ export default function AdminPage() {
       </header>
 
       {/* 2. Telemetry Quick Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 glass-panel p-4 rounded-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 studio-panel p-4 rounded-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)]/5 blur-[80px] rounded-full pointer-events-none" />
         <div className="flex items-center gap-3 relative z-10">
-          <Server className="text-teal-500 w-5 h-5" />
+          <Server className="text-[var(--accent)] w-5 h-5" />
           <div>
             <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Sync Server</div>
             <div className="text-xs font-semibold text-zinc-200">connected (db_main)</div>
           </div>
         </div>
         <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-white/5 pt-3 sm:pt-0 sm:pl-4 relative z-10">
-          <Cpu className="text-indigo-500 w-5 h-5" />
+          <Cpu className="text-[var(--accent)] w-5 h-5" />
           <div>
             <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Tauri Engine</div>
             <div className="text-xs font-semibold text-zinc-200">Active (v0.1.0)</div>
@@ -132,10 +132,10 @@ export default function AdminPage() {
             <Link href={card.href} key={idx}>
               <motion.div
                 whileHover={{ y: -4 }}
-                className="glass-card rounded-2xl p-6 flex flex-col justify-between min-h-[200px] cursor-pointer hover:border-indigo-500/30 hover:shadow-[0_8px_32px_-8px_rgba(79,70,229,0.2)] transition-all group relative overflow-hidden"
+                className="studio-card rounded-2xl p-6 flex flex-col justify-between min-h-[200px] cursor-pointer hover:border-zinc-700 transition-all group relative overflow-hidden"
               >
                 {/* Background Glow */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 blur-[50px] rounded-full pointer-events-none transition-all group-hover:bg-teal-500/20" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--accent)]/5 blur-[50px] rounded-full pointer-events-none transition-all group-hover:bg-[var(--accent)]/10" />
                 
                 <div className="relative z-10">
                   <div className="flex items-center justify-between">
@@ -151,7 +151,7 @@ export default function AdminPage() {
                   <p className="text-xs text-zinc-400 leading-relaxed">{card.desc}</p>
                 </div>
 
-                <div className="flex items-center gap-1 text-[10px] font-bold text-teal-400 group-hover:text-teal-300 mt-6 transition-colors relative z-10">
+                <div className="flex items-center gap-1 text-[10px] font-bold text-[var(--accent)] group-hover:text-[var(--accent-hover)] mt-6 transition-colors relative z-10">
                   <span>Configure Settings</span>
                   <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform" />
                 </div>
@@ -164,3 +164,4 @@ export default function AdminPage() {
     </div>
   );
 }
+

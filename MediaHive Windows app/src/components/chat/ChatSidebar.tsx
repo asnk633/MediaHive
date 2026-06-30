@@ -10,7 +10,7 @@ import { getDriveImageUrl } from '@/lib/driveUtils';
 import { supabase } from '@/lib/supabaseClient';
 
 const getRoomIconStyle = (iconUrl: string = '', roomName: string = 'Room') => {
-  return 'from-indigo-600 to-violet-600';
+  return 'from-amber-500 to-yellow-600';
 };
 
 function RoomAvatar({ iconUrl, name, gradient }: { iconUrl?: string; name: string; gradient: string }) {
@@ -18,7 +18,7 @@ function RoomAvatar({ iconUrl, name, gradient }: { iconUrl?: string; name: strin
   const initials = name ? name.substring(0, 2).toUpperCase() : 'RM';
   const canShowImage = !!(iconUrl && iconUrl.startsWith('http')) && !imgError;
   return (
-    <div className={`h-9 w-9 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white shrink-0 font-semibold text-xs tracking-wider shadow-inner shadow-white/10 group-hover:scale-105 transition-transform duration-300 overflow-hidden`}>
+    <div className={`h-9 w-9 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-zinc-950 shrink-0 font-bold text-xs tracking-wider shadow-inner shadow-white/10 group-hover:scale-105 transition-transform duration-300 overflow-hidden`}>
       {canShowImage ? (
         <img
           src={getDriveImageUrl(iconUrl!, undefined, true)}
@@ -131,10 +131,10 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
   );
 
   return (
-    <div className="flex flex-col h-full bg-[#050816]/30 backdrop-blur-md">
+    <div className="flex flex-col h-full bg-zinc-950 border-r border-white/5">
       <div className="p-5 border-b border-white/[0.05] flex items-center justify-between shrink-0">
         <h2 className="text-sm font-semibold tracking-wider text-white uppercase typo-label flex items-center gap-2.5">
-          <MessageSquareIcon className="h-4 w-4 text-indigo-400" />
+          <MessageSquareIcon className="h-4 w-4 text-[var(--accent)]" />
           Conversations
         </h2>
         
@@ -143,7 +143,7 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-8 w-8 rounded-lg border border-white/[0.04] bg-white/[0.01] hover:bg-white/[0.05] text-indigo-300 hover:text-indigo-200 transition-all cursor-pointer"
+              className="h-8 w-8 rounded-lg border border-white/[0.04] bg-white/[0.01] hover:bg-white/[0.05] text-[var(--accent)] hover:text-[var(--accent-hover)] transition-all cursor-pointer"
             >
               <PlusIcon className="h-4 w-4" />
             </Button>
@@ -157,13 +157,13 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
             </DialogHeader>
             <div className="space-y-4 py-6">
               <div className="space-y-2">
-                <Label htmlFor="room-name" className="text-xs font-semibold text-indigo-200 tracking-wider uppercase typo-label">Room Name</Label>
+                <Label htmlFor="room-name" className="text-xs font-semibold text-zinc-400 tracking-wider uppercase typo-label">Room Name</Label>
                 <Input 
                   id="room-name"
                   value={newRoomName} 
                   onChange={e => setNewRoomName(e.target.value)} 
                   placeholder="e.g. Video Production - Campaign"
-                  className="bg-black/40 border-white/[0.08] text-white placeholder-white/20 focus:border-indigo-500/50 rounded-xl focus:ring-1 focus:ring-indigo-500/50 h-10 px-4"
+                  className="bg-black/40 border-white/[0.08] text-white placeholder-white/20 focus:border-[var(--accent)]/50 rounded-xl focus:ring-1 focus:ring-[var(--accent)]/50 h-10 px-4"
                 />
               </div>
             </div>
@@ -178,7 +178,7 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
               <Button 
                 onClick={handleCreateRoom} 
                 disabled={loading || !newRoomName.trim()}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-600/20 disabled:bg-indigo-950 disabled:text-indigo-400 h-10 px-4"
+                className="bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 rounded-full font-bold shadow-none disabled:opacity-50 disabled:bg-zinc-800 disabled:text-zinc-500 h-10 px-5"
               >
                 {loading ? 'Creating...' : 'Create Room'}
               </Button>
@@ -217,14 +217,14 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
                     onClick={() => onSelectRoom(room)}
                     className={`w-full text-left px-3.5 py-3 rounded-xl transition-all duration-300 flex items-center gap-3.5 relative border group cursor-pointer ${
                       isActive 
-                        ? 'bg-indigo-600/[0.06] text-white border-indigo-500/25 shadow-[0_0_24px_rgba(99,102,241,0.06)]' 
+                        ? 'bg-[var(--accent-wash)] text-white border-[var(--accent)]/20 shadow-none' 
                         : unreadCount > 0
-                          ? 'bg-white/[0.01] hover:bg-white/[0.03] border-indigo-500/10 text-white shadow-[0_0_16px_rgba(99,102,241,0.03)]'
+                          ? 'bg-white/[0.01] hover:bg-white/[0.03] border-[var(--accent)]/10 text-white shadow-none'
                           : 'hover:bg-white/[0.02] border-transparent text-white/70 hover:text-white'
                     }`}
                   >
                     {isActive && (
-                      <div className="absolute left-0 top-3 bottom-3 w-1 bg-indigo-500 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+                      <div className="absolute left-0 top-3 bottom-3 w-1 bg-[var(--accent)] rounded-full shadow-none" />
                     )}
 
                     <RoomAvatar iconUrl={room.icon_url} name={room.name || 'Support Chat'} gradient={gradient} />
@@ -233,7 +233,7 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
                       <div className="flex items-center justify-between gap-2">
                         <div className={`font-semibold text-xs truncate group-hover:translate-x-0.5 transition-transform duration-300 ${unreadCount > 0 ? 'text-white font-bold' : 'text-white/80'}`}>{room.name || 'Support Chat'}</div>
                         {room.last_message_time && (
-                          <span className={`text-[9px] shrink-0 font-light tracking-wide ${unreadCount > 0 ? 'text-indigo-400 font-medium' : 'text-white/30'}`}>
+                          <span className={`text-[9px] shrink-0 font-light tracking-wide ${unreadCount > 0 ? 'text-[var(--accent)] font-medium' : 'text-white/30'}`}>
                             {formatLastMsgTime(room.last_message_time)}
                           </span>
                         )}
@@ -251,7 +251,7 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
                           </div>
                         )}
                         {unreadCount > 0 && (
-                          <span className="flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-indigo-500 px-1 text-[9px] font-black text-white shadow-[0_0_12px_rgba(99,102,241,0.6)] animate-pulse shrink-0 typo-mono leading-none">
+                          <span className="flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[9px] font-black text-zinc-950 shadow-none animate-pulse shrink-0 typo-mono leading-none">
                             {unreadCount}
                           </span>
                         )}

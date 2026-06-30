@@ -2,31 +2,18 @@
 import './globals.css';
 import { ReactNode, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { DM_Sans, Outfit, Inter } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import RootProviders from '@/components/layout/RootProviders';
 import { OfflineBanner } from '@/components/system/OfflineBanner';
 import { ShellCommands } from '@/components/system/ShellCommands';
 import QueryProvider from "@/providers/QueryProvider";
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 import { AmbientCursorLight } from '@/components/ui/AmbientCursorLight';
 import { GlobalCommandPalette } from '@/components/layout/GlobalCommandPalette';
 import { WebViewDetector } from '@/components/WebViewDetector';
 import { Toaster } from '@/components/ui/sonner';
 import '@/utils/safeAreaInitializer';
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-body',
-  display: 'swap',
-});
-
-const outfit = Outfit({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-heading',
-  display: 'swap',
-});
 
 const inter = Inter({
   subsets: ['latin'],
@@ -36,8 +23,6 @@ const inter = Inter({
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  const useNewUI = process.env.NEXT_PUBLIC_NEW_UI === "true";
-
   useEffect(() => {
     if (typeof window !== 'undefined') {
       // 1. Proactively unregister legacy service workers to prevent cached page hijack
@@ -65,7 +50,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <html lang="en" className={cn(dmSans.variable, outfit.variable, inter.variable)} suppressHydrationWarning={true}>
+    <html lang="en" className={cn(inter.variable)} suppressHydrationWarning={true}>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -99,15 +84,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <WebViewDetector />
         <AmbientCursorLight />
         <QueryProvider>
-          <RootProviders>
-            <OfflineBanner />
-            <ShellCommands />
-            <div id="app-canvas">
-              {children}
-            </div>
-            <GlobalCommandPalette />
-            <Toaster />
-          </RootProviders>
+          <ThemeProvider>
+            <RootProviders>
+              <OfflineBanner />
+              <ShellCommands />
+              <div id="app-canvas">
+                {children}
+              </div>
+              <GlobalCommandPalette />
+              <Toaster />
+            </RootProviders>
+          </ThemeProvider>
         </QueryProvider>
       {/* impeccable-live-start */}
 <script src="http://localhost:8400/live.js"></script>

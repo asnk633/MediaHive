@@ -18,7 +18,7 @@ export function useMouseLight() {
     // Debounced coordinate tracking to 16ms for performance (via requestAnimationFrame)
     const handleMouseMove = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const card = target.closest(".glass-card-premium, .glass-card") as HTMLElement;
+      const card = target.closest(".studio-card-premium, .studio-card") as HTMLElement;
 
       if (!card) {
         if (activeCard) {
@@ -80,3 +80,4 @@ export function useMouseLight() {
     }
   };
 }
+

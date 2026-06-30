@@ -90,7 +90,7 @@ export default function ActivityPage() {
       
       {/* Header */}
       <header className="flex flex-col gap-2 border-b border-white/5 pb-6">
-        <div className="flex items-center gap-2 text-sm text-teal-400 font-medium tracking-wider uppercase mb-1">
+        <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium tracking-wider uppercase mb-1">
           <Sparkles size={14} />
           Telemetry Logs
         </div>
@@ -101,15 +101,15 @@ export default function ActivityPage() {
       </header>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-1.5 glass-panel p-3 rounded-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-48 h-48 bg-teal-500/10 blur-[60px] rounded-full pointer-events-none" />
+      <div className="flex flex-wrap gap-1.5 studio-panel p-3 rounded-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-[var(--accent)]/5 blur-[60px] rounded-full pointer-events-none" />
         {["All", "Uploads", "Tasks", "System", "Inventory", "Events", "Productions"].map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer relative z-10 ${
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold border transition-all cursor-pointer relative z-10 ${
               filter === f 
-                ? "bg-gradient-to-br from-teal-500/10 to-indigo-500/10 text-teal-400 border-teal-500/30 shadow-[0_4px_12px_-4px_rgba(20,184,166,0.15)]"
+                ? "bg-[var(--accent-wash)] border-[var(--accent)]/30 text-[var(--accent)]"
                 : "bg-zinc-950/40 border-white/5 text-zinc-400 hover:text-zinc-200"
             }`}
           >
@@ -132,14 +132,14 @@ export default function ActivityPage() {
           <motion.div
             layout
             key={act.id}
-            className="flex gap-4 p-3.5 pl-6 rounded-2xl hover:glass-card border border-transparent hover:border-indigo-500/30 hover:shadow-[0_4px_20px_-4px_rgba(79,70,229,0.15)] transition-all relative group overflow-hidden"
+            className="flex gap-4 p-3.5 pl-6 rounded-2xl hover:studio-card border border-transparent transition-all relative group overflow-hidden"
           >
-            <div className="absolute top-0 right-0 w-24 h-24 bg-teal-500/5 blur-[30px] rounded-full pointer-events-none transition-all group-hover:bg-teal-500/15" />
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[var(--accent)]/5 blur-[30px] rounded-full pointer-events-none transition-all group-hover:bg-[var(--accent)]/10" />
             
             {/* Dot Node */}
-            <div className="absolute left-[20px] top-[22px] w-2 h-2 rounded-full bg-teal-500 ring-4 ring-zinc-950 z-10"></div>
+            <div className="absolute left-[20px] top-[22px] w-2 h-2 rounded-full bg-[var(--accent)] ring-4 ring-zinc-950 z-10"></div>
 
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-500/20 to-indigo-500/20 border border-teal-500/20 flex items-center justify-center text-xs font-bold text-teal-400 flex-shrink-0 relative z-10">
+            <div className="w-8 h-8 rounded-full bg-[var(--bg-tertiary)] border border-[var(--border)] flex items-center justify-center text-xs font-bold text-[var(--accent)] flex-shrink-0 relative z-10">
               {getInitials(act.actor_name)}
             </div>
 
@@ -147,7 +147,7 @@ export default function ActivityPage() {
               <div className="flex items-center justify-between gap-4">
                 <p className="text-xs text-zinc-300 m-0 leading-relaxed">
                   <span className="font-semibold text-white">{act.actor_name || "System"}</span> {act.title}{" "}
-                  <span className="text-teal-400 font-medium">{act.description}</span>
+                  <span className="text-[var(--accent)] font-medium">{act.description}</span>
                 </p>
                 <div className="flex items-center gap-1 text-[10px] text-zinc-500 flex-shrink-0">
                   <Clock size={11} />
@@ -165,3 +165,4 @@ export default function ActivityPage() {
     </div>
   );
 }
+

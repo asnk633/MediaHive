@@ -371,7 +371,7 @@ export default function DesktopSideNav() {
                             >
                                 <div className="relative h-11 w-[160px] overflow-hidden -ml-1">
                                     <img 
-                                        src={theme === 'luminous' ? '/brand-name-dark.png' : '/brand-name-light.png'}
+                                        src={theme === 'light' ? '/brand-name-dark.png' : '/brand-name-light.png'}
                                         alt="MediaHive"
                                         className="absolute left-[-12px] top-1/2 -translate-y-1/2 w-[185px] max-w-none h-auto object-contain"
                                     />

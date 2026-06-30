@@ -20,7 +20,7 @@ export default function ConflictsPage() {
       {/* Header */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-sm text-teal-400 font-medium tracking-wider uppercase mb-1">
+          <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium tracking-wider uppercase mb-1">
             <Sparkles size={14} />
             Operations Room
           </div>
@@ -45,7 +45,7 @@ export default function ConflictsPage() {
               animate={{ opacity: 1 }}
               className="rounded-2xl border border-dashed border-white/5 bg-zinc-900/10 p-12 text-center"
             >
-              <CheckCircle2 className="w-10 h-10 text-teal-500 mx-auto mb-3" />
+              <CheckCircle2 className="w-10 h-10 text-[var(--accent)] mx-auto mb-3" />
               <div className="text-sm font-bold text-zinc-200">No conflicts found</div>
               <p className="text-xs text-zinc-500 mt-1 m-0">All schedules, equipment booking, and resource allotments are clear.</p>
             </motion.div>
@@ -84,7 +84,7 @@ export default function ConflictsPage() {
                     <div className="flex items-center justify-end gap-2 mt-6 pt-3 border-t border-white/5">
                       <button 
                         onClick={() => handleResolve(conf.id)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/20 text-xs font-semibold text-teal-400 transition-colors cursor-pointer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--accent-wash)] hover:bg-[var(--accent)]/20 border border-[var(--accent)]/20 text-xs font-semibold text-[var(--accent)] transition-colors cursor-pointer"
                       >
                         <span>Resolve Conflict</span>
                         <ArrowRight size={12} />

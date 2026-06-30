@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ChatSidebar from './ChatSidebar';
 import ChatWindow from './ChatWindow';
 import GroupInfoSidebar from './GroupInfoSidebar';
@@ -19,6 +19,16 @@ export default function ChatLayout({ currentUser, initialRooms, allUsers }: { cu
   const [infoOpen, setInfoOpen] = useState(false);
   const [activeRoomMessages, setActiveRoomMessages] = useState<any[]>([]);
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
+
+  const tabParam = searchParams ? searchParams.get('tab') : null;
+
+  const filteredRoomsByTab = useMemo(() => {
+    return (rooms || []).filter((room) => {
+      if (!room) return false;
+      const isGroup = !!(room.is_media_team_only || (room.name && room.name.trim().length > 0));
+      return tabParam === "channels" ? isGroup : !isGroup;
+    });
+  }, [rooms, tabParam]);
 
   // Mark active room as read
   useEffect(() => {
@@ -303,7 +313,7 @@ export default function ChatLayout({ currentUser, initialRooms, allUsers }: { cu
           <div className="w-80 md:w-88 shrink-0 flex flex-col h-full border-r border-white/[0.06] bg-black/20">
             <ChatSidebar 
               currentUser={currentUser} 
-              rooms={rooms} 
+              rooms={filteredRoomsByTab} 
               activeRoom={activeRoom} 
               unreadCounts={unreadCounts}
               onSelectRoom={handleSelectRoom} 
@@ -327,7 +337,7 @@ export default function ChatLayout({ currentUser, initialRooms, allUsers }: { cu
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center p-8 relative">
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-indigo-500/5 blur-[80px] rounded-full" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-[var(--accent)]/5 blur-[80px] rounded-full" />
                 </div>
 
                 <motion.div 
@@ -342,7 +352,7 @@ export default function ChatLayout({ currentUser, initialRooms, allUsers }: { cu
                   }}
                   className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 shadow-inner mb-6 flex items-center justify-center"
                 >
-                  <MessageSquare className="h-12 w-12 text-indigo-400" strokeWidth={1.2} />
+                  <MessageSquare className="h-12 w-12 text-[var(--accent)]" strokeWidth={1.2} />
                 </motion.div>
                 
                 <h3 className="text-lg font-medium text-white typo-heading mb-1.5 z-10">

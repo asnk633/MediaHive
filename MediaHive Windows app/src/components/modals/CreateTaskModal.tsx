@@ -142,9 +142,9 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="glass-panel border-white/10 max-w-md w-full text-zinc-100 p-6 shadow-2xl">
+      <DialogContent className="studio-panel border-white/10 max-w-md w-full text-[var(--text-primary)] p-6 shadow-2xl !flex !flex-col !gap-4 max-h-[90vh] overflow-y-auto !h-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold tracking-wide text-white">
+          <DialogTitle className="text-xl font-bold tracking-wide text-[var(--text-primary)]">
             Create New Task
           </DialogTitle>
           <DialogDescription className="sr-only">
@@ -161,15 +161,15 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
 
         {success ? (
           <div className="flex flex-col items-center justify-center py-8 gap-3 text-center">
-            <div className="w-12 h-12 rounded-full bg-teal-500/20 border border-teal-500/30 flex items-center justify-center text-teal-400">
+            <div className="w-12 h-12 rounded-full bg-[var(--accent)]/15 border border-[var(--accent)]/30 flex items-center justify-center text-[var(--accent)]">
               <Check size={24} strokeWidth={2.5} />
             </div>
-            <span className="text-sm font-semibold text-teal-300">Task created successfully!</span>
+            <span className="text-sm font-semibold text-[var(--accent)]">Task created successfully!</span>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+              <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                 Task Title *
               </label>
               <input
@@ -179,12 +179,12 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                 placeholder="What needs to be done?"
                 disabled={saving}
-                className="glass-form-input placeholder:text-zinc-500 w-full"
+                className="glass-form-input placeholder:text-[var(--text-tertiary)] w-full"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+              <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                 Description
               </label>
               <textarea
@@ -193,13 +193,13 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
                 placeholder="Provide task details or links..."
                 rows={3}
                 disabled={saving}
-                className="glass-form-input placeholder:text-zinc-500 w-full resize-none"
+                className="glass-form-input placeholder:text-[var(--text-tertiary)] w-full resize-none"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                   Category / Department
                 </label>
                 <input
@@ -208,12 +208,12 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
                   onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
                   placeholder="e.g. general"
                   disabled={saving}
-                  className="glass-form-input placeholder:text-zinc-500 w-full"
+                  className="glass-form-input placeholder:text-[var(--text-tertiary)] w-full"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                   Due Date
                 </label>
                 <input
@@ -229,7 +229,7 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
             {!isGuest && (
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                  <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                     Status
                   </label>
                   <select
@@ -238,15 +238,15 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
                     disabled={saving}
                     className="glass-form-input cursor-pointer w-full"
                   >
-                    <option className="bg-zinc-950 text-white" value="To Do">To Do</option>
-                    <option className="bg-zinc-950 text-white" value="In Progress">In Progress</option>
-                    <option className="bg-zinc-950 text-white" value="On Hold">On Hold</option>
-                    <option className="bg-zinc-950 text-white" value="Done">Done</option>
+                    <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="To Do">To Do</option>
+                    <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="In Progress">In Progress</option>
+                    <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="On Hold">On Hold</option>
+                    <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="Done">Done</option>
                   </select>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                  <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                     Priority
                   </label>
                   <select
@@ -255,9 +255,9 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
                     disabled={saving}
                     className="glass-form-input cursor-pointer w-full"
                   >
-                    <option className="bg-zinc-950 text-white" value="High">High</option>
-                    <option className="bg-zinc-950 text-white" value="Medium">Medium</option>
-                    <option className="bg-zinc-950 text-white" value="Low">Low</option>
+                    <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="High">High</option>
+                    <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="Medium">Medium</option>
+                    <option className="bg-[var(--bg-primary)] text-[var(--text-primary)]" value="Low">Low</option>
                   </select>
                 </div>
               </div>
@@ -265,11 +265,11 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
 
             {isPrivileged && (
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                   Assignee
                 </label>
                 {loadingProfiles ? (
-                  <div className="flex items-center gap-2 text-xs text-zinc-400 py-2">
+                  <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)] py-2">
                     <Loader2 className="animate-spin" size={14} />
                     <span>Loading team members...</span>
                   </div>
@@ -281,7 +281,7 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
                     className="glass-form-input cursor-pointer w-full"
                   >
                     {profiles.map((p: any) => (
-                      <option key={p.id} value={p.id} className="bg-zinc-950 text-white">
+                      <option key={p.id} value={p.id} className="bg-[var(--bg-primary)] text-[var(--text-primary)]">
                         {p.full_name || p.name || p.email}
                       </option>
                     ))}
@@ -293,7 +293,7 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
             <button
               type="submit"
               disabled={saving || !form.title.trim()}
-              className="mt-2 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold py-3 rounded-xl shadow-lg shadow-teal-500/20 active:scale-[0.98] transition-all cursor-pointer"
+              className="mt-2 w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--bg-primary)] text-sm font-semibold py-2.5 rounded-full active:scale-[0.98] transition-all cursor-pointer"
             >
               {saving ? (
                 <>
@@ -310,3 +310,4 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
     </Dialog>
   );
 }
+

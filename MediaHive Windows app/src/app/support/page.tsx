@@ -48,7 +48,7 @@ export default function SupportPage() {
             {faqs.map((faq, idx) => (
               <div 
                 key={idx}
-                className="glass-card rounded-2xl overflow-hidden group hover:border-indigo-500/30 transition-all"
+                className="studio-card rounded-2xl overflow-hidden group hover:border-indigo-500/30 transition-all"
               >
                 <button 
                   onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
@@ -76,7 +76,7 @@ export default function SupportPage() {
         </div>
 
         {/* Right Pane: Ticket form */}
-        <div className="glass-panel rounded-2xl p-5 flex flex-col gap-4 lg:sticky lg:top-6 relative overflow-hidden">
+        <div className="studio-panel rounded-2xl p-5 flex flex-col gap-4 lg:sticky lg:top-6 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/10 blur-[60px] rounded-full pointer-events-none" />
           <div className="flex items-center justify-between border-b border-white/5 pb-2 relative z-10">
             <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider m-0">Submit Ticket</h3>
@@ -115,3 +115,4 @@ export default function SupportPage() {
     </div>
   );
 }
+

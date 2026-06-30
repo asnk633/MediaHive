@@ -14,10 +14,9 @@ interface CalendarEvent {
   id: string;
   title: string;
   description: string;
-  start_time: string;
-  end_time: string;
+  start_at: string; // UTC ISO string
+  end_at: string;   // UTC ISO string
   location: string;
-  date: string; // YYYY-MM-DD
 }
 
 interface Toast {
@@ -103,15 +102,15 @@ export default function CalendarPage() {
     if (!user.institution_id && !user.tenant_id) return;
     setLoadingEvents(true);
     try {
-      const startOfMonth = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-01`;
-      const endOfMonth = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-${new Date(viewYear, viewMonth + 1, 0).getDate()}`;
+      const startOfMonth = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-01T00:00:00.000Z`;
+      const endOfMonth = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-${new Date(viewYear, viewMonth + 1, 0).getDate()}T23:59:59.999Z`;
 
       let query = supabase
         .from("events")
-        .select("id, title, description, start_time, end_time, location, date")
-        .gte("date", startOfMonth)
-        .lte("date", endOfMonth)
-        .order("start_time", { ascending: true });
+        .select("id, title, description, start_at, end_at, location")
+        .gte("start_at", startOfMonth)
+        .lte("start_at", endOfMonth)
+        .order("start_at", { ascending: true });
         
       if (user.institution_id) {
         query = query.eq("institution_id", user.institution_id);
@@ -142,16 +141,17 @@ export default function CalendarPage() {
     setCreating(true);
     showToast("loading", "Creating event...");
     try {
+      const startAtIso = new Date(`${form.date}T${form.start_time}:00`).toISOString();
+      const endAtIso = new Date(`${form.date}T${form.end_time}:00`).toISOString();
       const { error } = await supabase.from("events").insert({
         title: form.title.trim(),
         description: form.description.trim(),
         location: form.location.trim(),
-        date: form.date,
-        start_time: form.start_time,
-        end_time: form.end_time,
+        start_at: startAtIso,
+        end_at: endAtIso,
         institution_id: user.institution_id || null,
         tenant_id: user.tenant_id || null,
-        created_by_id: user.id,
+        created_by: user.id,
         status: "scheduled",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -171,11 +171,29 @@ export default function CalendarPage() {
   // ─── Calendar grid ────────────────────────────────────────────────────────
   const calendarDays = buildCalendarDays(viewYear, viewMonth);
 
+  // Helpers for timezone-safe date grouping and time formatting
+  const getEventLocalDate = (startAtStr: string) => {
+    if (!startAtStr) return "";
+    const date = new Date(startAtStr);
+    return !isNaN(date.getTime()) ? date.toLocaleDateString("sv-SE") : "";
+  };
+
+  const formatEventTime = (isoStr: string) => {
+    if (!isoStr) return "";
+    const date = new Date(isoStr);
+    return !isNaN(date.getTime())
+      ? date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
+      : "";
+  };
+
   // Map events to dates for quick lookup
   const eventsByDate: Record<string, CalendarEvent[]> = {};
   events.forEach(ev => {
-    if (!eventsByDate[ev.date]) eventsByDate[ev.date] = [];
-    eventsByDate[ev.date].push(ev);
+    const localDate = getEventLocalDate(ev.start_at);
+    if (localDate) {
+      if (!eventsByDate[localDate]) eventsByDate[localDate] = [];
+      eventsByDate[localDate].push(ev);
+    }
   });
 
   const selectedDayEvents = eventsByDate[selectedDate] || [];
@@ -231,9 +249,9 @@ export default function CalendarPage() {
             <motion.div
               initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-md glass-panel rounded-3xl shadow-2xl overflow-hidden relative"
+              className="w-full max-w-md studio-panel rounded-3xl shadow-2xl overflow-hidden relative"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)]/5 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 relative z-10">
                 <div>
                   <h2 className="text-base font-bold text-white m-0">New Event</h2>
@@ -248,41 +266,41 @@ export default function CalendarPage() {
                   <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Event Title *</label>
                   <input required type="text" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                     placeholder="e.g. Weekly Team Sync"
-                    className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-teal-500/50 transition-all font-sans" />
+                    className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-[var(--accent)] transition-all font-sans" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Description</label>
                   <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                     rows={2} placeholder="Optional notes..."
-                    className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-teal-500/50 transition-all font-sans resize-none" />
+                    className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-[var(--accent)] transition-all font-sans resize-none" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Date *</label>
                     <input required type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
-                      className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-teal-500/50 transition-all font-sans" />
+                      className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[var(--accent)] transition-all font-sans" />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Location</label>
                     <input type="text" value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
                       placeholder="Room / Online"
-                      className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-teal-500/50 transition-all font-sans" />
+                      className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-[var(--accent)] transition-all font-sans" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Start Time</label>
                     <input type="time" value={form.start_time} onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))}
-                      className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-teal-500/50 transition-all font-sans" />
+                      className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[var(--accent)] transition-all font-sans" />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">End Time</label>
                     <input type="time" value={form.end_time} onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))}
-                      className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-teal-500/50 transition-all font-sans" />
+                      className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[var(--accent)] transition-all font-sans" />
                   </div>
                 </div>
                 <button type="submit" disabled={creating || !form.title.trim()}
-                  className="mt-2 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 disabled:opacity-50 text-white text-sm font-semibold py-2.5 rounded-xl transition-all cursor-pointer">
+                  className="mt-2 w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-zinc-950 text-sm font-semibold py-2.5 rounded-full transition-all cursor-pointer">
                   {creating ? <Loader2 size={15} className="animate-spin" /> : <Plus size={15} />}
                   {creating ? "Creating..." : "Create Event"}
                 </button>
@@ -308,7 +326,7 @@ export default function CalendarPage() {
           </button>
           <button
             onClick={() => { setForm(f => ({ ...f, date: selectedDate })); setShowCreateModal(true); }}
-            className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-teal-500/10 hover:shadow-teal-500/20 active:scale-95 transition-all cursor-pointer">
+            className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 text-sm font-semibold px-4 py-2 rounded-full active:scale-95 transition-all cursor-pointer">
             <Plus size={16} /> New Event
           </button>
         </div>
@@ -318,7 +336,7 @@ export default function CalendarPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
 
         {/* Main Calendar Grid */}
-        <div className="lg:col-span-3 flex flex-col gap-4 glass-panel p-6 rounded-2xl relative overflow-hidden">
+        <div className="lg:col-span-3 flex flex-col gap-4 studio-panel p-6 rounded-2xl relative overflow-hidden">
           <div className="absolute top-0 left-0 w-96 h-96 bg-teal-500/5 blur-[100px] rounded-full pointer-events-none" />
           {/* Month nav */}
           <div className="flex items-center justify-between mb-2 relative z-10">
@@ -354,16 +372,16 @@ export default function CalendarPage() {
                   className={`aspect-square rounded-xl p-2 flex flex-col justify-between border transition-all relative z-10 ${
                     !day.isCurrentMonth ? "opacity-20 border-transparent cursor-default" :
                     isSelected
-                      ? "bg-gradient-to-br from-teal-500/15 to-indigo-500/15 border-teal-500/40 shadow-[0_0_14px_rgba(13,148,136,0.12)] cursor-pointer"
-                      : "glass-card cursor-pointer hover:border-white/10"
+                      ? "bg-[var(--accent-wash)] border-[var(--accent)]/40 shadow-[0_0_14px_rgba(217,155,22,0.15)] cursor-pointer"
+                      : "studio-card cursor-pointer hover:border-white/10"
                   }`}
                 >
                   <span className={`text-xs font-bold leading-none ${
-                    isToday ? "text-teal-400" :
+                    isToday ? "text-[var(--accent)]" :
                     isSelected ? "text-white" : "text-zinc-400"
                   }`}>
                     {isToday ? (
-                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-500 text-white text-[9px] font-extrabold">
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[var(--accent)] text-zinc-950 text-[9px] font-extrabold">
                         {day.num}
                       </span>
                     ) : day.num}
@@ -385,7 +403,7 @@ export default function CalendarPage() {
         </div>
 
         {/* Right panel: Day timeline */}
-        <div className="glass-panel rounded-2xl p-5 flex flex-col gap-4 lg:sticky lg:top-6 relative overflow-hidden">
+        <div className="studio-panel rounded-2xl p-5 flex flex-col gap-4 lg:sticky lg:top-6 relative overflow-hidden">
           <div className="absolute bottom-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[80px] rounded-full pointer-events-none" />
           <div className="flex items-center justify-between border-b border-white/5 pb-2 relative z-10">
             <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider m-0">Timeline</h3>
@@ -407,7 +425,7 @@ export default function CalendarPage() {
             <div className="flex flex-col gap-3">
               {selectedDayEvents.map((ev, idx) => (
                 <div key={ev.id}
-                  className={`border-l-4 ${BORDER_COLORS[idx % BORDER_COLORS.length]} glass-card p-3 rounded-r-xl flex flex-col gap-2 relative z-10`}>
+                  className={`border-l-4 ${BORDER_COLORS[idx % BORDER_COLORS.length]} studio-card p-3 rounded-r-xl flex flex-col gap-2 relative z-10`}>
                   <div>
                     <div className="text-xs font-bold text-zinc-200 leading-normal">{ev.title}</div>
                     {ev.description && <div className="text-[10px] text-zinc-500 mt-0.5 leading-snug">{ev.description}</div>}
@@ -415,7 +433,7 @@ export default function CalendarPage() {
                   <div className="flex items-center justify-between text-[10px] text-zinc-400 mt-1">
                     <div className="flex items-center gap-1">
                       <Clock size={10} />
-                      <span>{formatTime(ev.start_time)} – {formatTime(ev.end_time)}</span>
+                      <span>{formatEventTime(ev.start_at)} – {formatEventTime(ev.end_at)}</span>
                     </div>
                     {ev.location && (
                       <div className="flex items-center gap-1 text-zinc-500">
@@ -440,3 +458,4 @@ export default function CalendarPage() {
     </div>
   );
 }
+

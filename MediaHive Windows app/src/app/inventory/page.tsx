@@ -649,7 +649,7 @@ export default function InventoryPage() {
             <Clock size={14} />
             Requests
             {requests.length > 0 && (
-              <span className="absolute -top-1.5 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-indigo-600 text-[9px] font-bold text-white shadow-lg animate-pulse">
+              <span className="absolute -top-1.5 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[var(--accent)] text-[9px] font-bold text-zinc-950 shadow-lg animate-pulse">
                 {requests.length}
               </span>
             )}
@@ -667,7 +667,7 @@ export default function InventoryPage() {
           {/* Add Asset Button */}
           <button 
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 active:scale-97 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-indigo-600/15 transition-all cursor-pointer"
+            className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 text-xs font-bold px-5 py-2.5 rounded-full transition-all cursor-pointer"
           >
             <Plus size={15} />
             Add Asset
@@ -676,13 +676,13 @@ export default function InventoryPage() {
       </header>
 
       {/* 2. Collapsible Categorization Guide */}
-      <div className="glass-panel rounded-2xl relative overflow-hidden transition-all duration-350">
+      <div className="studio-panel rounded-2xl relative overflow-hidden transition-all duration-350">
         <button
           onClick={() => setIsGuideOpen(!isGuideOpen)}
           className="w-full flex items-center justify-between px-6 py-4.5 text-left hover:bg-white/2 cursor-pointer transition-colors relative z-10"
         >
           <div className="flex items-center gap-3">
-            <Info size={15} className="text-indigo-400" />
+            <Info size={15} className="text-[var(--accent)]" />
             <span className="text-xs font-bold text-zinc-300 uppercase tracking-wider">Media Inventory Categorization Guide</span>
           </div>
           <motion.div
@@ -725,13 +725,12 @@ export default function InventoryPage() {
         </AnimatePresence>
       </div>
 
-      {/* 3. Tab Pills */}
       <div className="flex gap-2">
         <button
           onClick={() => setActiveTab("items")}
           className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer ${
             activeTab === "items"
-              ? "bg-gradient-to-br from-indigo-500/10 to-teal-500/10 text-indigo-400 border-indigo-500/30 shadow-[0_0_12px_rgba(99,102,241,0.12)]"
+              ? "active-tab-capsule"
               : "bg-zinc-950/20 border-white/5 text-zinc-500 hover:text-zinc-300"
           }`}
         >
@@ -741,7 +740,7 @@ export default function InventoryPage() {
           onClick={() => setActiveTab("schedule")}
           className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer ${
             activeTab === "schedule"
-              ? "bg-gradient-to-br from-indigo-500/10 to-teal-500/10 text-indigo-400 border-indigo-500/30 shadow-[0_0_12px_rgba(99,102,241,0.12)]"
+              ? "active-tab-capsule"
               : "bg-zinc-950/20 border-white/5 text-zinc-500 hover:text-zinc-300"
           }`}
         >
@@ -814,7 +813,7 @@ export default function InventoryPage() {
                   onClick={() => setViewMode("list")}
                   className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                     viewMode === "list"
-                      ? "bg-zinc-800/60 text-indigo-400"
+                      ? "bg-zinc-800/60 text-[var(--accent)]"
                       : "text-zinc-500 hover:text-zinc-300"
                   }`}
                   title="List View"
@@ -825,7 +824,7 @@ export default function InventoryPage() {
                   onClick={() => setViewMode("grid")}
                   className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                     viewMode === "grid"
-                      ? "bg-zinc-800/60 text-indigo-400"
+                      ? "bg-zinc-800/60 text-[var(--accent)]"
                       : "text-zinc-500 hover:text-zinc-300"
                   }`}
                   title="Grid View"
@@ -863,7 +862,7 @@ export default function InventoryPage() {
                 <AnimatedList className="!gap-1.5" delayOffset={0.02} maxDelay={0.25}>
                   {sortedItems.map(item => (
                     <div key={item.id}
-                      className="grid gap-4 items-center px-4 py-3 rounded-xl glass-card transition-all group hover:bg-white/[0.03]"
+                      className="grid gap-4 items-center px-4 py-3 rounded-xl studio-card transition-all group hover:bg-white/[0.03]"
                       style={{ gridTemplateColumns: "minmax(0,3fr) minmax(0,1.8fr) minmax(0,1.2fr) minmax(0,1.2fr) minmax(0,1fr) auto" }}>
                       
                       {/* Asset Name */}
@@ -914,7 +913,7 @@ export default function InventoryPage() {
                           {item.status === "Available" ? (
                             <button
                               onClick={() => { setSelectedItem(item); setShowRequestModal(true); }}
-                              className="flex items-center justify-center p-1 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 hover:text-teal-300 transition-colors cursor-pointer"
+                              className="flex items-center justify-center p-1 rounded-lg bg-[var(--accent-wash)] hover:bg-[var(--accent)]/20 text-[var(--accent)] transition-colors cursor-pointer"
                               title="Request Asset"
                             >
                               <ChevronRight size={14} />
@@ -922,7 +921,7 @@ export default function InventoryPage() {
                           ) : item.status === "Checked Out" ? (
                             <button
                               onClick={() => handleMarkReturned(item)}
-                              className="flex items-center gap-1 text-[9px] font-bold text-teal-400 hover:text-teal-300 bg-teal-500/10 hover:bg-teal-500/20 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                              className="flex items-center gap-1 text-[9px] font-bold text-[var(--accent)] hover:text-[var(--accent-hover)] bg-[var(--accent-wash)] hover:bg-[var(--accent)]/20 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
                               title="Return Asset"
                             >
                               <RotateCcw size={10} /> Return
@@ -950,7 +949,7 @@ export default function InventoryPage() {
                                   animate={{ opacity: 1, scale: 1 }}
                                   exit={{ opacity: 0, scale: 0.95 }}
                                   transition={{ duration: 0.1 }}
-                                  className="absolute right-0 mt-1 w-44 glass-panel rounded-xl shadow-2xl z-40 p-1 flex flex-col gap-0.5 text-left"
+                                  className="absolute right-0 mt-1 w-44 studio-panel rounded-xl shadow-2xl z-40 p-1 flex flex-col gap-0.5 text-left"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   {item.status !== "Maintenance" && (
@@ -991,14 +990,14 @@ export default function InventoryPage() {
             <AnimatedList className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 !w-full" delayOffset={0.03}>
               {sortedItems.map(item => (
                 <div key={item.id}
-                  className="glass-card p-5 flex flex-col justify-between min-h-[170px] transition-all group hover:shadow-[0_8px_32px_-8px_rgba(99,102,241,0.2)] hover:border-indigo-500/30"
+                  className="studio-card p-5 flex flex-col justify-between min-h-[170px] transition-all group hover:border-zinc-700"
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <div className="p-2 rounded-xl bg-zinc-900/60 border border-white/5">
                           {item.category === "Cameras" && <Camera size={14} className="text-teal-400" />}
-                          {item.category === "Lighting" && <Lightbulb size={14} className="text-indigo-400" />}
+                          {item.category === "Lighting" && <Lightbulb size={14} className="text-[var(--accent)]" />}
                           {item.category === "Audio" && <Mic size={14} className="text-purple-400" />}
                           {item.category === "Rigging" && <Box size={14} className="text-amber-400" />}
                           {item.category === "Accessories" && <Box size={14} className="text-zinc-400" />}
@@ -1014,7 +1013,7 @@ export default function InventoryPage() {
                       </div>
                       {/* Availability Badge with suitable colors in Card View */}
                       <span className={`px-2.5 py-0.5 text-[9px] font-bold uppercase border rounded-full ${
-                        item.status === "Available" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                        item.status === "Available" ? "bg-[var(--accent-wash)] text-[var(--accent)] border-[var(--accent)]/20" :
                         item.status === "Checked Out" ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
                         "bg-red-500/10 text-red-400 border-red-500/20"
                       }`}>{item.status}</span>
@@ -1038,14 +1037,14 @@ export default function InventoryPage() {
                   {item.status === "Checked Out" && (
                     <div className="mt-4 border-t border-white/5 pt-3 flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <div className="w-5 h-5 rounded-full bg-indigo-500/20 border border-indigo-500/20 flex items-center justify-center text-[9px] font-bold text-indigo-400">
+                        <div className="w-5 h-5 rounded-full bg-[var(--bg-tertiary)] border border-[var(--border)] flex items-center justify-center text-[9px] font-bold text-[var(--accent)]">
                           {item.assignee_name?.split(' ').map((n: string) => n[0]).join('') || '?'}
                         </div>
                         <span className="text-[10px] text-zinc-400 truncate max-w-[90px]">{item.assignee_name}</span>
                       </div>
                       <button
                         onClick={() => handleMarkReturned(item)}
-                        className="flex items-center gap-1 text-[9px] font-bold text-teal-400 hover:text-teal-350 bg-teal-500/10 hover:bg-teal-500/20 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                        className="flex items-center gap-1 text-[9px] font-bold text-[var(--accent)] hover:text-[var(--accent-hover)] bg-[var(--accent-wash)] hover:bg-[var(--accent)]/20 px-2.5 py-1 rounded transition-colors cursor-pointer"
                       >
                         <RotateCcw size={10} /> Return
                       </button>
@@ -1081,15 +1080,15 @@ export default function InventoryPage() {
           </div>
 
           {allBookings.length === 0 ? (
-            <div className="glass-panel rounded-2xl p-12 text-center text-zinc-500 text-xs">
+            <div className="studio-panel rounded-2xl p-12 text-center text-zinc-500 text-xs">
               <Calendar size={28} className="mx-auto mb-2 text-zinc-700" />
               No active bookings recorded.
             </div>
           ) : (
             <AnimatedList className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 !w-full" delayOffset={0.03}>
               {allBookings.map(booking => (
-                <div key={booking.id} className="glass-card p-5 flex flex-col justify-between min-h-[150px] relative overflow-hidden group hover:border-indigo-500/20">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 blur-[40px] rounded-full pointer-events-none" />
+                <div key={booking.id} className="studio-card p-5 flex flex-col justify-between min-h-[150px] relative overflow-hidden group hover:border-zinc-700">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-[var(--accent)]/5 blur-[40px] rounded-full pointer-events-none" />
                   <div>
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex flex-col">
@@ -1120,7 +1119,7 @@ export default function InventoryPage() {
                       <span>{booking.requested_date}</span>
                     </div>
                     {booking.due_date && (
-                      <div className="text-teal-400/80">
+                      <div className="text-[var(--accent)]/85">
                         Due: {new Date(booking.due_date).toLocaleDateString()}
                       </div>
                     )}
@@ -1146,9 +1145,9 @@ export default function InventoryPage() {
             <motion.div
               initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-lg glass-panel rounded-3xl shadow-2xl overflow-hidden relative"
+              className="w-full max-w-lg studio-panel rounded-3xl shadow-2xl overflow-hidden relative"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)]/5 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 relative z-10">
                 <div>
                   <h2 className="text-base font-bold text-white m-0">Add Asset</h2>
@@ -1227,7 +1226,7 @@ export default function InventoryPage() {
                     </div>
 
                     <button type="button" onClick={() => setCurrentStep(2)} disabled={!addForm.name.trim()}
-                      className="mt-2 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-teal-500 hover:from-indigo-500 hover:to-teal-400 disabled:opacity-50 text-white text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer">
+                      className="mt-2 w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-zinc-950 text-xs font-bold py-2.5 rounded-full transition-all cursor-pointer">
                       Next Details
                     </button>
                   </>
@@ -1290,7 +1289,7 @@ export default function InventoryPage() {
                         Back
                       </button>
                       <button type="submit" disabled={adding || uploadingImage}
-                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-teal-500 hover:from-indigo-500 hover:to-teal-400 disabled:opacity-50 text-white text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer">
+                        className="w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-zinc-950 text-xs font-bold py-2.5 rounded-full transition-all cursor-pointer">
                         {adding || uploadingImage ? <Loader2 size={14} className="animate-spin" /> : <PackagePlus size={14} />}
                         {adding || uploadingImage ? "Saving..." : "Add to Inventory"}
                       </button>
@@ -1314,9 +1313,9 @@ export default function InventoryPage() {
             <motion.div
               initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-md glass-panel rounded-3xl shadow-2xl overflow-hidden relative"
+              className="w-full max-w-md studio-panel rounded-3xl shadow-2xl overflow-hidden relative"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)]/5 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 relative z-10">
                 <div>
                   <h2 className="text-base font-bold text-white m-0">Request Asset</h2>
@@ -1340,7 +1339,7 @@ export default function InventoryPage() {
                     className="bg-zinc-950/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none transition-all font-sans resize-none" />
                 </div>
                 <button type="submit" disabled={requesting || !requestForm.purpose.trim()}
-                  className="mt-2 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-teal-500 hover:from-indigo-500 hover:to-teal-400 disabled:opacity-50 text-white text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer font-sans"
+                  className="mt-2 w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-zinc-950 text-xs font-bold py-2.5 rounded-full transition-all cursor-pointer font-sans"
                 >
                   {requesting ? <Loader2 size={14} className="animate-spin" /> : <ClipboardList size={14} />}
                   {requesting ? "Submitting..." : "Submit Checkout Request"}
@@ -1362,9 +1361,9 @@ export default function InventoryPage() {
             <motion.div
               initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.94, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-lg glass-panel rounded-3xl shadow-2xl overflow-hidden relative"
+              className="w-full max-w-lg studio-panel rounded-3xl shadow-2xl overflow-hidden relative"
             >
-              <div className="absolute top-0 right-0 w-72 h-72 bg-teal-500/10 blur-[90px] rounded-full pointer-events-none" />
+              <div className="absolute top-0 right-0 w-72 h-72 bg-[var(--accent)]/5 blur-[90px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 relative z-10">
                 <div>
                   <h2 className="text-base font-bold text-white m-0">Checkout Requests</h2>
@@ -1405,7 +1404,7 @@ export default function InventoryPage() {
                             <div className="grid grid-cols-2 gap-2 mt-1">
                               <button
                                 onClick={() => handleRequestAction(req, "approve")}
-                                className="py-2 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/25 text-teal-400 text-[10px] font-bold transition-all cursor-pointer"
+                                className="py-2 rounded-lg bg-[var(--accent-wash)] hover:bg-[var(--accent)]/20 border border-[var(--accent)]/20 text-[var(--accent)] text-[10px] font-bold transition-all cursor-pointer"
                               >
                                 Approve
                               </button>
@@ -1435,3 +1434,4 @@ export default function InventoryPage() {
     </div>
   );
 }
+

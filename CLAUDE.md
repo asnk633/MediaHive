@@ -36,7 +36,19 @@ Before writing a script, check `execution/` per your directive. Only create new 
 - Example: you hit an API rate limit → you then look into API → find a batch endpoint that would fix → rewrite script to accommodate → test → update directive.
 
 **3. Update directives as you learn**  
-Directives are living documents. When you discover API constraints, better approaches, common errors, or timing expectations—update the directive. But don't create or overwrite directives without asking unless explicitly told to. Directives are your instruction set and must be preserved (and improved upon over time, not extemporaneously used and then discarded).
+- Directives are living documents. When you discover API constraints, better approaches, common errors, or timing expectations—update the directive. But don't create or overwrite directives without asking unless explicitly told to. Directives are your instruction set and must be preserved (and improved upon over time, not extemporaneously used and then discarded).
+
+**4. Mandatory Routing — You Route, You Don't Do**  
+You are a mediator, not a worker. Every task MUST be routed to the correct sub-agent. See `directives/agent_routing.md` for the full routing table with zero exceptions.
+
+| Task | Route To | Reason |
+|------|----------|--------|
+| Write/edit files, run linters/tests/builds, debug code | **OpenCode** | OpenCode has direct file tools |
+| Summarize, draft, rewrite, translate, generate text | **Qwen/Ollama** (via MCP) | Local = free tokens |
+| Research, web fetch, API lookups | **OpenCode** | Has websearch/webfetch tools |
+| Planning, blueprints (short), git, deploy | **Can do yourself** | Needs repo/orchestration context |
+
+**Exception:** You may respond directly to the user in ≤2 sentences. Anything longer → route.
 
 ## Self-annealing loop
 
@@ -74,7 +86,7 @@ This project has a **Graphify** knowledge graph maintained in `graphify-out/`.
 
 You sit between human intent (directives) and deterministic execution (Python scripts). Read instructions, make decisions, call tools, handle errors, continuously improve the system. Always leverage the knowledge graph to save context tokens and ensure perfect precision.
 
-Pragmatic. Reliable. Self-anneal.
+Be pragmatic. Be reliable. Self-anneal.
 
 ## Skill Usage Directive
 
@@ -109,3 +121,9 @@ The Master Blueprints are the system memory. Skipping an update means the next a
 - Add any new "Known Quirks" discovered during the task
 
 **This rule overrides all other priorities. Do not end a task without updating the Blueprint.**
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan:
+[plan.md](file:///D:/MediaHive App/specs/001-mediahive-core-architecture/plan.md)
+<!-- SPECKIT END -->

@@ -235,7 +235,7 @@ export default function TeamsPage() {
             <motion.div
               initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-md glass-panel rounded-3xl shadow-2xl overflow-hidden relative"
+              className="w-full max-w-md studio-panel rounded-3xl shadow-2xl overflow-hidden relative"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 relative z-10">
@@ -275,7 +275,7 @@ export default function TeamsPage() {
           >
             <motion.div
               initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
-              className="w-full max-w-md glass-panel rounded-3xl shadow-2xl overflow-hidden relative"
+              className="w-full max-w-md studio-panel rounded-3xl shadow-2xl overflow-hidden relative"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 relative z-10">
@@ -349,7 +349,7 @@ export default function TeamsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
         
         {/* Left Side: Org Tree */}
-        <div className="glass-panel rounded-2xl p-5 flex flex-col gap-4 relative overflow-hidden">
+        <div className="studio-panel rounded-2xl p-5 flex flex-col gap-4 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-48 h-48 bg-teal-500/5 blur-[60px] rounded-full pointer-events-none" />
           <div className="flex items-center justify-between relative z-10">
             <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider m-0">Structure</h3>
@@ -406,7 +406,7 @@ export default function TeamsPage() {
                     exit={{ opacity: 0, scale: 0.95 }}
                     whileHover={{ y: -3 }}
                     key={member.id}
-                    className="glass-card p-5 flex flex-col items-center justify-between text-center min-h-[180px] transition-all cursor-pointer group hover:shadow-[0_8px_32px_-8px_rgba(79,70,229,0.2)] hover:border-indigo-500/30"
+                    className="studio-card p-5 flex flex-col items-center justify-between text-center min-h-[180px] transition-all cursor-pointer group hover:shadow-[0_8px_32px_-8px_rgba(79,70,229,0.2)] hover:border-indigo-500/30"
                   >
                     <div className="flex flex-col items-center gap-3">
                       {/* Member Avatar */}
@@ -435,7 +435,7 @@ export default function TeamsPage() {
 
         {/* Pending Invites */}
         {pendingInvites.length > 0 && (
-          <div className="glass-panel border-orange-500/20 rounded-2xl p-5 flex flex-col gap-4 mt-6 relative overflow-hidden">
+          <div className="studio-panel border-orange-500/20 rounded-2xl p-5 flex flex-col gap-4 mt-6 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-48 h-48 bg-orange-500/5 blur-[50px] rounded-full pointer-events-none" />
             <div className="flex items-center gap-2 text-orange-400 relative z-10">
               <Clock size={16} />
@@ -464,3 +464,4 @@ export default function TeamsPage() {
     </div>
   );
 }
+

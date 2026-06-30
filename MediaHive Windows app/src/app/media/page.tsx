@@ -405,7 +405,7 @@ export default function MediaPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="relative max-w-4xl w-full glass-panel rounded-3xl overflow-hidden shadow-2xl relative"
+              className="relative max-w-4xl w-full studio-panel rounded-3xl overflow-hidden shadow-2xl relative"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-5 py-3 border-b border-white/5 relative z-10">
@@ -473,7 +473,7 @@ export default function MediaPage() {
       </header>
 
       {/* 2. Search & Toolbar */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 glass-panel p-3 rounded-2xl relative overflow-hidden z-10">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 studio-panel p-3 rounded-2xl relative overflow-hidden z-10">
         <div className="relative flex-1 max-w-md w-full relative z-10">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 w-4 h-4" />
           <input
@@ -573,7 +573,7 @@ export default function MediaPage() {
 
             {/* Sidebar Panel */}
             <div className="flex flex-col gap-6 lg:sticky lg:top-6">
-              <div className="glass-panel rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden">
+              <div className="studio-panel rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 blur-[40px] rounded-full pointer-events-none" />
                 <div className="relative z-10 flex flex-col gap-3">
                   <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider m-0">Folders</h3>
@@ -602,7 +602,7 @@ export default function MediaPage() {
                 </div>
               </div>
 
-              <div className="glass-panel rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden">
+              <div className="studio-panel rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden">
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/5 blur-[40px] rounded-full pointer-events-none" />
                 <div className="relative z-10 flex flex-col gap-3">
                   <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider m-0">Tags</h3>
@@ -703,7 +703,7 @@ export default function MediaPage() {
                             </div>
                           </div>
                         ) : (
-                          <div key={asset.id} className="flex items-center gap-4 p-3 rounded-xl glass-card hover:border-white/10 transition-all group w-full">
+                          <div key={asset.id} className="flex items-center gap-4 p-3 rounded-xl studio-card hover:border-white/10 transition-all group w-full">
                             <div className="w-10 h-10 rounded-xl overflow-hidden bg-zinc-900 flex-shrink-0">
                               <SmartListImage srcArray={getValidThumbnailUrls(asset)} file={asset} />
                             </div>
@@ -736,3 +736,4 @@ export default function MediaPage() {
     </div>
   );
 }
+

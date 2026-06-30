@@ -9,10 +9,12 @@ import {
   Flag, User, Eye, Pencil, Trash2, Clock, CheckCheck,
   ListTodo, AlertTriangle, Pause, TrendingUp
 } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { supabase } from "@/lib/supabaseClient";
 import { AnimatedList } from "@/components/ui/animated-list";
+import { cn } from "@/lib/utils";
+import { DndContext, DragOverlay, useDraggable, useDroppable, type DragEndEvent } from "@dnd-kit/core";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Task {
@@ -46,7 +48,7 @@ const mapStatus = (s: string): Task["status"] => {
   const l = s?.toLowerCase() ?? "";
   if (["done", "completed"].includes(l)) return "Done";
   if (["in-progress", "in progress", "in_progress", "working"].includes(l)) return "In Progress";
-  if (["on-hold", "on hold", "on_hold", "hold", "paused"].includes(l)) return "On Hold";
+  if (["on-hold", "on hold", "on_hold", "hold", "paused", "review"].includes(l)) return "On Hold";
   return "To Do";
 };
 
@@ -82,41 +84,108 @@ const PRIORITY_COLORS: Record<string, string> = {
 };
 
 const PRIORITY_BG: Record<string, string> = {
-  High: "bg-red-500/10 text-red-400 border-red-500/20",
-  Medium: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  Low: "bg-zinc-800 text-zinc-500 border-zinc-700/50",
+  High: "bg-red-500/15 text-red-500 dark:text-red-400 border-red-500/20 rounded-[999px]",
+  Medium: "bg-amber-500/15 text-amber-500 dark:text-amber-400 border-amber-500/20 rounded-[999px]",
+  Low: "bg-zinc-500/15 text-zinc-600 dark:text-zinc-400 border-zinc-500/20 rounded-[999px]",
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  Done: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  "In Progress": "bg-purple-500/10 text-purple-400 border-purple-500/20",
-  "On Hold": "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  "To Do": "bg-zinc-800 text-zinc-400 border-zinc-700/50",
+  Done: "bg-emerald-500/15 text-emerald-500 dark:text-emerald-400 border-emerald-500/20 rounded-[999px]",
+  "In Progress": "bg-purple-500/15 text-purple-500 dark:text-purple-400 border-purple-500/20 rounded-[999px]",
+  "On Hold": "bg-amber-500/15 text-amber-500 dark:text-amber-400 border-amber-500/20 rounded-[999px]",
+  "To Do": "bg-zinc-500/15 text-zinc-600 dark:text-zinc-400 border-zinc-500/20 rounded-[999px]",
 };
 
 const KANBAN_COLS: Task["status"][] = ["To Do", "In Progress", "On Hold", "Done"];
 
+// ─── Kanban DnD Components (@dnd-kit) ──────────────────────────────────────────
+function KanbanCardView({ task, onView, onEdit, onDelete, showActions = true }: {
+  task: Task; onView: (t: Task) => void; onEdit: (t: Task) => void;
+  onDelete: (t: Task) => void; showActions?: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-3 h-full w-full">
+      <div className="flex items-start justify-between gap-2">
+        {task.category && task.category !== "General" && (
+          <span className="text-[9px] font-bold rounded bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1.5 py-0.5 truncate max-w-[80px]">{task.category}</span>
+        )}
+        <div className="flex items-center gap-1 ml-auto">
+          <Flag size={9} className={PRIORITY_COLORS[task.priority]} />
+          <span className={`text-[9px] font-bold ${PRIORITY_COLORS[task.priority]}`}>{task.priority}</span>
+        </div>
+      </div>
+      <div className={`text-xs font-semibold leading-normal ${task.status === "Done" ? "line-through text-zinc-500" : "text-zinc-200"}`}>{task.title}</div>
+      {task.description && (
+        <p className="text-[10px] text-zinc-500 m-0 leading-relaxed line-clamp-2">{task.description}</p>
+      )}
+      <div className="flex items-center gap-1.5 text-[10px] text-zinc-500">
+        <User size={9} />
+        <span className="truncate">{task.requester_name}</span>
+      </div>
+      <div className="flex items-center justify-between border-t border-white/5 pt-2">
+        <div className="flex items-center gap-1 text-[10px] text-zinc-500">
+          {task.status === "Done" ? (
+            <><CheckCheck size={9} className="text-emerald-500" /><span className="text-emerald-400">{task.completed_at_display || "—"}</span></>
+          ) : (
+            <><Calendar size={9} /><span className={isToday(task.due_date) ? "text-amber-400 font-semibold" : ""}>{isToday(task.due_date) ? "Today" : task.due_date_display}</span></>
+          )}
+        </div>
+        <div className="flex items-center gap-1">
+          {showActions && (
+            <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button onClick={() => onView(task)} title="View" className="w-5 h-5 rounded flex items-center justify-center text-zinc-600 hover:text-teal-400 hover:bg-teal-500/10 transition-all cursor-pointer"><Eye size={10} /></button>
+              <button onClick={() => onEdit(task)} title="Edit" className="w-5 h-5 rounded flex items-center justify-center text-zinc-600 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all cursor-pointer"><Pencil size={10} /></button>
+              <button onClick={() => onDelete(task)} title="Delete" className="w-5 h-5 rounded flex items-center justify-center text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer"><Trash2 size={10} /></button>
+            </div>
+          )}
+          <div className="w-5 h-5 rounded-full bg-[var(--bg-tertiary)] border border-[var(--border)] flex items-center justify-center text-[9px] font-bold text-[var(--accent)]" title={task.assignee_name}>{task.assignee_initials}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function KanbanCardDraggable({ task, onView, onEdit, onDelete }: {
+  task: Task; onView: (t: Task) => void; onEdit: (t: Task) => void; onDelete: (t: Task) => void;
+}) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: task.id, data: { task } });
+  return (
+    <div ref={setNodeRef} {...listeners} {...attributes}
+      className={`studio-card rounded-xl p-4 transition-all duration-200 group cursor-grab active:cursor-grabbing select-none hover:-translate-y-0.5 ${isDragging ? "opacity-20 border-teal-500/10 scale-95" : "hover:border-white/10"}`}>
+      <KanbanCardView task={task} onView={onView} onEdit={onEdit} onDelete={onDelete} />
+    </div>
+  );
+}
+
+function KanbanColumnDroppable({ id, children }: { id: string; children: React.ReactNode }) {
+  const { setNodeRef, isOver } = useDroppable({ id });
+  return (
+    <div ref={setNodeRef}
+      className={`flex flex-col gap-3 studio-panel p-4 rounded-2xl min-h-[400px] relative overflow-hidden transition-all duration-200 ${isOver ? "border-teal-500/40 bg-teal-950/10 shadow-lg shadow-teal-500/5 ring-1 ring-teal-500/20 scale-[1.01]" : ""}`}>
+      {children}
+    </div>
+  );
+}
+
 // ─── Stat Card ────────────────────────────────────────────────────────────────
-function StatCard({ label, value, icon: Icon, color, sub }: {
-  label: string; value: number; icon: React.ElementType;
-  color: string; sub?: string;
+function StatCard({ label, value, icon: Icon, sub }: {
+  label: string; value: number; icon: React.ElementType; sub?: string;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass-card rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden group hover:border-white/10 transition-all"
+      className="studio-card rounded-xl p-4 flex flex-col gap-2 relative overflow-hidden group transition-all"
     >
-      <div className={`absolute top-0 right-0 w-20 h-20 ${color} blur-[40px] rounded-full pointer-events-none opacity-30`} />
       <div className="flex items-center justify-between relative z-10">
         <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">{label}</span>
-        <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${color.replace("bg-", "bg-")} bg-opacity-20 border border-white/5`}>
-          <Icon size={13} className={color.includes("emerald") ? "text-emerald-400" : color.includes("purple") ? "text-purple-400" : color.includes("amber") ? "text-amber-400" : color.includes("red") ? "text-red-400" : color.includes("blue") ? "text-blue-400" : color.includes("teal") ? "text-teal-400" : "text-zinc-400"} />
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-foreground/[0.04] border border-border">
+          <Icon size={13} className="text-foreground/75" />
         </div>
       </div>
       <div className="relative z-10">
-        <span className="text-2xl font-bold text-white">{value}</span>
-        {sub && <span className="text-[10px] text-zinc-600 ml-1.5">{sub}</span>}
+        <span className="text-2xl font-mono font-bold text-foreground">{value}</span>
+        {sub && <span className="text-[10px] text-foreground/50 ml-1.5">{sub}</span>}
       </div>
     </motion.div>
   );
@@ -138,9 +207,33 @@ export default function TasksPage() {
 function TasksContent() {
   const { user, loading: authLoading } = useAuth();
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const createParam = searchParams ? searchParams.get("create") : null;
+  const viewParam = searchParams ? searchParams.get("view") : null;
   const hasAutoOpened = useRef(false);
-  const [viewMode, setViewMode] = useState<"list" | "kanban">("list");
+  const [viewMode, setViewMode] = useState<"list" | "kanban" | "backlog">("list");
+
+  useEffect(() => {
+    if (viewParam === "kanban") {
+      setViewMode("kanban");
+    } else if (viewParam === "backlog") {
+      setViewMode("backlog");
+    } else {
+      setViewMode("list");
+    }
+  }, [viewParam]);
+
+  const handleViewChange = (v: "list" | "kanban") => {
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : "");
+    if (v === "list") {
+      params.delete("view");
+    } else {
+      params.set("view", v);
+    }
+    const queryString = params.toString();
+    router.push(pathname + (queryString ? `?${queryString}` : ""));
+  };
   const [tasks, setTasks] = useState<Task[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -150,6 +243,9 @@ function TasksContent() {
   const [priorityFilter, setPriorityFilter] = useState<string>("All");
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("all");
+
+  // DnD State (used by @dnd-kit)
+  const [activeDragTask, setActiveDragTask] = useState<Task | null>(null);
 
   // Modals
   const [showModal, setShowModal] = useState(false);
@@ -384,20 +480,49 @@ function TasksContent() {
   // ─── Change Status ───────────────────────────────────────────────────────────
   const changeStatus = async (task: Task, newStatusUI: Task["status"]) => {
     const dbMap: Record<Task["status"], string> = {
-      "To Do": "todo", "In Progress": "in_progress", "On Hold": "on_hold", "Done": "done"
+      "To Do": "todo", "In Progress": "in_progress", "On Hold": "review", "Done": "done"
     };
     const completedAt = newStatusUI === "Done" ? new Date().toISOString() : null;
+
+    // Save original state for optimistic UI rollback
+    const originalTasks = [...tasks];
+
+    // Optimistically update local state
     setTasks(prev => prev.map(t => t.id === task.id ? {
       ...t, status: newStatusUI,
       completed_at: completedAt,
       completed_at_display: completedAt ? formatDate(completedAt) : null
     } : t));
-    await supabase.from("tasks").update({
-      status: dbMap[newStatusUI],
-      completed_at: completedAt,
-      updated_at: new Date().toISOString()
-    }).eq("id", task.id);
+
+    try {
+      const { data, error } = await supabase.from("tasks").update({
+        status: dbMap[newStatusUI],
+        completed_at: completedAt,
+        updated_at: new Date().toISOString()
+      }).eq("id", task.id).select();
+
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        throw new Error("You do not have permission to modify this task.");
+      }
+    } catch (err: any) {
+      console.error("Failed to update task status in Supabase:", err);
+      showToast("error", `Failed to move task: ${err.message || "Network error"}`);
+      // Revert to original state on failure
+      setTasks(originalTasks);
+    }
   };
+
+  const handleKanbanDragEnd = useCallback((event: DragEndEvent) => {
+    setActiveDragTask(null);
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const task = tasks.find(t => t.id === active.id);
+    if (!task) return;
+    const targetColumn = over.id as Task["status"];
+    if (!KANBAN_COLS.includes(targetColumn) || task.status === targetColumn) return;
+    changeStatus(task, targetColumn);
+  }, [tasks]);
 
   // ─── Delete Task ─────────────────────────────────────────────────────────────
   const handleDelete = async (task: Task) => {
@@ -458,11 +583,13 @@ function TasksContent() {
     return tabFilteredTasks.filter(t => {
       const matchSearch = t.title.toLowerCase().includes(search.toLowerCase()) ||
         t.description.toLowerCase().includes(search.toLowerCase());
-      const matchStatus = statusFilter === "All" || t.status === statusFilter;
+      const matchStatus = viewMode === "backlog"
+        ? t.status === "To Do"
+        : (statusFilter === "All" || t.status === statusFilter);
       const matchPriority = priorityFilter === "All" || t.priority === priorityFilter;
       return matchSearch && matchStatus && matchPriority;
     });
-  }, [tabFilteredTasks, search, statusFilter, priorityFilter]);
+  }, [tabFilteredTasks, search, statusFilter, priorityFilter, viewMode]);
 
   // ─── Render ───────────────────────────────────────────────────────────────────
   return (
@@ -498,7 +625,7 @@ function TasksContent() {
             <motion.div
               initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-lg glass-panel rounded-3xl shadow-2xl overflow-hidden relative"
+              className="w-full max-w-lg studio-panel rounded-3xl shadow-2xl overflow-hidden relative"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
@@ -588,7 +715,7 @@ function TasksContent() {
             <motion.div
               initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-sm glass-panel rounded-3xl shadow-2xl overflow-hidden relative p-6 flex flex-col gap-4"
+              className="w-full max-w-sm studio-panel rounded-3xl shadow-2xl overflow-hidden relative p-6 flex flex-col gap-4"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 blur-[60px] rounded-full pointer-events-none" />
               <div className="w-10 h-10 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
@@ -626,7 +753,7 @@ function TasksContent() {
             <motion.div
               initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-lg glass-panel rounded-3xl shadow-2xl overflow-hidden relative"
+              className="w-full max-w-lg studio-panel rounded-3xl shadow-2xl overflow-hidden relative"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 relative z-10">
@@ -724,7 +851,7 @@ function TasksContent() {
                 )}
 
                 <button type="submit" disabled={saving || !form.title.trim()}
-                  className="mt-2 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold py-3 rounded-xl shadow-lg shadow-teal-500/20 active:scale-[0.98] transition-all cursor-pointer">
+                  className="mt-2 w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed text-zinc-950 text-sm font-semibold py-2.5 rounded-full transition-all cursor-pointer">
                   {saving ? <Loader2 size={15} className="animate-spin" /> : editTask ? <Pencil size={15} /> : <Plus size={15} />}
                   {saving ? (editTask ? "Updating..." : "Creating...") : editTask ? "Update Task" : "Create Task"}
                 </button>
@@ -737,33 +864,26 @@ function TasksContent() {
       {/* ─── Header ───────────────────────────────────────────────────────────────── */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-sm text-teal-400 font-medium tracking-wider uppercase mb-1">
-            <Sparkles size={14} /> Workflows
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight text-white m-0">Tasks</h1>
-          <p className="text-zinc-400 m-0 text-sm mt-1">
-            Manage, schedule, and collaborate on project action items.
-            {!loading && (
-              <span className="ml-2 text-zinc-500">
-                — {stats.done}/{stats.total} done
-              </span>
-            )}
-          </p>
+          <h1 className="text-[28px] font-bold text-white m-0 leading-tight">Tasks</h1>
+          <p className="text-sm text-zinc-400 m-0 mt-1">Manage and track your workflow items</p>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="bg-zinc-950/40 border border-white/5 p-1 rounded-xl flex gap-1">
-            {(["list", "kanban"] as const).map(v => (
-              <button key={v} onClick={() => setViewMode(v)}
-                className={`p-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold transition-all cursor-pointer ${viewMode === v ? "bg-white/10 text-teal-400" : "text-zinc-500 hover:text-zinc-300"}`}>
-                {v === "list" ? <List size={14} /> : <LayoutGrid size={14} />}
-                <span className="capitalize">{v}</span>
-              </button>
-            ))}
+            {(["list", "kanban"] as const).map(v => {
+              const isActive = v === "list" ? (viewMode === "list" || viewMode === "backlog") : (viewMode === "kanban");
+              return (
+                <button key={v} onClick={() => handleViewChange(v)}
+                  className={`p-1.5 rounded-md flex items-center gap-1.5 text-xs font-semibold transition-all cursor-pointer ${isActive ? "bg-[var(--bg-tertiary)] text-[var(--accent)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`}>
+                  {v === "list" ? <List size={14} /> : <LayoutGrid size={14} />}
+                  <span className="capitalize">{v}</span>
+                </button>
+              );
+            })}
           </div>
 
           <button onClick={() => { setEditTask(null); setForm({ title: "", description: "", status: "To Do", priority: "Medium", category: "General", due_date: "", assignee_id: user?.id || "" }); setShowModal(true); }}
-            className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-teal-500/10 hover:shadow-teal-500/20 active:scale-95 transition-all cursor-pointer">
+            className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 text-sm font-semibold px-4 py-2 rounded-full active:scale-95 transition-all cursor-pointer">
             <Plus size={16} /> New Task
           </button>
         </div>
@@ -772,12 +892,12 @@ function TasksContent() {
       {/* ─── Stats Cards ──────────────────────────────────────────────────────────── */}
       {!loading && (
         <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-          <StatCard label="Total" value={stats.total} icon={ListTodo} color="bg-blue-500" />
-          <StatCard label="To Do" value={stats.todo} icon={Clock} color="bg-zinc-500" />
-          <StatCard label="Due Today" value={stats.dueToday} icon={AlertTriangle} color="bg-amber-500" />
-          <StatCard label="In Progress" value={stats.inProgress} icon={TrendingUp} color="bg-purple-500" />
-          <StatCard label="On Hold" value={stats.onHold} icon={Pause} color="bg-amber-500" />
-          <StatCard label="Done" value={stats.done} icon={CheckCheck} color="bg-emerald-500" />
+          <StatCard label="Total" value={stats.total} icon={ListTodo} />
+          <StatCard label="To Do" value={stats.todo} icon={Clock} />
+          <StatCard label="Due Today" value={stats.dueToday} icon={AlertTriangle} />
+          <StatCard label="In Progress" value={stats.inProgress} icon={TrendingUp} />
+          <StatCard label="On Hold" value={stats.onHold} icon={Pause} />
+          <StatCard label="Done" value={stats.done} icon={CheckCheck} />
         </div>
       )}
 
@@ -786,7 +906,7 @@ function TasksContent() {
         {/* Tab bar + search/filter row */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Tabs */}
-          <div className="flex items-center gap-1 bg-zinc-950/40 border border-white/5 p-1 rounded-xl">
+          <div className="flex items-center gap-1 bg-[var(--bg-sidebar)] border border-[var(--border)] p-1 rounded-lg">
             {([
               { key: "today", label: "Today Focus" },
               { key: "all", label: "All Tasks" },
@@ -795,15 +915,15 @@ function TasksContent() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                   activeTab === tab.key
-                    ? "bg-gradient-to-r from-teal-500/20 to-indigo-500/20 border border-teal-500/30 text-teal-300"
-                    : "text-zinc-500 hover:text-zinc-300"
+                    ? "bg-[var(--bg-tertiary)] border border-[var(--border)] text-[var(--accent)]"
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 }`}
               >
                 {tab.label}
                 {!loading && (
-                  <span className={`ml-1.5 text-[9px] px-1 py-0.5 rounded-full ${activeTab === tab.key ? "bg-teal-500/20 text-teal-400" : "bg-zinc-800 text-zinc-600"}`}>
+                  <span className={`ml-1.5 text-[9px] px-1 py-0.5 rounded-full ${activeTab === tab.key ? "bg-[var(--accent)]/15 text-[var(--accent)]" : "bg-[var(--bg-tertiary)] text-[var(--text-tertiary)]"}`}>
                     {tab.key === "today"
                       ? tasks.filter(t => (t.due_date && new Date(t.due_date).toDateString() === new Date().toDateString()) || t.status === "In Progress" || t.status === "On Hold").length
                       : tab.key === "mine"
@@ -820,12 +940,12 @@ function TasksContent() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 w-4 h-4" />
             <input type="text" placeholder="Search tasks..." value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-zinc-950/40 border border-white/5 rounded-xl pl-10 pr-4 py-2 text-sm text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-teal-500/50 transition-all font-sans" />
+              className="w-full bg-[var(--bg-sidebar)] border border-[var(--border)] rounded-md pl-10 pr-4 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:border-[var(--accent)] transition-all font-sans" />
           </div>
 
           {/* Filter toggle */}
           <button onClick={() => setShowFilters(v => !v)}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-colors cursor-pointer ${showFilters ? "bg-teal-500/10 border-teal-500/30 text-teal-400" : "bg-zinc-900/50 hover:bg-zinc-800 border-white/5 text-zinc-300"}`}>
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-md border text-xs font-semibold transition-colors cursor-pointer ${showFilters ? "bg-[var(--accent)]/10 border-[var(--accent)]/30 text-[var(--accent)]" : "bg-[var(--bg-sidebar)] hover:bg-[var(--bg-tertiary)] border-[var(--border)] text-[var(--text-secondary)]"}`}>
             <Filter size={14} /> Filters
             {(statusFilter !== "All" || priorityFilter !== "All") && (
               <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
@@ -879,8 +999,8 @@ function TasksContent() {
           <AnimatePresence mode="wait">
 
             {/* ── List View ─────────────────────────────────────────────────────── */}
-            {viewMode === "list" && (
-              <motion.div key={`list-${activeTab}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            {(viewMode === "list" || viewMode === "backlog") && (
+              <motion.div key={`list-${activeTab}-${viewMode}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 transition={{ duration: 0.1 }}
                 className="flex flex-col gap-2">
 
@@ -913,122 +1033,132 @@ function TasksContent() {
                     </div>
                     {!search && statusFilter === "All" && priorityFilter === "All" && activeTab === "all" && (
                       <button onClick={() => setShowModal(true)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-indigo-600 text-white text-xs font-semibold cursor-pointer">
+                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-zinc-950 text-xs font-semibold cursor-pointer">
                         <Plus size={13} /> New Task
                       </button>
                     )}
                   </div>
                 ) : (
-                  <AnimatedList className="!gap-1.5">
-                    {filteredTasks.map(task => (
-                      <div key={task.id}
-                        className="grid gap-4 items-center px-4 py-3 rounded-xl glass-card transition-all group hover:bg-white/[0.03]"
-                        style={{ gridTemplateColumns: "minmax(0,3fr) minmax(0,1.5fr) minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr) auto" }}>
+                  <AnimatedList className="divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">
+                    {filteredTasks.map(task => {
+                      const isSelected = viewTask && viewTask.id === task.id;
+                      return (
+                        <div key={task.id}
+                          onClick={() => setViewTask(task)}
+                          className={cn(
+                            "grid gap-4 items-center px-4 py-3 transition-all group hover:bg-foreground/[0.02] cursor-pointer relative select-none",
+                            isSelected ? "bg-[var(--accent-wash)]" : "bg-transparent"
+                          )}
+                          style={{ gridTemplateColumns: "minmax(0,3fr) minmax(0,1.5fr) minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr) auto" }}>
+                          {isSelected && <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[var(--accent)]" />}
 
-                        {/* Title + checkbox */}
-                        <div className="flex items-start gap-3 min-w-0">
-                          <button
-                            onClick={() => toggleDone(task)}
-                            title={task.status === "Done" ? "Mark incomplete" : "Mark as done"}
-                            className={`mt-0.5 flex-shrink-0 w-4 h-4 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
-                              task.status === "Done"
-                                ? "bg-teal-500 border-teal-500 text-white"
-                                : "border-zinc-700 hover:border-teal-500/50"
-                            }`}
-                          >
-                            {task.status === "Done" && <CheckSquare className="w-2.5 h-2.5" />}
-                          </button>
-                          <div className="flex flex-col gap-0.5 min-w-0 w-full">
-                            <span className={`text-sm font-medium truncate ${task.status === "Done" ? "text-zinc-500 line-through" : "text-zinc-200"}`}>
-                              {task.title}
-                            </span>
-                            {task.category && task.category !== "General" && (
-                              <span className="text-[9px] font-bold text-zinc-500 bg-zinc-800 px-1.5 py-0.5 rounded uppercase tracking-wider w-fit">
-                                {task.category}
+                          {/* Title + checkbox */}
+                          <div className="flex items-start gap-3 min-w-0 relative z-10">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); toggleDone(task); }}
+                              title={task.status === "Done" ? "Mark incomplete" : "Mark as done"}
+                              className={`mt-0.5 flex-shrink-0 w-4 h-4 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                                task.status === "Done"
+                                  ? "bg-[var(--accent)] border-[var(--accent)] text-white"
+                                  : "border-zinc-700 hover:border-[var(--accent)]/50"
+                              }`}
+                            >
+                              {task.status === "Done" && <CheckSquare className="w-2.5 h-2.5" />}
+                            </button>
+                            <div className="flex flex-col gap-0.5 min-w-0 w-full">
+                              <span className={`text-sm font-medium truncate ${task.status === "Done" ? "text-zinc-500 line-through" : "text-zinc-200"}`}>
+                                {task.title}
                               </span>
+                              {task.category && task.category !== "General" && (
+                                <span className="text-[9px] font-bold text-zinc-500 bg-zinc-800 px-1.5 py-0.5 rounded uppercase tracking-wider w-fit">
+                                  {task.category}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Requester */}
+                          <div className="flex items-center gap-2 min-w-0 relative z-10">
+                            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--bg-tertiary)] border border-[var(--border)] flex items-center justify-center text-[9px] font-bold text-[var(--text-secondary)]">
+                              {task.requester_initials}
+                            </div>
+                            <span className="text-xs text-zinc-400 truncate">{task.requester_name}</span>
+                          </div>
+
+                          {/* Assignee */}
+                          <div className="flex items-center gap-2 min-w-0 relative z-10">
+                            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--bg-tertiary)] border border-[var(--border)] flex items-center justify-center text-[9px] font-bold text-[var(--accent)]">
+                              {task.assignee_initials}
+                            </div>
+                            <span className="text-xs text-zinc-400 truncate">{task.assignee_name}</span>
+                          </div>
+
+                          {/* Priority */}
+                          <div className="relative z-10">
+                            <span className={`px-2.5 py-0.5 text-[9px] font-semibold border ${PRIORITY_BG[task.priority]}`}>
+                              {task.priority}
+                            </span>
+                          </div>
+
+                          {/* Status — clickable cycle */}
+                          <div className="relative z-10">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const cycle: Task["status"][] = ["To Do", "In Progress", "On Hold", "Done"];
+                                const idx = cycle.indexOf(task.status);
+                                changeStatus(task, cycle[(idx + 1) % cycle.length]);
+                              }}
+                              title="Click to change status"
+                              className={`px-2.5 py-0.5 text-[9px] font-semibold border transition-all cursor-pointer hover:opacity-85 ${STATUS_COLORS[task.status]}`}>
+                              {task.status}
+                            </button>
+                          </div>
+
+                          {/* Date — Due or Completed */}
+                          <div className="flex items-center gap-1.5 text-xs min-w-0 relative z-10">
+                            {task.status === "Done" ? (
+                              <>
+                                <CheckCheck size={11} className="text-emerald-500 flex-shrink-0" />
+                                <span className="text-emerald-400 truncate text-[10px]">{task.completed_at_display || "—"}</span>
+                              </>
+                            ) : (
+                              <>
+                                <Calendar size={11} className={`flex-shrink-0 ${isToday(task.due_date) ? "text-[var(--accent)]" : "text-zinc-600"}`} />
+                                <span className={`truncate text-[10px] ${isToday(task.due_date) ? "text-[var(--accent)] font-semibold" : "text-zinc-400"}`}>
+                                  {isToday(task.due_date) ? "Today" : task.due_date_display}
+                                </span>
+                              </>
                             )}
                           </div>
-                        </div>
 
-                        {/* Requester */}
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/20 flex items-center justify-center text-[9px] font-bold text-indigo-400">
-                            {task.requester_initials}
+                          {/* Action icons */}
+                          <div className="flex items-center gap-1 w-20 justify-end opacity-0 group-hover:opacity-100 transition-opacity relative z-10">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setViewTask(task); }}
+                              title="View"
+                              className="w-6 h-6 rounded-lg flex items-center justify-center text-zinc-500 hover:text-[var(--accent)] hover:bg-[var(--accent-wash)] transition-all cursor-pointer"
+                            >
+                              <Eye size={12} />
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); openEdit(task); }}
+                              title="Edit"
+                              className="w-6 h-6 rounded-lg flex items-center justify-center text-zinc-500 hover:text-[var(--accent)] hover:bg-[var(--accent-wash)] transition-all cursor-pointer"
+                            >
+                              <Pencil size={12} />
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setDeleteConfirm(task); }}
+                              title="Delete"
+                              className="w-6 h-6 rounded-lg flex items-center justify-center text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer"
+                            >
+                              <Trash2 size={12} />
+                            </button>
                           </div>
-                          <span className="text-xs text-zinc-400 truncate">{task.requester_name}</span>
                         </div>
-
-                        {/* Assignee */}
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-teal-500/20 to-indigo-500/20 border border-teal-500/20 flex items-center justify-center text-[9px] font-bold text-teal-400">
-                            {task.assignee_initials}
-                          </div>
-                          <span className="text-xs text-zinc-400 truncate">{task.assignee_name}</span>
-                        </div>
-
-                        {/* Priority */}
-                        <div className="flex items-center gap-1">
-                          <Flag size={10} className={PRIORITY_COLORS[task.priority]} />
-                          <span className={`text-xs font-semibold ${PRIORITY_COLORS[task.priority]}`}>{task.priority}</span>
-                        </div>
-
-                        {/* Status — clickable cycle */}
-                        <div>
-                          <button
-                            onClick={() => {
-                              const cycle: Task["status"][] = ["To Do", "In Progress", "On Hold", "Done"];
-                              const idx = cycle.indexOf(task.status);
-                              changeStatus(task, cycle[(idx + 1) % cycle.length]);
-                            }}
-                            title="Click to change status"
-                            className={`px-2 py-0.5 text-[9px] font-semibold border rounded-full whitespace-nowrap transition-all cursor-pointer hover:opacity-80 ${STATUS_COLORS[task.status]}`}>
-                            {task.status}
-                          </button>
-                        </div>
-
-                        {/* Date — Due or Completed */}
-                        <div className="flex items-center gap-1.5 text-xs min-w-0">
-                          {task.status === "Done" ? (
-                            <>
-                              <CheckCheck size={11} className="text-emerald-500 flex-shrink-0" />
-                              <span className="text-emerald-400 truncate text-[10px]">{task.completed_at_display || "—"}</span>
-                            </>
-                          ) : (
-                            <>
-                              <Calendar size={11} className={`flex-shrink-0 ${isToday(task.due_date) ? "text-amber-400" : "text-zinc-600"}`} />
-                              <span className={`truncate text-[10px] ${isToday(task.due_date) ? "text-amber-300 font-semibold" : "text-zinc-400"}`}>
-                                {isToday(task.due_date) ? "Today" : task.due_date_display}
-                              </span>
-                            </>
-                          )}
-                        </div>
-
-                        {/* Action icons */}
-                        <div className="flex items-center gap-1 w-20 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button
-                            onClick={() => setViewTask(task)}
-                            title="View"
-                            className="w-6 h-6 rounded-lg flex items-center justify-center text-zinc-500 hover:text-teal-400 hover:bg-teal-500/10 transition-all cursor-pointer"
-                          >
-                            <Eye size={12} />
-                          </button>
-                          <button
-                            onClick={() => openEdit(task)}
-                            title="Edit"
-                            className="w-6 h-6 rounded-lg flex items-center justify-center text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all cursor-pointer"
-                          >
-                            <Pencil size={12} />
-                          </button>
-                          <button
-                            onClick={() => setDeleteConfirm(task)}
-                            title="Delete"
-                            className="w-6 h-6 rounded-lg flex items-center justify-center text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer"
-                          >
-                            <Trash2 size={12} />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </AnimatedList>
                 )}
               </motion.div>
@@ -1036,106 +1166,53 @@ function TasksContent() {
 
             {/* ── Kanban View ──────────────────────────────────────────────────── */}
             {viewMode === "kanban" && (
-              <motion.div key={`kanban-${activeTab}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                transition={{ duration: 0.1 }}
-                className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {KANBAN_COLS.map(col => {
-                  const colTasks = filteredTasks.filter(t => t.status === col);
-                  const dotColor = col === "Done" ? "bg-emerald-500" : col === "In Progress" ? "bg-purple-500" : col === "On Hold" ? "bg-amber-500" : "bg-zinc-500";
-                  return (
-                    <div key={col} className="flex flex-col gap-3 glass-panel p-4 rounded-2xl min-h-[400px] relative overflow-hidden">
-                      <div className={`absolute top-0 right-0 w-48 h-48 blur-[60px] rounded-full pointer-events-none opacity-20 ${dotColor}`} />
-                      <div className="flex items-center justify-between border-b border-white/5 pb-2 relative z-10">
-                        <div className="flex items-center gap-2">
-                          <span className={`w-2 h-2 rounded-full ${dotColor}`} />
-                          <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">{col}</span>
-                          <span className="text-[10px] bg-zinc-800 text-zinc-500 px-1.5 py-0.5 rounded-full">{colTasks.length}</span>
-                        </div>
-                        <button onClick={() => { setForm(f => ({ ...f, status: col })); setShowModal(true); }}
-                          className="p-1 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-colors cursor-pointer">
-                          <Plus size={14} />
-                        </button>
-                      </div>
-
-                      <div className="flex flex-col gap-3 overflow-y-auto flex-1">
-                        {colTasks.length === 0 && (
-                          <div className="flex-1 flex items-center justify-center">
-                            <p className="text-[11px] text-zinc-600 text-center">No tasks here</p>
+              <DndContext
+                onDragStart={(event) => setActiveDragTask(tasks.find(t => t.id === event.active.id) || null)}
+                onDragEnd={handleKanbanDragEnd}>
+                <motion.div key={`kanban-${activeTab}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  transition={{ duration: 0.1 }}
+                  className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {KANBAN_COLS.map(col => {
+                    const colTasks = filteredTasks.filter(t => t.status === col);
+                    const dotColor = col === "Done" ? "bg-emerald-500" : col === "In Progress" ? "bg-purple-500" : col === "On Hold" ? "bg-amber-500" : "bg-zinc-500";
+                    return (
+                      <KanbanColumnDroppable key={col} id={col}>
+                        <div className={`absolute top-0 right-0 w-48 h-48 blur-[60px] rounded-full pointer-events-none opacity-20 ${dotColor}`} />
+                        <div className="flex items-center justify-between border-b border-white/5 pb-2 relative z-10">
+                          <div className="flex items-center gap-2">
+                            <span className={`w-2 h-2 rounded-full ${dotColor}`} />
+                            <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">{col}</span>
+                            <span className="text-[10px] bg-zinc-800 text-zinc-500 px-1.5 py-0.5 rounded-full">{colTasks.length}</span>
                           </div>
-                        )}
-                        <AnimatedList className="!gap-3">
-                          {colTasks.map(task => (
-                            <motion.div key={task.id} whileHover={{ y: -2 }}
-                              className="glass-card rounded-xl p-4 flex flex-col gap-3 transition-colors group">
-                              <div className="flex items-start justify-between gap-2">
-                                {task.category && task.category !== "General" && (
-                                  <span className="text-[9px] font-bold rounded bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1.5 py-0.5 truncate max-w-[80px]">
-                                    {task.category}
-                                  </span>
-                                )}
-                                <div className="flex items-center gap-1 ml-auto">
-                                  <Flag size={9} className={PRIORITY_COLORS[task.priority]} />
-                                  <span className={`text-[9px] font-bold ${PRIORITY_COLORS[task.priority]}`}>{task.priority}</span>
-                                </div>
-                              </div>
-
-                              <div className={`text-xs font-semibold leading-normal ${task.status === "Done" ? "line-through text-zinc-500" : "text-zinc-200"}`}>{task.title}</div>
-                              {task.description && (
-                                <p className="text-[10px] text-zinc-500 m-0 leading-relaxed line-clamp-2">{task.description}</p>
-                              )}
-
-                              {/* Requester row */}
-                              <div className="flex items-center gap-1.5 text-[10px] text-zinc-500">
-                                <User size={9} />
-                                <span className="truncate">{task.requester_name}</span>
-                              </div>
-
-                              <div className="flex items-center justify-between border-t border-white/5 pt-2">
-                                <div className="flex items-center gap-1 text-[10px] text-zinc-500">
-                                  {task.status === "Done" ? (
-                                    <>
-                                      <CheckCheck size={9} className="text-emerald-500" />
-                                      <span className="text-emerald-400">{task.completed_at_display || "—"}</span>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Calendar size={9} />
-                                      <span className={isToday(task.due_date) ? "text-amber-400 font-semibold" : ""}>
-                                        {isToday(task.due_date) ? "Today" : task.due_date_display}
-                                      </span>
-                                    </>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  {/* Action icons on kanban card */}
-                                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onClick={() => setViewTask(task)} title="View"
-                                      className="w-5 h-5 rounded flex items-center justify-center text-zinc-600 hover:text-teal-400 hover:bg-teal-500/10 transition-all cursor-pointer">
-                                      <Eye size={10} />
-                                    </button>
-                                    <button onClick={() => openEdit(task)} title="Edit"
-                                      className="w-5 h-5 rounded flex items-center justify-center text-zinc-600 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all cursor-pointer">
-                                      <Pencil size={10} />
-                                    </button>
-                                    <button onClick={() => setDeleteConfirm(task)} title="Delete"
-                                      className="w-5 h-5 rounded flex items-center justify-center text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer">
-                                      <Trash2 size={10} />
-                                    </button>
-                                  </div>
-                                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-teal-500/20 to-indigo-500/20 border border-teal-500/20 flex items-center justify-center text-[9px] font-bold text-teal-400"
-                                    title={task.assignee_name}>
-                                    {task.assignee_initials}
-                                  </div>
-                                </div>
-                              </div>
-                            </motion.div>
-                          ))}
-                        </AnimatedList>
-                      </div>
+                          <button onClick={() => { setForm(f => ({ ...f, status: col })); setShowModal(true); }}
+                            className="p-1 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-colors cursor-pointer">
+                            <Plus size={14} />
+                          </button>
+                        </div>
+                        <div className="flex flex-col gap-3 overflow-y-auto flex-1">
+                          {colTasks.length === 0 && (
+                            <div className="flex-1 flex items-center justify-center">
+                              <p className="text-[11px] text-zinc-600 text-center">No tasks here</p>
+                            </div>
+                          )}
+                          <div className="flex flex-col gap-3">
+                            {colTasks.map(task => (
+                              <KanbanCardDraggable key={task.id} task={task} onView={setViewTask} onEdit={openEdit} onDelete={setDeleteConfirm} />
+                            ))}
+                          </div>
+                        </div>
+                      </KanbanColumnDroppable>
+                    );
+                  })}
+                </motion.div>
+                <DragOverlay dropAnimation={null}>
+                  {activeDragTask ? (
+                    <div className="studio-card rounded-xl p-4 cursor-grabbing shadow-2xl rotate-[2deg] scale-105 border-teal-500/30">
+                      <KanbanCardView task={activeDragTask} onView={setViewTask} onEdit={openEdit} onDelete={setDeleteConfirm} showActions={false} />
                     </div>
-                  );
-                })}
-              </motion.div>
+                  ) : null}
+                </DragOverlay>
+              </DndContext>
             )}
 
           </AnimatePresence>
@@ -1144,3 +1221,4 @@ function TasksContent() {
     </div>
   );
 }
+

@@ -75,27 +75,20 @@ export function UserPreferences({
                     </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                     <ThemeCard 
-                        name="Midnight Indigo" 
-                        id="midnight" 
+                        name="Light Theme" 
+                        id="light" 
                         current={theme} 
-                        onClick={() => setTheme('midnight')} 
-                        colors={['#02040a', '#6366f1']}
+                        onClick={() => setTheme('light')} 
+                        colors={['#ffffff', '#2563eb']}
                     />
                     <ThemeCard 
-                        name="Golden Glass" 
-                        id="golden" 
+                        name="Dark Theme" 
+                        id="dark" 
                         current={theme} 
-                        onClick={() => setTheme('golden')} 
-                        colors={['#0a0a05', '#FFB800']}
-                    />
-                    <ThemeCard 
-                        name="Luminous White" 
-                        id="luminous" 
-                        current={theme} 
-                        onClick={() => setTheme('luminous')} 
-                        colors={['#f8fafc', '#0284c7']}
+                        onClick={() => setTheme('dark')} 
+                        colors={['#0f172a', '#38bdf8']}
                     />
                 </div>
             </div>

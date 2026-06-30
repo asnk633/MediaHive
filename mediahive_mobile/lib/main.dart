@@ -76,9 +76,13 @@ void main() async {
   // Initialize Auth Monitoring
   container.read(authServiceProvider);
   
-  // Initialize Notifications & FCM
-  await container.read(notificationServiceProvider).initialize();
-  await container.read(fcmServiceProvider).initialize();
+  // Initialize Notifications & FCM asynchronously so they do not block startup
+  unawaited(container.read(notificationServiceProvider).initialize().catchError((e, stack) {
+    logger.error('NOTIFICATION_INIT_ERROR', e, stack);
+  }));
+  unawaited(container.read(fcmServiceProvider).initialize().catchError((e, stack) {
+    logger.error('FCM_INIT_ERROR', e, stack);
+  }));
 
   // Warm update check provider to check for updates on startup
   container.read(updateInfoProvider);

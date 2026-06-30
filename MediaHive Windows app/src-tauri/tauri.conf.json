@@ -44,10 +44,7 @@
     "windows": {
       "nsis": {
         "installMode": "perMachine"
-      },
-      "certificateThumbprint": "A67461351583356547710B064D8577B58112C5AD",
-      "digestAlgorithm": "sha256",
-      "timestampUrl": "https://timestamp.digicert.com"
+      }
     }
   },
   "plugins": {

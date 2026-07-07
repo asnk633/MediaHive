@@ -137,7 +137,7 @@ class _StartupScreenState extends ConsumerState<StartupScreen> with SingleTicker
                                 ],
                               ),
                               child: Image.asset(
-                                'assets/images/logo.png',
+                                'assets/images/logo_3d.png',
                                 fit: BoxFit.contain,
                               ),
                             ),

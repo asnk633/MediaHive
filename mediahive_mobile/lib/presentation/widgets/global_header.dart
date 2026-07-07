@@ -80,7 +80,7 @@ class GlobalHeader extends ConsumerWidget {
                             width: 54,
                             height: 54,
                             child: Image.asset(
-                              'assets/images/logo.png',
+                              'assets/images/logo_3d.png',
                               fit: BoxFit.contain,
                             )
                             .animate(onPlay: (controller) => controller.repeat())

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mediahive_mobile/core/theme_provider.dart';
 import 'package:mediahive_mobile/core/design_tokens.dart';
 
@@ -69,28 +70,73 @@ class TodayAttendancePanel extends StatelessWidget {
   }
 
   Widget _buildActivePanel(ThemeColors colors) {
-    final statusColor = isCheckedIn ? const Color(0xFF10B981) : const Color(0xFFEF4444);
-    final statusText = isCheckedIn ? '\u{1F7E2} Checked In' : '\u{1F534} Checked Out';
-    final workModeText = isCheckedIn && workMode != null ? ' (${workMode!.toUpperCase()})' : '';
     final isLight = !colors.isDark;
+
+    final cardGradient = isCheckedIn
+        ? (isLight
+            ? const LinearGradient(
+                colors: [Color(0xFFECFDF5), Color(0xFFD1FAE5)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : LinearGradient(
+                colors: [
+                  const Color(0xFF064E3B).withValues(alpha: 0.6),
+                  const Color(0xFF022C22).withValues(alpha: 0.6),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ))
+        : (isLight
+            ? const LinearGradient(
+                colors: [Color(0xFFFEF2F2), Color(0xFFFEE2E2)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : LinearGradient(
+                colors: [
+                  const Color(0xFF7F1D1D).withValues(alpha: 0.6),
+                  const Color(0xFF450A0A).withValues(alpha: 0.6),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ));
+
+    final cardBorderColor = isCheckedIn
+        ? const Color(0xFF10B981).withValues(alpha: isLight ? 0.8 : 0.4)
+        : const Color(0xFFEF4444).withValues(alpha: isLight ? 0.8 : 0.4);
+
+    final cardContentColor = isCheckedIn
+        ? (colors.isDark ? const Color(0xFFD1FAE5) : const Color(0xFF065F46))
+        : (colors.isDark ? const Color(0xFFFEE2E2) : const Color(0xFF991B1B));
+
+    final cardContentSecondaryColor = isCheckedIn
+        ? (colors.isDark ? const Color(0xFFA7F3D0) : const Color(0xFF047857))
+        : (colors.isDark ? const Color(0xFFFCA5A5) : const Color(0xFFB91C1C));
+
+    final dotColor = isCheckedIn ? const Color(0xFF10B981) : const Color(0xFFEF4444);
 
     return GestureDetector(
       onTap: onTapAttendance,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: colors.surface,
+          gradient: cardGradient,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isCheckedIn ? const Color(0xFF10B981).withValues(alpha: 0.3) : colors.border.withValues(alpha: 0.5),
+            color: cardBorderColor,
+            width: 1.5,
           ),
-          boxShadow: isLight ? DesignTokens.spatialCardShadow : [
-            BoxShadow(
-              color: (isCheckedIn ? const Color(0xFF10B981) : colors.honey).withValues(alpha: 0.05),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          boxShadow: isLight
+              ? DesignTokens.spatialCardShadow
+              : [
+                  BoxShadow(
+                    color: (isCheckedIn ? const Color(0xFF10B981) : const Color(0xFFEF4444))
+                        .withValues(alpha: 0.05),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
         ),
         child: Row(
           children: [
@@ -100,51 +146,98 @@ class TodayAttendancePanel extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        statusText,
-                        style: TextStyle(
-                          color: isCheckedIn ? const Color(0xFF10B981) : colors.textPrimary,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        workModeText,
-                        style: TextStyle(
-                          color: colors.textSecondary.withValues(alpha: 0.8),
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                      _buildPulsingDot(dotColor),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Text(
+                              isCheckedIn ? 'Checked In' : 'Checked Out',
+                              style: TextStyle(
+                                color: cardContentColor,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            if (isCheckedIn && workMode != null) ...[
+                              const SizedBox(width: 6),
+                              Text(
+                                '(${workMode!.toUpperCase()})',
+                                style: TextStyle(
+                                  color: cardContentSecondaryColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 10),
                   if (isCheckedIn && checkInTime != null) ...[
-                    Text(
-                      'Since $checkInTime',
-                      style: TextStyle(
-                        color: colors.textSecondary.withValues(alpha: 0.6),
-                        fontSize: 11,
-                      ),
+                    Row(
+                      children: [
+                        Icon(
+                          LucideIcons.clock,
+                          size: 12,
+                          color: cardContentSecondaryColor,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Since $checkInTime',
+                          style: TextStyle(
+                            color: cardContentSecondaryColor,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                     if (lastKnownWorkLocation != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        'Location: $lastKnownWorkLocation',
-                        style: TextStyle(
-                          color: colors.honey.withValues(alpha: 0.8),
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      const SizedBox(height: 6),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2.0),
+                            child: Icon(
+                              LucideIcons.mapPin,
+                              size: 12,
+                              color: cardContentSecondaryColor,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              lastKnownWorkLocation!,
+                              style: TextStyle(
+                                color: cardContentSecondaryColor,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ] else ...[
-                    Text(
-                      'Ready to log check-in',
-                      style: TextStyle(
-                        color: colors.textSecondary.withValues(alpha: 0.5),
-                        fontSize: 11,
-                      ),
+                    Row(
+                      children: [
+                        Icon(
+                          LucideIcons.clock,
+                          size: 12,
+                          color: cardContentSecondaryColor,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Ready to log check-in',
+                          style: TextStyle(
+                            color: cardContentSecondaryColor,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ],
@@ -183,6 +276,36 @@ class TodayAttendancePanel extends StatelessWidget {
     );
   }
 
+  Widget _buildPulsingDot(Color color) {
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.6),
+            blurRadius: 6,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+    )
+        .animate(onPlay: (controller) => controller.repeat(reverse: true))
+        .scale(
+          begin: const Offset(0.8, 0.8),
+          end: const Offset(1.2, 1.2),
+          duration: 1000.ms,
+          curve: Curves.easeInOut,
+        )
+        .fadeIn(
+          begin: 0.5,
+          duration: 1000.ms,
+          curve: Curves.easeInOut,
+        );
+  }
+
   Widget _buildActionButton(
     ThemeColors colors, {
     required IconData icon,
@@ -194,7 +317,8 @@ class TodayAttendancePanel extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        width: 115,
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           gradient: gradient,
           borderRadius: BorderRadius.circular(12),
@@ -206,7 +330,7 @@ class TodayAttendancePanel extends StatelessWidget {
           ],
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, color: textColor, size: 14),
             const SizedBox(width: 6),

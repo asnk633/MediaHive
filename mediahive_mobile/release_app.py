@@ -42,11 +42,10 @@ if not SUPABASE_SERVICE_KEY:
     print("[WARNING] SUPABASE_SERVICE_ROLE_KEY not found in ../.env.local. Supabase sync will be skipped.")
 
 RELEASE_NOTES = (
-    "🚀 MediaHive v1.2.5-beta+64002 — Auth & Active Session Query Fixes\n\n"
-    "• Infinite Sign-Out Loop Fix: Resolved recursive loop during session recovery by adding manual sign-out tracking and checking transitions.\n"
-    "• FCM Token De-registration Fix: Guarded token deregistration from running when a user is already signed out, preventing connection timeout errors.\n"
-    "• Active Session Query Fix: Added order and limit constraints to prevent PostgrestException 406 when duplicate active records exist.\n"
-    "• Unified Refactoring & Accessibility: Modularized shell/dashboard/inventory/tasks screens and polished WCAG semantics/ink ripples.\n"
+    "🚀 MediaHive v1.2.5-beta+66003 — Geofenced Background Presence Alerts & NFC UI Redesign\n\n"
+    "• Geofenced Background Presence: Persistent background location monitoring via flutter_background_service and geolocator to verify office boundaries and trigger checkout reminders.\n"
+    "• NFC Scan Overlay Redesign: Swapped text hierarchy to make the event outcome (e.g. 'Checked Out Successfully') the primary headline. Added a status badge with a pulsing indicator dot.\n"
+    "• Home Attendance Card Redesign: Configured the attendance panel to dynamically change background gradients and borders to emerald (checked in) or crimson (checked out). Enlarged status title, aligned action buttons to 115px wide, and added icons."
 )
 
 # ─── 1. PARSE VERSION ─────────────────────────────────────────────────────────

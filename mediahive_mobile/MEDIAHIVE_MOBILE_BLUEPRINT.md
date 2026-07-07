@@ -35,7 +35,7 @@ This document is the single source of truth for the **MediaHive Flutter Mobile A
 | **Image Proxy** | Google Drive via Vercel backend | See Section 6 |
 | **State Management** | Riverpod / Provider | Feature-based architecture |
 | **NFC** | `nfc_manager` v4.2.1 | Attendance check-in feature |
-| **Background Location** | `flutter_background_geolocation` | Background presence verification; geofencing; headless task |
+| **Background Location** | `flutter_background_service` + `geolocator` | Background presence verification via Foreground Service |
 | **Battery** | `battery_plus` | Battery-aware polling for presence verification |
 
 ---
@@ -251,6 +251,12 @@ mediahive_mobile/
  
 | Date | Change | Author |
 | :--- | :--- | :--- |
+| 2026-07-07 | **NFC Scan Overlay Redesign**: Redesigned NFC check-in/out successful overlay and details card. Elevated success/error messages to the main headline at 22px bold. Rendered a status badge (e.g. 'TAP VERIFIED') in a pill-shaped, semi-transparent container with a pulsing status indicator dot above the headline. Upgraded details card using theme colors and added corresponding Lucide icons for each detail row (user, location, work mode, venue, check in/out time, duration). | AI Agent |
+| 2026-07-07 | **Today Attendance Card Redesign**: Redesigned dashboard attendance card in `today_attendance_panel.dart` to support dynamic status-based gradients (emerald for checked-in, error/danger for checked-out), standardized button widths to exactly 115px, enlarged status text to 18px bold, replaced unicode emojis with an animated pulsing dot container using `flutter_animate`, and cleaned up details rows with Lucide clock and mapPin icons. | AI Agent |
+| 2026-07-01 | **Logo Update**: Replaced default logo with new light/dark theme logos (`logo_luminous.png` and `logo_midnight.png`) in Auth screens and updated rotating instances with `logo_3d.png`. Registered assets in `pubspec.yaml`. | AI Agent |
+| 2026-07-01 | **Login Screen UI Fix**: Reduced vertical paddings and SizedBox heights to fit the view on a single screen without scrolling. | AI Agent |
+| Jun 30, 2026 | **Fix Double Notification Scheduling on Startup:** Merged two separate eager `updateReminders` calls in `attendance_reminder_service.dart` (one for session, one for policy) into a single combined call. Previously both fired independently, causing a double cancel/schedule cycle visible in logs (notifications scheduled, then immediately cancelled and re-scheduled). Fix reads both `initialSessionState` and `initialPolicyState` together and passes `policy` as `policyOverride` in a single `updateReminders` call. | AI Agent |
+| Jun 30, 2026 | **Database Recovery for 522 Timeout Successful**: Attempted an automated reboot cycle which was blocked by a backup verification error. Escated to Supabase Support, resulting in a successful force restart of the database container. CPU utilization dropped to 0% and verified connection health (direct SQL + local REST API tests). | AI Agent |
 | Jun 30, 2026 | **Asynchronous Notification & FCM Initialization:** Modified `lib/main.dart` to initialize NotificationService and FCMService asynchronously (via `unawaited`) instead of awaiting them, ensuring the app runs `runApp()` immediately and does not get stuck on the splash screen. Verified `flutter analyze` runs successfully with no compilation errors. | AI Agent |
 | Jun 28, 2026 | **Mobile UI/UX Refactoring Phase 1:** Bridged AppSpacing and AppRadius constants to DesignTokens. Routed AppColors duplicated compile-time color constants to point directly to DesignTokens equivalents. Refactored LoginScreen to use standard MhInput and MhButton widgets, removing custom _buildCustomInput method. Verified flutter analyze passes clean. | AI Agent |
 | Jun 28, 2026 | **L2 Relative Import Refactoring (108 files):** Automated refactoring of all relative imports (`.`, `..`) to package-relative imports (`package:mediahive_mobile/...`) across the entire codebase. Verified `flutter analyze` passes clean (No issues found). | AI Agent |
@@ -321,6 +327,8 @@ mediahive_mobile/
 | Jun 28, 2026 | **Fix Infinite Sign-Out Loop causing Login Failures:** Fixed recursive login/logout loop by adding a manual sign-out tracking flag (`_isManualSignOut`) and previous user tracking (`_previousUser`) in `AuthService` to only trigger session recovery on actual transition from signed-in to signed-out. Removed redundant client.auth.signOut() from `SessionRecoveryService.handleExpiredSession()`. Added a 2s timeout and try-catch around FCM token deregistration in `AuthService.signOut()` to prevent network blocking, and added a user null-check in `FCMService.deregisterToken()` to prevent PostgrestException 522 errors. | AI Agent |
 | Jun 28, 2026 | **Fix Active Session Fetching Error:** Added `.order('checkInTime', ascending: false).limit(1)` to `AttendanceRepository.getActiveSession` to safely handle multiple active sessions in the database without throwing a `PostgrestException` 406 (multiple rows returned) error. | AI Agent |
 | Jun 30, 2026 | **Asynchronous Startup Polish for Notifications & FCM:** Modified `main.dart` to initialize the push notification and FCM services asynchronously using non-blocking `unawaited` blocks to prevent startup flows from blocking the critical path to `runApp()`. | AI Agent |
+| Jul 07, 2026 | **Background Presence Tracking implementation:** Integrated `flutter_background_service` and `geolocator` for background presence verification. Declared service and permissions in `AndroidManifest.xml`. Implemented token refresh handshake between isolates, 10-minute check intervals with 1-minute failure retries, and private Hive box-based persistent grace period monitoring. Added unit tests with 100% pass rate. | AI Agent |
+
 
 
 

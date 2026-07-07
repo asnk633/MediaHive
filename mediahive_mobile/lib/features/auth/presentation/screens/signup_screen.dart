@@ -170,7 +170,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             ],
           ),
           child: Image.asset(
-            'assets/images/logo.png',
+            isDark ? 'assets/images/logo_midnight.png' : 'assets/images/logo_luminous.png',
             height: 100,
             width: 100,
           ),

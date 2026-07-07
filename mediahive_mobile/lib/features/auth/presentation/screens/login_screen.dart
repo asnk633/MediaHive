@@ -131,15 +131,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
                     // Brand Header
                     _buildBrandHeader(colors),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: 24),
                     
                     // Glassmorphic Login Card
                     _buildLoginCard(colors),
                     
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
                     
                     // Footer Links
                     _buildFooter(colors),
@@ -173,7 +173,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ],
           ),
           child: Image.asset(
-            'assets/images/logo.png',
+            isDark ? 'assets/images/logo_midnight.png' : 'assets/images/logo_luminous.png',
             height: 100,
             width: 100,
           ),
@@ -209,7 +209,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white.withValues(alpha: 0.65),
             borderRadius: BorderRadius.circular(32),
@@ -241,7 +241,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   color: colors.textSecondary.withValues(alpha: 0.7),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               
               MhInput(
                 label: 'EMAIL ADDRESS',
@@ -249,7 +249,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 prefixIcon: LucideIcons.mail,
                 hint: 'user@email.com',
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
               MhInput(
                 label: 'PASSWORD',
                 controller: _passwordController,
@@ -278,7 +278,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 20),
               
               MhButton(
                 label: 'SIGN IN',
@@ -288,7 +288,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 width: double.infinity,
                 height: 52.0,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -317,7 +317,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
               MhButton(
                 label: 'CONTINUE WITH GOOGLE',
                 onTap: _handleGoogleSignIn,
@@ -357,7 +357,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 40),
+        const SizedBox(height: 24),
         Text(
           'POWERED BY THAIBA GARDEN\nMEDIA & IT DEPARTMENT',
           textAlign: TextAlign.center,

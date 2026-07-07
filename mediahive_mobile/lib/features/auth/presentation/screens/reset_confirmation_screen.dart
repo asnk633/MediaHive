@@ -95,7 +95,7 @@ class ResetConfirmationScreen extends ConsumerWidget {
             ],
           ),
           child: Image.asset(
-            'assets/images/logo.png',
+            isDark ? 'assets/images/logo_midnight.png' : 'assets/images/logo_luminous.png',
             height: 60,
             width: 60,
           ),

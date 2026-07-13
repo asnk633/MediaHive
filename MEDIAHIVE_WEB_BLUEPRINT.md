@@ -23,13 +23,17 @@ This document is the platform blueprint and system memory for the **MediaHive We
 * **Quirk**: Next.js 16 deprecates `middleware.ts` in favor of `proxy.ts`. If both files exist in the same project directory, Next.js will crash immediately upon startup.
 * **Constraint**: All middleware-level operations (including Supabase session refreshing, routing guards, and CORS proxying) must be unified into a single `src/proxy.ts` file, and `middleware.ts` must not exist in the source directory.
 
+### 🔑 Next.js Build-Time Environment Variable Dependencies
+* **Quirk**: During Next.js production builds (specifically the static page and route data collection phase), modules are imported and evaluated. If a security or configuration check throws an error when an environment variable (such as `APP_SECRET`) is missing or too short, the build will crash on Vercel.
+* **Constraint**: Any environment variable checked at module-import level must be configured in Vercel's Project Environment Variables for BOTH Build and Runtime environments, even if the variable is technically only utilized at runtime.
+
 ---
 
 ## 3. Web Changelog
 
 | Date | Component | Description | Author |
 | :--- | :--- | :--- | :--- |
-| 2026-07-13 | Release | **Production Deployment of Vercel Pipeline**: Committed all pending security hardening updates (session protection, hybrid rate limiter, fail-closed auth guards, and CSRF checks), aligned test suites, and deployed to Vercel production hosting (`thaiba-garden-media-manager.vercel.app`). | AI Agent |
+| 2026-07-13 | Release | **Production Deployment of Vercel Pipeline & Fixes**: Committed pending security hardening updates (session protection, hybrid rate limiter, fail-closed auth guards, CSRF checks), aligned test suites. Resolved Next.js build errors by adding leading slashes to `.vercelignore` (preventing deletion of `src/components/reports/`) and adding the missing `APP_SECRET` env var on Vercel. Successfully built and deployed to Vercel production (`thaiba-garden-media-manager.vercel.app`). | AI Agent |
 | 2026-07-09 | Testing | **Targeted E2E Playwright Test Specs**: Created 5 targeted E2E Playwright test specs (`roles.spec.ts`, `rls.spec.ts`, `auth-refresh.spec.ts`, `ui-invariants.spec.ts`, `offline-sync.spec.ts`, `admin-attendance.spec.ts`) covering roles, RLS multi-tenant regression, token refresh race conditions, global UI layouts, and offline Dexie database initialization. | AI Agent |
 | 2026-07-08 | Diagnostics | **Telemetry & Log Optimization**: Suppressed benign Recharts container dimension warnings ('width/height should be greater than 0') from the global console logger wrapper to prevent log pollution. Fixed a React render-phase update violation ('Cannot update a component while rendering a different component') inside `TelemetryFAB.tsx` by wrapping the console hook's state updates in `setTimeout` to defer execution to a macrotask. | AI Agent |
 | 2026-07-08 | Global UX | **Telemetry & Log Share FAB (Global, Auth-Agnostic)**: Implemented `TelemetryFAB` — a circular floating action button (36px, fixed bottom-right at `bottom: 16px; right: 16px; z-index: 9999`) modelled after the Next.js circle button. Wired into root `layout.tsx` so it renders on every screen (even login/signup and global errors) regardless of auth state. Features live console log interception (capturing up to 500 logs), error badge counter, filterable "Logs" tab, detailed "Device Info" tab, clear logs, and Web Share API / clipboard copy integration. Verified clean TS compile. | AI Agent |

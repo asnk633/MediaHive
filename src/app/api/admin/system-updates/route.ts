@@ -1,13 +1,20 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
+import { verifyAdmin } from '@/lib/verifyUser';
 
 // Mock in-memory storage for system updates
 let mockUpdates: any[] = [];
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+    const { authorized, response } = await verifyAdmin(req);
+    if (!authorized) return response!;
+
     return NextResponse.json({ updates: mockUpdates });
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+    const { authorized, response } = await verifyAdmin(req);
+    if (!authorized) return response!;
+
     try {
         const body = await req.json();
         const newUpdate = {

@@ -49,7 +49,8 @@ class AttendanceRecord with _$AttendanceRecord {
   Duration get calculatedDuration {
     final start = DateTime.tryParse(checkInTime) ?? DateTime.now();
     final end = checkOutTime != null ? (DateTime.tryParse(checkOutTime!) ?? DateTime.now()) : DateTime.now();
-    return end.difference(start);
+    final diff = end.difference(start);
+    return diff.isNegative ? Duration.zero : diff;
   }
 
   String get formattedDuration {

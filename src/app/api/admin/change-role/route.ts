@@ -33,6 +33,22 @@ export async function POST(request: NextRequest) {
         const supabase = await getSupabaseFromRequest(request);
         if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
+        // Verify target user belongs to caller's tenant
+        const { data: targetProfile, error: fetchError } = await supabase
+            .from('profiles')
+            .select('tenant_id')
+            .eq('id', targetUid)
+            .single();
+
+        if (fetchError || !targetProfile) {
+            return NextResponse.json({ error: 'Target user not found' }, { status: 404 });
+        }
+
+        const normalizeId = (val: any) => val === null || val === undefined ? '' : String(val);
+        if (normalizeId(targetProfile.tenant_id) !== normalizeId(tenantId)) {
+            return NextResponse.json({ error: 'Forbidden: Target user belongs to a different tenant' }, { status: 403 });
+        }
+
         const { error } = await withTenant(
             supabase
                 .from('profiles')

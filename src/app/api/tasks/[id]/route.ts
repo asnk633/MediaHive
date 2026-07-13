@@ -47,6 +47,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       .from('tasks')
       .select('*')
       .eq('id', id)
+      .eq('tenant_id', tenantId)
       .single();
 
     if (fetchError) throw fetchError;

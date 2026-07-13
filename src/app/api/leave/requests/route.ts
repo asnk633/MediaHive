@@ -25,15 +25,31 @@ export async function GET(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+    // Fetch verified profile role and institution from the database
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, institution_id')
+      .eq('id', user.id)
+      .single();
+
+    const userRole = profile?.role || 'member';
     const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
     let instId = institution_id && isUuid(institution_id) ? institution_id : null;
-    if (!instId && user.user_metadata?.institution_id && isUuid(user.user_metadata.institution_id)) {
-      instId = user.user_metadata.institution_id;
-    }
 
-    if (institution_id && !isUuid(institution_id)) {
-      console.warn(`[LEAVE REQUESTS] ⚠️ Invalid institution_id format (not a UUID): "${institution_id}". Falling back to user metadata or null.`);
+    // Enforce isolation: standard users (non-admins) can only query their own institution
+    if (userRole !== 'admin') {
+      const userInstId = profile?.institution_id;
+      instId = userInstId && isUuid(userInstId) ? userInstId : null;
+      
+      if (!instId) {
+        return NextResponse.json({ error: 'Forbidden: No institution assigned' }, { status: 403 });
+      }
+    } else {
+      // Admins: if no query param is explicitly requested, attempt fallback to their profile's institution
+      if (!instId && profile?.institution_id && isUuid(profile.institution_id)) {
+        instId = profile.institution_id;
+      }
     }
 
     let query = supabase

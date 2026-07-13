@@ -1,17 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseAdmin } from "@/lib/verifyUser";
+import { getSupabaseAdmin, verifyUser } from "@/lib/verifyUser";
 import { v4 as uuidv4 } from "uuid";
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
+    const user = await verifyUser(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId');
     const lastReadParam = searchParams.get('lastRead');
     
     if (!userId) {
       return NextResponse.json({ error: "Missing userId parameter" }, { status: 400 });
+    }
+
+    if (userId !== user.uid && userId !== user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const supabase = getSupabaseAdmin();
@@ -150,10 +159,19 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await verifyUser(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { name, isMediaTeamOnly, creatorId, tenantId, participantUserIds } = await req.json();
 
     if (!name || !creatorId || !tenantId) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    if (creatorId !== user.uid && creatorId !== user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const supabase = getSupabaseAdmin();

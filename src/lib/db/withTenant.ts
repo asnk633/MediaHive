@@ -18,9 +18,9 @@ export async function withTenant() {
         throw new Error('Unauthorized: Authentication required');
     }
 
-    // 2. Extract Tenant context from JWT (app_metadata or user_metadata)
-    let tenantId = session.user?.app_metadata?.tenant_id || session.user?.user_metadata?.tenant_id;
-    let role = session.user?.app_metadata?.role || session.user?.user_metadata?.role;
+    // 2. Extract Tenant context from JWT (app_metadata ONLY)
+    let tenantId = session.user?.app_metadata?.tenant_id;
+    let role = session.user?.app_metadata?.role;
 
     // 🧠 FALLBACK: If missing in JWT, check DB (essential for initial sync or local dev)
     if (!tenantId || !role) {
@@ -52,7 +52,7 @@ export async function withTenant() {
         }
     };
 
-    console.log(`[DB] ✅ Context established: Tenant ${tenantId.slice(0, 8)}..., Role ${role} for user ${session.user.id.slice(0, 8)}...`);
+    console.log(`[DB] ✅ Context established: Tenant ${String(tenantId).slice(0, 8)}..., Role ${role} for user ${String(session.user?.id).slice(0, 8)}...`);
 
     return {
         db: supabase,
@@ -70,14 +70,22 @@ export function handleApiError(context: string, error: any) {
     console.error(`[DB] ❌ ${context} Error:`, JSON.stringify(error, null, 2));
 
     let status = 500;
-    if (error.code === 'PGRST116') status = 404;
-    else if (error.message?.includes('Unauthorized') || error.message?.includes('Authentication required')) status = 401;
-    else if (error.message?.includes('Forbidden') || error.message?.includes('Permission denied')) status = 403;
+    let safeMessage = 'Internal Server Error';
+
+    if (error.code === 'PGRST116') {
+        status = 404;
+        safeMessage = 'Resource not found';
+    } else if (error.message?.includes('Unauthorized') || error.message?.includes('Authentication required')) {
+        status = 401;
+        safeMessage = 'Authentication required';
+    } else if (error.message?.includes('Forbidden') || error.message?.includes('Permission denied')) {
+        status = 403;
+        safeMessage = 'Access denied';
+    }
 
     return NextResponse.json({
-        error: error.message || 'Internal Server Error',
-        context,
-        code: error.code
+        error: safeMessage,
+        context: process.env.NODE_ENV !== 'production' ? context : undefined
     }, {
         status
     });

@@ -3,7 +3,7 @@
 This project uses a centralized design token system to ensure consistency across the application.
 
 ## Tokens Source
-The source of truth is located at `src/styles/design-tokens.ts`.
+The source of truth is located at `src/styles/mediahive.tokens.ts`.
 These tokens are automatically mapped to Tailwind CSS configuration in `tailwind.config.ts`.
 
 ## Usage
@@ -28,10 +28,10 @@ Use semantic color names whenever possible:
 ### Motion
 Use Framer Motion with the tokens:
 ```tsx
-import { tokens } from "@/styles/design-tokens";
+import { mediahive } from "@/styles/mediahive.tokens";
 
 <motion.div
-  transition={{ duration: tokens.motion.duration.normal, ease: tokens.motion.ease.out }}
+  transition={{ duration: mediahive.motion.duration.normal, ease: mediahive.motion.easing.standard }}
 />
 ```
 

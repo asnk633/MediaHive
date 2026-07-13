@@ -98,6 +98,17 @@ class SystemLogger {
   getLogs() {
     return this.logs;
   }
+
+  clear() {
+    this.logs = [];
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('system_telemetry_logs');
+      } catch (e) {
+        // Ignore
+      }
+    }
+  }
 }
 
 export const logger = new SystemLogger();

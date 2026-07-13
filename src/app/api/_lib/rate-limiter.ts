@@ -2,23 +2,62 @@
 // Rate limiting middleware for API endpoints
 
 import { NextRequest, NextResponse } from 'next/server';
-import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
+import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { getEnvVar } from '@/lib/env-validator';
 
 // Get rate limiting configuration from environment variables
 const RATE_LIMIT_WINDOW = getEnvVar('RATE_LIMIT_WINDOW', 'number', 900); // 15 minutes default
 const RATE_LIMIT_MAX = getEnvVar('RATE_LIMIT_MAX', 'number', 100); // 100 requests per window default
 
-// Create rate limiter instances
-const authRateLimiter = new RateLimiterMemory({
-  points: RATE_LIMIT_MAX,
-  duration: RATE_LIMIT_WINDOW,
-});
+let authRateLimiter: any;
+let strictAuthRateLimiter: any;
 
-const strictAuthRateLimiter = new RateLimiterMemory({
-  points: 5, // Only 5 attempts for strict endpoints
-  duration: RATE_LIMIT_WINDOW,
-});
+const REDIS_URL = process.env.REDIS_URL;
+
+if (REDIS_URL) {
+  try {
+    // Dynamic require to avoid crashing if ioredis is not installed in the package environment
+    const Redis = require('ioredis');
+    const { RateLimiterRedis } = require('rate-limiter-flexible');
+    
+    const redisClient = new Redis(REDIS_URL, {
+      maxRetriesPerRequest: null,
+      enableReadyCheck: false
+    });
+    
+    authRateLimiter = new RateLimiterRedis({
+      storeClient: redisClient,
+      keyPrefix: 'auth_limit',
+      points: RATE_LIMIT_MAX,
+      duration: RATE_LIMIT_WINDOW,
+    });
+
+    strictAuthRateLimiter = new RateLimiterRedis({
+      storeClient: redisClient,
+      keyPrefix: 'strict_auth_limit',
+      points: 5,
+      duration: RATE_LIMIT_WINDOW,
+    });
+    console.log('[RATE LIMIT] Redis rate limiter configured successfully.');
+  } catch (err) {
+    console.warn('[RATE LIMIT] Redis client / rate limiter not available, falling back to memory:', err);
+    setupMemoryLimiters();
+  }
+} else {
+  setupMemoryLimiters();
+}
+
+function setupMemoryLimiters() {
+  authRateLimiter = new RateLimiterMemory({
+    points: RATE_LIMIT_MAX,
+    duration: RATE_LIMIT_WINDOW,
+  });
+
+  strictAuthRateLimiter = new RateLimiterMemory({
+    points: 5,
+    duration: RATE_LIMIT_WINDOW,
+  });
+}
 
 /**
  * Rate limiting middleware for authentication endpoints
@@ -35,10 +74,11 @@ export async function rateLimitMiddleware(
     const clientIp = getClientIp(req);
     
     if (!clientIp) {
-      // If we can't determine the IP, we'll still allow the request
-      // but log a warning for monitoring
-      console.warn('Unable to determine client IP for rate limiting');
-      return null;
+      console.error('[RATE LIMIT] Unable to determine client IP for rate limiting - Request Blocked');
+      return NextResponse.json(
+        { error: 'Bad Request', message: 'Unable to determine client IP address.' },
+        { status: 400 }
+      );
     }
     
     // Choose the appropriate rate limiter
@@ -50,7 +90,7 @@ export async function rateLimitMiddleware(
       return null; // Allow the request
     } catch (rateLimiterRes: any) {
       // Rate limit exceeded
-      const retrySecs = rateLimiterRes.msBeforeNext / 1000;
+      const retrySecs = rateLimiterRes.msBeforeNext ? rateLimiterRes.msBeforeNext / 1000 : 60;
       
       return NextResponse.json(
         { 
@@ -64,16 +104,18 @@ export async function rateLimitMiddleware(
             'Retry-After': retrySecs.toString(),
             'X-RateLimit-Limit': strict ? '5' : RATE_LIMIT_MAX.toString(),
             'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': new Date(Date.now() + rateLimiterRes.msBeforeNext).toISOString()
+            'X-RateLimit-Reset': new Date(Date.now() + (rateLimiterRes.msBeforeNext || 60000)).toISOString()
           }
         }
       );
     }
   } catch (error) {
-    // If there's an error with rate limiting, we should still allow the request
-    // to avoid blocking legitimate users due to rate limiting issues
-    console.error('Rate limiting error:', error);
-    return null;
+    // Fail closed: Reject with 429 if the rate limiter throws an error to prevent bypass
+    console.error('[RATE LIMIT] Internal rate limiting validation failed - Request Blocked:', error);
+    return NextResponse.json(
+      { error: 'Too Many Requests', message: 'Rate limiting validation failed.' },
+      { status: 429 }
+    );
   }
 }
 

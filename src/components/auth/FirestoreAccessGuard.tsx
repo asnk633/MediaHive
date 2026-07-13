@@ -14,12 +14,16 @@ const FirestoreAccessGuard = ({
 }: FirestoreAccessGuardProps) => {
   const { authStatus, user } = useAuth();
 
-  // Log when access is attempted
-  console.log('[ACCESS GUARD] authStatus:', authStatus, 'role:', user?.role);
+  // Log when access is attempted in development
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[ACCESS GUARD] authStatus:', authStatus, 'role:', user?.role);
+  }
 
   // Check if user is authenticated
   if (authStatus === 'unauthenticated') {
-    console.log('[ACCESS GUARD] Access blocked: User not authenticated');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[ACCESS GUARD] Access blocked: User not authenticated');
+    }
     return <div className="p-8 text-center text-destructive">Access denied: Professional session required</div>;
   }
 
@@ -35,12 +39,14 @@ const FirestoreAccessGuard = ({
       // Members are allowed, but we could add a specialized "Pending" state if we wanted to later.
       // For now, they pass hasAccess.
     }
-    console.error('FATAL: Authenticated user has no valid role - unknown state:', user?.uid);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('FATAL: Authenticated user has no valid role - unknown state:', user?.uid);
+    }
     return <div className="p-8 text-center text-destructive font-bold">FATAL ERROR: Invalid authorization state</div>;
   }
 
   // Log successful access
-  if (user) {
+  if (user && process.env.NODE_ENV !== 'production') {
     console.log('[ACCESS GUARD] Access granted for user:', user.uid, 'Role:', user.role);
   }
 

@@ -8,12 +8,14 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { supabase } from '@/lib/supabaseClient';
-import { Lock, Mail, AlertCircle, Loader2, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, AlertCircle, Loader2, CheckCircle2, Eye, EyeOff, Terminal, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { nativeNavigate, cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useTheme } from '@/contexts/ThemeContext';
 import { ThemeToggle } from '@/components/auth/ThemeToggle';
+import { TelemetrySettingsView } from '@/components/settings/views/TelemetrySettingsView';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export default function LoginClient() {
     const router = useRouter();
@@ -29,9 +31,15 @@ export default function LoginClient() {
     const [loading, setLoading] = useState(false);
     const [resetLoading, setResetLoading] = useState(false);
     const [showResetModal, setShowResetModal] = useState(false);
+    const [showTelemetryModal, setShowTelemetryModal] = useState(false);
     const [resetSuccess, setResetSuccess] = useState(false);
     const [isRecoveryMode, setIsRecoveryMode] = useState(false);
     const [resetError, setResetError] = useState<string | null>(null);
+    const [otpCode, setOtpCode] = useState('');
+    const [resetNewPassword, setResetNewPassword] = useState('');
+    const [resetConfirmNewPassword, setResetConfirmNewPassword] = useState('');
+    const [resetOtpError, setResetOtpError] = useState<string | null>(null);
+    const [resetPasswordError, setResetPasswordError] = useState<string | null>(null);
     const { user, loading: authLoading, login, loginWithGoogle } = useAuth();
 
     // Check for recovery mode on mount
@@ -175,6 +183,113 @@ export default function LoginClient() {
         }
     };
 
+    const handleResetWithOtp = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setResetOtpError(null);
+        setResetPasswordError(null);
+
+        if (!otpCode || !resetNewPassword || !resetConfirmNewPassword) {
+            toast.error('Please fill in all fields.');
+            return;
+        }
+
+        if (!/^\d{8}$/.test(otpCode)) {
+            setResetOtpError('Verification code must be exactly 8 digits.');
+            return;
+        }
+
+        if (resetNewPassword !== resetConfirmNewPassword) {
+            setResetPasswordError('Passwords do not match.');
+            return;
+        }
+
+        if (resetNewPassword.length < 6) {
+            setResetPasswordError('Password must be at least 6 characters.');
+            return;
+        }
+
+        setResetLoading(true);
+
+        // Try Block 1: Verify OTP code
+        try {
+            const { error: verifyError } = await supabase.auth.verifyOtp({
+                email,
+                token: otpCode,
+                type: 'recovery',
+            });
+
+            if (verifyError) {
+                console.error('[RESET_OTP] Verify OTP Error:', verifyError);
+                if (verifyError.message?.toLowerCase().includes('expired') || verifyError.status === 422) {
+                    setResetOtpError('Invalid or expired verification code. If you have retried multiple times, please request a new code.');
+                } else {
+                    setResetOtpError(verifyError.message || 'Verification failed. Please check the code and try again.');
+                }
+                setResetLoading(false);
+                return;
+            }
+        } catch (err: any) {
+            console.error('[RESET_OTP] Verify OTP Catch:', err);
+            setResetOtpError(err.message || 'Verification failed. Please check the code and try again.');
+            setResetLoading(false);
+            return;
+        }
+
+        // Try Block 2: Update password using the established session
+        try {
+            const { error: updateError } = await supabase.auth.updateUser({
+                password: resetNewPassword,
+            });
+
+            if (updateError) {
+                console.error('[RESET_OTP] Update User Error:', updateError);
+                setResetPasswordError(updateError.message || 'Failed to update password.');
+                await supabase.auth.signOut().catch(() => {});
+                setResetLoading(false);
+                return;
+            }
+            
+            await supabase.auth.signOut();
+            toast.success('Password updated successfully! Please log in.');
+            handleCancelReset();
+        } catch (err: any) {
+            console.error('[RESET_OTP] Update User Catch:', err);
+            setResetPasswordError(err.message || 'Failed to update password.');
+            await supabase.auth.signOut().catch(() => {});
+            setResetLoading(false);
+        }
+    };
+
+    const handleResendCode = async () => {
+        if (!email) return;
+        setResetLoading(true);
+        setResetOtpError(null);
+        setResetPasswordError(null);
+        try {
+            const { error: resendError } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/login?recovery=true`,
+            });
+            if (resendError) throw resendError;
+            toast.success('A new verification code has been sent!');
+        } catch (err: any) {
+            console.error('[RESET_RESEND] Error:', err);
+            setResetOtpError(err.message || 'Failed to resend code.');
+        } finally {
+            setResetLoading(false);
+        }
+    };
+
+    const handleCancelReset = () => {
+        setShowResetModal(false);
+        setResetSuccess(false);
+        setOtpCode('');
+        setResetNewPassword('');
+        setResetConfirmNewPassword('');
+        setResetOtpError(null);
+        setResetPasswordError(null);
+        setResetError(null);
+    };
+
     const bgGradient = theme === 'light'
         ? "bg-slate-50 text-slate-900"
         : "bg-slate-950 text-slate-50";
@@ -188,8 +303,22 @@ export default function LoginClient() {
         : "bg-indigo-500/10";
 
     return (
-        <div suppressHydrationWarning className={cn("relative min-h-screen flex items-center justify-center overflow-hidden transition-all duration-500", bgGradient)}>
+        <main suppressHydrationWarning className={cn("relative min-h-screen flex items-center justify-center overflow-hidden transition-all duration-500", bgGradient)}>
             <ThemeToggle />
+            
+            {/* Telemetry Trigger */}
+            <div className="absolute top-6 left-6 z-50">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    type="button"
+                    className="border-black/5 dark:border-white/5 bg-black/10 dark:bg-white/10 backdrop-blur-md text-foreground/75 hover:text-foreground hover:bg-black/20 dark:hover:bg-white/20 h-9 text-xs px-3.5 rounded-full flex items-center gap-1.5 shadow-lg select-none cursor-pointer"
+                    onClick={() => setShowTelemetryModal(true)}
+                >
+                    <Terminal size={14} />
+                    <span>Telemetry & Logs</span>
+                </Button>
+            </div>
             
             {/* Animated color haze */}
             <div className={cn("absolute w-[900px] h-[900px] blur-[180px] rounded-full top-[-200px] left-[-200px] animate-[float_12s_ease-in-out_infinite] transition-colors duration-500", hazeGlow1)} />
@@ -275,12 +404,13 @@ export default function LoginClient() {
                                             )}
 
                                             <div className="space-y-2">
-                                                <label className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
+                                                <label htmlFor="recovery-new-password" className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                                     New Password
                                                 </label>
                                                 <div className="relative group">
                                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                                     <input
+                                                        id="recovery-new-password"
                                                         type={showNewPassword ? "text" : "password"}
                                                         required
                                                         value={newPassword}
@@ -300,12 +430,13 @@ export default function LoginClient() {
                                             </div>
 
                                             <div className="space-y-2">
-                                                <label className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
+                                                <label htmlFor="recovery-confirm-password" className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                                     Confirm New Password
                                                 </label>
                                                 <div className="relative group">
                                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                                     <input
+                                                        id="recovery-confirm-password"
                                                         type={showConfirmNewPassword ? "text" : "password"}
                                                         required
                                                         value={confirmNewPassword}
@@ -362,12 +493,13 @@ export default function LoginClient() {
                                 </AnimatePresence>
 
                                 <div className="space-y-2">
-                                    <label className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
+                                    <label htmlFor="login-email" className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                         Email
                                     </label>
                                     <div className="relative group">
                                         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                         <input
+                                            id="login-email"
                                             type="email"
                                             required
                                             value={email}
@@ -379,12 +511,13 @@ export default function LoginClient() {
                                 </div>
 
                                 <div className="space-y-2 relative">
-                                    <label className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
+                                    <label htmlFor="login-password" className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                         Password
                                     </label>
                                     <div className="relative group">
                                         <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                         <input
+                                            id="login-password"
                                             type={showPassword ? "text" : "password"}
                                             required
                                             value={password}
@@ -487,99 +620,180 @@ export default function LoginClient() {
             </div>
 
             {/* Reset Password Modal */}
-            <AnimatePresence>
-                {showResetModal && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <motion.div 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                            onClick={() => setShowResetModal(false)}
-                        />
-                        <motion.div 
-                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="relative w-full max-w-sm bg-slate-900 border border-foreground/10 rounded-2xl shadow-2xl p-8 overflow-hidden"
-                        >
-                            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
-                            
-                            {resetSuccess ? (
-                                <div className="text-center space-y-6">
-                                    <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto border border-green-500/20">
-                                        <CheckCircle2 className="w-8 h-8 text-green-500" />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-foreground">Check Your Inbox</h3>
-                                    <p className="text-foreground/60 text-sm">
-                                        If an account exists for <span className="text-foreground font-medium">{email}</span>, you will receive a reset link shortly.
-                                    </p>
-                                    <Button 
-                                        onClick={() => setShowResetModal(false)}
-                                        className="w-full h-11 bg-primary text-foreground font-bold rounded-full"
-                                    >
-                                        Close
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="space-y-6">
-                                    <div className="space-y-2 text-center">
-                                        <h3 className="text-xl font-bold text-foreground">Reset Password</h3>
-                                        <p className="text-foreground/60 text-sm">Enter your email to receive a recovery link.</p>
-                                    </div>
-                                    
-                                    <form onSubmit={handleResetPassword} className="space-y-6">
-                                        <AnimatePresence>
-                                            {resetError && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: -10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-200 text-xs flex items-center gap-2"
-                                                >
-                                                    <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-                                                    {resetError}
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
+            <Dialog open={showResetModal} onOpenChange={(open) => { if (!open) handleCancelReset(); }}>
+                <DialogContent showCloseButton={false} className="w-full max-w-sm bg-slate-900 border border-foreground/10 rounded-2xl shadow-2xl p-8 overflow-hidden">
+                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
+                    
+                    {resetSuccess ? (
+                        <div className="space-y-6 text-left">
+                            <DialogHeader className="space-y-2 text-center">
+                                <DialogTitle className="text-xl font-bold text-foreground text-center">Verify Code</DialogTitle>
+                                <DialogDescription className="text-foreground/60 text-sm text-center">
+                                    Enter the 8-digit code sent to <span className="text-foreground font-medium">{email}</span> and your new password.
+                                </DialogDescription>
+                            </DialogHeader>
 
-                                        <div className="space-y-2">
-                                            <div className="relative group">
-                                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary" />
-                                                <input
-                                                    type="email"
-                                                    required
-                                                    value={email}
-                                                    onChange={(e) => setEmail(e.target.value)}
-                                                    placeholder="media@thaibagarden.com"
-                                                    className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all text-sm"
-                                                />
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="flex flex-col gap-3">
-                                            <Button 
-                                                type="submit"
-                                                disabled={resetLoading || !email}
-                                                className="w-full h-11 bg-primary hover:bg-primary/90 text-foreground font-bold rounded-full transition-all"
-                                            >
-                                                {resetLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Send Reset Link'}
-                                            </Button>
-                                            <button 
-                                                type="button"
-                                                onClick={() => setShowResetModal(false)}
-                                                className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors py-1"
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </form>
+                            <form onSubmit={handleResetWithOtp} className="space-y-5">
+                                <div className="space-y-1.5">
+                                    <label htmlFor="reset-otp-code" className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
+                                        Verification Code
+                                    </label>
+                                    <input
+                                        id="reset-otp-code"
+                                        type="text"
+                                        required
+                                        maxLength={8}
+                                        autoComplete="one-time-code"
+                                        value={otpCode}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(/\D/g, '');
+                                            setOtpCode(val);
+                                        }}
+                                        placeholder="93263500"
+                                        className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full px-5 text-center font-mono text-lg tracking-wider text-foreground placeholder:text-foreground/20 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all"
+                                    />
+                                    {resetOtpError && (
+                                        <p className="text-xs text-red-400 mt-1 ml-1 flex items-start gap-1">
+                                            <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                                            <span>{resetOtpError}</span>
+                                        </p>
+                                    )}
                                 </div>
-                            )}
-                        </motion.div>
+
+                                <div className="space-y-1.5">
+                                    <label htmlFor="reset-new-password" className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
+                                        New Password
+                                    </label>
+                                    <input
+                                        id="reset-new-password"
+                                        type="password"
+                                        required
+                                        value={resetNewPassword}
+                                        onChange={(e) => setResetNewPassword(e.target.value)}
+                                        placeholder="••••••••••••"
+                                        className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full px-5 text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label htmlFor="reset-confirm-password" className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
+                                        Confirm New Password
+                                    </label>
+                                    <input
+                                        id="reset-confirm-password"
+                                        type="password"
+                                        required
+                                        value={resetConfirmNewPassword}
+                                        onChange={(e) => setResetConfirmNewPassword(e.target.value)}
+                                        placeholder="••••••••••••"
+                                        className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full px-5 text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all"
+                                    />
+                                    {resetPasswordError && (
+                                        <p className="text-xs text-red-400 mt-1 ml-1 flex items-start gap-1">
+                                            <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                                            <span>{resetPasswordError}</span>
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-col gap-3 pt-2">
+                                    <Button
+                                        type="submit"
+                                        disabled={resetLoading}
+                                        className="w-full h-11 bg-primary hover:bg-primary/90 text-foreground font-bold rounded-full transition-all flex items-center justify-center"
+                                    >
+                                        {resetLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Update Password'}
+                                    </Button>
+
+                                    <div className="flex justify-between items-center px-2 pt-1 text-xs">
+                                        <button
+                                            type="button"
+                                            disabled={resetLoading}
+                                            onClick={handleResendCode}
+                                            className="font-bold text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
+                                        >
+                                            Resend Code
+                                        </button>
+                                        <button
+                                            type="button"
+                                            disabled={resetLoading}
+                                            onClick={handleCancelReset}
+                                            className="font-medium text-foreground/50 hover:text-foreground transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            <DialogHeader className="space-y-2 text-center">
+                                <DialogTitle className="text-xl font-bold text-foreground text-center">Reset Password</DialogTitle>
+                                <DialogDescription className="text-foreground/60 text-sm text-center">Enter your email to receive a recovery link.</DialogDescription>
+                            </DialogHeader>
+                            
+                            <form onSubmit={handleResetPassword} className="space-y-6">
+                                <AnimatePresence>
+                                    {resetError && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-200 text-xs flex items-center gap-2"
+                                        >
+                                            <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                                            {resetError}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
+                                <div className="space-y-2">
+                                    <label htmlFor="reset-email" className="sr-only">Email Address</label>
+                                    <div className="relative group">
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary" />
+                                        <input
+                                            id="reset-email"
+                                            type="email"
+                                            required
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            placeholder="media@thaibagarden.com"
+                                            className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all text-sm"
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div className="flex flex-col gap-3">
+                                    <Button 
+                                        type="submit"
+                                        disabled={resetLoading || !email}
+                                        className="w-full h-11 bg-primary hover:bg-primary/90 text-foreground font-bold rounded-full transition-all"
+                                    >
+                                        {resetLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Send Reset Link'}
+                                    </Button>
+                                    <button 
+                                        type="button"
+                                        onClick={handleCancelReset}
+                                        className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors py-1"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            {/* Telemetry Settings Modal */}
+            <Dialog open={showTelemetryModal} onOpenChange={setShowTelemetryModal}>
+                <DialogContent showCloseButton={true} className="w-full max-w-2xl bg-slate-950 border border-white/10 rounded-2xl shadow-2xl p-6 overflow-hidden max-h-[90vh] flex flex-col z-[101]">
+                    <div className="overflow-y-auto pr-1">
+                        <TelemetrySettingsView />
                     </div>
-                )}
-            </AnimatePresence>
-        </div>
+                </DialogContent>
+            </Dialog>
+        </main>
     );
 }
 

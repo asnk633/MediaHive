@@ -57,7 +57,7 @@ export default function SystemActivityClient() {
                         {activities.map((act) => (
                             <div
                                 key={act.id}
-                                className="flex items-center gap-4 p-4 bg-[#11131F] border border-foreground/5 rounded-xl hover:bg-foreground/5 transition-colors"
+                                className="flex items-center gap-4 p-4 bg-card border border-border rounded-xl hover:bg-muted/30 transition-colors"
                             >
                                 <div className="p-2.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400">
                                     {getActivityIcon(act.type)}

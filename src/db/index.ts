@@ -25,7 +25,15 @@ async function initializeDatabase() {
     } else {
       // Local SQLite via better-sqlite3 (dynamic import to avoid build issues)
       const { drizzle: drizzleSqlite } = await import('drizzle-orm/better-sqlite3');
-      const Database = (await import('better-sqlite3')).default;
+      const betterSqlite = await import('better-sqlite3');
+      
+      let Database: any = betterSqlite;
+      while (Database && typeof Database !== 'function' && Database.default) {
+        Database = Database.default;
+      }
+      if (typeof Database !== 'function') {
+        Database = betterSqlite.default || betterSqlite;
+      }
       // Use LOCAL_DB_PATH if provided, otherwise default to dev3.db (switched from dev2 due to locks)
       const path = await import('path');
       const fs = await import('fs');

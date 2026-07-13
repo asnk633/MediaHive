@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 
 // Credentials from kanban-dnd.spec.ts which are likely valid for Real Firebase
 const ADMIN_USER = {
-    email: 'media@thaibagarden.com',
-    password: 'media@thaiba'
+    email: process.env.E2E_ADMIN_EMAIL || 'media@thaibagarden.com',
+    password: process.env.E2E_ADMIN_PASSWORD || 'media@thaiba'
 };
 
 test.describe('Task Editing Regression', () => {

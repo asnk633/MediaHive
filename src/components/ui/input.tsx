@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, forwardRef } from "react";
+import { InputHTMLAttributes, forwardRef, useId } from "react";
 import { cn } from "@/lib/utils";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 
@@ -11,7 +11,20 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, description, variant = "default", fullWidth = true, ...props }, ref) => {
+  ({ className, label, error, description, variant = "default", fullWidth = true, id, ...props }, ref) => {
+    const generatedId = useId();
+    const inputId = id || generatedId;
+    const errorId = `${inputId}-error`;
+    const descId = `${inputId}-desc`;
+
+    const hasError = !!error;
+    const hasDesc = !error && !!description;
+
+    const ariaDescribedby = [
+      hasError ? errorId : null,
+      hasDesc ? descId : null,
+      props["aria-describedby"]
+    ].filter(Boolean).join(" ") || undefined;
 
     const variants = {
       default: "border-foreground/10 focus:border-blue-500/50 focus:ring-blue-500/20",
@@ -22,7 +35,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={cn("flex flex-col gap-1.5", fullWidth && "w-full")}>
         {label && (
-          <label className="text-xs font-medium text-foreground/60 ml-1">
+          <label htmlFor={inputId} className="text-xs font-medium text-foreground/60 ml-1">
             {label}
           </label>
         )}
@@ -30,6 +43,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <div className="relative">
           <input
             ref={ref}
+            id={inputId}
+            aria-describedby={ariaDescribedby}
+            aria-invalid={hasError ? "true" : undefined}
             spellCheck={props.type !== "password" && props.type !== "email"}
             className={cn(
               "flex h-10 w-full rounded-lg bg-foreground/5 px-3 py-2 text-sm text-foreground",
@@ -53,13 +69,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {error && (
-          <p className="text-xs text-red-400 ml-1 animate-in slide-in-from-top-1 fade-in duration-200">
+          <p id={errorId} className="text-xs text-red-400 ml-1 animate-in slide-in-from-top-1 fade-in duration-200">
             {error}
           </p>
         )}
 
         {!error && description && (
-          <p className="text-xs text-foreground/50 ml-1">
+          <p id={descId} className="text-xs text-foreground/50 ml-1">
             {description}
           </p>
         )}

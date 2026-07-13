@@ -86,7 +86,12 @@ describe('PUT /api/tasks/[id]', () => {
       }
     });
     
-    mockUpdate.mockImplementation(() => ({ eq: () => ({ select: () => ({ single: mockUpdateSingle }) }) }));
+    const mockUpdateChain = {
+      eq: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      single: mockUpdateSingle
+    };
+    mockUpdate.mockReturnValue(mockUpdateChain);
 
     const req = mockReq({ 
       client_timestamp: '2026-06-16T10:00:00Z', 
@@ -119,7 +124,12 @@ describe('PUT /api/tasks/[id]', () => {
       if (table === 'tasks') return { select: mockSelect, eq: mockEq, single: mockSingle, update: mockUpdate };
     });
     
-    mockUpdate.mockImplementation(() => ({ eq: () => ({ select: () => ({ single: mockUpdateSingle }) }) }));
+    const mockUpdateChain = {
+      eq: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      single: mockUpdateSingle
+    };
+    mockUpdate.mockReturnValue(mockUpdateChain);
 
     const req = mockReq({ 
       client_timestamp: '2026-06-16T10:00:00Z', 

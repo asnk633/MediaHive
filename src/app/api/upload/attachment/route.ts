@@ -53,6 +53,37 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const fileExt = path.extname(file.name).toLowerCase();
+    
+    // Strict File Extension Whitelist (SVG/XML explicitly omitted)
+    const ALLOWED_EXTENSIONS = new Set([
+      '.jpg', '.jpeg', '.png', '.webp', '.gif',
+      '.pdf',
+      '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.csv',
+      '.mp3', '.wav', '.ogg',
+      '.mp4', '.mov', '.avi', '.webm'
+    ]);
+
+    if (!ALLOWED_EXTENSIONS.has(fileExt)) {
+      return NextResponse.json({ error: 'Unsupported file extension' }, { status: 400 });
+    }
+
+    // MIME-type Alignment Check
+    const ALLOWED_MIME_TYPES = new Set([
+      'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+      'application/pdf',
+      'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'text/plain', 'text/csv',
+      'audio/mpeg', 'audio/wav', 'audio/ogg',
+      'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm'
+    ]);
+
+    if (!ALLOWED_MIME_TYPES.has(file.type)) {
+      return NextResponse.json({ error: 'Unsupported file media type' }, { status: 400 });
+    }
+
     // Generate unique filename
     const timestamp = Date.now();
     const ext = path.extname(file.name);

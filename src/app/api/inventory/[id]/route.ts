@@ -50,7 +50,7 @@ export async function PATCH(
         const { db, tenantId, user } = await withTenant();
 
         // Role check
-        const role = (user.app_metadata?.role || user.user_metadata?.role) as string;
+        const role = user.app_metadata?.role as string;
         if (role !== 'admin') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
@@ -147,7 +147,7 @@ export async function DELETE(
         const { db, tenantId, user } = await withTenant();
 
         // Role check
-        const role = (user.app_metadata?.role || user.user_metadata?.role) as string;
+        const role = user.app_metadata?.role as string;
         if (role !== 'admin') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }

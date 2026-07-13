@@ -782,6 +782,11 @@ export default function LoginPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [dbError, setDbError] = useState<string | null>(null);
+  const [otpCode, setOtpCode] = useState("");
+  const [resetNewPassword, setResetNewPassword] = useState("");
+  const [resetConfirmNewPassword, setResetConfirmNewPassword] = useState("");
+  const [resetOtpError, setResetOtpError] = useState<string | null>(null);
+  const [resetPasswordError, setResetPasswordError] = useState<string | null>(null);
 
   // variants moved outside of component
   
@@ -1004,6 +1009,114 @@ export default function LoginPage() {
       setError(err.message || "Failed to send reset email. Please try again.");
       setLoading(false);
     }
+  };
+
+  const handleResetWithOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetOtpError(null);
+    setResetPasswordError(null);
+
+    if (!otpCode || !resetNewPassword || !resetConfirmNewPassword) {
+      setError("Please fill in all fields.");
+      return;
+    }
+
+    if (!/^\d{8}$/.test(otpCode)) {
+      setResetOtpError("Verification code must be exactly 8 digits.");
+      return;
+    }
+
+    if (resetNewPassword !== resetConfirmNewPassword) {
+      setResetPasswordError("Passwords do not match.");
+      return;
+    }
+
+    if (resetNewPassword.length < 6) {
+      setResetPasswordError("Password must be at least 6 characters.");
+      return;
+    }
+
+    setLoading(true);
+
+    // Try Block 1: Verify OTP code
+    try {
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        email,
+        token: otpCode,
+        type: 'recovery',
+      });
+
+      if (verifyError) {
+        console.error("[RESET_OTP] Verify OTP Error:", verifyError);
+        if (verifyError.message?.toLowerCase().includes("expired") || verifyError.status === 422) {
+          setResetOtpError("Invalid or expired verification code. If you have retried multiple times, please request a new code.");
+        } else {
+          setResetOtpError(verifyError.message || "Verification failed. Please check the code and try again.");
+        }
+        setLoading(false);
+        return;
+      }
+    } catch (err: any) {
+      console.error("[RESET_OTP] Verify OTP Catch:", err);
+      setResetOtpError(err.message || "Verification failed. Please check the code and try again.");
+      setLoading(false);
+      return;
+    }
+
+    // Try Block 2: Update password using the established session
+    try {
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: resetNewPassword,
+      });
+
+      if (updateError) {
+        console.error("[RESET_OTP] Update User Error:", updateError);
+        setResetPasswordError(updateError.message || "Failed to update password.");
+        await supabase.auth.signOut().catch(() => {});
+        setLoading(false);
+        return;
+      }
+      
+      await supabase.auth.signOut();
+      setError("Password updated successfully! Please log in.");
+      handleCancelReset();
+    } catch (err: any) {
+      console.error("[RESET_OTP] Update User Catch:", err);
+      setResetPasswordError(err.message || "Failed to update password.");
+      await supabase.auth.signOut().catch(() => {});
+      setLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (!email) return;
+    setLoading(true);
+    setResetOtpError(null);
+    setResetPasswordError(null);
+    try {
+      const { error: resendError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (resendError) throw resendError;
+      setError("A new verification code has been sent!");
+    } catch (err: any) {
+      console.error("[RESET_RESEND] Error:", err);
+      setResetOtpError(err.message || "Failed to resend code.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelReset = () => {
+    setAuthMode("gate");
+    setSuccessMessage(null);
+    setError(null);
+    setOtpCode("");
+    setResetNewPassword("");
+    setResetConfirmNewPassword("");
+    setResetOtpError(null);
+    setResetPasswordError(null);
+    setLoading(false);
   };
 
   if (!mounted) {
@@ -1441,67 +1554,163 @@ export default function LoginPage() {
                             </p>
                           </div>
 
-                          <form onSubmit={handleResetPassword} className="flex flex-col gap-4">
-                            {error && (
-                              <div className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-red-500/20 border border-red-500/30 text-red-200 text-[11px] font-medium">
-                                <AlertCircle size={13} className="flex-shrink-0 mt-0.5" />
-                                <span>{error}</span>
+                          {successMessage ? (
+                            <form onSubmit={handleResetWithOtp} className="flex flex-col gap-3">
+                              <div className="flex flex-col gap-1 pt-1">
+                                <p className="text-white/80 text-[10px] leading-relaxed m-0 font-medium">
+                                  Enter the 8-digit verification code sent to <span className="text-white font-bold">{email}</span>.
+                                </p>
                               </div>
-                            )}
 
-                            {successMessage && (
-                              <div className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-200 text-[11px] font-medium">
-                                <AlertCircle size={13} className="flex-shrink-0 mt-0.5" />
-                                <span>{successMessage}</span>
-                              </div>
-                            )}
-
-                            <div className="flex flex-col gap-1.5">
-                              <label className="text-[9px] font-bold text-white/70 uppercase tracking-wider">
-                                Email Address
-                              </label>
-                              <div className="relative">
-                                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/60" />
+                              <div className="flex flex-col gap-1">
+                                <label className="text-[9px] font-bold text-white/70 uppercase tracking-wider">
+                                  Verification Code
+                                </label>
                                 <input
-                                  type="email"
+                                  type="text"
                                   required
-                                  value={email}
-                                  onChange={(e) => setEmail(e.target.value)}
-                                  placeholder="you@thaibagarden.com"
-                                  className="w-full rounded-xl px-4 py-3 pl-11 text-xs text-white placeholder:text-white/40 bg-black/20 border border-white/10 focus:outline-none focus:border-white focus:ring-4 focus:ring-white/5 transition-all shadow-sm font-medium"
+                                  maxLength={8}
+                                  autoComplete="one-time-code"
+                                  value={otpCode}
+                                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                                  placeholder="93263500"
+                                  className="w-full rounded-xl px-4 py-2 text-center font-mono text-xs text-white placeholder:text-white/20 bg-black/20 border border-white/10 focus:outline-none focus:border-white focus:ring-4 focus:ring-white/5 transition-all shadow-sm font-medium tracking-widest"
+                                />
+                                {resetOtpError && (
+                                  <p className="text-[10px] text-red-300 mt-1 ml-1 flex items-start gap-1">
+                                    <AlertCircle size={11} className="shrink-0 mt-0.5" />
+                                    <span>{resetOtpError}</span>
+                                  </p>
+                                )}
+                              </div>
+
+                              <div className="flex flex-col gap-1">
+                                <label className="text-[9px] font-bold text-white/70 uppercase tracking-wider">
+                                  New Password
+                                </label>
+                                <input
+                                  type="password"
+                                  required
+                                  value={resetNewPassword}
+                                  onChange={(e) => setResetNewPassword(e.target.value)}
+                                  placeholder="••••••••••••"
+                                  className="w-full rounded-xl px-4.5 py-2 text-xs text-white placeholder:text-white/40 bg-black/20 border border-white/10 focus:outline-none focus:border-white focus:ring-4 focus:ring-white/5 transition-all shadow-sm font-medium"
                                 />
                               </div>
-                            </div>
 
-                            <button
-                              type="submit"
-                              disabled={loading || !email}
-                              className="mt-2 w-full flex items-center justify-center gap-2 bg-white text-zinc-950 hover:bg-zinc-100 disabled:bg-white/50 font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg cursor-pointer disabled:cursor-not-allowed active:scale-[0.98]"
-                            >
-                              {loading ? (
-                                <>
-                                  <Loader2 size={13} className="animate-spin" />
-                                  <span>Recovering...</span>
-                                </>
-                              ) : (
-                                <>
-                                  <span>Send Recovery Link</span>
-                                  <ArrowRight size={13} />
-                                </>
+                              <div className="flex flex-col gap-1">
+                                <label className="text-[9px] font-bold text-white/70 uppercase tracking-wider">
+                                  Confirm New Password
+                                </label>
+                                <input
+                                  type="password"
+                                  required
+                                  value={resetConfirmNewPassword}
+                                  onChange={(e) => setResetConfirmNewPassword(e.target.value)}
+                                  placeholder="••••••••••••"
+                                  className="w-full rounded-xl px-4.5 py-2 text-xs text-white placeholder:text-white/40 bg-black/20 border border-white/10 focus:outline-none focus:border-white focus:ring-4 focus:ring-white/5 transition-all shadow-sm font-medium"
+                                />
+                                {resetPasswordError && (
+                                  <p className="text-[10px] text-red-300 mt-1 ml-1 flex items-start gap-1">
+                                    <AlertCircle size={11} className="shrink-0 mt-0.5" />
+                                    <span>{resetPasswordError}</span>
+                                  </p>
+                                )}
+                              </div>
+
+                              <button
+                                type="submit"
+                                disabled={loading}
+                                className="mt-2 w-full flex items-center justify-center gap-2 bg-white text-zinc-950 hover:bg-zinc-100 disabled:bg-white/50 font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg cursor-pointer disabled:cursor-not-allowed active:scale-[0.98]"
+                              >
+                                {loading ? (
+                                  <>
+                                    <Loader2 size={13} className="animate-spin" />
+                                    <span>Updating...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <span>Update Password</span>
+                                    <ArrowRight size={13} />
+                                  </>
+                                )}
+                              </button>
+
+                              <div className="flex justify-between items-center px-1 pt-1 text-[10px]">
+                                <button
+                                  type="button"
+                                  disabled={loading}
+                                  onClick={handleResendCode}
+                                  className="font-bold text-white hover:underline transition-colors disabled:opacity-50"
+                                >
+                                  Resend Code
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={loading}
+                                  onClick={handleCancelReset}
+                                  className="font-medium text-white/60 hover:text-white transition-colors"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </form>
+                          ) : (
+                            <form onSubmit={handleResetPassword} className="flex flex-col gap-4">
+                              {error && (
+                                <div className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-red-500/20 border border-red-500/30 text-red-200 text-[11px] font-medium">
+                                  <AlertCircle size={13} className="flex-shrink-0 mt-0.5" />
+                                  <span>{error}</span>
+                                </div>
                               )}
-                            </button>
-                          </form>
 
-                          <div className="text-center text-[10px] pt-1">
-                            <span className="text-white/60 font-medium">Remembered password? </span>
-                            <button 
-                              type="button" 
-                              onClick={() => { setAuthMode("login"); setError(null); setSuccessMessage(null); }}
-                              className="text-white hover:underline font-bold transition-all cursor-pointer"
-                            >
-                              Sign in
-                            </button>
-                          </div>
+                              <div className="flex flex-col gap-1.5">
+                                <label className="text-[9px] font-bold text-white/70 uppercase tracking-wider">
+                                  Email Address
+                                </label>
+                                <div className="relative">
+                                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/60" />
+                                  <input
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="you@thaibagarden.com"
+                                    className="w-full rounded-xl px-4 py-3 pl-11 text-xs text-white placeholder:text-white/40 bg-black/20 border border-white/10 focus:outline-none focus:border-white focus:ring-4 focus:ring-white/5 transition-all shadow-sm font-medium"
+                                  />
+                                </div>
+                              </div>
+
+                              <button
+                                type="submit"
+                                disabled={loading || !email}
+                                className="mt-2 w-full flex items-center justify-center gap-2 bg-white text-zinc-950 hover:bg-zinc-100 disabled:bg-white/50 font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg cursor-pointer disabled:cursor-not-allowed active:scale-[0.98]"
+                              >
+                                {loading ? (
+                                  <>
+                                    <Loader2 size={13} className="animate-spin" />
+                                    <span>Recovering...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <span>Send Recovery Link</span>
+                                    <ArrowRight size={13} />
+                                  </>
+                                )}
+                              </button>
+
+                              <div className="text-center text-[10px] pt-1">
+                                <span className="text-white/60 font-medium">Remembered password? </span>
+                                <button 
+                                  type="button" 
+                                  onClick={() => { setAuthMode("login"); setError(null); setSuccessMessage(null); }}
+                                  className="text-white hover:underline font-bold transition-all cursor-pointer"
+                                >
+                                  Sign in
+                                </button>
+                              </div>
+                            </form>
+                          )}
                         </motion.div>
                       )}
                     </motion.div>

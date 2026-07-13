@@ -293,31 +293,31 @@ export default function HomeClient() {
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-                                    className="flex items-center gap-3 md:gap-4 flex-wrap justify-center md:justify-end"
+                                    className="grid grid-cols-2 md:flex items-center gap-3 md:gap-4 w-full md:w-auto justify-center md:justify-end"
                                 >
-                                    <Magnetic strength={0.3}>
+                                    <Magnetic strength={0.3} className="w-full md:w-auto">
                                         <button 
                                             onClick={() => nativeNavigate('/tasks/new?returnTo=home', router, 'HomeClient.tsx')} 
-                                            className="group flex items-center gap-3 h-12 px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
+                                            className="group flex items-center justify-center md:justify-start gap-3 h-12 w-full md:w-auto px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
                                         >
                                             <CheckSquare size={18} className="text-primary group-hover:rotate-12 transition-transform" /> 
                                             NEW TASK
                                         </button>
                                     </Magnetic>
-                                    <Magnetic strength={0.3}>
+                                    <Magnetic strength={0.3} className="w-full md:w-auto">
                                         <button 
                                             onClick={() => nativeNavigate('/calendar', router, 'HomeClient.tsx')} 
-                                            className="group flex items-center gap-3 h-12 px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
+                                            className="group flex items-center justify-center md:justify-start gap-3 h-12 w-full md:w-auto px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
                                         >
                                             <CalendarIcon size={18} className="text-primary group-hover:rotate-12 transition-transform" /> 
                                             NEW EVENT
                                         </button>
                                     </Magnetic>
                                     {currentRole !== 'member' && (
-                                        <Magnetic strength={0.3}>
+                                        <Magnetic strength={0.3} className="w-full md:w-auto">
                                             <button 
                                                 onClick={() => nativeNavigate('/campaigns/new', router, 'HomeClient.tsx')} 
-                                                className="group flex items-center gap-3 h-12 px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
+                                                className="group flex items-center justify-center md:justify-start gap-3 h-12 w-full md:w-auto px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
                                             >
                                                 <FolderPlus size={18} className="text-primary group-hover:scale-110 transition-transform" /> 
                                                 NEW CAMPAIGN
@@ -325,10 +325,10 @@ export default function HomeClient() {
                                         </Magnetic>
                                     )}
                                     {['admin', 'manager'].includes(currentRole) && (
-                                        <Magnetic strength={0.3}>
+                                        <Magnetic strength={0.3} className="w-full md:w-auto">
                                             <button 
                                                 onClick={() => nativeNavigate('/notifications/new', router, 'HomeClient.tsx')} 
-                                                className="group flex items-center gap-3 h-12 px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
+                                                className="group flex items-center justify-center md:justify-start gap-3 h-12 w-full md:w-auto px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
                                             >
                                                 <Bell size={18} className="text-rose-400 animate-swing transition-transform" /> 
                                                 NOTIFY TEAM

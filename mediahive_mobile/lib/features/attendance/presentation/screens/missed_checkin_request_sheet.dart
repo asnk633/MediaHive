@@ -62,6 +62,11 @@ class _MissedCheckinRequestSheetState extends ConsumerState<MissedCheckinRequest
       return;
     }
 
+    if (_selectedDateTime.isAfter(DateTime.now())) {
+      setState(() => _errorMessage = 'Check-in time cannot be in the future.');
+      return;
+    }
+
     setState(() {
       _submitting = true;
       _errorMessage = null;

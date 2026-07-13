@@ -13,8 +13,8 @@ import { test, expect } from './fixtures/db-fixture';
  */
 
 const ADMIN_USER = {
-    email: 'media@thaibagarden.com',
-    password: 'media@thaiba'
+    email: process.env.E2E_ADMIN_EMAIL || 'media@thaibagarden.com',
+    password: process.env.E2E_ADMIN_PASSWORD || 'media@thaiba'
 };
 
 test.describe('Critical User Journeys', () => {

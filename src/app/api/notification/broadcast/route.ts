@@ -8,8 +8,8 @@ export async function POST(req: NextRequest) {
   try {
     // 1. Authenticate user
     const user = await verifyUser(req);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!user || user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized: Admin access required' }, { status: 403 });
     }
 
     // 2. Parse request body

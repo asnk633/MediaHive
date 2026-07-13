@@ -1,3 +1,35 @@
+CREATE OR REPLACE FUNCTION public.is_admin()
+ RETURNS boolean
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+ STABLE
+AS $function$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid()
+      AND role = 'admin'
+  );
+END;
+$function$;
+
+CREATE OR REPLACE FUNCTION public.is_manager()
+ RETURNS boolean
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+ STABLE
+AS $function$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid()
+      AND role = 'manager'
+  );
+END;
+$function$;
+
 CREATE OR REPLACE FUNCTION public.get_auth_tenant_id()
  RETURNS uuid
  LANGUAGE plpgsql
@@ -19,9 +51,9 @@ BEGIN
         SELECT tenant_id INTO tid FROM public.profiles WHERE id = auth.uid();
     END IF;
 
-    -- 3. If still null (anonymous signup fallback), use the primary tenant ID
+    -- 3. If still null, return NULL to enforce strict isolation
     IF tid IS NULL THEN
-        tid := '7bc0bbe7-1943-4929-a769-5fdfbc487446'::uuid;
+        tid := NULL;
     END IF;
 
     RETURN tid;
@@ -30,6 +62,7 @@ $function$;
 
 -- Fix Cross-Tenant Data Leakage in Inventory Tables
 DROP POLICY IF EXISTS "Enable read/write access for authenticated users" ON inventory_items;
+DROP POLICY IF EXISTS "tenant_isolation_inventory" ON inventory_items;
 CREATE POLICY "tenant_isolation_inventory" ON inventory_items
 FOR ALL TO authenticated
 USING (tenant_id = get_auth_tenant_id())
@@ -37,6 +70,7 @@ WITH CHECK (tenant_id = get_auth_tenant_id());
 
 -- inventory_warranties
 DROP POLICY IF EXISTS "Enable read/write access for authenticated users" ON inventory_warranties;
+DROP POLICY IF EXISTS "tenant_isolation_inventory" ON inventory_warranties;
 CREATE POLICY "tenant_isolation_inventory" ON inventory_warranties
 FOR ALL TO authenticated
 USING (EXISTS (
@@ -52,6 +86,7 @@ WITH CHECK (EXISTS (
 
 -- inventory_assignments
 DROP POLICY IF EXISTS "Enable read/write access for authenticated users" ON inventory_assignments;
+DROP POLICY IF EXISTS "tenant_isolation_inventory" ON inventory_assignments;
 CREATE POLICY "tenant_isolation_inventory" ON inventory_assignments
 FOR ALL TO authenticated
 USING (EXISTS (
@@ -67,6 +102,7 @@ WITH CHECK (EXISTS (
 
 -- inventory_asset_movements
 DROP POLICY IF EXISTS "Enable read/write access for authenticated users" ON inventory_asset_movements;
+DROP POLICY IF EXISTS "tenant_isolation_inventory" ON inventory_asset_movements;
 CREATE POLICY "tenant_isolation_inventory" ON inventory_asset_movements
 FOR ALL TO authenticated
 USING (EXISTS (
@@ -82,6 +118,7 @@ WITH CHECK (EXISTS (
 
 -- inventory_maintenance_history
 DROP POLICY IF EXISTS "Enable read/write access for authenticated users" ON inventory_maintenance_history;
+DROP POLICY IF EXISTS "tenant_isolation_inventory" ON inventory_maintenance_history;
 CREATE POLICY "tenant_isolation_inventory" ON inventory_maintenance_history
 FOR ALL TO authenticated
 USING (EXISTS (
@@ -97,6 +134,7 @@ WITH CHECK (EXISTS (
 
 -- inventory_borrow_logs
 DROP POLICY IF EXISTS "Enable read/write access for authenticated users" ON inventory_borrow_logs;
+DROP POLICY IF EXISTS "tenant_isolation_inventory" ON inventory_borrow_logs;
 CREATE POLICY "tenant_isolation_inventory" ON inventory_borrow_logs
 FOR ALL TO authenticated
 USING (EXISTS (
@@ -112,6 +150,7 @@ WITH CHECK (EXISTS (
 
 -- inventory_qr_codes
 DROP POLICY IF EXISTS "Enable read/write access for authenticated users" ON inventory_qr_codes;
+DROP POLICY IF EXISTS "tenant_isolation_inventory" ON inventory_qr_codes;
 CREATE POLICY "tenant_isolation_inventory" ON inventory_qr_codes
 FOR ALL TO authenticated
 USING (EXISTS (
@@ -143,6 +182,10 @@ USING ((status = 'active'::text) AND (tenant_id = get_auth_tenant_id()));
 
 -- Fix Tenant-Wide Edit Permissions on Tasks & Events
 DROP POLICY IF EXISTS "tenant_wide_tasks" ON tasks;
+DROP POLICY IF EXISTS "users_read_tenant_tasks" ON tasks;
+DROP POLICY IF EXISTS "users_insert_tenant_tasks" ON tasks;
+DROP POLICY IF EXISTS "users_modify_own_tasks" ON tasks;
+DROP POLICY IF EXISTS "users_delete_own_tasks" ON tasks;
 CREATE POLICY "users_read_tenant_tasks" ON tasks
 FOR SELECT TO authenticated
 USING (tenant_id = get_auth_tenant_id());
@@ -189,6 +232,10 @@ USING (
 );
 
 DROP POLICY IF EXISTS "tenant_wide_events" ON events;
+DROP POLICY IF EXISTS "users_read_tenant_events" ON events;
+DROP POLICY IF EXISTS "users_insert_tenant_events" ON events;
+DROP POLICY IF EXISTS "users_modify_own_events" ON events;
+DROP POLICY IF EXISTS "users_delete_own_events" ON events;
 CREATE POLICY "users_read_tenant_events" ON events
 FOR SELECT TO authenticated
 USING (tenant_id = get_auth_tenant_id());

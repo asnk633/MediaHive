@@ -6,8 +6,9 @@ import { PageHeader } from '@/components/ui/layout/PageHeader';
 import { SettingsLayout } from '@/components/settings/SettingsLayout';
 import { ProfileSettingsView } from '@/components/settings/views/ProfileSettingsView';
 import { NotificationSettingsView } from '@/components/settings/views/NotificationSettingsView';
+import { TelemetrySettingsView } from '@/components/settings/views/TelemetrySettingsView';
 
-type SettingsTab = 'profile' | 'notifications';
+type SettingsTab = 'profile' | 'notifications' | 'telemetry';
 
 export default function SettingsClient() {
     const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
@@ -25,6 +26,7 @@ export default function SettingsClient() {
             >
                 {activeTab === 'profile' && <ProfileSettingsView />}
                 {activeTab === 'notifications' && <NotificationSettingsView />}
+                {activeTab === 'telemetry' && <TelemetrySettingsView />}
             </SettingsLayout>
         </PageLayout>
     );

@@ -269,7 +269,7 @@ function ReportDownloadButton() {
                     <Download size={16} /> Report
                 </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md bg-[#1a1f2e] border-[#ffffff1a] text-foreground">
+            <DialogContent className="sm:max-w-md bg-popover border-border text-foreground">
                 <DialogHeader>
                     <DialogTitle>Download Monthly Report</DialogTitle>
                     <DialogDescription className="text-foreground/60 mt-2">

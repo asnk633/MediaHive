@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data: listener } = supabase.auth.onAuthStateChange(
             async (event: any, session: any) => {
                 // E2E test auth bypass check
-                if (typeof window !== 'undefined' && (process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_E2E_TESTING === 'true') && localStorage.getItem('playwright_test_auth') === 'true') {
+                if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_E2E_TESTING === 'true' && localStorage.getItem('playwright_test_auth') === 'true') {
                     console.log('[AUTH LISTENER] E2E test auth bypass active - ignoring state change');
                     return;
                 }
@@ -208,7 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 // ── E2E TEST BYPASS ──────────────────────────────────────────────────
                 // playwright_test_auth: allows Playwright tests to inject a mock auth
                 // state without real Supabase credentials. Only active in development or testing.
-                if (typeof window !== 'undefined' && (process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_E2E_TESTING === 'true')) {
+                if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_E2E_TESTING === 'true') {
                     const isE2EAuth = localStorage.getItem('playwright_test_auth') === 'true';
                     if (isE2EAuth) {
                         console.log('[BOOT] E2E test auth bypass detected');

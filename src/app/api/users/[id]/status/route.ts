@@ -14,7 +14,7 @@ export async function PUT(
         const { db, tenantId, user: adminUser } = await withTenant();
 
         // Admin check
-        const role = (adminUser.app_metadata?.role || adminUser.user_metadata?.role) as string;
+        const role = adminUser.app_metadata?.role as string;
         if (role !== 'admin') {
             return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
         }

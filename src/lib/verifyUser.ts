@@ -41,7 +41,7 @@ export async function verifyUser(req: Request, options = { strict: true }): Prom
 
     // Pulse check session for JWT claims
     const { data: { session } } = await supabaseServer.auth.getSession();
-    if (session) {
+    if (session && process.env.NODE_ENV !== 'production') {
         console.log(`[verifyUser] 🎫 JWT app_metadata:`, session.user.app_metadata);
     }
 
@@ -128,12 +128,14 @@ export async function verifyUser(req: Request, options = { strict: true }): Prom
         tenantId: sanitizeUUID(profile.tenant_id),
     };
 
-    console.log(`[verifyUser] 🏁 Returning user for ${new URL(req.url).pathname}:`, {
-        uid: authUser.uid,
-        role: authUser.role,
-        institutionRoles,
-        tenant_id: authUser.tenant_id
-    });
+    if (process.env.NODE_ENV !== 'production') {
+        console.log(`[verifyUser] 🏁 Returning user for ${new URL(req.url).pathname}:`, {
+            uid: authUser.uid,
+            role: authUser.role,
+            institutionRoles,
+            tenant_id: authUser.tenant_id
+        });
+    }
 
     return authUser;
 }

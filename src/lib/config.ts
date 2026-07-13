@@ -1,5 +1,7 @@
 // src/lib/config.ts
 // Configuration and feature flags for the application
+import crypto from 'crypto';
+
 
 export const config = {
   // Feature flags
@@ -19,7 +21,17 @@ export const config = {
   VIP_MATCH_THRESHOLD: parseFloat(process.env.VIP_MATCH_THRESHOLD || '0.65'),
   
   // Security settings
-  APP_SECRET: process.env.APP_SECRET || 'fallback-secret-key-for-dev-only',
+  APP_SECRET: (() => {
+      let secret = process.env.APP_SECRET;
+      if (!secret || secret.length < 32) {
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error('FATAL: APP_SECRET environment variable is missing or less than 32 characters in production!');
+        }
+        console.warn('WARNING: APP_SECRET is missing or weak (less than 32 characters) in config. Generating a secure dynamic fallback in memory.');
+        secret = crypto.randomBytes(32).toString('hex');
+      }
+      return secret;
+    })(),
   
   // File upload settings
   MAX_UPLOAD_SIZE: parseInt(process.env.MAX_UPLOAD_SIZE || '10485760', 10), // 10MB default

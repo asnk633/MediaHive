@@ -1,6 +1,6 @@
 // src/app/api/upload/avatar/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { getSupabaseFromRequest, verifyUser } from "@/lib/verifyUser";
 import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -23,6 +23,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid userId" }, { status: 400 });
     }
 
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const database = await getDb();
+    const [targetProfile] = await database.select().from(users).where(eq(users.id, userId)).limit(1);
+    if (!targetProfile) {
+      return NextResponse.json({ error: "Target user not found" }, { status: 404 });
+    }
+
+    const normalizeId = (val: any) => val === null || val === undefined ? '' : String(val);
+    if (normalizeId(user.tenant_id) !== normalizeId(targetProfile.tenantId)) {
+      return NextResponse.json({ error: "Forbidden: Tenant mismatch" }, { status: 403 });
+    }
+    if (user.role !== "admin" && normalizeId(user.email) !== normalizeId(targetProfile.email)) {
+      return NextResponse.json({ error: "Forbidden: Cannot change other user's avatar" }, { status: 403 });
+    }
+
     if (!file.type.startsWith("image/")) {
       return NextResponse.json({ error: "Only image files allowed" }, { status: 400 });
     }
@@ -38,7 +57,6 @@ export async function POST(request: NextRequest) {
       const base64 = buffer.toString("base64");
       const dataUrl = `data:${file.type};base64,${base64}`;
 
-      const database = await getDb();
       await database.update(users).set({ avatar_url: dataUrl }).where(eq(users.id, userId));
       return NextResponse.json({ avatar_url: dataUrl, message: "Avatar stored as base64 (dev)" }, { status: 200 });
     }
@@ -48,6 +66,7 @@ export async function POST(request: NextRequest) {
     const fileBuf = Buffer.from(arrayBuffer);
     const key = `avatars/${userId}/${Date.now()}_${file.name}`;
 
+    const supabase = await getSupabaseFromRequest(request);
     const { data, error: uploadError } = await supabase.storage.from("avatars").upload(key, fileBuf, {
       contentType: file.type,
       upsert: true,
@@ -62,7 +81,6 @@ export async function POST(request: NextRequest) {
     const publicUrl = publicData.publicUrl;
 
     // Persist to DB
-    const database = await getDb();
     await database.update(users).set({ avatar_url: publicUrl }).where(eq(users.id, userId));
 
     return NextResponse.json({ avatar_url: publicUrl, message: "Avatar uploaded" }, { status: 200 });

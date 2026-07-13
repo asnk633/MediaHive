@@ -268,8 +268,8 @@ function TaskViewContent() {
     const canEdit = isAdmin || isOwner || user?.role === 'manager' || user?.role === 'member';
 
     return (
-        <div className="flex flex-col h-full bg-[#0a0c10] text-foreground">
-            <div className="sticky top-0 z-10 border-b border-foreground/5 bg-[#0a0c10]/80 backdrop-blur-xl supports-[backdrop-filter]:bg-[#0a0c10]/60">
+        <div className="flex flex-col h-full bg-background text-foreground">
+            <div className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
                 <div className="flex items-center justify-between p-4 max-w-7xl mx-auto w-full">
                     <div className="flex items-center gap-4">
                         <Button
@@ -316,7 +316,7 @@ function TaskViewContent() {
                                     <MoreHorizontal className="h-5 w-5" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48 bg-[#10111a] border-[#ffffff1a] text-foreground">
+                            <DropdownMenuContent align="end" className="w-48 bg-popover border-border text-foreground">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                 <DropdownMenuItem onClick={() => {
                                     navigator.clipboard.writeText(window.location.href);
@@ -347,7 +347,7 @@ function TaskViewContent() {
             <ScrollArea className="flex-1">
                 <div className="max-w-7xl mx-auto p-4 lg:p-8 space-y-8">
 
-                    <div className="flex flex-wrap items-center gap-4 bg-[#10111a] p-4 rounded-2xl border border-foreground/5 shadow-sm">
+                    <div className="flex flex-wrap items-center gap-4 bg-card p-4 rounded-2xl border border-border shadow-sm">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild disabled={!canEdit}>
                                 <Button
@@ -358,7 +358,7 @@ function TaskViewContent() {
                                     {task.status?.replace('_', ' ').toUpperCase()}
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="bg-[#10111a] border-[#ffffff1a] text-foreground">
+                            <DropdownMenuContent align="start" className="bg-popover border-border text-foreground">
                                 {['pending', 'in_progress', 'review', 'completed', 'blocked'].map(s => (
                                     <DropdownMenuItem key={s} onClick={() => handleStatusChange(s)}>
                                         <span className={cn("capitalize", task.status === s && "font-bold text-blue-400")}>
@@ -382,7 +382,7 @@ function TaskViewContent() {
                             <div className="flex -space-x-2">
                                 {task.assigned_to && task.assigned_to.length > 0 ? (
                                     task.assigned_to.map((u: any, i: number) => (
-                                        <Badge key={i} variant="neutral" className="rounded-full h-8 w-8 p-0 flex items-center justify-center border-2 border-[#10111a] bg-gray-800 text-xs">
+                                        <Badge key={i} variant="neutral" className="rounded-full h-8 w-8 p-0 flex items-center justify-center border-2 border-card bg-gray-800 text-xs">
                                             {getInitials(u.name || u.email)}
                                         </Badge>
                                     ))
@@ -399,7 +399,7 @@ function TaskViewContent() {
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
                                     <FileText className="h-5 w-5 text-blue-500" /> Description
                                 </h3>
-                                <div className="prose prose-invert max-w-none text-foreground leading-relaxed bg-[#10111a] p-6 rounded-2xl border border-foreground/5">
+                                <div className="prose prose-invert max-w-none text-foreground leading-relaxed bg-card p-6 rounded-2xl border border-border">
                                     {task.description ? (
                                         <p className="whitespace-pre-wrap">{task.description}</p>
                                     ) : (
@@ -408,7 +408,7 @@ function TaskViewContent() {
                                 </div>
                             </div>
 
-                            <Separator className="bg-foreground/5" />
+                            <Separator className="bg-border" />
 
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -417,7 +417,7 @@ function TaskViewContent() {
                                     </h3>
                                 </div>
 
-                                <div className="bg-[#10111a] p-6 rounded-2xl border border-foreground/5">
+                                <div className="bg-card p-6 rounded-2xl border border-border">
                                     <AttachmentSection
                                         task={task}
                                         onUpdate={() => loadTask()}
@@ -429,13 +429,13 @@ function TaskViewContent() {
 
                         <div className="space-y-6">
 
-                            <Card className="bg-[#10111a] border-foreground/5 shadow-none">
+                            <Card className="bg-card border-border shadow-none">
                                 <CardHeader>
-                                    <CardTitle className="text-sm font-medium text-foreground/60 uppercase tracking-widest">Details</CardTitle>
+                                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Details</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4 text-sm">
                                     <div className="flex justify-between">
-                                        <span className="text-foreground/50">Created By</span>
+                                        <span className="text-muted-foreground">Created By</span>
                                         <span className="text-foreground">{resolveUserName(task.created_by)}</span>
                                     </div>
                                     <div className="flex justify-between">
@@ -455,13 +455,13 @@ function TaskViewContent() {
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
                                     <MessageSquare className="h-5 w-5 text-green-500" /> Discussion
                                 </h3>
-                                <div className="bg-[#10111a] rounded-2xl border border-foreground/5 overflow-hidden">
+                                <div className="bg-card rounded-2xl border border-border overflow-hidden">
                                     <div className="p-4 space-y-4">
                                         <div className="text-center py-8 text-foreground/40 text-sm">
                                             No recent activity.
                                         </div>
                                     </div>
-                                    <div className="p-4 bg-foreground/5 border-t border-foreground/5 flex gap-2">
+                                    <div className="p-4 bg-muted border-t border-border flex gap-2">
                                         <Input
                                             className="bg-transparent border-0 focus-visible:ring-0 text-foreground placeholder:text-foreground/40"
                                             placeholder="Write a comment..."

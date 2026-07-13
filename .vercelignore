@@ -2,13 +2,8 @@
 src/app/_api_disabled/
 src/server_disabled/
 
-# Ignore unfinished admin subsystems
-
-
-# Ignore heavy admin APIs not needed for core app
-# src/app/api/admin/
+# Ignore cron
 src/app/api/cron/
-
 
 # Ignore test & debug material
 __tests__/
@@ -27,3 +22,17 @@ functions/
 debug_*.js
 inspect_*.py
 *.log
+
+# Ignore heavy directories that exceed Vercel CLI upload size limit
+mediahive_mobile/
+MediaHive Windows app/
+website/
+graphify-out/
+.agent/
+.agents/
+.tmp/
+docs/
+reports/
+execution/
+scratch/
+serviceAccountKey.json

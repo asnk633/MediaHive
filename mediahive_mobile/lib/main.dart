@@ -257,7 +257,7 @@ class MediaHiveApp extends ConsumerWidget {
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.transparent,
             foregroundColor: DesignTokens.lightTextPrimary,
-            side: BorderSide(color: DesignTokens.lightBorder.withValues(alpha: 0.15), width: 0.75),
+            side: BorderSide(color: DesignTokens.lightBorder.withValues(alpha: 0.6), width: 0.75),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
           ),
         ),
@@ -283,11 +283,11 @@ class MediaHiveApp extends ConsumerWidget {
           // ── Body — Paragraph / description text ───────────────────
           bodyLarge:  TextStyle(fontSize: 16, fontWeight: FontWeight.w400, height: 1.50, color: Colors.white),
           bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, height: 1.50, color: DesignTokens.textSecondary),
-          bodySmall:  TextStyle(fontSize: 12, fontWeight: FontWeight.w400, height: 1.45, color: Color(0xFF666666)),
+          bodySmall:  TextStyle(fontSize: 12, fontWeight: FontWeight.w400, height: 1.45, color: Color(0xFF9E9E9E)),
           // ── Label — Buttons, badges, uppercase category tags ──────
           labelLarge:  TextStyle(fontSize: 14, fontWeight: FontWeight.w600, height: 1.20, letterSpacing: 0.3, color: Colors.white),
           labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, height: 1.20, letterSpacing: 0.5, color: DesignTokens.textSecondary),
-          labelSmall:  TextStyle(fontSize: 10, fontWeight: FontWeight.w700, height: 1.20, letterSpacing: 0.8, color: Color(0xFF666666)),
+          labelSmall:  TextStyle(fontSize: 10, fontWeight: FontWeight.w700, height: 1.20, letterSpacing: 0.8, color: Color(0xFF9E9E9E)),
         ),
         scaffoldBackgroundColor: DesignTokens.backgroundPrimary,
         colorScheme: ColorScheme.fromSeed(
@@ -348,7 +348,7 @@ class MediaHiveApp extends ConsumerWidget {
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.transparent,
             foregroundColor: Colors.white,
-            side: BorderSide(color: DesignTokens.border.withValues(alpha: 0.15), width: 0.75),
+            side: BorderSide(color: DesignTokens.border.withValues(alpha: 0.5), width: 0.75),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
           ),
         ),

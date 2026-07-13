@@ -42,10 +42,11 @@ if not SUPABASE_SERVICE_KEY:
     print("[WARNING] SUPABASE_SERVICE_ROLE_KEY not found in ../.env.local. Supabase sync will be skipped.")
 
 RELEASE_NOTES = (
-    "🚀 MediaHive v1.2.5-beta+66003 — Geofenced Background Presence Alerts & NFC UI Redesign\n\n"
-    "• Geofenced Background Presence: Persistent background location monitoring via flutter_background_service and geolocator to verify office boundaries and trigger checkout reminders.\n"
-    "• NFC Scan Overlay Redesign: Swapped text hierarchy to make the event outcome (e.g. 'Checked Out Successfully') the primary headline. Added a status badge with a pulsing indicator dot.\n"
-    "• Home Attendance Card Redesign: Configured the attendance panel to dynamically change background gradients and borders to emerald (checked in) or crimson (checked out). Enlarged status title, aligned action buttons to 115px wide, and added icons."
+    "🚀 MediaHive v1.2.6-beta+67001 — UI/UX Refinement, Role Gating & Dashboard Bug Fixes\n\n"
+    "• Attendance Dashboard Enhancements: Fixed a critical UI bug where the Missed Check-In bottom sheet was rendered underneath the main bottom navigation bar (added useRootNavigator: true). Restricted the main check-in panel display to team and manager roles.\n"
+    "• Typography & Accessibility: Integrated textScaleOf helper to clamp accessibility text scale factors between [0.8, 1.3] in MhButton and MhInput, and polished dashboard typography font sizes.\n"
+    "• Localized Date Formatting: Standardized date and time display across calendar events, task lists, and downloads using DateFormat.yMMMd().\n"
+    "• User Flow Polish: Added a SnackBar with an 'Undo' option for task deletions, mapped helpful user instructions for common authentication and network errors, and gated debug panels behind kDebugMode."
 )
 
 # ─── 1. PARSE VERSION ─────────────────────────────────────────────────────────
@@ -124,9 +125,15 @@ try:
 
     # Create Release
     print(f"\n[GitHub] Creating release {tag_name}...")
+    # Resolve current git branch dynamically to publish release on the active branch
+    try:
+        git_branch = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode().strip()
+    except Exception:
+        git_branch = "main"
+
     release_payload = {
         "tag_name": tag_name,
-        "target_commitish": "main",
+        "target_commitish": git_branch,
         "name": f"MediaHive Release {tag_name}",
         "body": RELEASE_NOTES,
         "draft": False,

@@ -35,7 +35,22 @@ class _AmbientCanvasBackgroundState extends State<AmbientCanvasBackground>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2000),
-    )..repeat();
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final disableAnims = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    if (disableAnims) {
+      if (_controller.isAnimating) {
+        _controller.stop();
+      }
+    } else {
+      if (!_controller.isAnimating) {
+        _controller.repeat();
+      }
+    }
   }
 
   @override

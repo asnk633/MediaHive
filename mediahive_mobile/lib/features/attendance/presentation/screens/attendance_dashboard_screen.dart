@@ -236,6 +236,7 @@ class _AttendanceDashboardScreenState
                               onQrTap: isScanning ? null : () {
                                 showModalBottomSheet(
                                   context: context,
+                                  useRootNavigator: true,
                                   isScrollControlled: true,
                                   backgroundColor: Colors.transparent,
                                   builder: (ctx) => QrScannerOverlay(
@@ -300,6 +301,7 @@ class _AttendanceDashboardScreenState
                               onRemoteCheckoutTap: session == null ? null : () {
                                 showModalBottomSheet(
                                   context: context,
+                                  useRootNavigator: true,
                                   isScrollControlled: true,
                                   backgroundColor: colors.backgroundSecondary,
                                   shape: const RoundedRectangleBorder(
@@ -314,6 +316,7 @@ class _AttendanceDashboardScreenState
                               onMissedCheckinTap: () {
                                 showModalBottomSheet(
                                   context: context,
+                                  useRootNavigator: true,
                                   isScrollControlled: true,
                                   backgroundColor: colors.backgroundSecondary,
                                   shape: const RoundedRectangleBorder(
@@ -696,6 +699,7 @@ class _AttendanceDashboardScreenState
 
     await showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       backgroundColor: colors.backgroundSecondary,
       shape: const RoundedRectangleBorder(
@@ -799,6 +803,7 @@ class _AttendanceDashboardScreenState
   void _showTimelineSheet(BuildContext context, ThemeColors colors, AttendanceRecord record) {
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       backgroundColor: colors.backgroundSecondary,
       shape: const RoundedRectangleBorder(

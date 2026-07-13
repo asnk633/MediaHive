@@ -63,6 +63,7 @@ class ThemeColors {
   final List<BoxShadow> glowBlue;
   final Color iconColor;
   final Color honey;
+  /// Maps to `softGold` in FinTech dark mode.
   final Color indigo;
   final Color emerald;
   final Color error;

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/utils/layout_helpers.dart';
 import 'package:mediahive_mobile/core/providers/update_provider.dart';
 import 'package:mediahive_mobile/features/chat/presentation/providers/chat_providers.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -32,6 +32,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = ref.watch(themeColorsProvider);
+    final headerHeight = ref.watch(headerHeightProvider);
 
     return Scaffold(
       backgroundColor: colors.backgroundPrimary,
@@ -44,10 +45,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         ),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(
+          padding: EdgeInsets.only(
             left: 20, 
             right: 20, 
-            top: 140, 
+            top: headerHeight == 0 ? 140.0 : headerHeight, 
             bottom: 140,
           ),
           child: Column(

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum NavItem { dashboard, tasks, events, inventory, files, governance }
+enum NavItem { dashboard, work, assets, governance }
 
 final navigationProvider = StateProvider<NavItem>((ref) => NavItem.dashboard);
 

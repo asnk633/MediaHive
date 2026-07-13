@@ -79,26 +79,55 @@ class ResetConfirmationScreen extends ConsumerWidget {
     final isDark = colors.isDark;
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.15),
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white.withValues(alpha: isDark ? 0.1 : 0.3)),
-            boxShadow: [
-              BoxShadow(
-                color: (isDark ? const Color(0xFFFFD700) : const Color(0xFF006EE6))
-                    .withValues(alpha: isDark ? 0.2 : 0.1),
-                blurRadius: 30,
-                spreadRadius: 5,
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.transparent,
+                boxShadow: isDark
+                    ? [
+                        BoxShadow(
+                          color: const Color(0xFFFFB800)
+                              .withValues(alpha: 0.4),
+                          blurRadius: 25,
+                          spreadRadius: 2,
+                        ),
+                        BoxShadow(
+                          color: const Color(0xFFFFD700)
+                              .withValues(alpha: 0.15),
+                          blurRadius: 50,
+                          spreadRadius: 8,
+                        ),
+                        BoxShadow(
+                          color: const Color(0xFFFFD700)
+                              .withValues(alpha: 0.05),
+                          blurRadius: 80,
+                          spreadRadius: 18,
+                        ),
+                      ]
+                    : [
+                        BoxShadow(
+                          color: const Color(0xFF000000)
+                              .withValues(alpha: 0.06),
+                          blurRadius: 25,
+                          spreadRadius: 4,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
               ),
-            ],
-          ),
-          child: Image.asset(
-            isDark ? 'assets/images/logo_midnight.png' : 'assets/images/logo_luminous.png',
-            height: 60,
-            width: 60,
-          ),
+            ),
+            Image.asset(
+              isDark
+                  ? 'assets/images/logo_honey.png'
+                  : 'assets/images/logo_luminous.png',
+              height: 120,
+              width: 120,
+            ),
+          ],
         ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
         const SizedBox(height: 24),
         Text(

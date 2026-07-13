@@ -14,6 +14,7 @@ import 'package:mediahive_mobile/features/files/presentation/widgets/upload_file
 import 'package:mediahive_mobile/features/files/domain/models/file_asset.dart';
 import 'package:mediahive_mobile/core/utils/url_helpers.dart';
 import 'package:mediahive_mobile/presentation/providers/navigation_provider.dart';
+import 'package:mediahive_mobile/core/utils/layout_helpers.dart';
 
 class DownloadsScreen extends ConsumerStatefulWidget {
   const DownloadsScreen({super.key});
@@ -57,6 +58,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
   Widget build(BuildContext context) {
     final colors = ref.watch(themeColorsProvider);
     final filesAsync = ref.watch(filesListProvider);
+    final headerHeight = ref.watch(headerHeightProvider);
 
     return Scaffold(
       backgroundColor: colors.backgroundPrimary,
@@ -77,7 +79,11 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
               // Header
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.only(left: AppSpacing.l, right: AppSpacing.l, top: 120 + MediaQuery.of(context).padding.top),
+                  padding: EdgeInsets.only(
+                    left: AppSpacing.l, 
+                    right: AppSpacing.l, 
+                    top: (headerHeight == 0 ? (120.0 + MediaQuery.of(context).padding.top) : headerHeight) + 64.0,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -645,7 +651,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${DateFormat('dd-MM-yyyy').format(file.createdAt)} • ${_formatSize(file.size)}',
+                          '${DateFormat.yMMMd().format(file.createdAt)} • ${_formatSize(file.size)}',
                           style: TextStyle(fontSize: 10, color: colors.textSecondary, fontWeight: FontWeight.bold),
                         ),
                       ],

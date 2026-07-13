@@ -148,10 +148,8 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                               if (_isSpeedDialOpen) setState(() => _isSpeedDialOpen = false);
                               switch (item) {
                                 case NavItem.dashboard:  context.go('/dashboard'); break;
-                                case NavItem.tasks:      context.go('/tasks'); break;
-                                case NavItem.events:     context.go('/calendar'); break;
-                                case NavItem.inventory:  context.go('/inventory'); break;
-                                case NavItem.files:      context.go('/files'); break;
+                                case NavItem.work:       context.go('/work'); break;
+                                case NavItem.assets:     context.go('/assets'); break;
                                 case NavItem.governance: context.go('/governance'); break;
                               }
                             },
@@ -179,16 +177,12 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
   int _getNavIndex(NavItem item) {
     switch (item) {
       case NavItem.dashboard: return 0;
-      case NavItem.tasks: return 1;
-      case NavItem.events: return 2;
-      case NavItem.inventory: return 3;
-      case NavItem.files: return 4;
-      case NavItem.governance: return 5;
+      case NavItem.work: return 1;
+      case NavItem.assets: return 2;
+      case NavItem.governance: return 3;
     }
   }
   
-
-
 
   Widget _buildTabletNavigationRail(NavItem currentItem, ThemeColors colors) {
     final isLight = !colors.isDark;
@@ -200,21 +194,17 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
         NavItem selectedItem;
         switch(index) {
           case 0: selectedItem = NavItem.dashboard; break;
-          case 1: selectedItem = NavItem.tasks; break;
-          case 2: selectedItem = NavItem.events; break;
-          case 3: selectedItem = NavItem.inventory; break;
-          case 4: selectedItem = NavItem.files; break;
-          case 5: selectedItem = NavItem.governance; break;
+          case 1: selectedItem = NavItem.work; break;
+          case 2: selectedItem = NavItem.assets; break;
+          case 3: selectedItem = NavItem.governance; break;
           default: selectedItem = NavItem.dashboard; break;
         }
         ref.read(navigationProvider.notifier).state = selectedItem;
         if (_isSpeedDialOpen) setState(() => _isSpeedDialOpen = false);
         switch (selectedItem) {
           case NavItem.dashboard:  context.go('/dashboard'); break;
-          case NavItem.tasks:      context.go('/tasks'); break;
-          case NavItem.events:     context.go('/calendar'); break;
-          case NavItem.inventory:  context.go('/inventory'); break;
-          case NavItem.files:      context.go('/files'); break;
+          case NavItem.work:       context.go('/work'); break;
+          case NavItem.assets:     context.go('/assets'); break;
           case NavItem.governance: context.go('/governance'); break;
         }
       },
@@ -261,19 +251,11 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
         ),
         const NavigationRailDestination(
           icon: Icon(LucideIcons.checkSquare),
-          label: Text('TASKS'),
-        ),
-        const NavigationRailDestination(
-          icon: Icon(LucideIcons.calendar),
-          label: Text('EVENTS'),
+          label: Text('WORK'),
         ),
         const NavigationRailDestination(
           icon: Icon(LucideIcons.package),
-          label: Text('INVENTORY'),
-        ),
-        const NavigationRailDestination(
-          icon: Icon(LucideIcons.download),
-          label: Text('FILES'),
+          label: Text('ASSETS'),
         ),
         NavigationRailDestination(
           icon: Consumer(
@@ -420,6 +402,22 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    nfcState.status == NfcScanStatus.scanning
+                        ? 'Align the top-back portion of your phone with the NFC tag.'
+                        : nfcState.status == NfcScanStatus.success
+                            ? 'NFC credentials read and validated.'
+                            : nfcState.status == NfcScanStatus.error
+                                ? 'Unable to read NFC tag. Ensure it is a valid MediaHive tag and tap again.'
+                                : 'Ensure NFC is enabled on your device.',
+                    style: TextStyle(
+                      color: colors.textSecondary,
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                   if (nfcState.status == NfcScanStatus.success && nfcState.record != null) ...[
                     const SizedBox(height: 24),
                     // Redesigned details card using theme colors
@@ -517,8 +515,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
           ),
           child: Icon(LucideIcons.nfc, color: colors.honey, size: 40),
         ).animate(onPlay: (controller) => controller.repeat())
-         .scale(begin: const Offset(0.9, 0.9), end: const Offset(1.1, 1.1), duration: 1.seconds, curve: Curves.easeInOut)
-         .blurXY(begin: 0, end: 1, duration: 1.seconds, curve: Curves.easeInOut);
+         .scale(begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05), duration: 1.seconds, curve: Curves.easeInOut);
       case NfcScanStatus.success:
         return Container(
           width: 80,

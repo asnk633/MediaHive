@@ -98,10 +98,6 @@ class DesignTokens {
 
   // ─── Shadows ───────────────────────────────────────────────────────────────
 
-  // Shared non-gold shadow
-  static List<BoxShadow> glowPrimary = [];
-  static List<BoxShadow> glowHoney   = [];
-
   // Product photography shadow (shared)
   static List<BoxShadow> productShadow = [
     const BoxShadow(

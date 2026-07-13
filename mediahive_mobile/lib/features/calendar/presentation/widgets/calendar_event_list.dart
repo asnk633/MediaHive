@@ -158,7 +158,7 @@ class CalendarEventList extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.only(left: 12, bottom: 16),
                     child: Text(
-                      DateFormat('dd-MM-yyyy').format(DateTime.parse(event.date)),
+                      DateFormat.yMMMd().format(DateTime.parse(event.date)),
                       style: TextStyle(fontWeight: FontWeight.w900, color: colors.indigo, fontSize: 14),
                     ),
                   ),

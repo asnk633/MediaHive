@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mediahive_mobile/core/utils/layout_helpers.dart';
 import 'package:mediahive_mobile/core/theme_provider.dart';
 import 'package:mediahive_mobile/core/theme/elastic_scroll_physics.dart';
 import 'package:mediahive_mobile/core/providers/user_provider.dart';
@@ -31,11 +32,14 @@ class DashboardScreen extends ConsumerWidget {
     final metrics = ref.watch(dashboardMetricsProvider);
     final profileAsync = ref.watch(currentUserProfileProvider);
     final activeSessionAsync = ref.watch(activeAttendanceSessionProvider);
+    final headerHeight = ref.watch(headerHeightProvider);
 
     final roleRaw = profileAsync.maybeWhen(
       data: (p) => (p?['role']?.toString() ?? 'member').toLowerCase().trim(),
       orElse: () => 'member',
     );
+
+    final showAttendance = roleRaw == 'team' || roleRaw == 'manager';
 
     final isAdminOrManager = profileAsync.maybeWhen(
       data: (p) {
@@ -86,44 +90,47 @@ class DashboardScreen extends ConsumerWidget {
                 _buildSliverHeader(colors),
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 120, 20, 140),
+                    padding: EdgeInsets.fromLTRB(20, headerHeight == 0 ? 120.0 : headerHeight, 20, 140),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildGreetingSection(colors, ref),
                         const SizedBox(height: 32),
-                        TodayAttendancePanel(
-                          role: roleRaw,
-                          isCheckedIn: isCheckedIn,
-                          checkInTime: checkInTime,
-                          workMode: activeSession?.workMode,
-                          lastKnownWorkLocation: activeSession?.lastKnownWorkLocation,
-                          onTapAttendance: () => context.push('/attendance'),
-                          onTapNfc: () {
-                            ref.read(globalNfcScanningProvider.notifier).startScan(
-                              workMode: isCheckedIn ? activeSession.workMode : 'office',
-                              source: 'nfc',
-                            );
-                          },
-                          onTapQr: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (ctx) => QrScannerOverlay(
-                                onScan: (payload) {
-                                  Navigator.pop(ctx);
-                                  ref.read(globalNfcScanningProvider.notifier).startScan(
-                                    workMode: isCheckedIn ? activeSession.workMode : 'office',
-                                    source: 'qr',
-                                    qrPayload: payload,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 32),
+                        if (showAttendance) ...[
+                          TodayAttendancePanel(
+                            role: roleRaw,
+                            isCheckedIn: isCheckedIn,
+                            checkInTime: checkInTime,
+                            workMode: activeSession?.workMode,
+                            lastKnownWorkLocation: activeSession?.lastKnownWorkLocation,
+                            onTapAttendance: () => context.push('/attendance'),
+                            onTapNfc: () {
+                              ref.read(globalNfcScanningProvider.notifier).startScan(
+                                workMode: isCheckedIn ? activeSession.workMode : 'office',
+                                source: 'nfc',
+                              );
+                            },
+                            onTapQr: () {
+                              showModalBottomSheet(
+                                context: context,
+                                useRootNavigator: true,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (ctx) => QrScannerOverlay(
+                                  onScan: (payload) {
+                                    Navigator.pop(ctx);
+                                    ref.read(globalNfcScanningProvider.notifier).startScan(
+                                      workMode: isCheckedIn ? activeSession.workMode : 'office',
+                                      source: 'qr',
+                                      qrPayload: payload,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 32),
+                        ],
                         RequestsPanel(
                           isAdminOrManager: isAdminOrManager,
                           onTapNewTask: () => context.push('/create-task'),
@@ -147,7 +154,7 @@ class DashboardScreen extends ConsumerWidget {
                                           'ACCESS RESTRICTED: ADMINS & MANAGERS ONLY',
                                           style: TextStyle(
                                             color: colors.textPrimary,
-                                            fontSize: 10,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.bold,
                                             letterSpacing: 0.5,
                                           ),
@@ -250,14 +257,14 @@ class DashboardScreen extends ConsumerWidget {
     return Center(
       child: Column(
         children: [
-          Icon(LucideIcons.shieldCheck, size: 16, color: colors.textSecondary.withValues(alpha: 0.2)),
+          Icon(LucideIcons.shieldCheck, size: 16, color: colors.textSecondary.withValues(alpha: 0.7)),
           const SizedBox(height: 8),
           Text(
             'MEDIAHIVE SECURE OPS CORE',
             style: AppTypography.caption.copyWith(
-              fontSize: 8,
+              fontSize: 11,
               letterSpacing: 2.0,
-              color: colors.textSecondary.withValues(alpha: 0.2),
+              color: colors.textSecondary.withValues(alpha: 0.7),
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -298,7 +305,7 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(height: 4),
               Text(
                 'No immediate priorities found',
-                style: AppTypography.caption.copyWith(color: colors.textSecondary.withValues(alpha: 0.5)),
+                style: AppTypography.caption.copyWith(color: colors.textSecondary.withValues(alpha: 0.75)),
               ),
             ],
           ),
@@ -323,19 +330,22 @@ class DashboardScreen extends ConsumerWidget {
     } catch (_) {}
     final isOverdue = !isDone && dueDate != null && dueDate.isBefore(today);
 
-    return GestureDetector(
-      onTap: () => context.push('/task-details', extra: task),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isOverdue ? AppColors.error.withValues(alpha: 0.5) : colors.border.withValues(alpha: 0.5),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => context.push('/task-details', extra: task),
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isOverdue ? AppColors.error.withValues(alpha: 0.5) : colors.border.withValues(alpha: 0.5),
+            ),
           ),
-        ),
-        child: Row(
+          child: Row(
           children: [
             Container(
               width: 32,
@@ -361,16 +371,16 @@ class DashboardScreen extends ConsumerWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.bodyS.copyWith(
                       fontWeight: FontWeight.w900,
-                      color: isDone ? colors.textSecondary.withValues(alpha: 0.5) : (isOverdue ? AppColors.error : colors.textPrimary),
+                      color: isDone ? colors.textSecondary.withValues(alpha: 0.75) : (isOverdue ? AppColors.error : colors.textPrimary),
                       decoration: isDone ? TextDecoration.lineThrough : null,
                     ),
                   ),
                   Text(
                     'DUE ${task.dueDate}',
                     style: AppTypography.caption.copyWith(
-                      fontSize: 8,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: colors.textSecondary.withValues(alpha: 0.5),
+                      color: colors.textSecondary.withValues(alpha: 0.75),
                     ),
                   ),
                 ],
@@ -380,8 +390,9 @@ class DashboardScreen extends ConsumerWidget {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
 
 
@@ -607,7 +618,7 @@ class DashboardScreen extends ConsumerWidget {
             '$count EVENTS',
             style: TextStyle(
               color: colors.textSecondary,
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.0,
             ),
@@ -633,7 +644,7 @@ class DashboardScreen extends ConsumerWidget {
         final relevantEvents = events.where((e) => _isRelevantEvent(e, roleRaw, currentUserId, currentDepartment, today)).toList();
         
         if (relevantEvents.isEmpty) {
-          return Center(child: Text('NO EVENTS SCHEDULED', style: TextStyle(color: colors.textSecondary, fontSize: 10, fontWeight: FontWeight.bold)));
+          return Center(child: Text('NO EVENTS SCHEDULED', style: TextStyle(color: colors.textSecondary, fontSize: 11, fontWeight: FontWeight.bold)));
         }
 
         return Column(
@@ -673,7 +684,7 @@ class DashboardScreen extends ConsumerWidget {
                 Text(
                   event.time.split(':').length > 1 ? event.time.split(':')[1].substring(0, 2) : '00',
                   style: TextStyle(
-                    fontSize: 10,
+                    fontSize: 11,
                     fontWeight: FontWeight.bold,
                     color: Color(event.colorValue).withValues(alpha: 0.6),
                   ),
@@ -702,7 +713,7 @@ class DashboardScreen extends ConsumerWidget {
                     Text(
                       event.location ?? 'No location',
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: 11,
                         color: colors.textSecondary,
                       ),
                     ),
@@ -719,7 +730,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
             child: Text(
               event.type.toUpperCase(),
-              style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: colors.textSecondary.withValues(alpha: 0.6)),
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: colors.textSecondary.withValues(alpha: 0.6)),
             ),
           ),
         ],
@@ -782,7 +793,7 @@ class DashboardScreen extends ConsumerWidget {
               '$count TASKS',
               style: TextStyle(
                 color: colors.textSecondary,
-                fontSize: 10,
+                fontSize: 11,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.0,
               ),
@@ -829,7 +840,7 @@ class DashboardScreen extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Text(
                     'No immediate priorities found',
-                    style: AppTypography.caption.copyWith(color: colors.textSecondary.withValues(alpha: 0.5)),
+                    style: AppTypography.caption.copyWith(color: colors.textSecondary.withValues(alpha: 0.75)),
                   ),
                 ],
               ),
@@ -905,7 +916,7 @@ class DashboardScreen extends ConsumerWidget {
                     const SizedBox(width: 4),
                     Text(
                       task.assignee.toUpperCase(),
-                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: colors.textSecondary.withValues(alpha: 0.6)),
+                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: colors.textSecondary.withValues(alpha: 0.6)),
                     ),
                   ],
                 ),
@@ -942,7 +953,7 @@ class DashboardScreen extends ConsumerWidget {
         child: Text(
           task.status.toUpperCase(),
           style: TextStyle(
-            fontSize: 9, 
+            fontSize: 11, 
             fontWeight: FontWeight.w900, 
             color: color,
             letterSpacing: 0.5,
@@ -1047,7 +1058,7 @@ class DashboardScreen extends ConsumerWidget {
       ),
       child: Text(
         displayPriority,
-        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color),
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color),
       ),
     );
   }
@@ -1119,7 +1130,7 @@ class DashboardScreen extends ConsumerWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: 8,
+            fontSize: 11,
             fontWeight: FontWeight.bold,
             color: colors.textSecondary.withValues(alpha: 0.6),
           ),

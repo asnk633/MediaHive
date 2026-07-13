@@ -28,6 +28,40 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
+  String _getFriendlyErrorMessage(Object e) {
+    final str = e.toString().toLowerCase();
+    if (str.contains('invalid login credentials') || str.contains('invalid_credentials') || str.contains('invalid_grant')) {
+      return 'Invalid email or password. Please check your credentials and try again.';
+    }
+    if (str.contains('email not confirmed') || str.contains('email_not_confirmed')) {
+      return 'Your email address has not been confirmed yet. Please verify your email.';
+    }
+    if (str.contains('user not found') || str.contains('user_not_found')) {
+      return 'No account exists with this email address.';
+    }
+    if (str.contains('network') || str.contains('socketexception') || str.contains('failed host lookup') || str.contains('connection failed')) {
+      return 'Network offline. Please check your internet connection and try again.';
+    }
+    if (str.contains('rate limit') || str.contains('too many requests')) {
+      return 'Too many attempts. Please wait a moment and try again.';
+    }
+    return 'Authentication Failed. Please verify your login details.';
+  }
+
+  String _getFriendlyGoogleSignInErrorMessage(Object e) {
+    final str = e.toString().toLowerCase();
+    if (str.contains('network') || str.contains('socketexception') || str.contains('failed host lookup')) {
+      return 'Network error. Please check your connection and try again.';
+    }
+    if (str.contains('cancelled') || str.contains('user canceled') || str.contains('sign_in_canceled')) {
+      return 'Google Sign-In was cancelled.';
+    }
+    if (str.contains('developer_error') || str.contains('api_exception 10')) {
+      return 'Google configuration error. Please contact support.';
+    }
+    return 'Google Sign-In Failed. Please try again.';
+  }
+
   void _handleSignIn() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -53,7 +87,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Authentication Failed: ${e.toString()}')),
+          SnackBar(content: Text(_getFriendlyErrorMessage(e))),
         );
       }
     }
@@ -70,7 +104,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Google Sign-In Failed: ${e.toString()}')),
+          SnackBar(content: Text(_getFriendlyGoogleSignInErrorMessage(e))),
         );
       }
     } finally {
@@ -157,26 +191,61 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isDark = colors.isDark;
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: isDark ? 0.04 : 0.15),
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.3)),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFFFD700)
-                    .withValues(alpha: isDark ? 0.2 : 0.1),
-                blurRadius: 30,
-                spreadRadius: 5,
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            // Glow emitter — invisible circle that casts layered shadows
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.transparent,
+                boxShadow: isDark
+                    ? [
+                        // Inner tight backlight
+                        BoxShadow(
+                          color: const Color(0xFFFFB800)
+                              .withValues(alpha: 0.4),
+                          blurRadius: 30,
+                          spreadRadius: 2,
+                        ),
+                        // Mid ambient ring
+                        BoxShadow(
+                          color: const Color(0xFFFFD700)
+                              .withValues(alpha: 0.15),
+                          blurRadius: 60,
+                          spreadRadius: 10,
+                        ),
+                        // Wide outer haze
+                        BoxShadow(
+                          color: const Color(0xFFFFD700)
+                              .withValues(alpha: 0.05),
+                          blurRadius: 100,
+                          spreadRadius: 25,
+                        ),
+                      ]
+                    : [
+                        // Light mode: clean elevation shadow, no yellow
+                        BoxShadow(
+                          color: const Color(0xFF000000)
+                              .withValues(alpha: 0.06),
+                          blurRadius: 30,
+                          spreadRadius: 5,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
               ),
-            ],
-          ),
-          child: Image.asset(
-            isDark ? 'assets/images/logo_midnight.png' : 'assets/images/logo_luminous.png',
-            height: 100,
-            width: 100,
-          ),
+            ),
+            // Logo
+            Image.asset(
+              isDark
+                  ? 'assets/images/logo_honey.png'
+                  : 'assets/images/logo_luminous.png',
+              height: 160,
+              width: 160,
+            ),
+          ],
         ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
         const SizedBox(height: 12),
         Align(

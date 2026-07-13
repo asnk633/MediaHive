@@ -23,6 +23,23 @@ debug_*.js
 inspect_*.py
 *.log
 
+# Ignore compiled builds and binaries recursively
+**/*.apk
+**/*.exe
+**/*.dmg
+**/*.zip
+**/*.tar.gz
+**/*.tgz
+**/*.rar
+**/*.pdb
+**/*.lib
+**/*.rlib
+
+# Ignore public assets that are too large
+public/*.apk
+public/**/*.apk
+public/video/
+
 # Ignore heavy directories that exceed Vercel CLI upload size limit
 mediahive_mobile/
 MediaHive Windows app/

@@ -34,11 +34,21 @@ inspect_*.py
 **/*.pdb
 **/*.lib
 **/*.rlib
+**/*.glb
+**/*.gltf
+
+# Ignore Next.js build cache
+.next
+.next/
+.next/**
+**/.next/**
 
 # Ignore public assets that are too large
 public/*.apk
 public/**/*.apk
 public/video/
+public/*.glb
+public/**/*.glb
 
 # Ignore heavy directories that exceed Vercel CLI upload size limit
 mediahive_mobile/

@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyUser } from '@/lib/server/server-utils';
 import { getDriveClient } from '@/lib/drive';
 import { logFileDeleted } from '@/app/api/_lib/audit';
-import { supabase } from '@/lib/supabaseClient';
+import { getSupabaseAdmin } from '@/lib/server/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -84,7 +83,7 @@ export async function DELETE(
         if (deleteError) throw deleteError;
 
         // 5. Log Audit
-        await logFileDeleted(user.id, user.tenant_id, id, { name: file.name });
+        await logFileDeleted(user.uid, user.tenant_id || "", id, { name: file.name });
 
         return NextResponse.json({ success: true, id, message: 'File deleted successfully' });
 

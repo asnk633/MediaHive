@@ -14,14 +14,19 @@ import {
     ChevronRight,
     ShieldAlert,
     BarChart3,
-    Sliders
+    Sliders,
+    Clock,
+    Moon,
+    Sun
 } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 import { cn, nativeNavigate } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContextProvider';
 
 const adminNavItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard, path: '/admin', minRole: 'manager' },
     { id: 'users', label: 'Users', icon: Users, path: '/admin/users', minRole: 'manager' },
+    { id: 'attendance', label: 'Attendance & NFC', icon: Clock, path: '/admin/attendance', minRole: 'manager' },
     { id: 'leave-analytics', label: 'Leave Analytics', icon: BarChart3, path: '/admin/leave-analytics', minRole: 'manager' },
     { id: 'workspaces', label: 'Workspaces', icon: Building2, path: '/admin/workspaces', minRole: 'admin' },
     { id: 'permissions', label: 'Permissions', icon: ShieldCheck, path: '/admin/security', minRole: 'admin' },
@@ -147,6 +152,9 @@ export default function AdminSidebar() {
                         <ChevronLeft size={20} className="shrink-0 transition-transform group-hover:-translate-x-1" />
                         {!isCollapsed && <span className="text-sm font-bold">Exit Admin</span>}
                     </button>
+
+                    {/* Theme Toggle */}
+                    <ThemeToggleButton isCollapsed={isCollapsed} />
                     
                     <button 
                         onClick={toggleCollapse}
@@ -162,5 +170,33 @@ export default function AdminSidebar() {
                 </div>
             </div>
         </motion.aside>
+    );
+}
+
+/** Inline theme toggle button — shown in the sidebar footer */
+function ThemeToggleButton({ isCollapsed }: { isCollapsed: boolean }) {
+    const { theme, toggleTheme } = useTheme();
+    const isDark = theme === 'dark';
+    return (
+        <button
+            onClick={toggleTheme}
+            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            className={cn(
+                "group w-full flex items-center gap-3 p-3.5 rounded-2xl transition-all",
+                "text-foreground/80 hover:bg-foreground/5 hover:text-foreground",
+                isCollapsed ? "justify-center" : ""
+            )}
+        >
+            {isDark ? (
+                <Sun size={20} className="shrink-0 text-amber-400 transition-transform group-hover:rotate-12" />
+            ) : (
+                <Moon size={20} className="shrink-0 text-indigo-400 transition-transform group-hover:-rotate-12" />
+            )}
+            {!isCollapsed && (
+                <span className="text-sm font-bold">
+                    {isDark ? 'Light Mode' : 'Dark Mode'}
+                </span>
+            )}
+        </button>
     );
 }

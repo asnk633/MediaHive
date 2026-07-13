@@ -53,7 +53,8 @@ class FieldWorkSession with _$FieldWorkSession {
     final end = endedAt != null
         ? (DateTime.tryParse(endedAt!) ?? DateTime.now())
         : DateTime.now();
-    return end.difference(start);
+    final diff = end.difference(start);
+    return diff.isNegative ? Duration.zero : diff;
   }
 
   String get formattedDuration {

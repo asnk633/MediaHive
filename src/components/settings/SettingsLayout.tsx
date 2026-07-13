@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { User, Bell, Shield, Building2 } from 'lucide-react';
+import { User, Bell, Shield, Building2, Terminal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContextProvider';
 
 interface SettingsLayoutProps {
     children: React.ReactNode;
-    activeTab: 'profile' | 'notifications';
+    activeTab: 'profile' | 'notifications' | 'telemetry';
     onTabChange: (tab: any) => void;
 }
 
@@ -23,6 +23,7 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
     const menuItems = [
         { id: 'profile', label: 'My Profile', icon: <User size={18} /> },
         { id: 'notifications', label: 'Notifications', icon: <Bell size={18} /> },
+        { id: 'telemetry', label: 'Telemetry & Logs', icon: <Terminal size={18} /> },
     ];
 
 

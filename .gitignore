@@ -102,3 +102,8 @@ graphify-out/graph.json
 
 # Large Assets
 public/MediaHive new log 3dsvg.glb
+
+*.backup
+.env.test
+*.key
+.env*

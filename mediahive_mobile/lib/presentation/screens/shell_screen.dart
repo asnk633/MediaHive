@@ -148,10 +148,8 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                               if (_isSpeedDialOpen) setState(() => _isSpeedDialOpen = false);
                               switch (item) {
                                 case NavItem.dashboard:  context.go('/dashboard'); break;
-                                case NavItem.tasks:      context.go('/tasks'); break;
-                                case NavItem.events:     context.go('/calendar'); break;
-                                case NavItem.inventory:  context.go('/inventory'); break;
-                                case NavItem.files:      context.go('/files'); break;
+                                case NavItem.work:       context.go('/work'); break;
+                                case NavItem.assets:     context.go('/assets'); break;
                                 case NavItem.governance: context.go('/governance'); break;
                               }
                             },
@@ -179,16 +177,12 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
   int _getNavIndex(NavItem item) {
     switch (item) {
       case NavItem.dashboard: return 0;
-      case NavItem.tasks: return 1;
-      case NavItem.events: return 2;
-      case NavItem.inventory: return 3;
-      case NavItem.files: return 4;
-      case NavItem.governance: return 5;
+      case NavItem.work: return 1;
+      case NavItem.assets: return 2;
+      case NavItem.governance: return 3;
     }
   }
   
-
-
 
   Widget _buildTabletNavigationRail(NavItem currentItem, ThemeColors colors) {
     final isLight = !colors.isDark;
@@ -200,21 +194,17 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
         NavItem selectedItem;
         switch(index) {
           case 0: selectedItem = NavItem.dashboard; break;
-          case 1: selectedItem = NavItem.tasks; break;
-          case 2: selectedItem = NavItem.events; break;
-          case 3: selectedItem = NavItem.inventory; break;
-          case 4: selectedItem = NavItem.files; break;
-          case 5: selectedItem = NavItem.governance; break;
+          case 1: selectedItem = NavItem.work; break;
+          case 2: selectedItem = NavItem.assets; break;
+          case 3: selectedItem = NavItem.governance; break;
           default: selectedItem = NavItem.dashboard; break;
         }
         ref.read(navigationProvider.notifier).state = selectedItem;
         if (_isSpeedDialOpen) setState(() => _isSpeedDialOpen = false);
         switch (selectedItem) {
           case NavItem.dashboard:  context.go('/dashboard'); break;
-          case NavItem.tasks:      context.go('/tasks'); break;
-          case NavItem.events:     context.go('/calendar'); break;
-          case NavItem.inventory:  context.go('/inventory'); break;
-          case NavItem.files:      context.go('/files'); break;
+          case NavItem.work:       context.go('/work'); break;
+          case NavItem.assets:     context.go('/assets'); break;
           case NavItem.governance: context.go('/governance'); break;
         }
       },
@@ -261,19 +251,11 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
         ),
         const NavigationRailDestination(
           icon: Icon(LucideIcons.checkSquare),
-          label: Text('TASKS'),
-        ),
-        const NavigationRailDestination(
-          icon: Icon(LucideIcons.calendar),
-          label: Text('EVENTS'),
+          label: Text('WORK'),
         ),
         const NavigationRailDestination(
           icon: Icon(LucideIcons.package),
-          label: Text('INVENTORY'),
-        ),
-        const NavigationRailDestination(
-          icon: Icon(LucideIcons.download),
-          label: Text('FILES'),
+          label: Text('ASSETS'),
         ),
         NavigationRailDestination(
           icon: Consumer(
@@ -320,8 +302,24 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
       ],
     );
   }
-  Widget _buildNfcScanOverlay(BuildContext context, WidgetRef ref, NfcScanState nfcState, ThemeColors colors) {
+   Widget _buildNfcScanOverlay(BuildContext context, WidgetRef ref, NfcScanState nfcState, ThemeColors colors) {
     final isLight = !colors.isDark;
+    
+    final Color statusColor;
+    switch (nfcState.status) {
+      case NfcScanStatus.success:
+        statusColor = colors.emerald;
+        break;
+      case NfcScanStatus.error:
+        statusColor = colors.error;
+        break;
+      case NfcScanStatus.scanning:
+        statusColor = colors.honey;
+        break;
+      default:
+        statusColor = colors.honey;
+    }
+
     return Positioned.fill(
       child: Container(
         color: colors.backgroundPrimary.withValues(alpha: 0.7),
@@ -351,48 +349,102 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                 children: [
                   _buildNfcStatusIcon(nfcState, colors),
                   const SizedBox(height: 24),
+                  // ── Pill-shaped Status Badge ──
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: statusColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: statusColor.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: statusColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ).animate(onPlay: (controller) => controller.repeat())
+                         .scale(begin: const Offset(0.8, 0.8), end: const Offset(1.2, 1.2), duration: 800.ms, curve: Curves.easeInOut)
+                         .fade(begin: 0.5, end: 1.0, duration: 800.ms, curve: Curves.easeInOut),
+                        const SizedBox(width: 8),
+                        Text(
+                          _getNfcStatusTitle(nfcState.status).toUpperCase(),
+                          style: TextStyle(
+                            color: statusColor,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // ── Elevate check-in/out messages to main headline ──
                   Text(
-                    _getNfcStatusTitle(nfcState.status),
+                    (nfcState.message != null && nfcState.message!.isNotEmpty)
+                        ? nfcState.message!
+                        : (nfcState.status == NfcScanStatus.scanning
+                            ? 'Hold your device near the NFC tag'
+                            : _getNfcStatusTitle(nfcState.status)),
                     style: TextStyle(
                       color: colors.textPrimary,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.5,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      height: 1.25,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   Text(
-                    nfcState.message ?? '',
+                    nfcState.status == NfcScanStatus.scanning
+                        ? 'Align the top-back portion of your phone with the NFC tag.'
+                        : nfcState.status == NfcScanStatus.success
+                            ? 'NFC credentials read and validated.'
+                            : nfcState.status == NfcScanStatus.error
+                                ? 'Unable to read NFC tag. Ensure it is a valid MediaHive tag and tap again.'
+                                : 'Ensure NFC is enabled on your device.',
                     style: TextStyle(
-                      color: colors.textSecondary.withValues(alpha: 0.8),
-                      fontSize: 13,
+                      color: colors.textSecondary,
+                      fontSize: 12,
                       height: 1.4,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   if (nfcState.status == NfcScanStatus.success && nfcState.record != null) ...[
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
+                    // Redesigned details card using theme colors
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: colors.backgroundPrimary.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: colors.border.withValues(alpha: 0.2)),
+                        color: colors.surface.withValues(alpha: isLight ? 0.6 : 0.4),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: colors.border.withValues(alpha: 0.5),
+                          width: 1,
+                        ),
                       ),
                       child: Column(
                         children: [
-                          _buildDetailRow('USER', nfcState.record!.userName, colors),
-                          const Divider(height: 16, thickness: 0.5, color: Colors.grey),
-                          _buildDetailRow('LOCATION', nfcState.tagName ?? 'Registered Tag', colors),
-                          const Divider(height: 16, thickness: 0.5, color: Colors.grey),
-                          _buildDetailRow('WORK MODE', nfcState.record!.workMode.toUpperCase(), colors),
+                          _buildDetailRow(LucideIcons.user, 'USER', nfcState.record!.userName, colors),
+                          Divider(height: 24, thickness: 0.8, color: colors.border.withValues(alpha: 0.15)),
+                          _buildDetailRow(LucideIcons.mapPin, 'LOCATION', nfcState.tagName ?? 'Registered Tag', colors),
+                          Divider(height: 24, thickness: 0.8, color: colors.border.withValues(alpha: 0.15)),
+                          _buildDetailRow(LucideIcons.briefcase, 'WORK MODE', nfcState.record!.workMode.toUpperCase(), colors),
                           if (nfcState.record!.lastKnownWorkLocation != null) ...[
-                            const Divider(height: 16, thickness: 0.5, color: Colors.grey),
-                            _buildDetailRow('VENUE', nfcState.record!.lastKnownWorkLocation!, colors),
+                            Divider(height: 24, thickness: 0.8, color: colors.border.withValues(alpha: 0.15)),
+                            _buildDetailRow(LucideIcons.building, 'VENUE', nfcState.record!.lastKnownWorkLocation!, colors),
                           ],
-                          const Divider(height: 16, thickness: 0.5, color: Colors.grey),
+                          Divider(height: 24, thickness: 0.8, color: colors.border.withValues(alpha: 0.15)),
                           _buildDetailRow(
+                            LucideIcons.clock,
                             nfcState.record!.checkOutTime != null ? 'CHECK OUT TIME' : 'CHECK IN TIME',
                             DateFormat('hh:mm a').format(
                               DateTime.parse(nfcState.record!.checkOutTime ?? nfcState.record!.checkInTime).toLocal()
@@ -400,8 +452,8 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                             colors,
                           ),
                           if (nfcState.record!.checkOutTime != null) ...[
-                            const Divider(height: 16, thickness: 0.5, color: Colors.grey),
-                            _buildDetailRow('DURATION', nfcState.record!.formattedDuration, colors),
+                            Divider(height: 24, thickness: 0.8, color: colors.border.withValues(alpha: 0.15)),
+                            _buildDetailRow(LucideIcons.hourglass, 'DURATION', nfcState.record!.formattedDuration, colors),
                           ]
                         ],
                       ),
@@ -459,30 +511,32 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
           decoration: BoxDecoration(
             color: colors.honey.withValues(alpha: 0.1),
             shape: BoxShape.circle,
+            border: Border.all(color: colors.honey.withValues(alpha: 0.3), width: 1.5),
           ),
           child: Icon(LucideIcons.nfc, color: colors.honey, size: 40),
         ).animate(onPlay: (controller) => controller.repeat())
-         .scale(begin: const Offset(0.9, 0.9), end: const Offset(1.1, 1.1), duration: 1.seconds, curve: Curves.easeInOut)
-         .blurXY(begin: 0, end: 1, duration: 1.seconds, curve: Curves.easeInOut);
+         .scale(begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05), duration: 1.seconds, curve: Curves.easeInOut);
       case NfcScanStatus.success:
         return Container(
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.green.withValues(alpha: 0.1),
+            color: colors.emerald.withValues(alpha: 0.15),
             shape: BoxShape.circle,
+            border: Border.all(color: colors.emerald.withValues(alpha: 0.3), width: 1.5),
           ),
-          child: const Icon(LucideIcons.checkCircle, color: Colors.green, size: 40),
+          child: Icon(LucideIcons.checkCircle, color: colors.emerald, size: 40),
         ).animate().scale(duration: 400.ms, curve: Curves.easeOutBack);
       case NfcScanStatus.error:
         return Container(
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.red.withValues(alpha: 0.1),
+            color: colors.error.withValues(alpha: 0.15),
             shape: BoxShape.circle,
+            border: Border.all(color: colors.error.withValues(alpha: 0.3), width: 1.5),
           ),
-          child: const Icon(LucideIcons.alertTriangle, color: Colors.red, size: 40),
+          child: Icon(LucideIcons.alertTriangle, color: colors.error, size: 40),
         ).animate().shake(duration: 500.ms);
       case NfcScanStatus.nfcNotAvailable:
       case NfcScanStatus.nfcDisabled:
@@ -490,10 +544,11 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.orange.withValues(alpha: 0.1),
+            color: colors.honey.withValues(alpha: 0.15),
             shape: BoxShape.circle,
+            border: Border.all(color: colors.honey.withValues(alpha: 0.3), width: 1.5),
           ),
-          child: const Icon(LucideIcons.nfc, color: Colors.orange, size: 40),
+          child: Icon(LucideIcons.nfc, color: colors.honey, size: 40),
         );
       default:
         return const SizedBox.shrink();
@@ -517,29 +572,55 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
     }
   }
 
-  Widget _buildDetailRow(String label, String value, ThemeColors colors) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: colors.textSecondary.withValues(alpha: 0.5),
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
+  Widget _buildDetailRow(IconData icon, String label, String value, ThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: colors.indigo.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              color: colors.indigo,
+              size: 16,
+            ),
           ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            color: colors.textPrimary,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: colors.textSecondary.withValues(alpha: 0.6),
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      color: colors.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    textAlign: TextAlign.right,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
-

@@ -5,6 +5,7 @@ import 'package:mediahive_mobile/core/theme/app_spacing.dart';
 import 'package:mediahive_mobile/core/theme/app_typography.dart';
 import 'package:mediahive_mobile/core/design_tokens.dart';
 import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/utils/text_scale.dart';
 
 enum MhButtonType { primary, secondary, outline, ghost }
 
@@ -55,7 +56,7 @@ class MhButton extends StatelessWidget {
               child: Center(
                 child: isLoading
                     ? _buildLoader(colors)
-                    : _buildContent(colors),
+                    : _buildContent(context, colors),
               ),
             ),
           ),
@@ -107,16 +108,17 @@ class MhButton extends StatelessWidget {
     }
   }
 
-  Widget _buildContent(ThemeColors colors) {
+  Widget _buildContent(BuildContext context, ThemeColors colors) {
     final hasIcon = icon != null;
     final hasLabel = label.isNotEmpty;
+    final scaleFactor = textScaleOf(context);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (hasIcon)
-          Icon(icon, size: 18, color: _getTextColor(colors)),
+          Icon(icon, size: 18 * scaleFactor, color: _getTextColor(colors)),
         if (hasIcon && hasLabel)
           const SizedBox(width: AppSpacing.xs),
         if (hasLabel)
@@ -126,6 +128,7 @@ class MhButton extends StatelessWidget {
               style: AppTypography.bodyM.copyWith(
                 color: _getTextColor(colors),
                 fontWeight: FontWeight.w900,
+                fontSize: (AppTypography.bodyM.fontSize ?? 14) * scaleFactor,
                 letterSpacing: 0.5,
               ),
               textAlign: TextAlign.center,

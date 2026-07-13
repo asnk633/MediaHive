@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { getSupabaseAdmin } from '@/lib/verifyUser';
 import { TABLES } from '@/lib/dbTables';
 
 export async function GET() {
@@ -9,6 +9,8 @@ export async function GET() {
   let details: any = {};
 
   try {
+    const supabase = getSupabaseAdmin();
+
     // 1. Check DB Connection
     const { error: dbError } = await supabase.from(TABLES.USERS).select('id').limit(1);
     dbStatus = !dbError;

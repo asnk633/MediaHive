@@ -17,7 +17,8 @@ import {
   auditLog,
   mediaReports,
   vipEmbeddings,
-  notifications
+  notifications,
+  nfcTags
 } from '@/db/schema';
 import { eq, and, gt, lt, desc, asc } from 'drizzle-orm';
 import { z } from 'zod';
@@ -61,7 +62,8 @@ const REPLICABLE_TABLES = [
   'tasks', 'events', 'users', 'institutions', 'tenants',
   'taskComments', 'attachments', 'files', 'attendance',
   'presence', 'editLocks', 'taskActivity', 'automationRules',
-  'auditLog', 'mediaReports', 'vipEmbeddings', 'notifications'
+  'auditLog', 'mediaReports', 'vipEmbeddings', 'notifications',
+  'nfcTags'
 ];
 
 

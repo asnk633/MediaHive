@@ -42,12 +42,18 @@ export async function GET(request: Request) {
         const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
         
         let institutionId = rawInstitutionId && isUuid(rawInstitutionId) ? rawInstitutionId : null;
-        if (!institutionId && profile?.institution_id && isUuid(profile.institution_id)) {
-            institutionId = profile.institution_id;
-        }
 
-        if (rawInstitutionId && !isUuid(rawInstitutionId)) {
-            console.warn(`[LEAVE ANALYTICS] ⚠️ Invalid institution_id format (not a UUID): "${rawInstitutionId}". Falling back to profile institution or null.`);
+        // Enforce isolation: managers/non-admins can only query their own institution
+        if (profile?.role !== 'admin') {
+            institutionId = profile?.institution_id && isUuid(profile.institution_id) ? profile.institution_id : null;
+            if (!institutionId) {
+                return NextResponse.json({ error: 'Forbidden: No institution assigned' }, { status: 403 });
+            }
+        } else {
+            // Admins: fallback to profile institution if no institution_id was explicitly requested
+            if (!institutionId && profile?.institution_id && isUuid(profile.institution_id)) {
+                institutionId = profile.institution_id;
+            }
         }
 
         let query = supabase

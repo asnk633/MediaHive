@@ -2,7 +2,7 @@
 
 import { ReactNode, useRef, useEffect } from 'react';
 import { AuthProvider } from "@/contexts/AuthContextProvider";
-import { ThemeProvider } from "@/contexts/ThemeContext";
+
 import BootGate from '@/components/layout/BootGate';
 import Diagnostics from '@/components/Diagnostics';
 import { networkMonitor } from '@/utils/networkMonitor';
@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { WorkspaceProvider } from "@/system/workspace/WorkspaceProvider";
 import { useRouter } from 'next/navigation';
 import { nativeNavigate } from '@/lib/utils';
+import { MotionConfig } from 'framer-motion';
 
 
 // --- GLOBAL BUFFER FOR DIAGNOSTICS ---
@@ -81,7 +82,19 @@ export default function RootProviders({ children }: { children: ReactNode }) {
       addToBuffer('ERROR', args);
       originalError.apply(console, args);
     };
-    console.warn = (...args) => { addToBuffer('WARN', args); originalWarn.apply(console, args); };
+    console.warn = (...args) => {
+      const isBenignWarn = args.some(arg => {
+        if (typeof arg !== 'string') return false;
+        return (
+          arg.includes('should be greater than 0') && 
+          (arg.includes('width') || arg.includes('height') || arg.includes('chart'))
+        );
+      });
+      if (isBenignWarn) return;
+
+      addToBuffer('WARN', args);
+      originalWarn.apply(console, args);
+    };
 
     // 4. Telemetry Helper (Must use originalLog/Error to avoid infinite recursion)
     const emitBootTelemetry = (status: 'success' | 'timeout' | 'retry' | 'anr_warning') => {
@@ -151,15 +164,15 @@ export default function RootProviders({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <WorkspaceProvider>
-          <Diagnostics />
+    <AuthProvider>
+      <WorkspaceProvider>
+        <Diagnostics />
+        <MotionConfig reducedMotion="user">
           <BootGate>
             {children}
           </BootGate>
-        </WorkspaceProvider>
-      </AuthProvider>
-    </ThemeProvider>
+        </MotionConfig>
+      </WorkspaceProvider>
+    </AuthProvider>
   );
 }

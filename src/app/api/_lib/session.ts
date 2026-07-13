@@ -5,20 +5,27 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify, SignJWT } from 'jose';
 import { AuthUser, UserRole } from './types';
+import crypto from 'crypto';
+import { getDb } from '@/db';
+import { users } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 
-// Environment variables
-// NOTE: The fallback secret is only for development and must NEVER be used in production
-const JWT_SECRET = process.env.APP_SECRET || 'fallback_secret_key_for_development';
-const SESSION_MAX_AGE = parseInt(process.env.SESSION_MAX_AGE || '604800'); // 7 days default
-const REFRESH_TOKEN_MAX_AGE = parseInt(process.env.REFRESH_TOKEN_MAX_AGE || '2592000'); // 30 days default
+// Dynamic fallback secret for development if APP_SECRET is missing or weak
+let JWT_SECRET = process.env.APP_SECRET;
+if (!JWT_SECRET || JWT_SECRET.length < 32) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('FATAL: APP_SECRET environment variable is missing or less than 32 characters in production!');
+  }
+  console.warn('WARNING: APP_SECRET is missing or weak (less than 32 characters). Generating a secure dynamic fallback in memory.');
+  JWT_SECRET = crypto.randomBytes(32).toString('hex');
+}
+
+const SESSION_MAX_AGE = 900; // 15 minutes default (short-lived access tokens)
+const REFRESH_TOKEN_MAX_AGE = parseInt(process.env.REFRESH_TOKEN_MAX_AGE || '2592000', 10); // 30 days default
 
 // JWT secret key
 const getJwtSecretKey = () => {
-  const secret = JWT_SECRET;
-  if (!secret) {
-    throw new Error('JWT_SECRET is not set in environment variables');
-  }
-  return new TextEncoder().encode(secret);
+  return new TextEncoder().encode(JWT_SECRET);
 };
 
 /**
@@ -40,7 +47,7 @@ export async function createSession(user: AuthUser): Promise<{ accessToken: stri
     .sign(secretKey);
   
   // Create refresh token (longer-lived)
-  const refreshToken = await new SignJWT({ sub: user.id })
+  const refreshToken = await new SignJWT({ sub: String(user.id) })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt(now)
     .setExpirationTime(now + REFRESH_TOKEN_MAX_AGE)
@@ -117,7 +124,7 @@ export function clearSessionCookies(response: NextResponse): void {
 /**
  * Get user from request with token verification
  */
-export async function getUserFromRequest(req: NextRequest): Promise<AuthUser | null> {
+export async function getUserFromRequest(req: NextRequest, res?: NextResponse): Promise<AuthUser | null> {
   // Try access token first
   const accessToken = req.cookies.get('access_token')?.value;
   if (accessToken) {
@@ -132,14 +139,61 @@ export async function getUserFromRequest(req: NextRequest): Promise<AuthUser | n
   if (refreshToken) {
     const payload = await verifyRefreshToken(refreshToken);
     if (payload) {
-      // In a real implementation, you would fetch the user from DB
-      // For now, we'll just return null to force re-login
-      // A full implementation would re-issue tokens here
-      return null;
+      try {
+        const db = await getDb();
+        const userResult = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, parseInt(payload.userId, 10)))
+          .limit(1);
+        
+        const user = userResult[0];
+        if (user) {
+          const authUser: AuthUser = {
+            id: String(user.id),
+            email: user.email,
+            fullName: user.fullName,
+            role: user.role as UserRole,
+            tenant_id: String(user.tenantId),
+            institution_id: String(user.institution_id),
+          };
+          
+          const tokens = await createSession(authUser);
+          
+          // If NextResponse context is passed, set the cookies directly on it
+          if (res) {
+            setSessionCookies(res, tokens.accessToken, tokens.refreshToken);
+          } else {
+            // Attempt to write using Next.js headers (next/headers cookies)
+            // This is allowed in state-changing routes and Server Actions, but may fail in GET route handlers.
+            try {
+              const cookieStore = await cookies();
+              cookieStore.set('access_token', tokens.accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: SESSION_MAX_AGE,
+                path: '/',
+                sameSite: 'strict',
+              });
+              cookieStore.set('refresh_token', tokens.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: REFRESH_TOKEN_MAX_AGE,
+                path: '/',
+                sameSite: 'strict',
+              });
+            } catch {
+              // Ignore cookie setting failures in GET route handlers (will fallback to next request)
+            }
+          }
+          
+          return authUser;
+        }
+      } catch (err) {
+        console.error('[SESSION] In-flight token renewal failed:', err);
+      }
     }
   }
-  
-
   
   return null;
 }

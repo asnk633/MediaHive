@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../core/theme/app_spacing.dart';
+import 'package:mediahive_mobile/core/utils/layout_helpers.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../core/services/network_service.dart';
 import '../../../../../core/services/analytics_service.dart';
@@ -34,6 +36,7 @@ class TasksScreen extends ConsumerWidget {
     final networkStatus = ref.watch(networkStatusProvider).valueOrNull ?? NetworkStatus.online;
     final isOffline = networkStatus == NetworkStatus.offline;
     final colors = ref.watch(themeColorsProvider);
+    final headerHeight = ref.watch(headerHeightProvider);
 
     return Scaffold(
       backgroundColor: colors.backgroundPrimary,
@@ -64,7 +67,7 @@ class TasksScreen extends ConsumerWidget {
                 : tasksAsync.hasValue
                     ? (tasksAsync.value!.isEmpty
                         ? _buildEmptyState(context)
-                        : _buildContent(context, ref, activeTab, tasksAsync.value!, isOffline, colors))
+                        : _buildContent(context, ref, activeTab, tasksAsync.value!, isOffline, colors, headerHeight))
                     : const SizedBox.shrink(),
           ),
         ),
@@ -72,7 +75,7 @@ class TasksScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, WidgetRef ref, int activeTab, List<dynamic> tasks, bool isOffline, ThemeColors colors) {
+  Widget _buildContent(BuildContext context, WidgetRef ref, int activeTab, List<dynamic> tasks, bool isOffline, ThemeColors colors, double headerHeight) {
     final profile = ref.watch(currentUserProfileProvider).valueOrNull;
     final fullName = profile?['full_name'] as String?;
 
@@ -81,7 +84,7 @@ class TasksScreen extends ConsumerWidget {
       padding: EdgeInsets.only(
         left: AppSpacing.l, 
         right: AppSpacing.l, 
-        top: 120 + MediaQuery.of(context).padding.top, 
+        top: (headerHeight == 0 ? (120.0 + MediaQuery.of(context).padding.top) : headerHeight) + 64.0, 
         bottom: 120,
       ),
       children: [
@@ -149,7 +152,11 @@ class TasksScreen extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             GestureDetector(
-              onLongPress: () => _showChaosMenu(context, ref, colors),
+              onLongPress: () {
+                if (kDebugMode) {
+                  _showChaosMenu(context, ref, colors);
+                }
+              },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -596,7 +603,7 @@ class TasksScreen extends ConsumerWidget {
                 if (!canDelete) return;
                 _showTaskActionSheet(context, ref, task, canDelete, colors);
               },
-              onDeleted: () => ref.read(tasksListProvider.notifier).deleteTask(task.id),
+              onDeleted: () => _deleteTaskWithUndo(context, ref, task),
               onLeadingTap: () {
                 if (!_canUpdateStatus(ref, task)) return;
                 final isDone = task.status.toString().toLowerCase() == 'done';
@@ -625,7 +632,7 @@ class TasksScreen extends ConsumerWidget {
                 if (!canDelete) return;
                 _showTaskActionSheet(context, ref, task, canDelete, colors);
               },
-              onDeleted: () => ref.read(tasksListProvider.notifier).deleteTask(task.id),
+              onDeleted: () => _deleteTaskWithUndo(context, ref, task),
               onLeadingTap: () {
                 if (!_canUpdateStatus(ref, task)) return;
                 final isDone = task.status.toString().toLowerCase() == 'done';
@@ -654,7 +661,7 @@ class TasksScreen extends ConsumerWidget {
                 if (!canDelete) return;
                 _showTaskActionSheet(context, ref, task, canDelete, colors);
               },
-              onDeleted: () => ref.read(tasksListProvider.notifier).deleteTask(task.id),
+              onDeleted: () => _deleteTaskWithUndo(context, ref, task),
               onLeadingTap: () {
                 if (!_canUpdateStatus(ref, task)) return;
                 final isDone = task.status.toString().toLowerCase() == 'done';
@@ -683,7 +690,7 @@ class TasksScreen extends ConsumerWidget {
                 if (!canDelete) return;
                 _showTaskActionSheet(context, ref, task, canDelete, colors);
               },
-              onDeleted: () => ref.read(tasksListProvider.notifier).deleteTask(task.id),
+              onDeleted: () => _deleteTaskWithUndo(context, ref, task),
               onLeadingTap: () {
                 if (!_canUpdateStatus(ref, task)) return;
                 final isDone = task.status.toString().toLowerCase() == 'done';
@@ -835,6 +842,26 @@ class TasksScreen extends ConsumerWidget {
     return isAdminOrManager || isCreator;
   }
 
+  void _deleteTaskWithUndo(BuildContext context, WidgetRef ref, Task task) async {
+    final notifier = ref.read(tasksListProvider.notifier);
+    await notifier.deleteTask(task.id);
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Task "${task.title}" deleted'),
+          action: SnackBarAction(
+            label: 'Undo',
+            onPressed: () {
+              ref.read(tasksListProvider.notifier).addTask(task);
+            },
+          ),
+        ),
+      );
+    }
+  }
+
   void _showTaskActionSheet(BuildContext context, WidgetRef ref, Task task, bool canDelete, ThemeColors colors) {
     showModalBottomSheet(
       context: context,
@@ -916,7 +943,7 @@ class TasksScreen extends ConsumerWidget {
                   );
 
                   if (confirmed == true) {
-                    await ref.read(tasksListProvider.notifier).deleteTask(task.id);
+                    _deleteTaskWithUndo(context, ref, task);
                   }
                 },
                 leading: Icon(LucideIcons.trash2, color: colors.error),
@@ -1018,24 +1045,28 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
                   ),
                 ),
                 if (hasActiveFilters)
-                  GestureDetector(
-                    onTap: _clearFilters,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: colors.error.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                            color: colors.error.withValues(alpha: 0.3)),
-                      ),
-                      child: Text(
-                        'CLEAR ALL',
-                        style: TextStyle(
-                          color: colors.error,
-                          fontSize: 9,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 0.8,
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: _clearFilters,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: colors.error.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color: colors.error.withValues(alpha: 0.3)),
+                        ),
+                        child: Text(
+                          'CLEAR ALL',
+                          style: TextStyle(
+                            color: colors.error,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.8,
+                          ),
                         ),
                       ),
                     ),
@@ -1198,34 +1229,38 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
     required VoidCallback onTap,
     required Color accentColor,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? accentColor.withValues(alpha: 0.12)
-              : colors.surface.withValues(alpha: 0.4),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding:
+              const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
             color: isSelected
-                ? accentColor.withValues(alpha: 0.6)
-                : colors.border.withValues(alpha: 0.4),
-            width: isSelected ? 1.5 : 1,
+                ? accentColor.withValues(alpha: 0.12)
+                : colors.surface.withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected
+                  ? accentColor.withValues(alpha: 0.6)
+                  : colors.border.withValues(alpha: 0.4),
+              width: isSelected ? 1.5 : 1,
+            ),
           ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected
-                ? accentColor
-                : colors.textSecondary.withValues(alpha: 0.7),
-            fontSize: 11,
-            fontWeight:
-                isSelected ? FontWeight.w800 : FontWeight.w500,
-            letterSpacing: 0.3,
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isSelected
+                  ? accentColor
+                  : colors.textSecondary.withValues(alpha: 0.7),
+              fontSize: 11,
+              fontWeight:
+                  isSelected ? FontWeight.w800 : FontWeight.w500,
+              letterSpacing: 0.3,
+            ),
           ),
         ),
       ),

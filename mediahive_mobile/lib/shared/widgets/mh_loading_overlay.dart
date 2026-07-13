@@ -37,7 +37,7 @@ class MhLoadingOverlay extends ConsumerWidget {
               children: [
                 // Rotating Logo
                 Image.asset(
-                  'assets/images/logo.png',
+                  'assets/images/logo_3d.png',
                   width: 100,
                   height: 100,
                 )

@@ -347,7 +347,7 @@ class TaskItemTile extends ConsumerWidget {
     if (dateStr == null || dateStr.isEmpty) return 'No Date';
     try {
       final date = DateTime.parse(dateStr);
-      return DateFormat('dd-MM-yyyy').format(date);
+      return DateFormat.yMMMd().format(date);
     } catch (e) {
       return dateStr;
     }

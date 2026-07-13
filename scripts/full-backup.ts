@@ -35,7 +35,9 @@ const tables = [
   'invites',
   'task_assignments',
   'leave_requests',
-  'user_leave_balances'
+  'user_leave_balances',
+  'attendance',
+  'nfc_tags'
 ];
 
 async function backup() {

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -58,7 +59,7 @@ class SystemHealthScreen extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.xl),
               
-              // Fetch the profile state
+              if (kDebugMode)
               ref.watch(currentUserProfileProvider).maybeWhen(
                 data: (profile) {
                   final rawRole = profile?['role'] as String? ?? 'member';

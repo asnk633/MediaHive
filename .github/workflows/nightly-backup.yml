@@ -13,13 +13,13 @@ jobs:
       TURSO_CONNECTION_URL: ${{ secrets.TURSO_CONNECTION_URL }}
       TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66dd77 # v4.1.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           cache: 'pnpm'
 
@@ -47,11 +47,17 @@ jobs:
           echo "BACKUP_FILE=${BACKUP_FILE}" >> $GITHUB_ENV
           echo "TIMESTAMP=${TIMESTAMP}" >> $GITHUB_ENV
 
-      - name: Upload backup as artifact
-        uses: actions/upload-artifact@v7
+      - name: Encrypt backup before upload
+        run: |
+          gpg --batch --symmetric --passphrase "${{ secrets.BACKUP_ENCRYPTION_PASSPHRASE }}" \
+            --output backups/${{ env.BACKUP_FILE }}.gpg backups/${{ env.BACKUP_FILE }}
+          rm backups/${{ env.BACKUP_FILE }}
+
+      - name: Upload encrypted backup as artifact
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec7 # v4.6.2
         with:
-          path: backups/${{ env.BACKUP_FILE }}
-          retention-days: 30 # Keep backups for 30 days
+          path: backups/${{ env.BACKUP_FILE }}.gpg
+          retention-days: 7 # Reduced from 30 days
 
       - name: Cleanup old backups (local)
         run: |

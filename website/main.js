@@ -1,17 +1,20 @@
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import GUI from 'lil-gui';
 
 
 // Register GSAP ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
+window.ScrollTrigger = ScrollTrigger;
 
 // Initialize RectAreaLightUniformsLib for RectAreaLight support in MeshStandardMaterial
 RectAreaLightUniformsLib.init();
@@ -798,7 +801,68 @@ function setupAnimations() {
           }
         }
 
-      }
+        // Drive the Blender keyframe animation mixer in sync with the scroll progress.
+        if (window.MediaHive_Mixer) {
+          const duration   = window.MediaHive_ClipDuration  || 8.333;
+          // CLAMP: The Blender clip continues past the "laptop fully open" frame into
+          // an unwanted lid-close + aerial camera-swing. We freeze the mixer at the
+          // "peak open" time so the last ~600px of the hero pin hold the good frame.
+          // window.MediaHive_ClipFreezeTime can be overridden from the browser console
+          // to tune the exact freeze point without a code change.
+          const freezeAt   = window.MediaHive_ClipFreezeTime ?? (duration * 0.84);
+          const mixerTarget = Math.min(p * duration, freezeAt);
+          window.MediaHive_Mixer.setTime(mixerTarget);
+        }
+
+        // ─── SCROLL DEBUG HUD ─── toggle visibility with Shift+H
+        let hud = document.getElementById('mh-scroll-hud');
+        if (!hud) {
+          hud = document.createElement('div');
+          hud.id = 'mh-scroll-hud';
+          Object.assign(hud.style, {
+            position: 'fixed', top: '12px', right: '12px', zIndex: '99999',
+            background: 'rgba(0,0,0,0.85)', color: '#00ff88',
+            fontFamily: 'monospace', fontSize: '12px', lineHeight: '1.75',
+            padding: '10px 14px', borderRadius: '8px',
+            border: '1px solid rgba(0,255,136,0.3)',
+            backdropFilter: 'blur(6px)', pointerEvents: 'none', minWidth: '210px',
+          });
+          document.body.appendChild(hud);
+          // Shift+H toggles the HUD
+          document.addEventListener('keydown', (e) => {
+            if (e.shiftKey && e.key === 'H') hud.style.display = hud.style.display === 'none' ? 'block' : 'none';
+          });
+        }
+        const mixerTime  = window.MediaHive_Mixer ? window.MediaHive_Mixer.time.toFixed(3) : 'N/A';
+        const clipDur    = window.MediaHive_ClipDuration  ? window.MediaHive_ClipDuration.toFixed(3)  : '?';
+        const freezeAt   = window.MediaHive_ClipFreezeTime;
+        const freezeDisp = freezeAt != null ? freezeAt.toFixed(3) + 's' : '~84%';
+        const scrollY    = Math.round(window.scrollY);
+        const totalH     = document.documentElement.scrollHeight - window.innerHeight;
+        hud.innerHTML = `
+          <div style="color:#fff;font-weight:bold;margin-bottom:4px">📜 Scroll HUD <span style="color:#555;font-size:10px">(Shift+H)</span></div>
+          <div>Progress : <b style="color:#00ff88">${p.toFixed(4)}</b></div>
+          <div>Percent  : <b style="color:#00ff88">${(p * 100).toFixed(1)}%</b></div>
+          <div>ScrollY  : <b style="color:#ffcc00">${scrollY}px</b></div>
+          <div>MaxScroll: <b style="color:#aaa">${totalH}px</b></div>
+          <div>Mixer t  : <b style="color:#88ccff">${mixerTime}s</b></div>
+          <div>ClipDur  : <b style="color:#cc88ff">${clipDur}s</b></div>
+          <div>FreezeAt : <b style="color:#ff88aa">${freezeDisp}</b></div>
+          <div>Direction: <b style="color:#ff8844">${self.direction > 0 ? '▼ down' : '▲ up'}</b></div>
+        `;
+        // ─── END SCROLL DEBUG HUD ───
+      },
+      onLeaveBack: () => {
+        // Hard-reset every scroll-driven element to its initial hidden state
+        // so none of them get stranded when the user scrolls all the way back to the top.
+        gsap.set('#desktop-overlay', { opacity: 0, x: -50, pointerEvents: 'none', visibility: 'hidden' });
+        const finalMsg = document.querySelector('.chaos-message.final');
+        if (finalMsg) gsap.set(finalMsg, { opacity: 0, scale: 1, y: 0 });
+        const svgEl = document.getElementById('text-hover-svg');
+        if (svgEl) gsap.set(svgEl, { opacity: 0, scale: 0.85, y: 30 });
+        const heroTextOverlay = document.getElementById('hero-text-container') || document.getElementById('hero-text-overlay');
+        if (heroTextOverlay) heroTextOverlay.style.opacity = '1';
+      },
     }
   });
 
@@ -856,169 +920,42 @@ function setupAnimations() {
     0.057
   );
 
-  // Desktop overlay appears at 2700px / 0.771 progress
+  // Desktop overlay appears at 2700px / 0.771 progress and slides in from the left.
+  // Using fromTo so GSAP's scrub reversal has an explicit hidden from-state to return to.
   scrollTimeline
-    .to('#desktop-overlay', {
-      opacity: 1,
-      x: 0,
-      duration: 0.16,
-      ease: 'power1.out',
-      onStart: () => gsap.set('#desktop-overlay', { pointerEvents: 'auto', visibility: 'visible' }),
-      onReverseComplete: () => gsap.set('#desktop-overlay', { pointerEvents: 'none', visibility: 'hidden' })
-    }, 0.771);
-
-  // --- Hero Background Sequence Animation ---
-  const bgCanvas = document.getElementById('hero-bg-canvas');
-  const frameNames = [
-    "00000", "00007", "00013", "00020", "00027", "00034", "00040", "00047", "00054", "00061",
-    "00067", "00074", "00081", "00087", "00094", "00101", "00108", "00114", "00121", "00128",
-    "00134", "00141", "00148", "00155", "00161", "00168", "00175", "00182", "00188", "00195"
-  ];
-  let renderBgFrame = () => {};
-
-  if (bgCanvas) {
-    const bgCtx = bgCanvas.getContext('2d');
-    
-    const resizeBgCanvas = () => {
-      bgCanvas.width = window.innerWidth;
-      bgCanvas.height = window.innerHeight;
-      if (typeof sequence !== 'undefined') renderBgFrame(sequence.frame);
-    };
-    window.addEventListener('resize', resizeBgCanvas);
-    bgCanvas.width = window.innerWidth;
-    bgCanvas.height = window.innerHeight;
-
-    const images = [];
-    let imagesLoaded = 0;
-    
-    for (let i = 0; i < frameNames.length; i++) {
-      const img = new Image();
-      img.src = `/images/frames/${i + 1}.png`;
-      images.push(img);
-      img.onload = () => {
-        imagesLoaded++;
-        if (imagesLoaded === 1) renderBgFrame(0);
-      };
-    }
-
-    renderBgFrame = (index) => {
-      if (!images[index] || !images[index].complete || images[index].naturalWidth === 0) return;
-      
-      const img = images[index];
-      const canvasRatio = bgCanvas.width / bgCanvas.height;
-      const imgRatio = img.width / img.height;
-      let drawWidth, drawHeight, offsetX = 0, offsetY = 0;
-      
-      if (imgRatio > canvasRatio) {
-        drawHeight = bgCanvas.height;
-        drawWidth = img.width * (bgCanvas.height / img.height);
-        offsetX = (bgCanvas.width - drawWidth) / 2;
-      } else {
-        drawWidth = bgCanvas.width;
-        drawHeight = img.height * (bgCanvas.width / img.width);
-        offsetY = (bgCanvas.height - drawHeight) / 2;
-      }
-      
-      bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-      bgCtx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    };
-  }
-
-  // --- Hero Laptop 3D Animation ---
-  const heroCanvas = document.getElementById('hero-laptop-canvas');
-  if (heroCanvas) {
-    let heroModelGroup = null;
-    
-    initDevice('hero-laptop-canvas', '/models/macbook_pro_14_inch_M5.glb', 2.4, () => createVideoTexture('/video/laptop-demo.mp4'), { 
-      skipScrollTrigger: true,
-      rotateX: 0.1,
-      rotateY: -0.5,
-      onModelLoaded: (group) => {
-        heroModelGroup = group;
-      }
-    });
-
-    const sequence = { frame: 0 };
-    const laptopAnim = { p: 0 };
-
-    if (bgCanvas) bgCanvas.style.opacity = 1;
-    if (heroCanvas) heroCanvas.style.opacity = 0;
-
-    // 1. Background Sequence Animation (scrubs up to progress 0.75)
-    scrollTimeline.to(sequence, {
-      frame: frameNames.length - 1,
-      snap: "frame",
-      duration: 0.75, 
-      ease: "none",
-      onUpdate: function() {
-        if (bgCanvas) renderBgFrame(sequence.frame);
-      }
-    }, 0);
-
-    // Logo styling initial setup
-    const logoOverlayEl = document.getElementById('hero-logo-overlay');
-    if (logoOverlayEl) {
-      logoOverlayEl.style.display = 'none';
-      logoOverlayEl.style.opacity = 0;
-    }
-
-    // 2. Fade out background sequence, bottom gradient, and dark horizon glow (starts at 0.65, fully transparent by 0.75)
-    if (bgCanvas) {
-      scrollTimeline.to(bgCanvas, {
-        opacity: 0,
-        duration: 0.10, 
-        ease: "none"
-      }, 0.65);
-    }
-
-    const bottomFadeEl = document.getElementById('hero-bottom-fade');
-    if (bottomFadeEl) {
-      scrollTimeline.to(bottomFadeEl, {
-        opacity: 0,
-        duration: 0.10,
-        ease: "none"
-      }, 0.65);
-    }
-
-    const darkGlowEl = document.getElementById('hero-dark-glow');
-    if (darkGlowEl) {
-      scrollTimeline.to(darkGlowEl, {
-        opacity: 0,
-        duration: 0.10,
-        ease: "none"
-      }, 0.65);
-    }
-
-    // 3. Fade in 3D Laptop (starts at 0.65, fully visible by 0.75)
-    if (heroCanvas) {
-      scrollTimeline.to(heroCanvas, {
+    .fromTo('#desktop-overlay',
+      { opacity: 0, x: -50, y: 0, visibility: 'hidden' },
+      {
         opacity: 1,
-        duration: 0.10, 
-        ease: "none"
-      }, 0.65);
-    }
+        x: 0,
+        y: 0,
+        visibility: 'visible',
+        duration: 0.11,
+        ease: 'power1.out',
+        onStart: () => gsap.set('#desktop-overlay', { pointerEvents: 'auto' }),
+        onReverseComplete: () => gsap.set('#desktop-overlay', { pointerEvents: 'none', visibility: 'hidden', opacity: 0, x: -50, y: 0 })
+      }, 0.771)
+    .to('#desktop-overlay',
+      {
+        y: -window.innerHeight,
+        opacity: 0,
+        duration: 0.12,
+        ease: 'power2.in',
+        onComplete: () => gsap.set('#desktop-overlay', { pointerEvents: 'none', visibility: 'hidden' })
+      }, 0.88);
 
-    // 4. Laptop 3D Animation (starts at 0.65 and completes at 0.93)
-    scrollTimeline.to(laptopAnim, {
-      p: 1,
-      duration: 0.28,
-      ease: "power2.out",
-      onUpdate: function() {
-        if (heroModelGroup) {
-          const p = laptopAnim.p;
-          const isMobile = window.innerWidth < 1024;
-          heroModelGroup.position.y = isMobile 
-            ? -2.5 + (p * 2.8) 
-            : -4.2 + (p * 4.5);  
-          heroModelGroup.position.x = isMobile ? 0 : p * 0.65;
-          heroModelGroup.rotation.y = isMobile 
-            ? -0.5 + (p * 0.5)
-            : -0.8 + (p * 0.8); 
-          heroModelGroup.rotation.x = 0.5 - (p * 0.4);  
-        }
-      }
-    }, 0.65);
+  // Scroll the 3D canvas upward out of view (instead of fading) in sync with the tablet section
+  const deskCanvas = document.getElementById('desk-awakening-canvas');
+  if (deskCanvas) {
+    scrollTimeline
+      .fromTo(deskCanvas,
+        { y: 0 },
+        { y: -window.innerHeight, duration: 0.12, ease: 'power2.in' },
+        0.88);
   }
+
+  // Expose the master scrollTimeline globally so other modules can sync with it
+  window.MediaHive_ScrollTimeline = scrollTimeline;
 }
 
 
@@ -1036,733 +973,902 @@ function setupAnimations() {
 // ==========================================================================
 function initDeskAwakening() {
   const canvas = document.getElementById('desk-awakening-canvas');
-  const vignette = document.getElementById('desk-loop-vignette');
   if (!canvas) return;
 
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
-  // WebGL Renderer with context safety
+  // --- 1. SceneManager Setup ---
   let renderer;
+  let mixer = null;
+  let animations = [];
   try {
     renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isMobile, powerPreference: 'high-performance' });
   } catch (err) {
-    console.warn('[DeskAwakening] WebGL context creation failed:', err);
     return;
   }
-
-  renderer.setPixelRatio(isMobile ? 1.0 : Math.min(window.devicePixelRatio, 1.0));
-  renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight, false);
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFShadowMap;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.8;
+  // Set toneMappingExposure to 1.05 for enhanced visibility while keeping rich contrast
+  renderer.toneMappingExposure = 1.05;
 
-  let rafId = null;
-  let particleMat = null;
-  let laptopVideoElement = null;
-  canvas.addEventListener('webglcontextlost', (e) => {
-    e.preventDefault();
-    if (rafId) cancelAnimationFrame(rafId);
-    rafId = null;
-    console.warn('[DeskAwakening] WebGL context lost.');
-  }, false);
-  canvas.addEventListener('webglcontextrestored', () => {
-    console.log('[DeskAwakening] WebGL context restored, reinitializing.');
-    startRenderLoop();
-  }, false);
+
 
   const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x050319, 0.035);
+  let camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.set(2.49, 14.07, 0.22); 
+  const globalLookAt = new THREE.Vector3(2.49, -5.4, 0.22); 
 
-  // Camera â€” 3/4 elevated view
-  const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-  camera.position.set(3.8, 3.0, 5.8);
-  camera.lookAt(0, 0.4, 0);
+  // Background starts as null (transparent) to blend canvas with page CSS background
+  scene.background = null;
+  scene.environment = null; // Will be set to PMREM RoomEnvironment below for soft IBL
 
-  // 1. Hemisphere fill light â€” bright enough to see the desk clearly
-  const hemiLight = new THREE.HemisphereLight(0xffffff, 0x443322, 1.8);
-  scene.add(hemiLight);
-
-  // 2. Main key light from above-right
-  const keyLight = new THREE.DirectionalLight(0xfff4e0, 3.5);
-  keyLight.position.set(4, 10, 6);
-  keyLight.castShadow = true;
-  const shadowMapSize = isMobile ? 1024 : 2048;
-  keyLight.shadow.mapSize.width = shadowMapSize;
-  keyLight.shadow.mapSize.height = shadowMapSize;
-  keyLight.shadow.camera.near = 0.5;
-  keyLight.shadow.camera.far = 30;
-  keyLight.shadow.camera.left = -8;
-  keyLight.shadow.camera.right = 8;
-  keyLight.shadow.camera.top = 8;
-  keyLight.shadow.camera.bottom = -8;
-  keyLight.shadow.bias = -0.001;
-  keyLight.shadow.radius = 3;
-  scene.add(keyLight);
-
-  // 3. Fill light from left
-  const fillLight = new THREE.DirectionalLight(0xd0e8ff, 1.5);
-  fillLight.position.set(-5, 5, 3);
-  scene.add(fillLight);
-
-  // 4. Warm under-fill
-  const warmFill = new THREE.PointLight(0xffe8c0, 1.2, 20);
-  warmFill.position.set(2, 2, 5);
-  scene.add(warmFill);
-
-  // 5. Screen glow (starts off, animated in by GSAP)
-  const screenRimLight = new THREE.PointLight(0x6699ff, 0, 8);
-  screenRimLight.position.set(0, 1.2, 0.5);
-  scene.add(screenRimLight);
-
-  // Shadow catcher below desk (invisible, only receives shadows)
-  const floorPlane = new THREE.Mesh(
-    new THREE.PlaneGeometry(50, 50),
-    new THREE.ShadowMaterial({ opacity: 0.25 })
+  // --- Post-Processing: subtle bloom for the laptop screen glow ---
+  // (must be created after scene and camera are declared)
+  const composer = new EffectComposer(renderer);
+  let renderPass = new RenderPass(scene, camera);
+  composer.addPass(renderPass);
+  const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    0.40,  // strength — beautiful glow in the dark moody scene
+    0.5,   // radius
+    0.85   // threshold — slightly lower to capture emissive details nicely
   );
-  floorPlane.rotation.x = -Math.PI / 2;
-  floorPlane.position.y = -0.07; // just below the desk surface
-  floorPlane.receiveShadow = true;
-  scene.add(floorPlane);
+  composer.addPass(bloomPass);
 
-  // Desk Surface (procedural wood grain texture)
-  function createWoodTexture() {
-    const c = document.createElement('canvas');
-    c.width = 512; c.height = 512;
-    const ctx = c.getContext('2d');
-    ctx.fillStyle = '#3b1e0a';
-    ctx.fillRect(0, 0, 512, 512);
-    for (let i = 0; i < 80; i++) {
-      const y = (i / 80) * 512;
-      const wave = Math.sin(i * 0.8) * 6;
-      ctx.beginPath();
-      ctx.moveTo(0, y + wave);
-      for (let x = 0; x < 512; x += 4) {
-        ctx.lineTo(x, y + Math.sin(x * 0.02 + i * 0.5) * 4 + wave);
-      }
-      const light = i % 5 === 0 ? '#a0622a' : '#5c2c0c';
-      ctx.strokeStyle = light;
-      ctx.globalAlpha = 0.04 + Math.random() * 0.08;
-      ctx.lineWidth = 1 + Math.random() * 2;
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-    for (let k = 0; k < 4; k++) {
-      const kx = 60 + Math.random() * 400;
-      const ky = 60 + Math.random() * 400;
-      const grad = ctx.createRadialGradient(kx, ky, 0, kx, ky, 18);
-      grad.addColorStop(0, 'rgba(20,8,2,0.5)');
-      grad.addColorStop(1, 'rgba(20,8,2,0)');
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.ellipse(kx, ky, 18, 10, Math.random(), 0, Math.PI * 2);
-      ctx.fill();
-    }
-    const tex = new THREE.CanvasTexture(c);
-    tex.wrapS = THREE.RepeatWrapping;
-    tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(3, 1);
-    return tex;
-  }
+  // ==========================================================================
+  // === LIGHTING: Matched to Blender source lights + IBL environment       ===
+  // ==========================================================================
+  // FIX Issue 2: The Blender scene uses a forest.exr HDRI world for soft IBL.
+  // Three.js approximation: RoomEnvironment PMREMGenerator gives soft diffuse
+  // fill on all PBR surfaces. We use default RoomEnvironment for clean, neutral, realistic reflections.
+  const pmremGenerator = new THREE.PMREMGenerator(renderer);
+  pmremGenerator.compileEquirectangularShader();
+  const roomEnv = pmremGenerator.fromScene(new RoomEnvironment()).texture;
+  scene.environment = roomEnv;   // IBL: soft omnidirectional fill on all PBR surfaces
+  scene.background = null;
+  pmremGenerator.dispose();
 
-  // Main Scene Group for Mouse Parallax (ALL objects go here)
+  // Desk centre in Three.js world space (all lights target here)
+  const deskCenter = new THREE.Vector3(6.25, 6.10, 0.82);
+
+  // 1. KEY LIGHT — Directional Light with soft shadow mapping.
+  //    Color matches Blender Key_Light warm sun-ray tone.
+  const keyLight = new THREE.DirectionalLight(0xfff4e0, 0.70);
+  keyLight.position.set(4, 10, 6);
+  keyLight.target.position.copy(deskCenter);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.width = isMobile ? 1024 : 2048;
+  keyLight.shadow.mapSize.height = isMobile ? 1024 : 2048;
+  keyLight.shadow.camera.near = 1;
+  keyLight.shadow.camera.far = 40;
+  keyLight.shadow.camera.left   = -10;
+  keyLight.shadow.camera.right  =  10;
+  keyLight.shadow.camera.top    =  10;
+  keyLight.shadow.camera.bottom = -10;
+  keyLight.shadow.bias = -0.0005;
+  keyLight.shadow.radius = 4;
+  scene.add(keyLight);
+  scene.add(keyLight.target);
+
+  // 2. FILL LIGHT — Soft blue-white from upper-left to fill shadows.
+  const fillLight = new THREE.DirectionalLight(0x88bbff, 0.22);
+  fillLight.position.set(-4, 8, 4);
+  fillLight.target.position.copy(deskCenter);
+  scene.add(fillLight);
+  scene.add(fillLight.target);
+
+  // 3. RIM LIGHT — Backlight highlighting edges of keyboard/mouse.
+  const rimLight = new THREE.DirectionalLight(0xffffff, 0.35);
+  rimLight.position.set(0, 5, -8);
+  rimLight.target.position.copy(deskCenter);
+  scene.add(rimLight);
+  scene.add(rimLight.target);
+
+  // 5. AMBIENT LIGHT — Soft ambient fill to soften shadows and make desk texture visible
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+  scene.add(ambientLight);
+
+  // 4. Screen glow PointLight — blue glow from screen, start at 0.0 intensity
+  const screenGlow = new THREE.PointLight(0x4488ff, 0.0, 8, 1.5);
+  screenGlow.position.set(6.25, 7.5, 0.82); // positioned above laptop
+  scene.add(screenGlow);
+
+
+  // --- 2. GLTFModelLoader Setup ---
+  const loadingManager = new THREE.LoadingManager();
+  loadingManager.onProgress = (url, loaded, total) => {
+     const pct = Math.round((loaded/total)*100);
+     const bar = document.querySelector('.preloader-progress');
+     if(bar) bar.style.width = pct + '%';
+  };
+  loadingManager.onLoad = () => {
+     const preloader = document.getElementById('cinematic-preloader');
+     if(preloader) {
+        preloader.style.opacity = '0';
+        setTimeout(() => preloader.style.display = 'none', 500);
+     }
+  };
+
+  const loader = new GLTFLoader(loadingManager);
   const sceneGroup = new THREE.Group();
   scene.add(sceneGroup);
-  globalDeskSceneGroup = sceneGroup;
-
-  // ── 1. Interactive GPU Particles (Colorful Dust) ───────────────────────────
-  const particleCount = isMobile ? 1200 : 3500;
-  const particleGeo = new THREE.BufferGeometry();
-  const positions = new Float32Array(particleCount * 3);
-  const randoms = new Float32Array(particleCount * 3);
-  for (let i = 0; i < particleCount * 3; i += 3) {
-    positions[i] = (Math.random() - 0.5) * 16.0;
-    positions[i + 1] = Math.random() * 8.0 - 1.0;
-    positions[i + 2] = -Math.random() * 10.0 - 2.0; // strictly behind desk/screen on Z axis
-
-    randoms[i] = Math.random();
-    randoms[i + 1] = Math.random();
-    randoms[i + 2] = Math.random();
-  }
-  particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  particleGeo.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 3));
-
-  function createParticleTexture() {
-    const c = document.createElement('canvas');
-    c.width = 16; c.height = 16;
-    const ctx = c.getContext('2d');
-    const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
-    grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    grad.addColorStop(0.3, 'rgba(220, 200, 255, 0.7)');
-    grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    ctx.fillStyle = grad; ctx.fillRect(0, 0, 16, 16);
-    return new THREE.CanvasTexture(c);
-  }
-  const particleTex = createParticleTexture();
-
-  particleMat = new THREE.ShaderMaterial({
-    uniforms: {
-      uTime: { value: 0 },
-      uTexture: { value: particleTex },
-      uParticleSize: { value: isMobile ? 25.0 : 45.0 },
-      uFlowIntensity: { value: 0.2 }
-    },
-    vertexShader: `
-      uniform float uTime;
-      uniform float uParticleSize;
-      uniform float uFlowIntensity;
-      attribute vec3 aRandom;
-      varying vec3 vColor;
-      varying float vAlpha;
-      void main() {
-        vec3 pos = position;
-        // Swirling harmonic motion (fluid flow simulation)
-        pos.x += sin(uTime * 0.45 + pos.z * 0.4 + aRandom.x * 6.28) * uFlowIntensity * 1.3;
-        pos.y += cos(uTime * 0.35 + pos.x * 0.4 + aRandom.y * 6.28) * uFlowIntensity * 0.9;
-        pos.z += sin(uTime * 0.50 + pos.y * 0.4 + aRandom.z * 6.28) * uFlowIntensity * 1.3;
-
-        vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-        gl_Position = projectionMatrix * mvPosition;
-        gl_PointSize = uParticleSize / -mvPosition.z;
-
-        // Dynamic multi-hued particles based on design system
-        if (aRandom.x < 0.35) {
-          vColor = vec3(0.42, 0.24, 0.96); // primary purple #6C3EF4
-        } else if (aRandom.x < 0.68) {
-          vColor = vec3(0.0, 0.94, 1.0);  // neon cyan #00f0ff
-        } else {
-          vColor = vec3(0.96, 0.65, 0.14); // accent amber #F5A623
-        }
-
-        vAlpha = 0.4 + 0.4 * sin(uTime * 0.3 + aRandom.z * 6.28);
-      }
-    `,
-    fragmentShader: `
-      uniform sampler2D uTexture;
-      varying vec3 vColor;
-      varying float vAlpha;
-      void main() {
-        vec4 texColor = texture2D(uTexture, gl_PointCoord);
-        if (texColor.a < 0.05) discard;
-        gl_FragColor = vec4(vColor, texColor.a * vAlpha * 0.7);
-      }
-    `,
-    transparent: true,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false
-  });
-
-  const particles = new THREE.Points(particleGeo, particleMat);
-  scene.add(particles);
-
-
-  // ── Wooden Desk Table (real GLB model) ─────────────────────────────────
-  let deskMesh = null;
-  const tableLoader = new GLTFLoader();
-  tableLoader.load('/models/wooden_table.glb', (gltf) => {
-    deskMesh = gltf.scene;
-    globalDeskMesh = deskMesh;
-    // Rotate the table to align wood grain and orient correctly
-    deskMesh.rotation.y = Math.PI / 2;
-    
-    // Scale up to cover the viewport width
-    const tableBbox = new THREE.Box3().setFromObject(deskMesh);
-    const tableSz = new THREE.Vector3();
-    tableBbox.getSize(tableSz);
-    const tableScale = 24.0 / tableSz.x;
-    deskMesh.scale.setScalar(tableScale);
-
-    // Position so top surface is at y = 0
-    tableBbox.setFromObject(deskMesh);
-    deskMesh.position.set(0, -tableBbox.max.y, 0.5);
-
-    deskMesh.traverse((child) => {
-      if (child.isMesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-    });
-    sceneGroup.add(deskMesh);
-  }, undefined, (err) => {
-    console.warn('[DeskAwakening] Failed to load wooden_table.glb:', err);
-    // Fallback: plain dark wooden box if GLB fails
-    const woodTex = createWoodTexture();
-    deskMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(12, 0.12, 8),
-      new THREE.MeshStandardMaterial({ map: woodTex, roughness: 0.7, metalness: 0.0 })
-    );
-    globalDeskMesh = deskMesh;
-    deskMesh.position.set(0, -0.06, 0.5);
-    deskMesh.receiveShadow = true;
-    sceneGroup.add(deskMesh);
-  });
-
-
-  // â”€â”€ 4. Laptop GLTF Loading & Setup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  const laptopGroup = new THREE.Group();
-  sceneGroup.add(laptopGroup);
 
   let laptopLid = null;
-  let lidPivot = null;
+  let screenMesh = null;
+  let plantObj = null;
+  let logoMeshesToHide = [];
+  let logoMeshesToBlend = [];
+  let clutterObjects = [];
+  let laptopVideoElement = null;
+  let laptopVideoTexture = null;
+
+  const materials = {
+     'macBook-mockup': new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.2, metalness: 0.9 }),
+     'desk': new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.7, metalness: 0.2 }),
+     'clutter': new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.4, metalness: 0.1 }),
+  };
+  
+  // Screen material — starts emissive at 1.2 so the blue glow is visible from frame 1
   const screenMat = new THREE.MeshStandardMaterial({
-    color: 0x000000,
+    color: 0xffffff,
     emissive: new THREE.Color(0xffffff),
     emissiveIntensity: 0.0,
-    roughness: 0.08,
-    metalness: 0.2,
-    transparent: true,
-    opacity: 1
+    roughness: 0.9,
+    metalness: 0.0,
+    envMapIntensity: 0.0,
+    side: THREE.DoubleSide
   });
 
-  const deskLoader = new GLTFLoader();
-  deskLoader.load('/models/macbook_pro_14_inch_M5.glb', (gltf) => {
+  loader.load('/animated_mockup_macbook_pro.glb?v=99', (gltf) => {
     const model = gltf.scene;
-    const bbox = new THREE.Box3().setFromObject(model);
+    
+    let bbox = new THREE.Box3();
+    model.traverse((child) => {
+       if (child.name.toLowerCase().includes('macbook')) {
+           bbox.expandByObject(child);
+       }
+    });
+    if(bbox.isEmpty()) bbox.setFromObject(model);
+
     const sz = new THREE.Vector3();
     bbox.getSize(sz);
-    const scale = 1.95 / Math.max(sz.x, sz.y, sz.z);
+    const scale = 1.0;
     model.scale.setScalar(scale);
-
-    bbox.setFromObject(model);
-    const center = new THREE.Vector3();
-    bbox.getCenter(center);
-    model.position.set(-center.x, -bbox.min.y, -center.z);
-
-    model.traverse((child) => {
-      if (child.name === 'RcexTyyhpuJYATQ') {
-        laptopLid = child;
-      }
-
-      if (!child.isMesh) return;
-      child.castShadow = true;
-      child.receiveShadow = true;
-      if (child.material) child.material.envMapIntensity = 0.6;
-
-      const name = child.name.toLowerCase();
-      const matName = child.material?.name?.toLowerCase() ?? '';
-      const isScreen =
-        name === 'tftbkkzhxqpkrgc' || matName === 'hlqwfcapwzetdqy' ||
-        name.includes('screen') || name.includes('display');
-
-      if (isScreen) {
-        const videoTex = createVideoTexture('/video/laptop-demo.mp4');
-        laptopVideoElement = videoTex.userData.video;
-        screenMat.map = videoTex;
-        screenMat.emissiveMap = videoTex;
-        child.material = screenMat;
-        if (!laptopLid) {
-          let cur = child.parent;
-          for (let d = 0; d < 6 && cur && cur !== model; d++) {
-            if (cur.children.length > 2) { laptopLid = cur; break; }
-            cur = cur.parent;
-          }
-          if (!laptopLid) laptopLid = child.parent ?? model;
-        }
-      }
-    });
-
+    
     model.updateMatrixWorld(true);
 
-    if (laptopLid) {
-      lidPivot = new THREE.Group();
-      lidPivot.name = "lidPivot";
+    bbox = new THREE.Box3();
+    model.traverse((child) => {
+       if (child.name.toLowerCase().includes('macbook')) {
+           bbox.expandByObject(child);
+       }
+    });
+    if(bbox.isEmpty()) bbox.setFromObject(model);
+
+    const center = new THREE.Vector3();
+    bbox.getCenter(center);
+    model.position.set(0, 0, 0);
+    
+    console.log(`[3D Setup] Model scale: ${scale}`);
+    console.log(`[3D Setup] Model bounding box size: ${sz.x}, ${sz.y}, ${sz.z}`);
+    console.log(`[3D Setup] Model centered at: ${-center.x}, ${-center.y}, ${-center.z}`);
+
+    model.traverse((child) => {
+      const lowerName = (child.name || '').toLowerCase();
+      if (lowerName.includes('aqdtiijfiakvckx') || lowerName.includes('znrfbdnyocoxsdd')) {
+         console.log('[DEBUG] Hiding Apple logo by name:', child.name);
+         child.visible = false;
+         child.scale.set(0, 0, 0);
+         return;
+      }
       
-      const parentNode = model.getObjectByName('nIhhmAXgzOpXafM');
-      if (parentNode) {
-        // Place the pivot at the hinge line relative to parent node
-        lidPivot.position.set(0, -11.46, -0.42);
-        parentNode.add(lidPivot);
-        
-        // Remove lid from parent and add to pivot
-        laptopLid.parent.remove(laptopLid);
-        lidPivot.add(laptopLid);
-        
-        // Apply optimal calibrated values to ensure flush fit when closed and zero distortion when open
-        const scaleY = 1.0617;
-        const scaleZ = 1.028;
-        const posZOffset = -0.060;
-        
-        laptopLid.scale.set(1.0, scaleY, scaleZ);
-        laptopLid.position.set(0, 11.46 * scaleY, 0.42 * scaleZ + posZOffset);
-        
-        console.log(`[3D Setup] Landing page laptop calibrated using optimal pre-sets: scaleY=${scaleY}, scaleZ=${scaleZ}, posZOffset=${posZOffset}`);
+      if (child.isMesh && child.material) {
+         const mats = Array.isArray(child.material) ? child.material : [child.material];
+         const hasLogoMat = mats.some(m => {
+           const mn = (m.name || '').toLowerCase();
+           return mn.includes('znrfbdnyocoxsdd') || mn.includes('logo-plate');
+         });
+         if (hasLogoMat) {
+           console.log('[DEBUG] Hiding Apple logo by material:', child.name);
+           child.visible = false;
+           child.scale.set(0, 0, 0);
+           return;
+         }
+      }
+      // if (child.name.toLowerCase().includes('floor') || child.name.toLowerCase().includes('wall')) {
+      //     child.visible = false;
+      // }
+      if (!child.isMesh) return;
+      // Wall/acoustic panels must NOT cast shadows — they produce a hard diagonal band
+      // across the desk that doesn't appear in the Blender reference render.
+      // Applied in BOTH traversals (Traverse #1 and #2) to prevent ordering bugs.
+      const _cn1 = child.name.toLowerCase();
+      if (_cn1.includes('wall') || _cn1.includes('acoustic')) {
+        child.castShadow = false;
       } else {
-        console.warn("[3D Setup] Could not find parentNode nIhhmAXgzOpXafM for laptop lid pivot creation.");
+        child.castShadow = true;
       }
-    } else {
-      console.warn("[3D Setup] Could not find laptopLid for pivot calibration.");
-      laptopLid = model;
-    }
+      child.receiveShadow = true;
+      
+      const name = child.name.toLowerCase();
 
-    if (lidPivot) {
-      lidPivot.rotation.x = 1.91; // Initial closed state
-    } else {
-      laptopLid.rotation.x = 1.91;
-    }
-    laptopGroup.add(model);
-  });
-
-  // ── 4b. Desk Accessories Loading ──────────────────────────────────────────
-  const accessoryLoader = new GLTFLoader();
-  const accessories = [];
-
-  function loadAccessory(url, pos, rot, scale, name, flyDir) {
-    return new Promise((resolve) => {
-      accessoryLoader.load(url, (gltf) => {
-        const model = gltf.scene;
-        // Auto-scale to target size
-        const bbox = new THREE.Box3().setFromObject(model);
-        const sz = new THREE.Vector3();
-        bbox.getSize(sz);
-        const maxDim = Math.max(sz.x, sz.y, sz.z);
-        model.userData.maxDim = maxDim;
-        // Cap maxDim at 5.0 — photogrammetry / 3D-scan models often include
-        // background geometry, inflating their bbox to 50-500 units.
-        // Without this cap, scale / maxDim → near-zero → model invisible.
-        const s = Math.abs(scale) / maxDim;
-        model.scale.setScalar(s);
-
-        // Apply rotation BEFORE bbox measurement so rotated shape is correct
-        if (rot) model.rotation.set(rot[0], rot[1], rot[2]);
-
-        // Auto-snap: place model at origin, measure its bottom face,
-        // then lift so bottom sits at y = pos[1] (desk surface = 0).
-        // pos[1] is treated as desired height of item's bottom above desk.
-        model.position.set(0, 0, 0);
-        const snapBbox = new THREE.Box3().setFromObject(model);
-        const desiredFloor = Math.max(0, pos[1]); // clamp negative (can't sink below desk)
-        const computedY = desiredFloor - snapBbox.min.y;
-
-        model.position.set(pos[0], computedY, pos[2]);
-        model.userData.flyDir = flyDir || { x: 12, y: 0, z: 0 };
-
-        model.traverse((child) => {
-          if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
+      if (child.material) {
+        const isScreenName = name.includes('screen') || name.includes('tftbkkzhxqpkrgc') || name.includes('naiwmivetsydjdz') || name.includes('display');
+        const isExcluded = name.includes('border') || name.includes('metalic') || name.includes('frame') || name.includes('bezel') || name.includes('back');
+        
+        if (isScreenName && !isExcluded) {
+          screenMesh = child;
+          console.log('[SCREEN MESH FOUND]', child.name, 'parent:', child.parent?.name, 'isMultiMaterial:', Array.isArray(child.material));
+          
+          if (!laptopVideoTexture) {
+            laptopVideoTexture = createVideoTexture('/video/laptop-demo.mp4');
+            laptopVideoElement = laptopVideoTexture.userData.video;
+            laptopVideoElement.addEventListener('canplay', () => console.log('[VIDEO] canplay — frames ready'));
+            laptopVideoElement.addEventListener('playing', () => console.log('[VIDEO] playing'));
+            laptopVideoElement.addEventListener('error', (e) => console.error('[VIDEO] load error', e));
           }
-        });
+          
+          screenMat.color.set(0xffffff); // Stop killing the map
+          screenMat.map = laptopVideoTexture; // Map video to diffuse
+          screenMat.emissiveMap = laptopVideoTexture;
+          screenMat.emissive.set(0xffffff); // White so emissiveMap is not tinted
+          screenMat.emissiveIntensity = 0.4;
+          screenMat.needsUpdate = true;
+          
+          if (Array.isArray(child.material)) {
+            for (let i = 0; i < child.material.length; i++) {
+              const m = child.material[i];
+              const mName = (m.name || '').toLowerCase();
+              if (mName.includes('screen') || mName.includes('display') || mName.includes('glass') || mName.includes('tft') || mName.includes('lcd') || mName.includes('hlqwfcapwzetdqy')) {
+                child.material[i] = screenMat;
+                console.log(`[SCREEN MESH] Replaced material slot ${i} (${m.name}) on "${child.name}" with screenMat`);
+              } else {
+                m.needsUpdate = true;
+              }
+            }
+          } else {
+            child.material = screenMat;
+          }
+        } else {
+          if (Array.isArray(child.material)) {
+            child.material.forEach(m => { m.needsUpdate = true; });
+          } else {
+            child.material.needsUpdate = true;
+          }
+        }
+      }
 
-        model.name = name;
-        model.userData._origPos = [pos[0], computedY, pos[2]];
-        model.userData._origRot = rot ? [rot[0], rot[1], rot[2]] : [0, 0, 0];
-        model.userData._origScale = scale;
-        model.userData._url = url;
-        model.userData._name = name;
-        model.userData._flyDir = flyDir || { x: 12, y: 0, z: 0 };
-
-        sceneGroup.add(model);
-        accessories.push(model);
-        resolve(model);
-      }, undefined, (err) => {
-        console.warn(`[DeskAwakening] Failed to load accessory: ${name}`, err);
-        resolve(null);
-      });
+      let isTopLevelClutter = false;
+      let p = child;
+      while(p && p !== model) {
+         if (p.name.includes('Sketchfab_model') || (p.parent && p.parent.name === 'root')) {
+            isTopLevelClutter = true;
+            break;
+         }
+         p = p.parent;
+      }
+      
+      if (isTopLevelClutter && p && !p.name.toLowerCase().includes('macbook') && !p.name.toLowerCase().includes('table') && !p.name.toLowerCase().includes('desk') && !p.name.toLowerCase().includes('plane') && !clutterObjects.includes(p)) {
+         p.userData.flyDir = {
+           x: (Math.random() - 0.5) * 8,
+           y: Math.random() * 4 + 2,
+           z: (Math.random() - 0.5) * 8
+         };
+         clutterObjects.push(p);
+      }
     });
-  }
 
-  // pos[1] = desired height of item's BOTTOM above the desk surface (y=0).
-  // 0 = sitting on desk. Scale = visual size of the object.
-  // loadAccessory auto-snaps every item so its bottom face touches y=pos[1].
-  const accessoryPromises = [
-    loadAccessory('/models/simple_pc_mouse.glb', [1.600, 0, 2.008], [0.000, -0.300, 0.000], 0.610, 'PC Mouse', { x: 20, y: 0, z: 5.5 }),
-    loadAccessory('/models/usb_memory.glb', [1.380, 0, 0.270], [0.000, 0.500, 0.000], 0.210, 'USB Memory', { x: 20, y: 0, z: 3.5 }),
-    loadAccessory('/models/paper_lowpoly.glb', [-1.600, 0, 0.200], [0.000, 0.300, 0.000], 1.000, 'Paper Sheet', { x: -20, y: 0, z: 0.5 }),
-    loadAccessory('/models/paper%20with line.glb', [0.460, 0, -1.660], [1.593, 0.003, 0.851], 1.535, 'Lined Paper', { x: -18, y: 0, z: -2 }),
-    loadAccessory('/models/cup.glb', [-2.940, 0, 2.398], [0.000, 0.300, 0.000], 0.684, 'Coffee Cup', { x: -22, y: 0, z: 3.5 }),
-    loadAccessory('/models/crumpled_paper.glb', [-2.500, 0, 0.400], [0.200, 3.665, 0.100], 0.400, 'Crumpled Paper', { x: -22, y: 0, z: 1 }),
-    loadAccessory('/models/gopro_hero_8.glb', [2.250, 0, 2.400], [0.000, -0.500, 0.000], 0.500, 'GoPro Hero 8', { x: 20, y: 0, z: 4.5 }),
-    loadAccessory('/models/earphone.glb', [-2.990, 0, 1.210], [1.571, -0.175, -1.484], 1.010, 'Earphones', { x: -22, y: 0, z: 4.5 }),
-    loadAccessory('/models/a18eff8fc5334944b386d36c71fdce17.glb', [1.750, 0, -1.930], [0.611, -1.387, 1.856], 0.460, 'Note Memo', { x: 18, y: 0, z: -2 }),
-    loadAccessory('/models/pencil.glb', [1.720, 0, 0.990], [0.000, 1.200, 1.571], 0.760, 'Pencil', { x: 20, y: 0, z: 4.5 }),
-    loadAccessory('/models/sony_alpha_3.glb', [3.000, 0, -1.440], [0.000, 5.061, 0.000], 1.410, 'Sony Alpha Camera', { x: 22, y: 0, z: -3.5 }),
-    loadAccessory('/models/notebook_and_pen.glb', [2.870, 0, 0.500], [0.000, -0.698, 0.000], 1.360, 'Notebook & Pen', { x: 22, y: 0, z: 2 }),
-    loadAccessory('/models/thermos_-_hydration_bottle_24oz.glb', [-2.170, 0, -1.470], [0.000, 0.000, 0.000], 1.460, 'Thermos Flask', { x: -22, y: 0, z: -4.5 }),
-    loadAccessory('/models/dji_mavic3_classic_dji_drone.glb', [-4.390, 0, -1.410], [0.000, -5.498, 0.000], 1.800, 'DJI Mavic Drone', { x: -24, y: 0, z: -2 }),
-  ];
-  Promise.all(accessoryPromises).then(() => {
-    console.log('[DeskAwakening] All accessories loaded:', accessories.length);
-  });
+    model.traverse((child) => {  // Traverse #2 — AUTHORITATIVE pass for castShadow
+        if (child.isMesh) {
+           const _cn2 = child.name.toLowerCase();
+           
+           // Hide the leather desk mat/cushion completely so laptop sits directly on the wood desk
+           let isCushion = _cn2.includes('leathercushion') || _cn2.includes('cushion');
+           if (child.material) {
+              const checkMat = (m) => {
+                 const mn = m.name ? m.name.toLowerCase() : '';
+                 if (mn.includes('leathercushion') || mn.includes('cushion')) {
+                    isCushion = true;
+                 }
+              };
+              if (Array.isArray(child.material)) {
+                 child.material.forEach(checkMat);
+              } else {
+                 checkMat(child.material);
+              }
+           }
+           if (isCushion) {
+              child.visible = false;
+              return;
+           }
+
+           // Wall/acoustic panels: exclude from shadow casting to prevent hard diagonal band.
+           // This is Traverse #2 (runs LAST) so it is the authoritative final state.
+           if (_cn2.includes('wall') || _cn2.includes('acoustic')) {
+             child.castShadow = false;
+           } else {
+             child.castShadow = true;
+           }
+           
+           // Determine if this mesh belongs to the laptop to disable self-shadowing blackout
+           let isLaptop = false;
+           let parentNode = child;
+           while (parentNode) {
+              if (parentNode.name && (parentNode.name.toLowerCase().includes('macbook') || parentNode.name.toLowerCase().includes('laptop'))) {
+                 isLaptop = true;
+                 break;
+              }
+              parentNode = parentNode.parent;
+           }
+           
+           if (isLaptop) {
+              child.receiveShadow = false;
+           } else {
+              child.receiveShadow = true;
+           }
+           
+          if (child.material) {
+             const applyMat = (m) => {
+                 const matName = m.name ? m.name.toLowerCase() : '';
+                 if (matName.includes('znrfbdnyocoxsdd')) {
+                    console.log('[DEBUG] FOUND LOGO MATERIAL!', m.name, 'ON MESH:', child.name);
+                 }
+                 
+                 // Logging unique material names once (Condition 2)
+                if (m.name) {
+                   if (!window.MediaHive_LoggedMaterials) {
+                      window.MediaHive_LoggedMaterials = new Set();
+                   }
+                   if (!window.MediaHive_LoggedMaterials.has(m.name)) {
+                      window.MediaHive_LoggedMaterials.add(m.name);
+                      console.log(`[Material Traverse] Found material: "${m.name}"`);
+                   }
+                }
+
+                const isOpaque = matName.includes('desk') || matName.includes('concrete') || matName.includes('wall') || matName.includes('table');
+                
+                 if (isOpaque) {
+                     m.transparent = false;
+                     m.depthWrite = true;
+                  } else {
+                     const hasAlpha = m.opacity < 0.99 || m.alphaTest > 0 || m.alphaMode === 'BLEND' || m.alphaMode === 'MASK' || m.transparent === true;
+                     m.transparent = hasAlpha;
+                     m.depthWrite = !hasAlpha;
+                  }
+                
+                const mn = m.name ? m.name.toLowerCase() : '';
+                if (mn.includes('walnutdesk') || m.name === 'MH_WalnutDesk') {
+                   m.map = null;
+                   m.color.setHex(0x382c24); // Beautiful rich dark walnut tone
+                   m.roughness = 0.70;
+                   m.metalness = 0.05;
+                   m.needsUpdate = true;
+                } else if (mn.includes('leathercushion') || m.name === 'MH_LeatherCushion' || mn.includes('cushion')) {
+                   m.roughness = 0.85;
+                   m.metalness = 0.0;
+                   m.color.setHex(0x3a3a3a); // beautiful gray leather color, not pitch black
+                   if (m.map) m.map.colorSpace = THREE.SRGBColorSpace;
+                } else if (mn.includes('darkconcrete') || m.name === 'MH_DarkConcrete') {
+                   m.roughness = 0.95;
+                   m.metalness = 0.0;
+                   if (m.map) m.map.colorSpace = THREE.SRGBColorSpace;
+                } else if (mn.includes('backwall_acoustic') || m.name === 'MH_BackWall_Acoustic') {
+                   m.roughness = 0.85;
+                   m.metalness = 0.0;
+                   if (m.map) m.map.colorSpace = THREE.SRGBColorSpace;
+                } else if (mn.includes('backwall') || m.name === 'MH_BackWall') {
+                   m.roughness = 0.95;
+                   m.metalness = 0.0;
+                   if (m.map) m.map.colorSpace = THREE.SRGBColorSpace;
+                } else if (mn.includes('body-metal') || mn.includes('screen-back-metal') || mn.includes('spacegray_aluminum') || m.name === 'MH_SpaceGray_Aluminum' || mn === 'ggmexfbynnyrwmm' || mn === 'xvtjevwvvydejrr' || mn === 'hdeqgqdhvrltuvq' || mn === 'mtvwtmeddbygzea') {
+                    // Space Gray Aluminum (laptop body and outer casing)
+                    if (m.map) {
+                       m.map = null;
+                       m.needsUpdate = true;
+                    }
+                    m.roughness = 0.35;
+                    m.metalness = 0.85;
+                    m.color.setHex(0x666666); // premium, visible space gray aluminum tone
+                 } else if (mn.includes('keyboard-bed') || mn === 'quuxrfeuujyrumo') {
+                    // Keyboard bed
+                    if (m.map) {
+                       m.map = null;
+                       m.needsUpdate = true;
+                    }
+                    m.roughness = 0.45;
+                    m.metalness = 0.2;
+                    m.color.setHex(0x222222);
+                 } else if (mn.includes('keycap') || [
+                    'kmkiqgtfazdmtyc', 'itkedaojlogksh', 'xecnbqmzozolkiz',
+                    'sqkqsxqceccdmmm', 'utaqarmjnpkrqeb', 'waaaedqzqdlobii', 'ktcwfhzytafeplg',
+                    'uhoyziiufeqjbix', 'dthpmxudoflfvyk', 'pkadkdyuuvylyht'
+                 ].includes(mn)) {
+                    // Keycaps
+                    if (m.map) {
+                       m.map = null;
+                       m.needsUpdate = true;
+                    }
+                    m.roughness = 0.65;
+                    m.metalness = 0.1;
+                    m.color.setHex(0x181818);
+                 } else if (mn.includes('trackpad') || mn === 'wiyopyjeeihnvjf') {
+                    // Trackpad
+                    if (m.map) {
+                       m.map = null;
+                       m.needsUpdate = true;
+                    }
+                    m.roughness = 0.55;
+                    m.metalness = 0.15;
+                    m.color.setHex(0x5a5a5a);
+                 } else if (mn === 'vjogifqmxcmlckf') {
+                    // Key legends
+                    m.roughness = 0.5;
+                    m.metalness = 0.0;
+                    m.color.setHex(0xbbbbbb);
+                 } else if (mn.includes('hinge') || mn === 'hzlgdkvnmxfngm') {
+                    // Hinge
+                    if (m.map) {
+                       m.map = null;
+                       m.needsUpdate = true;
+                    }
+                    m.roughness = 0.7;
+                    m.metalness = 0.1;
+                    m.color.setHex(0x111111);
+                } else if (mn.includes('logo-plate') || mn === 'znrfbdnyocoxsdd') {
+                    // Apple logo — hidden (not branding we want to show)
+                    child.visible = false;
+                    m.roughness = 0.05;
+                    m.metalness = 0.95;
+                    m.color.setHex(0x111111);
+                } else if (mn.includes('trackpad_glass') || m.name === 'MH_Trackpad_Glass' || mn.includes('trackpad')) {
+                   m.roughness = 0.15;
+                   m.metalness = 0.1;
+                } else if (mn.includes('keyboard_pbt') || m.name === 'MH_Keyboard_PBT' || mn.includes('keycap') || mn === 'iqdrvpeoazqbhho') {
+                   m.roughness = 0.7;
+                   m.metalness = 0.0;
+                } else if (mn.includes('paper') || mn.includes('notebook')) {
+                   // Darken paper to prevent white blowout reflections
+                   m.roughness = 0.95;
+                   m.metalness = 0.0;
+                   m.color.setHex(0x999999); // soft paper color that won't blow out
+                } else if (mn.includes('leaf') || mn.includes('leaves') || mn.includes('plant') || mn.includes('mat.2')) {
+                   // Darken plant leaves for the moody look
+                   m.roughness = 0.85;
+                   m.metalness = 0.0;
+                   m.color.multiplyScalar(0.75);
+                }
+
+                if (mn.includes('blinn1')) {
+                   m.color.setHex(0x111111);
+                   m.roughness = 0.6;
+                   m.metalness = 0.1;
+                } else if (mn.includes('blinn4')) {
+                   m.color.setHex(0xcc4400);
+                   m.roughness = 0.5;
+                   m.metalness = 0.0;
+                } else if (mn.includes('blinn6')) {
+                   m.color.setHex(0x222222);
+                   m.roughness = 0.4;
+                   m.metalness = 0.3;
+                }
+
+                // envMapIntensity - structurally separate from the existing PBR chains (Condition 1 & 2)
+                m.envMapIntensity = 0.25; // default set before named checks
+                if (mn.includes('walnutdesk')) {
+                   m.envMapIntensity = 0.20;
+                } else if (mn.includes('darkconcrete')) {
+                   m.envMapIntensity = 0.15;
+                } else if (mn.includes('backwall_acoustic')) {
+                   m.envMapIntensity = 0.20;
+                } else if (mn.includes('backwall')) {
+                   m.envMapIntensity = 0.15;
+                } else if (mn.includes('blinn4')) { // orange accent
+                   m.envMapIntensity = 0.20;
+                } else if (mn.includes('spacegray_aluminum')) { // macbook / metal parts
+                   m.envMapIntensity = 0.35;
+                }
+
+                if (m.map) m.map.colorSpace = THREE.SRGBColorSpace;
+                if (m.normalMap) m.normalMap.colorSpace = THREE.NoColorSpace;
+                if (m.roughnessMap) m.roughnessMap.colorSpace = THREE.NoColorSpace;
+                if (m.metalnessMap) m.metalnessMap.colorSpace = THREE.NoColorSpace;
+                if (m.aoMap) m.aoMap.colorSpace = THREE.NoColorSpace;
+                
+                m.needsUpdate = true;
+             };
+
+             if (Array.isArray(child.material)) {
+                child.material.forEach(applyMat);
+             } else {
+                applyMat(child.material);
+             }
+          }
+       }
+       
+      if (child.isLight) {
+          child.visible = false;
+       }
+    });
+
+    sceneGroup.add(model);
 
 
 
-  // ── 5. Post Processing ── simple render pass only (no bloom, no dof blur)
-  let composer = null;
-  // Note: bloom and DoF disabled to keep the scene clean and well-lit
+    // Assign references for animation loop overrides
+    plantObj = sceneGroup.getObjectByName('plant');
+    laptopLid = sceneGroup.getObjectByName('screen-mockup');
+    console.log('[DEBUG] Resolved plantObj:', plantObj ? plantObj.name : 'null');
+    console.log('[DEBUG] Resolved laptopLid:', laptopLid ? laptopLid.name : 'null');
 
-  // ── 6. State proxy for GSAP timeline (prevents desyncs) ────────────────────
+    // Style Apple logo mesh parts to match the Space Gray casing exactly, or hide them
+    const logoHideNames = [];
+    const logoBlendNames = ['xiLiwJHfkqIwaTs'];
+    
+    sceneGroup.traverse((child) => {
+       const lowerName = (child.name || '').toLowerCase();
+       
+       if (logoHideNames.some(name => lowerName.includes(name.toLowerCase()))) {
+          child.visible = false;
+          child.scale.set(0, 0, 0);
+          logoMeshesToHide.push(child);
+          console.log('[DEBUG] Hid logo part:', child.name);
+       } else if (logoBlendNames.some(name => lowerName.includes(name.toLowerCase()))) {
+          child.visible = true;
+          child.scale.set(1, 1, 1);
+          if (child.material) {
+             // Clone material to avoid affecting keyboard keycaps sharing the same material instance
+             const mats = Array.isArray(child.material) ? child.material : [child.material];
+             const clonedMats = mats.map((m) => {
+                const newMat = m.clone();
+                newMat.color.setHex(0x666666);       // casing base color
+                newMat.roughness = 0.35;             // matching casing roughness
+                newMat.metalness = 0.85;             // matching casing metalness
+                if (newMat.map) newMat.map = null;
+                newMat.needsUpdate = true;
+                return newMat;
+             });
+             child.material = Array.isArray(child.material) ? clonedMats : clonedMats[0];
+          }
+          logoMeshesToBlend.push(child);
+          console.log('[DEBUG] Blended logo part:', child.name);
+       }
+    });
+
+    // Position plant to clear wall clipping on initial frame (using correct relative coordinates)
+    if (plantObj) {
+       plantObj.position.x = -5.5;
+       plantObj.position.z = 3.5;
+    }
+
+    mixer = new THREE.AnimationMixer(model);
+    animations = gltf.animations;
+
+    // Measure the real clip duration so the scroll onUpdate can map [0..1] → [0..clipDur]
+    // without over-shooting or under-shooting due to a hardcoded estimate.
+    const maxClipDuration = animations.reduce((max, clip) => Math.max(max, clip.duration), 0);
+    window.MediaHive_ClipDuration = maxClipDuration;
+
+    // Freeze the mixer at 84% of the clip (≈ frame 210 of 250 / t ≈ 7.0s for an 8.333s clip).
+    // The Blender keyframes after this point close the laptop lid and swing the camera to an
+    // aerial top-down view — neither of which is part of the intended scroll experience.
+    // Override from the browser console at runtime: window.MediaHive_ClipFreezeTime = <seconds>
+    if (window.MediaHive_ClipFreezeTime == null) {
+      window.MediaHive_ClipFreezeTime = maxClipDuration * 0.84;
+    }
+    console.log(`[3D Setup] Clip duration measured: ${maxClipDuration.toFixed(3)}s (${Math.round(maxClipDuration * 30)} frames @ 30fps)`);
+    console.log(`[3D Setup] Animation freeze point: ${window.MediaHive_ClipFreezeTime.toFixed(3)}s — override via window.MediaHive_ClipFreezeTime`);
+
+    animations.forEach((clip) => {
+       // ISSUE: Gaming chair.fbxAction is an obsolete animation clip exported from Blender
+       // that translates the child Gaming_chairfbx node by -403 local Y units (representing
+       // depth movement in Blender, which got exported as vertical displacement in GLTF).
+       // This conflicts with the correct ChairAction animating the parent Chair node.
+       // Skipping it fixes the coordinate conflicts and keeps the chair in its correct position.
+       if (clip.name.includes('Gaming chair.fbxAction')) {
+          console.log(`[ChairFix] Skipping obsolete animation clip: "${clip.name}"`);
+          return;
+       }
+       const action = mixer.clipAction(clip);
+       action.loop = THREE.LoopOnce;
+       action.clampWhenFinished = true;
+       action.play();
+    });
+    mixer.setTime(0); // Start at frame 0 = lid fully closed
+
+    let chairLocalDeltaZ = 0;
+    model.traverse((node) => {
+      if (node.name === 'Chair') {
+        const parentWorldScale = new THREE.Vector3();
+        if (node.parent) {
+          node.parent.getWorldScale(parentWorldScale);
+        } else {
+          parentWorldScale.set(1, 1, 1);
+        }
+        const worldDeltaZ = 6.78 - 1.177;  // 5.603 Three.js units
+        const localDeltaZ = parentWorldScale.z !== 0 ? worldDeltaZ / parentWorldScale.z : worldDeltaZ;
+        node.position.z += localDeltaZ;
+        chairLocalDeltaZ = localDeltaZ;
+        console.log(`[ChairFix] Chair moved +${worldDeltaZ.toFixed(3)} world Z (local delta: ${localDeltaZ.toFixed(3)}, parentScaleZ: ${parentWorldScale.z.toFixed(4)})`);
+      }
+    });
+
+    // Offset the Z keyframe tracks in the ChairAction clip so they match our load-time correction.
+    // This prevents the chair from jumping forward to the table when the user scrolls back to the top.
+    if (chairLocalDeltaZ !== 0 && gltf.animations) {
+      gltf.animations.forEach(clip => {
+        if (clip.name === 'ChairAction') {
+          clip.tracks.forEach(track => {
+            if (track.name === 'Chair.position') {
+              console.log(`[ChairFix] Offsetting animation track "${track.name}" in clip "${clip.name}" by Z delta: ${chairLocalDeltaZ.toFixed(3)}`);
+              for (let i = 2; i < track.values.length; i += 3) {
+                track.values[i] += chairLocalDeltaZ;
+              }
+            }
+          });
+        }
+      });
+    }
+
+    let gltfCamera = null;
+    model.traverse((child) => {
+       if (child.isCamera) {
+          gltfCamera = child;
+       }
+    });
+    if (gltfCamera) {
+       camera = gltfCamera;
+       updateCameraProjection();
+       renderPass.camera = camera;
+    }
+
+    const chairNode = model.getObjectByName('Chair');
+    if (chairNode) {
+      window.MediaHive_ChairNode = chairNode;
+      chairNode.traverse((c) => {
+        if (c.isMesh && c.material) {
+          const mats = Array.isArray(c.material) ? c.material : [c.material];
+          mats.forEach((m) => { m.transparent = true; });
+        }
+      });
+    }
+
+    bindLoadedModelToTimeline();
+
+    const nonLaptopMeshes = [];
+    model.traverse((child) => {
+      if (!child.isMesh) return;
+      let isLaptop = false;
+      let ancestor = child;
+      while (ancestor) {
+        const aName = ancestor.name.toLowerCase();
+        if (aName.includes('macbook') || aName.includes('mac_book') || aName.includes('laptop')) {
+          isLaptop = true;
+          break;
+        }
+        ancestor = ancestor.parent;
+      }
+      if (!isLaptop) {
+        // Clone materials to prevent shared state side-effects when changing opacity
+        if (Array.isArray(child.material)) {
+          child.material = child.material.map((m) => {
+            const cloned = m.clone();
+            cloned.transparent = true;
+            return cloned;
+          });
+        } else if (child.material) {
+          child.material = child.material.clone();
+          child.material.transparent = true;
+        }
+        nonLaptopMeshes.push(child);
+      }
+    });
+    window.MediaHive_NonLaptopMeshes = nonLaptopMeshes;
+
+    // Scroll-driven fade-out animation for all non-laptop meshes (clutter, plant, desk props)
+    const masterTl = window.MediaHive_ScrollTimeline;
+    if (masterTl && nonLaptopMeshes.length) {
+      const allNonLaptopMats = [];
+      nonLaptopMeshes.forEach((m) => {
+        const mats = Array.isArray(m.material) ? m.material : (m.material ? [m.material] : []);
+        allNonLaptopMats.push(...mats);
+      });
+
+      masterTl.to(allNonLaptopMats, {
+        opacity: 0,
+        duration: 0.12,
+        ease: 'power2.inOut',
+        onUpdate: function() {
+          const p = this.progress();
+          const isComplete = p > 0.99;
+          nonLaptopMeshes.forEach((m) => {
+            m.visible = !isComplete;
+          });
+        }
+      }, 0.76);
+    }
+
+    // ISSUE 6: Hide the 3D desk canvas when user reaches the tablet section.
+    // Delayed creation to inside GLTF load callback prevents premature triggers on load.
+    let canvasHidden = false;
+    window.MH_canvasHidden = () => canvasHidden;
+    ScrollTrigger.create({
+      trigger: '#tablet-section',
+      start: 'top 90%',
+      onEnter: () => {
+        console.log('[DEBUG] ScrollTrigger #tablet-section onEnter', { canvasHidden });
+        if (canvasHidden) return;
+        canvasHidden = true;
+        active = false;
+        window.MH_active_state = active;
+        if (laptopVideoElement) laptopVideoElement.pause();
+        // Canvas is moved off-screen by the GSAP scroll timeline; just stop rendering.
+        canvas.style.pointerEvents = 'none';
+      },
+      onLeaveBack: () => {
+        console.log('[DEBUG] ScrollTrigger #tablet-section onLeaveBack', { canvasHidden });
+        if (!canvasHidden) return;
+        canvasHidden = false;
+        active = true;
+        window.MH_active_state = active;
+        if (laptopVideoElement) laptopVideoElement.play().catch(()=>{});
+        canvas.style.pointerEvents = 'none';
+      }
+    });
+  }); // end gltf.load callback
+
   const animState = {
-    lidRotationX: 1.91,
-    screenEmissive: 0.0,
-    ambientLight: 0.1,
-    particleFlow: 0.2
+    lidRotationX: Math.PI,
+    screenEmissive: 0.0   // starts off (0.0) when laptop is closed
   };
 
-  function updateVisuals() {
-    if (lidPivot) {
-      lidPivot.rotation.x = animState.lidRotationX;
-    } else if (laptopLid) {
-      laptopLid.rotation.x = animState.lidRotationX;
-    }
-    screenMat.emissiveIntensity = animState.screenEmissive;
-    screenMat.needsUpdate = true;
-    if (particleMat) {
-      particleMat.uniforms.uFlowIntensity.value = animState.particleFlow;
-    }
+  function bindLoadedModelToTimeline() {
+     window.MediaHive_Mixer = mixer;
+
+     const masterTl = window.MediaHive_ScrollTimeline;
+     if (masterTl) {
+       const chairNode = window.MediaHive_ChairNode;
+       if (chairNode) {
+         const chairMats = [];
+         chairNode.traverse((c) => {
+           if (c.isMesh) {
+             const mats = Array.isArray(c.material) ? c.material : (c.material ? [c.material] : []);
+             chairMats.push(...mats);
+           }
+         });
+         if (chairMats.length) {
+           masterTl.to(chairMats, {
+             opacity: 0,
+             duration: 0.10,
+             ease: 'power2.in',
+             onUpdate: function() {
+               const p = this.progress();
+               if (chairNode) chairNode.visible = (p < 0.99);
+             }
+           }, 0.25);
+         }
+       }
+
+        // Screen glow intensity tween (existing)
+        masterTl.to(animState, {
+          screenEmissive: 0.4,   // tweens to 0.4 (video display baseline)
+          duration: 0.15,
+          ease: 'power2.inOut'
+        }, 0.1);
+
+       masterTl.to(screenGlow, {
+         intensity: 3.0,
+         duration: 0.15,
+         ease: 'power2.inOut'
+       }, 0.1);
+     }
   }
 
-  // ── 7. Scroll-Driven Scene Animation ─────────────────────────────────────
-  // Phase 1 — Laptop lid opens: 0px → 600px scroll
-  const scrollTl = gsap.timeline({
-    scrollTrigger: {
-      trigger: document.body,
-      start: 'top top',
-      end: '+=600',
-      scrub: 1.5,
-    }
-  });
-  scrollTl.to(animState, {
-    lidRotationX: 0.0,
-    screenEmissive: 1.2,
-    particleFlow: 0.35,
-    duration: 1,
-    ease: 'power3.inOut',
-    onUpdate: updateVisuals
-  });
-
-  // Phase 2 — Camera zooms into laptop screen + accessories scatter: 600px → 1800px scroll
-  // Camera position state for GSAP
-  const camState = {
-    posX: camera.position.x,
-    posY: camera.position.y,
-    posZ: camera.position.z,
-    fov: camera.fov,
-    lookY: 0.4,
-  };
-
-  Promise.all(accessoryPromises).then(() => {
-    // 2a. Accessories fly off desk
-    accessories.forEach((acc) => {
-      if (!acc) return;
-      const fd = acc.userData._flyDir || { x: 12, y: 0, z: 0 };
-      const origPos = acc.userData._origPos || [0, 0, 0];
-      gsap.to(acc.position, {
-        x: origPos[0] + fd.x,
-        y: origPos[1] + (fd.y || 0) + 3,
-        z: origPos[2] + (fd.z || 0),
-        ease: 'power2.in',
-        scrollTrigger: {
-          trigger: document.body,
-          start: '+=600',
-          end: '+=1800',
-          scrub: 1.2,
-        }
-      });
-    });
-
-    // 2b. Camera zooms in toward the laptop screen
-    gsap.to(camState, {
-      posX: 0.5,
-      posY: 1.45,
-      posZ: 2.95,
-      fov: 27,
-      lookY: 1.0,
-      ease: 'power2.inOut',
-      scrollTrigger: {
-        trigger: document.body,
-        start: '+=600',
-        end: '+=1800',
-        scrub: 1.5,
-        onUpdate: () => {
-          camera.position.set(camState.posX, camState.posY, camState.posZ);
-          camera.lookAt(0, camState.lookY, 0);
-          camera.fov = camState.fov;
-          camera.updateProjectionMatrix();
-        }
-      }
-    });
-
-    // 2c. Screen glow intensifies as camera zooms in
-    gsap.to(animState, {
-      screenEmissive: 2.5,
-      particleFlow: 0.6,
-      ease: 'power2.inOut',
-      scrollTrigger: {
-        trigger: document.body,
-        start: '+=600',
-        end: '+=1800',
-        scrub: 1,
-        onUpdate: updateVisuals,
-      }
-    });
-
-    // 2d. Desk movement timeline (pull back 600px-1800px, hold 1800px-2000px, table fade 2000px-2500px, hold 2500px-3500px)
-    const tableOpacityObj = { value: 1.0 };
-    const deskTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: document.body,
-        start: '+=600',
-        end: '+=2900',
-        scrub: 1.5
-      }
-    });
-
-    // Step 1: Pull back (600 to 1800, duration 12)
-    deskTl.to(sceneGroup.position, {
-      z: -1,
-      y: 0.28,
-      duration: 12,
-      ease: 'power2.inOut'
-    }, 'pullback');
-    deskTl.to(tableOpacityObj, {
-      value: 1.0,
-      duration: 12,
-      onUpdate: () => { updateTableOpacity(tableOpacityObj.value); }
-    }, 'pullback');
-
-    // Step 2: Hold 1 (1800 to 2000, duration 2)
-    deskTl.to(sceneGroup.position, {
-      z: -1,
-      y: 0.28,
-      duration: 2
-    }, 'hold1');
-    deskTl.to(tableOpacityObj, {
-      value: 1.0,
-      duration: 2,
-      onUpdate: () => { updateTableOpacity(tableOpacityObj.value); }
-    }, 'hold1');
-
-    // Step 3: Fade Table (2000 to 2500, duration 5)
-    deskTl.to(sceneGroup.position, {
-      z: -1,
-      y: 0.28,
-      duration: 5
-    }, 'fadeTable');
-    deskTl.to(tableOpacityObj, {
-      value: 0.0,
-      duration: 5,
-      ease: 'power2.inOut',
-      onUpdate: () => { updateTableOpacity(tableOpacityObj.value); }
-    }, 'fadeTable');
-
-    // Step 4: Hold 2 (2500 to 3500, duration 10)
-    deskTl.to(sceneGroup.position, {
-      z: -1,
-      y: 0.28,
-      duration: 10
-    }, 'hold2');
-    deskTl.to(tableOpacityObj, {
-      value: 0.0,
-      duration: 10,
-      onUpdate: () => { updateTableOpacity(tableOpacityObj.value); }
-    }, 'hold2');
-
-    // 2e. Desk exit timeline (slide up 3500px-4900px in lockstep with unpinned page scroll)
-    const deskExitTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: document.body,
-        start: '+=3500',
-        end: '+=1400',
-        scrub: true,
-        onUpdate: (self) => {
-          // Hide sceneGroup past 99% progress to save resources
-          sceneGroup.visible = (self.progress < 0.99);
-        }
-      }
-    });
-
-    deskExitTl.to(sceneGroup.position, {
-      y: 2.28,
-      duration: 1,
-      ease: 'none'
-    });
-  });
-
-  // â”€â”€ 8. Dampened Mouse Parallax Tilt (Design Spell) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  let mouseX = 0, mouseY = 0;
-  let targetMouseX = 0, targetMouseY = 0;
-
-  const onMouseMove = (e) => {
-    targetMouseX = (e.clientX / window.innerWidth) * 2 - 1;
-    targetMouseY = (e.clientY / window.innerHeight) * 2 - 1;
-  };
-  window.addEventListener('mousemove', onMouseMove, { passive: true });
-
-  // â”€â”€ 9. Resize Observer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  const ro = new ResizeObserver(() => {
-    const w = canvas.clientWidth, h = canvas.clientHeight;
-    if (!w || !h) return;
+  function updateCameraProjection() {
+    if (!camera) return;
+    const w = window.innerWidth, h = window.innerHeight;
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    renderer.setSize(w, h, false);
-    if (composer) {
-      composer.setSize(w, h);
-    }
-  });
-  ro.observe(canvas);
-
-  // â”€â”€ 10. Intersection Observer (Off-screen render freeze) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  let active = true;
-  const ioObs = new IntersectionObserver(([e]) => {
-    active = e.isIntersecting;
-    if (active) {
-      if (laptopVideoElement) {
-        laptopVideoElement.play().catch(err => console.warn("Laptop video resume failed:", err));
-      }
-      if (!rafId) startRenderLoop();
-    } else {
-      if (laptopVideoElement) {
-        laptopVideoElement.pause();
-      }
-    }
-  }, { threshold: 0 });
-  ioObs.observe(canvas);
-
-  const clock = new THREE.Clock();
-  let lastRenderTime = 0;
-  const FPS_INTERVAL = 1 / 30; // 30 FPS cap
-
-  function startRenderLoop() {
-    (function loop() {
-      if (!active) { rafId = null; return; }
-      rafId = requestAnimationFrame(loop);
-
-      const time = clock.getElapsedTime();
-      if (time - lastRenderTime < FPS_INTERVAL) return;
-      lastRenderTime = time;
-
-      if (particleMat) {
-        particleMat.uniforms.uTime.value = time;
-      }
-
-      mouseX += (targetMouseX - mouseX) * 0.045;
-      mouseY += (targetMouseY - mouseY) * 0.045;
-
-      const scrollY = window.lenis ? window.lenis.scroll : window.scrollY;
-      if (scrollY < 2500) {
-        sceneGroup.rotation.y = mouseX * 0.16;
-        sceneGroup.rotation.x = -mouseY * 0.08;
-      } else {
-        // Smoothly lerp sceneGroup rotation back to 0
-        sceneGroup.rotation.y += (0 - sceneGroup.rotation.y) * 0.1;
-        sceneGroup.rotation.x += (0 - sceneGroup.rotation.x) * 0.1;
-      }
-
-      if (particles) {
-        particles.rotation.y = mouseX * 0.06;
-        particles.rotation.x = -mouseY * 0.03;
-      }
-      if (composer) {
-        composer.render();
-      } else {
-        renderer.render(scene, camera);
-      }
-    })();
+    
+    // Apply Blender camera lens shift (Camera.003: shift_x = -0.3, shift_y = 0.05)
+    // Blender shift_x/y are in film-width / film-height units respectively.
+    // Three.js projectionMatrix[8] = X NDC offset = 2 * shift_x
+    // Three.js projectionMatrix[9] = Y NDC offset = 2 * shift_y  (no aspect mult — shift_y is in film HEIGHT units)
+    camera.projectionMatrix.elements[8] = 2 * -0.3;   // = -0.6
+    camera.projectionMatrix.elements[9] = 2 * 0.05;   // = +0.1  (no aspect ratio factor)
   }
-  startRenderLoop();
+
+  // --- 4. Render Loop with IntersectionObserver ---
+  window.addEventListener('resize', () => {
+    updateCameraProjection();
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    composer.setSize(window.innerWidth, window.innerHeight);
+    bloomPass.resolution.set(window.innerWidth, window.innerHeight);
+  });
+
+  let active = true;
+  window.MH_active = () => active;
+
+  let mouseX = 0, mouseY = 0, targetMouseX = 0, targetMouseY = 0;
+  window.addEventListener('mousemove', (e) => {
+    targetMouseX = (e.clientX / window.innerWidth) * 2 - 1;
+    targetMouseY = (e.clientY / window.innerHeight) * 2 - 1;
+  }, { passive: true });
+
+  function render() {
+    requestAnimationFrame(render);
+    if (!active) return;
+
+
+
+    const scrollY = window.lenis ? window.lenis.scroll : window.scrollY;
+
+    // Enforce plant position on every frame to override animation mixer resets
+    if (plantObj) {
+      plantObj.position.x = -5.5;
+      plantObj.position.z = 3.5;
+    }
+
+    // Force hide and shrink Apple logo parts on every frame to override animation mixer resets
+    for (let i = 0; i < logoMeshesToHide.length; i++) {
+      const mesh = logoMeshesToHide[i];
+      mesh.visible = false;
+      mesh.scale.set(0, 0, 0);
+    }
+
+    // Force show and scale 1 for blending backing plates/logo parts
+    for (let i = 0; i < logoMeshesToBlend.length; i++) {
+      const mesh = logoMeshesToBlend[i];
+      mesh.visible = true;
+      mesh.scale.set(1, 1, 1);
+    }
+
+
+
+    // Force laptop lid fully closed at scroll 0, else let mixer or static rotation control it
+    if (scrollY === 0) {
+      if (laptopLid) laptopLid.rotation.x = 1.595;
+    } else {
+      if (!mixer) {
+        if (laptopLid) laptopLid.rotation.x = animState.lidRotationX;
+      }
+    }
+
+    screenMat.emissiveIntensity = animState.screenEmissive;
+    const activeMap = screenMesh && screenMesh.material && (screenMesh.material.emissiveMap || screenMesh.material.map);
+    if (activeMap && activeMap.image) {
+      const vid = activeMap.image;
+      if (vid && vid.readyState >= 2) {
+        activeMap.needsUpdate = true;
+      }
+    }
+
+    mouseX += (targetMouseX - mouseX) * 0.05;
+    mouseY += (targetMouseY - mouseY) * 0.05;
+    
+    if (scrollY < 2500) {
+      sceneGroup.rotation.y = mouseX * 0.1;
+      sceneGroup.rotation.x = -mouseY * 0.05;
+    }
+
+    if (!mixer) {
+      camera.lookAt(globalLookAt);
+    }
+    // Use post-processing composer (includes subtle bloom for screen)
+    composer.render();
+  }
+
+  render();
 }
 
+
 function setupGlobalBackground() {
+  // Guard — bail out silently if glow elements haven't been injected into the DOM
+  if (!document.querySelector('.glow-purple')) return;
   const bgTimeline = gsap.timeline({
     scrollTrigger: {
       trigger: '#scroll-wrapper',
@@ -1884,6 +1990,7 @@ if (typeof window !== 'undefined' && window.Lenis) {
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
   });
+  window.lenis = lenis;
 
   // Sync GSAP ScrollTrigger updates with Lenis scrolling
   lenis.on('scroll', ScrollTrigger.update);
@@ -2242,7 +2349,7 @@ function initDevice(canvasId, modelUrl, targetSize, createTextureFn, options = {
 
     model.traverse((child) => {
       if (child.isMesh && child.material) {
-        child.material.envMapIntensity = 0.3;
+        child.material.envMapIntensity = 0.22; // reduced from 0.3 for visual consistency (Condition 3)
         if (child.material.roughness !== undefined) {
           child.material.roughness = Math.max(child.material.roughness, 0.35);
         }
@@ -2260,9 +2367,9 @@ function initDevice(canvasId, modelUrl, targetSize, createTextureFn, options = {
         const isScreen = 
           name.includes('screen') || name.includes('display') || name.includes('lcd') ||
           (name.includes('scr_0') && !name.includes('glass')) || // iPhone screen mesh name (object.010_scr_0)
-          name === 'tftbkkzhxqpkrgc' || // Macbook screen mesh name
+          name === 'tftbkkzhxqpkrgc' || name === 'naiwmivetsydjdz' || // Macbook screen mesh names
           name === 'auxuzfpidyyvcpo' || // iPad screen mesh name
-          matName === 'hlqwfcapwzetdqy' || // Macbook screen material name
+          matName === 'hlqwfcapwzetdqy' || matName === 'ztrfkpzrroyzncn' || // Macbook screen material names
           matName === 'hlumgtgdbnvpsa' ||   // iPad screen material name
           matName === 'material_10';       // Pizza3 iPhone screen material name
 
@@ -2273,7 +2380,8 @@ function initDevice(canvasId, modelUrl, targetSize, createTextureFn, options = {
             color: 0xffffff,
             depthTest: true,
             depthWrite: true,
-            transparent: false
+            transparent: false,
+            side: THREE.DoubleSide
           });
           child.material.needsUpdate = true;
         } else if (matName === 'scene_-_root') {

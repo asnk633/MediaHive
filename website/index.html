@@ -107,26 +107,20 @@
   <div id="global-bg" style="background: #000; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2;">
   </div>
 
-  <!-- Desk Awakening 3D Background Canvas -->
+  <!-- Desk Awakening 3D Canvas -->
   <canvas id="desk-awakening-canvas" style="
     position: fixed;
     top: 0; left: 0;
     width: 100vw; height: 100vh;
     z-index: -1; pointer-events: none;"></canvas>
 
-  <!-- Loop-reset vignette (peaks opaque at instant reset, normally invisible) -->
-  <div id="desk-loop-vignette" style="
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background: #060910;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0;"></div>
-
-
 
   <div id="scroll-wrapper">
+    <!-- Global ambient glow overlays — animated by GSAP setupGlobalBackground() -->
+    <div class="glow-purple" style="position:fixed;top:20%;left:10%;width:600px;height:600px;background:radial-gradient(ellipse,rgba(139,92,246,0.18) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;will-change:transform,opacity;"></div>
+    <div class="glow-blue"   style="position:fixed;top:15%;right:5%;width:500px;height:500px;background:radial-gradient(ellipse,rgba(59,130,246,0.22) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;will-change:transform,opacity;"></div>
+    <div class="glow-indigo" style="position:fixed;top:50%;left:30%;width:550px;height:550px;background:radial-gradient(ellipse,rgba(99,102,241,0.16) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;will-change:transform,opacity;"></div>
+    <div class="glow-teal"   style="position:fixed;bottom:10%;right:15%;width:480px;height:480px;background:radial-gradient(ellipse,rgba(20,184,166,0.14) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;will-change:transform,opacity;"></div>
     <!-- Continuous Scrolling Grid -->
     <div class="global-grid-container">
       <svg class="global-grid-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -147,6 +141,7 @@
       background: transparent;">
 
       <!-- Digital Serenity Background Elements Removed for Global Unified Background -->
+      <div class="hero-vignette"></div>
 
       <!-- Corner Elements -->
       <div class="corner-element-animate" style="position: absolute; top: 16px; left: 16px; width: 40px; height: 40px; animation-delay: 4s;">
@@ -553,61 +548,61 @@
     </div>
     <div class="marquee-wrapper">
       <div class="marquee-content">
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/nextdotjs/white" alt="Next.js"/><span>Next.js</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/react/white" alt="React"/><span>React</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/flutter/white" alt="Flutter"/><span>Flutter</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/tauri/white" alt="Tauri"/><span>Tauri</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/supabase/white" alt="Supabase"/><span>Supabase</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/firebase/white" alt="Firebase"/><span>Firebase</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/tailwindcss/white" alt="Tailwind CSS"/><span>Tailwind CSS</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/threedotjs/white" alt="Three.js"/><span>Three.js</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/greensock/white" alt="GSAP"/><span>GSAP</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/vite/white" alt="Vite"/><span>Vite</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/spacex/white" alt="Antigravity"/><span>Antigravity</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/codeforces/white" alt="Qoder"/><span>Qoder</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/ollama/white" alt="Ollama"/><span>Ollama</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/anthropic/white" alt="Claude"/><span>Claude</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/devdotto/white" alt="21st.dev"/><span>21st.dev</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/uikit/white" alt="Uiverse"/><span>Uiverse</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/openai/white" alt="ChatGPT"/><span>ChatGPT</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/googlegemini/white" alt="Gemini"/><span>Gemini</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/androidstudio/white" alt="Android Studio"/><span>Android Studio</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/google/white" alt="Google Labs"/><span>Google Labs</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/adobeaftereffects/white" alt="After Effects"/><span>After Effects</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/react/white" alt="React Bits"/><span>React Bits</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/awesomewm/white" alt="Aceternity UI"/><span>Aceternity UI</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/framer/white" alt="Framer"/><span>Framer</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/github/white" alt="GitHub"/><span>GitHub</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/vercel/white" alt="Vercel"/><span>Vercel</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/nextdotjs/ffffff" alt="Next.js"/><span>Next.js</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/react/ffffff" alt="React"/><span>React</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/flutter/ffffff" alt="Flutter"/><span>Flutter</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/tauri/ffffff" alt="Tauri"/><span>Tauri</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/supabase/ffffff" alt="Supabase"/><span>Supabase</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/firebase/ffffff" alt="Firebase"/><span>Firebase</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/tailwindcss/ffffff" alt="Tailwind CSS"/><span>Tailwind CSS</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/threedotjs/ffffff" alt="Three.js"/><span>Three.js</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/greensock/ffffff" alt="GSAP"/><span>GSAP</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/vite/ffffff" alt="Vite"/><span>Vite</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/spacex/ffffff" alt="Antigravity"/><span>Antigravity</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/codeforces/ffffff" alt="Qoder"/><span>Qoder</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/ollama/ffffff" alt="Ollama"/><span>Ollama</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/anthropic/ffffff" alt="Claude"/><span>Claude</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/devdotto/ffffff" alt="21st.dev"/><span>21st.dev</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/uikit/ffffff" alt="Uiverse"/><span>Uiverse</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/openai/ffffff" onerror="this.style.display='none'" alt="ChatGPT"/><span>ChatGPT</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/googlegemini/ffffff" alt="Gemini"/><span>Gemini</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/androidstudio/ffffff" alt="Android Studio"/><span>Android Studio</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/google/ffffff" alt="Google Labs"/><span>Google Labs</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/adobe/ffffff" onerror="this.style.display='none'" alt="After Effects"/><span>After Effects</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/react/ffffff" alt="React Bits"/><span>React Bits</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/awesomewm/ffffff" alt="Aceternity UI"/><span>Aceternity UI</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/framer/ffffff" alt="Framer"/><span>Framer</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/github/ffffff" alt="GitHub"/><span>GitHub</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/vercel/ffffff" alt="Vercel"/><span>Vercel</span></div>
       </div>
       <!-- Duplicate for infinite scroll -->
       <div class="marquee-content" aria-hidden="true">
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/nextdotjs/white" alt="Next.js"/><span>Next.js</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/react/white" alt="React"/><span>React</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/flutter/white" alt="Flutter"/><span>Flutter</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/tauri/white" alt="Tauri"/><span>Tauri</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/supabase/white" alt="Supabase"/><span>Supabase</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/firebase/white" alt="Firebase"/><span>Firebase</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/tailwindcss/white" alt="Tailwind CSS"/><span>Tailwind CSS</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/threedotjs/white" alt="Three.js"/><span>Three.js</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/greensock/white" alt="GSAP"/><span>GSAP</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/vite/white" alt="Vite"/><span>Vite</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/spacex/white" alt="Antigravity"/><span>Antigravity</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/codeforces/white" alt="Qoder"/><span>Qoder</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/ollama/white" alt="Ollama"/><span>Ollama</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/anthropic/white" alt="Claude"/><span>Claude</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/devdotto/white" alt="21st.dev"/><span>21st.dev</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/uikit/white" alt="Uiverse"/><span>Uiverse</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/openai/white" alt="ChatGPT"/><span>ChatGPT</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/googlegemini/white" alt="Gemini"/><span>Gemini</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/androidstudio/white" alt="Android Studio"/><span>Android Studio</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/google/white" alt="Google Labs"/><span>Google Labs</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/adobeaftereffects/white" alt="After Effects"/><span>After Effects</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/react/white" alt="React Bits"/><span>React Bits</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/awesomewm/white" alt="Aceternity UI"/><span>Aceternity UI</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/framer/white" alt="Framer"/><span>Framer</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/github/white" alt="GitHub"/><span>GitHub</span></div>
-        <div class="tool-pill"><img src="https://cdn.simpleicons.org/vercel/white" alt="Vercel"/><span>Vercel</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/nextdotjs/ffffff" alt="Next.js"/><span>Next.js</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/react/ffffff" alt="React"/><span>React</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/flutter/ffffff" alt="Flutter"/><span>Flutter</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/tauri/ffffff" alt="Tauri"/><span>Tauri</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/supabase/ffffff" alt="Supabase"/><span>Supabase</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/firebase/ffffff" alt="Firebase"/><span>Firebase</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/tailwindcss/ffffff" alt="Tailwind CSS"/><span>Tailwind CSS</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/threedotjs/ffffff" alt="Three.js"/><span>Three.js</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/greensock/ffffff" alt="GSAP"/><span>GSAP</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/vite/ffffff" alt="Vite"/><span>Vite</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/spacex/ffffff" alt="Antigravity"/><span>Antigravity</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/codeforces/ffffff" alt="Qoder"/><span>Qoder</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/ollama/ffffff" alt="Ollama"/><span>Ollama</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/anthropic/ffffff" alt="Claude"/><span>Claude</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/devdotto/ffffff" alt="21st.dev"/><span>21st.dev</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/uikit/ffffff" alt="Uiverse"/><span>Uiverse</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/openai/ffffff" onerror="this.style.display='none'" alt="ChatGPT"/><span>ChatGPT</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/googlegemini/ffffff" alt="Gemini"/><span>Gemini</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/androidstudio/ffffff" alt="Android Studio"/><span>Android Studio</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/google/ffffff" alt="Google Labs"/><span>Google Labs</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/adobe/ffffff" onerror="this.style.display='none'" alt="After Effects"/><span>After Effects</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/react/ffffff" alt="React Bits"/><span>React Bits</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/awesomewm/ffffff" alt="Aceternity UI"/><span>Aceternity UI</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/framer/ffffff" alt="Framer"/><span>Framer</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/github/ffffff" alt="GitHub"/><span>GitHub</span></div>
+        <div class="tool-pill"><img src="https://cdn.simpleicons.org/vercel/ffffff" alt="Vercel"/><span>Vercel</span></div>
       </div>
     </div>
   </section>
@@ -858,6 +853,7 @@
     })();
   </script>
 
-  <script type="module" src="/main.js"></script>
+  <script type="module" src="/main.js?v=99"></script>
 </body>
 </html>
+

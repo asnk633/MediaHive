@@ -2,13 +2,13 @@
 // Media quality analysis service using local/open-source methods
 
 import { config } from '@/lib/config';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs/promises';
 
-const execPromise = promisify(exec);
+const execFilePromise = promisify(execFile);
 
 // Types for media analysis
 export interface QualityReport {
@@ -132,17 +132,33 @@ async function analyzeVideoQuality(videoPath: string): Promise<QualityReport> {
     
     // Extract keyframes using ffmpeg
     const framePattern = path.join(framesDir, 'frame_%03d.jpg');
-    const ffmpegCmd = `ffmpeg -i "${videoPath}" -vf "fps=1,scale=320:240" -q:v 2 "${framePattern}"`;
-    
     try {
-      await execPromise(ffmpegCmd);
+      await execFilePromise('ffmpeg', [
+        '-y',
+        '-i', videoPath,
+        '-vf', 'fps=1,scale=320:240',
+        '-q:v', '2',
+        framePattern
+      ]);
     } catch (ffmpegError: unknown) {
       console.warn('FFmpeg frame extraction warning:', ffmpegError);
     }
     
     // Get video metadata
-    const ffprobeCmd = `ffprobe -v quiet -print_format json -show_format -show_streams "${videoPath}"`;
-    const { stdout } = await execPromise(ffprobeCmd);
+    let stdout = '';
+    try {
+      const result = await execFilePromise('ffprobe', [
+        '-v', 'quiet',
+        '-print_format', 'json',
+        '-show_format',
+        '-show_streams',
+        videoPath
+      ]);
+      stdout = result.stdout;
+    } catch (ffprobeError: unknown) {
+      console.warn('FFprobe metadata extraction warning:', ffprobeError);
+      stdout = '{}';
+    }
     const videoInfo = JSON.parse(stdout);
     
     // Analyze keyframes
@@ -206,8 +222,12 @@ async function analyzeVideoQuality(videoPath: string): Promise<QualityReport> {
     // Audio loudness analysis
     let audioLoudness: number | undefined;
     try {
-      const loudnormCmd = `ffmpeg -i "${videoPath}" -af loudnorm=print_format=json -f null -`;
-      const { stderr } = await execPromise(loudnormCmd);
+      const { stderr } = await execFilePromise('ffmpeg', [
+        '-i', videoPath,
+        '-af', 'loudnorm=print_format=json',
+        '-f', 'null',
+        '-'
+      ]);
       // Parse loudness from stderr (simplified)
       audioLoudness = 80; // Placeholder value
     } catch (audioError: unknown) {
@@ -250,11 +270,14 @@ async function analyzeVideoQuality(videoPath: string): Promise<QualityReport> {
 async function analyzeAudioQuality(audioPath: string): Promise<QualityReport> {
   try {
     // Use ffmpeg to analyze audio
-    const loudnormCmd = `ffmpeg -i "${audioPath}" -af loudnorm=print_format=json -f null -`;
-    
     let audioLoudness = 0;
     try {
-      const { stderr } = await execPromise(loudnormCmd);
+      const { stderr } = await execFilePromise('ffmpeg', [
+        '-i', audioPath,
+        '-af', 'loudnorm=print_format=json',
+        '-f', 'null',
+        '-'
+      ]);
       // Parse loudness from stderr (simplified)
       audioLoudness = 80; // Placeholder value
     } catch (audioError: unknown) {

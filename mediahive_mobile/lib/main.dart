@@ -23,6 +23,8 @@ import 'features/attendance/presentation/providers/attendance_provider.dart';
 import 'features/attendance/data/services/attendance_reminder_service.dart';
 // background_headless_task import removed — BGGeo headless tasks no longer used
 import 'features/attendance/data/services/background_presence_service.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // flutter_background_geolocation removed (paid license required)
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -60,6 +62,39 @@ void main() async {
 
   final container = ProviderContainer();
   final logger = container.read(loggerProvider.notifier);
+
+  // Initialize Background Presence Service
+  final bgPresenceService = BackgroundPresenceService();
+  try {
+    await bgPresenceService.initializeService();
+    
+    // Register token refresh handshake listener
+    FlutterBackgroundService().on('requestRefresh').listen((event) async {
+      try {
+        debugPrint('BG_PRESENCE: Main isolate received requestRefresh event');
+        final response = await Supabase.instance.client.auth.refreshSession();
+        final newSession = response.session;
+        if (newSession != null) {
+          const storage = FlutterSecureStorage();
+          await storage.write(key: 'access_token', value: newSession.accessToken);
+          await storage.write(key: 'refresh_token', value: newSession.refreshToken);
+          final expiresAt = DateTime.now().add(Duration(seconds: newSession.expiresIn ?? 3600));
+          await storage.write(key: 'token_expires_at', value: expiresAt.toIso8601String());
+
+          FlutterBackgroundService().invoke('tokenRefreshResponse', {
+            'accessToken': newSession.accessToken,
+            'refreshToken': newSession.refreshToken,
+            'expiresAt': expiresAt.toIso8601String(),
+          });
+          debugPrint('BG_PRESENCE: Main isolate successfully refreshed token and sent response');
+        }
+      } catch (e) {
+        debugPrint('BG_PRESENCE: Main isolate failed to refresh token: $e');
+      }
+    });
+  } catch (e) {
+    debugPrint('BG_PRESENCE_INIT_ERROR: $e');
+  }
   
   // Flutter Error Interception
   FlutterError.onError = (details) {
@@ -222,7 +257,7 @@ class MediaHiveApp extends ConsumerWidget {
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.transparent,
             foregroundColor: DesignTokens.lightTextPrimary,
-            side: BorderSide(color: DesignTokens.lightBorder.withValues(alpha: 0.15), width: 0.75),
+            side: BorderSide(color: DesignTokens.lightBorder.withValues(alpha: 0.6), width: 0.75),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
           ),
         ),
@@ -248,11 +283,11 @@ class MediaHiveApp extends ConsumerWidget {
           // ── Body — Paragraph / description text ───────────────────
           bodyLarge:  TextStyle(fontSize: 16, fontWeight: FontWeight.w400, height: 1.50, color: Colors.white),
           bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, height: 1.50, color: DesignTokens.textSecondary),
-          bodySmall:  TextStyle(fontSize: 12, fontWeight: FontWeight.w400, height: 1.45, color: Color(0xFF666666)),
+          bodySmall:  TextStyle(fontSize: 12, fontWeight: FontWeight.w400, height: 1.45, color: Color(0xFF9E9E9E)),
           // ── Label — Buttons, badges, uppercase category tags ──────
           labelLarge:  TextStyle(fontSize: 14, fontWeight: FontWeight.w600, height: 1.20, letterSpacing: 0.3, color: Colors.white),
           labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, height: 1.20, letterSpacing: 0.5, color: DesignTokens.textSecondary),
-          labelSmall:  TextStyle(fontSize: 10, fontWeight: FontWeight.w700, height: 1.20, letterSpacing: 0.8, color: Color(0xFF666666)),
+          labelSmall:  TextStyle(fontSize: 10, fontWeight: FontWeight.w700, height: 1.20, letterSpacing: 0.8, color: Color(0xFF9E9E9E)),
         ),
         scaffoldBackgroundColor: DesignTokens.backgroundPrimary,
         colorScheme: ColorScheme.fromSeed(
@@ -313,7 +348,7 @@ class MediaHiveApp extends ConsumerWidget {
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.transparent,
             foregroundColor: Colors.white,
-            side: BorderSide(color: DesignTokens.border.withValues(alpha: 0.15), width: 0.75),
+            side: BorderSide(color: DesignTokens.border.withValues(alpha: 0.5), width: 0.75),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
           ),
         ),

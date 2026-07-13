@@ -17,7 +17,7 @@ export async function GET(
         const { db, tenantId, user } = await withTenant();
 
         // Basic permission check
-        const role = (user.app_metadata?.role || user.user_metadata?.role) as string;
+        const role = user.app_metadata?.role as string;
         if (user.id !== userId && role !== 'admin') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }

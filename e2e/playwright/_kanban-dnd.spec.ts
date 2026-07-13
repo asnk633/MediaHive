@@ -3,13 +3,13 @@ import { test, expect } from './fixtures/db-fixture';
 
 // Credentials provided by the user
 const ADMIN_USER = {
-    email: 'media@thaibagarden.com',
-    password: 'media@thaiba'
+    email: process.env.E2E_ADMIN_EMAIL || 'media@thaibagarden.com',
+    password: process.env.E2E_ADMIN_PASSWORD || 'media@thaiba'
 };
 
 const TEAM_USER = {
-    email: 'kmspallikkunnu@gmail.com',
-    password: 'sabith@thaiba'
+    email: process.env.E2E_TEAM_EMAIL || 'kmspallikkunnu@gmail.com',
+    password: process.env.E2E_TEAM_PASSWORD || 'sabith@thaiba'
 };
 
 test.describe('Kanban Board Drag-and-Drop', () => {

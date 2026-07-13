@@ -1,6 +1,6 @@
 name: mediahive_mobile
 description: A new Flutter project for MediaHive.
-version: 1.2.5-beta+64002
+version: 1.2.6-beta+67001
 
 
 environment:
@@ -77,6 +77,8 @@ dependencies:
   flutter_timezone: ^5.1.0
   # flutter_background_geolocation removed — paid license required for release builds
   app_settings: ^5.1.1
+  flutter_background_service: ^5.0.7
+
 
 
 
@@ -117,6 +119,9 @@ flutter:
   assets:
     - .env
     - assets/images/logo.png
+    - assets/images/logo_luminous.png
+    - assets/images/logo_midnight.png
+    - assets/images/logo_3d.png
     - assets/images/google_logo.png
     - assets/images/logo_honey.png
     - assets/images/logo_honey_safe.png

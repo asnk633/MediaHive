@@ -13,24 +13,21 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('light');
-
-  // Load theme from localStorage on mount
-  useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') as Theme;
-    if (storedTheme === 'dark' || storedTheme === 'light') {
-      setThemeState(storedTheme);
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setThemeState('dark');
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
     }
-  }, []);
+    return 'dark'; // Server-side default fallback
+  });
 
-  // Update document class when theme changes
+  // Update document class and data-theme when theme changes
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
     }
     localStorage.setItem('theme', theme);
   }, [theme]);

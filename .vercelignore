@@ -2,13 +2,8 @@
 src/app/_api_disabled/
 src/server_disabled/
 
-# Ignore unfinished admin subsystems
-
-
-# Ignore heavy admin APIs not needed for core app
-# src/app/api/admin/
+# Ignore cron
 src/app/api/cron/
-
 
 # Ignore test & debug material
 __tests__/
@@ -27,3 +22,41 @@ functions/
 debug_*.js
 inspect_*.py
 *.log
+
+# Ignore compiled builds and binaries recursively
+**/*.apk
+**/*.exe
+**/*.dmg
+**/*.zip
+**/*.tar.gz
+**/*.tgz
+**/*.rar
+**/*.pdb
+**/*.lib
+**/*.rlib
+**/*.glb
+**/*.gltf
+
+# Ignore Next.js build cache
+.next/
+
+# Ignore public assets that are too large
+public/*.apk
+public/**/*.apk
+public/video/
+public/*.glb
+public/**/*.glb
+
+# Ignore heavy ROOT-level directories ONLY (with leading slash)
+/mediahive_mobile/
+/MediaHive Windows app/
+/website/
+/graphify-out/
+/.agent/
+/.agents/
+/.tmp/
+/docs/
+/reports/
+/execution/
+/scratch/
+/serviceAccountKey.json

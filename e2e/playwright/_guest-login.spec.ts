@@ -2,8 +2,8 @@
 import { test, expect } from './fixtures/db-fixture';
 
 const GUEST_USER = {
-    email: 'shuaibmse007@gmail.com',
-    password: 'amarthaiba@thaiba'
+    email: process.env.E2E_GUEST_EMAIL || 'shuaibmse007@gmail.com',
+    password: process.env.E2E_GUEST_PASSWORD || 'amarthaiba@thaiba'
 };
 
 test.describe('Guest User Experience', () => {

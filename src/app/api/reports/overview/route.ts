@@ -8,8 +8,8 @@ export async function GET(req: Request) {
         const { db, tenantId, user } = await withTenant();
 
         // 1. Robust Role Extraction
-        // Checking app_metadata (synced) and user_metadata (session-based)
-        const role = (user.app_metadata?.role || user.user_metadata?.role || user.role)?.toLowerCase();
+        // Checking app_metadata (synced)
+        const role = user.app_metadata?.role?.toLowerCase();
         
         console.log(`[REPORTS] Access check - User: ${user.id}, Role: ${role}, Tenant: ${tenantId}`);
 
@@ -30,10 +30,24 @@ export async function GET(req: Request) {
         
         // Validate if rawInstitutionId is a valid UUID
         const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
-        const institutionId = rawInstitutionId && isUuid(rawInstitutionId) ? rawInstitutionId : null;
+        let institutionId = rawInstitutionId && isUuid(rawInstitutionId) ? rawInstitutionId : null;
 
         if (rawInstitutionId && !institutionId) {
             console.warn(`[REPORTS] ⚠️ Invalid institution_id format (not a UUID): "${rawInstitutionId}". Ignoring filter.`);
+        }
+
+        // Enforce institution-level isolation for managers
+        if (role === 'manager') {
+            const { data: profile } = await db
+                .from('profiles')
+                .select('institution_id')
+                .eq('id', user.id)
+                .single();
+            if (profile?.institution_id && isUuid(profile.institution_id)) {
+                institutionId = profile.institution_id;
+            } else {
+                return NextResponse.json({ error: 'Forbidden: No institution assigned' }, { status: 403 });
+            }
         }
 
         const headers = {

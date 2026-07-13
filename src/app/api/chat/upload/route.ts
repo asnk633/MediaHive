@@ -1,13 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDriveClient, ensureFolderPath, DRIVE_CONFIG, makeFilePublic } from "@/lib/drive";
 import { Readable } from "stream";
-import { getSupabaseAdmin } from "@/lib/server/supabase-admin";
 import { createClient } from "@supabase/supabase-js";
+import { getSupabaseServerClient } from "@/lib/supabaseServerClient";
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
+    // Authenticate user via Bearer token or cookie session
+    const authHeader = request.headers.get("Authorization");
+    const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
+
+    let supabaseClient;
+    if (token) {
+      if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        return NextResponse.json({ error: "Server misconfiguration" }, { status: 500 });
+      }
+      console.log("[ChatUpload] Using user-authenticated client via Bearer token.");
+      supabaseClient = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        {
+          global: {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        }
+      );
+    } else {
+      console.log("[ChatUpload] Using cookie session client.");
+      supabaseClient = await getSupabaseServerClient();
+    }
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !user) {
+      console.error("[ChatUpload] Authentication failed:", authError);
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     const roomId = formData.get("roomId") as string | null;
@@ -26,29 +58,6 @@ export async function POST(request: NextRequest) {
       const fileBuf = Buffer.from(arrayBuffer);
       const pathKey = `chat/${roomId}/${Date.now()}_${file.name}`;
 
-      const authHeader = request.headers.get("Authorization");
-      const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
-
-      let supabaseClient;
-      if (token) {
-        console.log("[ChatUpload] Using user-authenticated client via Bearer token.");
-        const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-        supabaseClient = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          anonKey,
-          {
-            global: {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            }
-          }
-        );
-      } else {
-        console.log("[ChatUpload] No Bearer token found. Falling back to Admin client.");
-        supabaseClient = getSupabaseAdmin();
-      }
-
       const { data, error: uploadError } = await supabaseClient.storage.from("media").upload(pathKey, fileBuf, {
         contentType: file.type,
         upsert: true,
@@ -57,9 +66,7 @@ export async function POST(request: NextRequest) {
       if (uploadError) {
         console.error("Supabase failover upload error:", uploadError);
         return NextResponse.json({ 
-          error: "Upload failed: " + uploadError.message,
-          debugUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-          hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY
+          error: "Upload failed: " + uploadError.message
         }, { status: 500 });
       }
 

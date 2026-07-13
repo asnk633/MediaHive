@@ -586,7 +586,7 @@ export default function CalendarClient() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-[#0f1219]/95 border border-[var(--glass-border)] rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+                            className="bg-popover/95 border border-border rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
                         >
                             {/* Header */}
                             <div className="p-5 border-b border-foreground/[0.05] bg-black/30 flex items-center justify-between">

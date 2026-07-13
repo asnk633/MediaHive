@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mediahive_mobile/core/theme/app_spacing.dart';
 import 'package:mediahive_mobile/core/theme/app_typography.dart';
 import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/utils/text_scale.dart';
 
 class MhInput extends StatefulWidget {
   final String label;
@@ -41,6 +42,7 @@ class _MhInputState extends State<MhInput> {
         final bgFillColor = _isFocused
             ? (colors.isDark ? colors.surface : Colors.white)
             : (colors.isDark ? colors.surface.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.8));
+        final scaleFactor = textScaleOf(context);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,7 +54,7 @@ class _MhInputState extends State<MhInput> {
                 style: AppTypography.caption.copyWith(
                   color: widget.errorText != null ? colors.error : colors.textSecondary,
                   fontWeight: FontWeight.w900,
-                  fontSize: 9,
+                  fontSize: 9 * scaleFactor,
                   letterSpacing: 1.2,
                 ),
               ),
@@ -88,14 +90,23 @@ class _MhInputState extends State<MhInput> {
                   style: AppTypography.bodyM.copyWith(
                     color: colors.textPrimary,
                     fontWeight: FontWeight.w600,
+                    fontSize: (AppTypography.bodyM.fontSize ?? 14) * scaleFactor,
                   ),
                   decoration: InputDecoration(
                     hintText: widget.hint,
-                    hintStyle: AppTypography.bodyM.copyWith(color: colors.textSecondary.withValues(alpha: 0.5)),
+                    hintStyle: AppTypography.bodyM.copyWith(
+                      color: colors.textSecondary.withValues(alpha: 0.5),
+                      fontSize: (AppTypography.bodyM.fontSize ?? 14) * scaleFactor,
+                    ),
                     prefixIcon: widget.prefixIcon != null 
-                      ? Icon(widget.prefixIcon, size: 18, color: _isFocused ? colors.honey : colors.textSecondary) 
+                      ? Icon(widget.prefixIcon, size: 18 * scaleFactor, color: _isFocused ? colors.honey : colors.textSecondary) 
                       : null,
-                    border: InputBorder.none, filled: false,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    filled: false,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   ),
                 ),
@@ -107,7 +118,10 @@ class _MhInputState extends State<MhInput> {
                 padding: const EdgeInsets.only(left: 4),
                 child: Text(
                   widget.errorText!,
-                  style: AppTypography.caption.copyWith(color: colors.error, fontSize: 10),
+                  style: AppTypography.caption.copyWith(
+                    color: colors.error, 
+                    fontSize: 10 * scaleFactor,
+                  ),
                 ),
               ),
             ],

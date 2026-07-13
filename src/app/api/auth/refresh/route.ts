@@ -69,14 +69,20 @@ if (rateLimitResponse) {
     // Remove passwordHash from response
     const { passwordHash, ...userWithoutPassword } = user;
     
-    // Create new session with fresh tokens
-    // UNSAFE CAST: Drizzle user row force-cast to AuthUser. Works today because
-    // the fields refresh/route.ts reads happen to overlap, but AuthUser and
-    // AuthenticatedUser are structurally incompatible (id: string vs uid: string,
-    // etc). If MediaHive consolidates onto the Supabase auth path, this cast
-    // should be replaced with an explicit mapper function instead of relying
-    // on field overlap. See audit item #8.
-    const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await createSession(userWithoutPassword as AuthUser);
+    const validRoles = ['admin', 'manager', 'team', 'member'] as const;
+    const role = validRoles.includes(user.role as any) 
+      ? (user.role as typeof validRoles[number]) 
+      : 'member';
+
+    const authUser: AuthUser = {
+      id: String(user.id),
+      email: user.email,
+      fullName: user.fullName,
+      role: role,
+      institution_id: String(user.institution_id),
+      tenant_id: String(user.tenantId),
+    };
+    const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await createSession(authUser);
     
     // Create response
     const response = NextResponse.json(
@@ -85,8 +91,7 @@ if (rateLimitResponse) {
     );
     
     // Set new secure cookies
-    response.cookies.set({ name: 'access_token', value: newAccessToken, httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-response.cookies.set({ name: 'refresh_token', value: newRefreshToken, httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    setSessionCookies(response, newAccessToken, newRefreshToken);
     
     return response;
   } catch (error) {

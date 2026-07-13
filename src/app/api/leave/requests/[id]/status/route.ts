@@ -27,6 +27,17 @@ export async function POST(
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+    // 0. Fetch profile and verify role permissions
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('role, institution_id')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError || !profile || (profile.role !== 'admin' && profile.role !== 'manager')) {
+      return NextResponse.json({ error: 'Forbidden: Unauthorized to process requests' }, { status: 403 });
+    }
+
     // 1. Get the request details
     const { data: leaveRequest, error: fetchError } = await supabase
       .from(TABLES.LEAVE_REQUESTS)
@@ -35,6 +46,16 @@ export async function POST(
       .single();
 
     if (fetchError || !leaveRequest) throw new Error('Request not found');
+
+    // Verify manager institution scope matching with strict null-check & normalization
+    const normalizeId = (val: any) => val === null || val === undefined ? '' : String(val);
+    if (profile.role === 'manager') {
+      const managerInst = normalizeId(profile.institution_id);
+      const requestInst = normalizeId(leaveRequest.institution_id);
+      if (!managerInst || managerInst !== requestInst) {
+        return NextResponse.json({ error: 'Forbidden: Cannot process requests for another institution' }, { status: 403 });
+      }
+    }
 
     // 2. Update status
     const { error: updateError } = await supabase

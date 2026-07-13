@@ -139,6 +139,27 @@ export const attendance = sqliteTable('attendance', {
   created_at: text('created_at').notNull(),
 });
 
+// NFC Tags table for location and attendance validation
+export const nfcTags = sqliteTable('nfc_tags', {
+  id: text('id').primaryKey(), // UUID represented as text in SQLite
+  tagName: text('tagName').notNull(),
+  tagId: text('tagId').notNull(),
+  tagType: text('tagType').notNull().default('attendance'),
+  entityId: text('entityId'),
+  entityType: text('entityType'),
+  latitude: real('latitude').notNull(),
+  longitude: real('longitude').notNull(),
+  radius: real('radius').notNull().default(50.0),
+  active: integer('active', { mode: 'boolean' }).notNull().default(true),
+  deletedAt: text('deletedAt'),
+  createdAt: text('createdAt').notNull(),
+  campusId: text('campusId'),
+  campusName: text('campusName'),
+  locationGroup: text('locationGroup'),
+  accuracy: real('accuracy'),
+  wifiSsids: text('wifi_ssids'),
+});
+
 // Performance Snapshots (Derived, Cached) - Spec 2.0
 export const performanceSnapshots = sqliteTable('performance_snapshots', {
   id: integer('id').primaryKey({ autoIncrement: true }),

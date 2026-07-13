@@ -348,11 +348,11 @@ export default function ReportsAnalyticsClient() {
                             </div>
                             <div className="flex -space-x-2">
                                 {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0f172a] bg-foreground/5 flex items-center justify-center text-[10px] font-bold text-foreground/80">
+                                    <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-foreground/5 flex items-center justify-center text-[10px] font-bold text-foreground/80">
                                         M
                                     </div>
                                 ))}
-                                <div className="w-8 h-8 rounded-full border-2 border-[#0f172a] bg-blue-600 flex items-center justify-center text-[10px] font-bold text-foreground">
+                                <div className="w-8 h-8 rounded-full border-2 border-background bg-blue-600 flex items-center justify-center text-[10px] font-bold text-foreground">
                                     +
                                 </div>
                             </div>

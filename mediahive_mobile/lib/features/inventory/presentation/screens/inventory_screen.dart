@@ -18,6 +18,7 @@ import 'package:mediahive_mobile/core/services/network_service.dart';
 import 'package:mediahive_mobile/core/providers/user_provider.dart';
 import 'package:mediahive_mobile/features/inventory/presentation/widgets/inventory_transaction_sheets.dart';
 import 'package:mediahive_mobile/presentation/providers/navigation_provider.dart';
+import 'package:mediahive_mobile/core/utils/layout_helpers.dart';
 import '../../../../../shared/widgets/mh_loading.dart';
 import 'package:mediahive_mobile/core/services/notification_service.dart';
 import 'dart:async';
@@ -194,6 +195,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
     final isAdmin = role == 'admin' || role == 'manager';
     final canBook = isAdmin || role == 'team';
     final colors = ref.watch(themeColorsProvider);
+    final headerHeight = ref.watch(headerHeightProvider);
 
     return Scaffold(
       backgroundColor: colors.backgroundPrimary,
@@ -223,6 +225,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
             canBook,
             isOffline,
             colors,
+            headerHeight,
           ),
           loading: () => _buildLoadingState(colors),
           error: (e, _) => _buildErrorState(ref, e, colors),
@@ -245,6 +248,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
     bool canBook,
     bool isOffline,
     ThemeColors colors,
+    double headerHeight,
   ) {
     var filteredItems = items;
 
@@ -326,7 +330,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
         padding: EdgeInsets.only(
           left: AppSpacing.l, 
           right: AppSpacing.l, 
-          top: 120 + MediaQuery.of(context).padding.top, 
+          top: (headerHeight == 0 ? (120.0 + MediaQuery.of(context).padding.top) : headerHeight) + 64.0, 
           bottom: 120,
         ),
         children: [

@@ -89,9 +89,9 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       cancelled = true;
-      if (unlistenFn) unlistenFn();
-      if (unlistenMaximized) unlistenMaximized();
-      if (unlistenUnmaximized) unlistenUnmaximized();
+      if (unlistenFn) (unlistenFn as any)();
+      if (unlistenMaximized) (unlistenMaximized as any)();
+      if (unlistenUnmaximized) (unlistenUnmaximized as any)();
     };
   }, []);
 

@@ -19,24 +19,24 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
 
       - name: Set up Java 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12 # v4.7.0
         with:
           distribution: 'zulu'
           java-version: '17'
 
       - name: Set up Flutter SDK
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@44ac965b96f59e1c0a67deb328b84d8df1b174b9 # v2.18.0
         with:
           channel: 'stable'
           cache: true
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.5.0
         with:
           python-version: '3.x'
 
@@ -48,9 +48,8 @@ jobs:
       - name: Setup Environment Files
         run: |
           cd mediahive_mobile
-          echo "SUPABASE_URL=https://fcctcorycpvebupluzpe.supabase.co" > .env
+          echo "SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" > .env
           echo "SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" >> .env
-          echo "GITHUB_TOKEN=${{ secrets.RELEASE_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}" >> .env
           echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" >> .env
 
       - name: Setup Android Signing

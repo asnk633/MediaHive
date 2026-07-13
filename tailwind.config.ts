@@ -3,7 +3,7 @@ import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 const mediahive = {
   colors: {
-    canvas: "#000000",
+    canvas: "#0b1220",
 
     surface: {
       DEFAULT: "rgba(255,255,255,0.03)",

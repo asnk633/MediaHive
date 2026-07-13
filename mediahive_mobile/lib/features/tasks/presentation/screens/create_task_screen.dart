@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mediahive_mobile/core/utils/layout_helpers.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:uuid/uuid.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -649,6 +650,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   Widget build(BuildContext context) {
     final colors = ref.watch(themeColorsProvider);
     final labsState = ref.watch(labsProvider);
+    final headerHeight = ref.watch(headerHeightProvider);
     final testDemoDataEnabled = labsState['testDemoData'] ?? false;
     final profile = ref.watch(currentUserProfileProvider).valueOrNull;
     final currentUserId = profile?['id'] as String?;
@@ -724,7 +726,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                 children: [
                   // Page 1: General Info
                   SingleChildScrollView(
-                    padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
+                    padding: EdgeInsets.only(top: headerHeight == 0 ? 120.0 : headerHeight, left: 24, right: 24, bottom: 40),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -762,7 +764,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                   ),
                   // Page 2: Timeline & Context
                   SingleChildScrollView(
-                    padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
+                    padding: EdgeInsets.only(top: headerHeight == 0 ? 120.0 : headerHeight, left: 24, right: 24, bottom: 40),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -792,7 +794,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                   ),
                   // Page 3: Governance
                   SingleChildScrollView(
-                    padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
+                    padding: EdgeInsets.only(top: headerHeight == 0 ? 120.0 : headerHeight, left: 24, right: 24, bottom: 40),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -890,7 +892,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                   ),
                   // Page 4: Attachments & Submit
                   SingleChildScrollView(
-                    padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
+                    padding: EdgeInsets.only(top: headerHeight == 0 ? 120.0 : headerHeight, left: 24, right: 24, bottom: 40),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

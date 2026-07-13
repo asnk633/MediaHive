@@ -124,7 +124,7 @@ export default function BottomNavigation() {
                 />
 
                 <span
-                  className={`text-[9px] font-bold uppercase tracking-widest mt-1.5 transition-all duration-200 ${active ? 'opacity-100' : 'opacity-0 scale-90 translate-y-1 group-hover:opacity-60 group-hover:translate-y-0 group-hover:scale-100'}`}
+                  className={`text-[9px] font-bold uppercase tracking-widest mt-1.5 ${active ? 'opacity-100' : 'opacity-60 translate-y-0 scale-1 transition-none'}`}
                 >
                   {item.label}
                 </span>

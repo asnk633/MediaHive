@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
-import { verifyUser } from '@/lib/verifyUser';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/verifyUser';
 import { MonitoringService } from '@/services/monitoringService';
 
 /**
@@ -13,6 +12,8 @@ export async function POST(req: Request) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const supabase = await getSupabaseFromRequest(req);
 
     const { updates } = await req.json();
 
@@ -30,11 +31,12 @@ export async function POST(req: Request) {
 
     const ids = updates.map(u => u.id).filter(id => id !== undefined && id !== null && typeof id === 'string');
     
-    // 1. Fetch current versions from DB
+    // 1. Fetch current versions from DB (Hardened with tenant isolation)
     const { data: currentRecords, error: fetchError } = await supabase
       .from('tasks')
       .select('id, version')
-      .in('id', ids);
+      .in('id', ids)
+      .eq('tenant_id', tenantId);
 
     if (fetchError) throw fetchError;
 
@@ -92,7 +94,7 @@ if (update.owner_id !== user.uid) {
       .select('id');
 
     if (error) {
-      MonitoringService.error(error, { tenantId, userId: user.uid, updateCount: validUpdates.length });
+      MonitoringService.error(error.message, error, { tenantId, userId: user.uid, updateCount: validUpdates.length });
       throw error;
     }
 

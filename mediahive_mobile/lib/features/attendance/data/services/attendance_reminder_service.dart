@@ -41,20 +41,17 @@ final attendanceReminderServiceProvider = Provider<AttendanceReminderService>((r
     });
   });
 
-  // Eagerly fire an initial reminder update if the session provider is already loaded.
-  // ref.listen does NOT trigger on the initial value — only on subsequent changes.
-  // This ensures shift reminders are scheduled on boot/login without waiting for a state change.
+  // Eagerly fire a single combined initial reminder update using both session and policy
+  // (if already loaded). ref.listen does NOT trigger on the initial value — only on
+  // subsequent changes. By combining both reads into one call, we ensure only a single
+  // debounce window is started on boot/login, preventing the double schedule/cancel cycle
+  // that occurred when session and policy each fired updateReminders independently.
   final initialSessionState = ref.read(activeAttendanceSessionProvider);
-  initialSessionState.whenData((session) {
-    service.updateReminders(session);
-  });
-
-  // Fix #3: Also eagerly read the policy initial value so that if the policy has already
-  // resolved by the time this provider is first watched (common after a hot restart or
-  // when Supabase responds quickly), we schedule with the real policy rather than defaults.
   final initialPolicyState = ref.read(attendancePolicyProvider);
-  initialPolicyState.whenData((policy) {
-    final session = ref.read(activeAttendanceSessionProvider).value;
+  initialSessionState.whenData((session) {
+    // Pass the policy override if it's already available, otherwise updateReminders
+    // will fetch it internally. Either way, this is a single call.
+    final policy = initialPolicyState.value;
     service.updateReminders(session, policyOverride: policy);
   });
 
@@ -66,6 +63,15 @@ class AttendanceReminderService {
   final _logger = LoggerService();
   static const int _notificationIdOffset = 2000;
   Timer? _debounceTimer;
+
+  /// True while _executeUpdateReminders is running. Prevents concurrent executions.
+  bool _isExecuting = false;
+
+  /// Set to true when updateReminders is called while an execution is in progress.
+  /// When the execution finishes it will do exactly one more run with the latest state.
+  bool _hasPendingRequest = false;
+  AttendanceRecord? _lastRequestedSession;
+  AttendancePolicy? _lastRequestedPolicy;
 
   AttendanceReminderService(this._ref);
 
@@ -91,8 +97,20 @@ class AttendanceReminderService {
   }
 
   /// Reactively schedules and cancels check-in/out and lunch reminders.
-  /// Uses debounce to coalesce rapid-fire calls from multiple provider listeners.
+  /// Uses a debounce to coalesce rapid-fire calls, plus an execution guard so that
+  /// concurrent async executions never run at the same time. If a call arrives while
+  /// an execution is in progress, it is stored as a pending request and honoured
+  /// exactly once after the current execution completes.
   void updateReminders(AttendanceRecord? activeSession, {AttendancePolicy? policyOverride}) {
+    if (_isExecuting) {
+      // Execution already in progress — store the latest requested state and let
+      // the running execution trigger a follow-up run when it finishes.
+      _hasPendingRequest = true;
+      _lastRequestedSession = activeSession;
+      _lastRequestedPolicy = policyOverride;
+      return;
+    }
+    // No execution in progress — use debounce to coalesce rapid-fire calls.
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       _executeUpdateReminders(activeSession, policyOverride: policyOverride);
@@ -100,6 +118,7 @@ class AttendanceReminderService {
   }
 
   Future<void> _executeUpdateReminders(AttendanceRecord? activeSession, {AttendancePolicy? policyOverride}) async {
+    _isExecuting = true;
     try {
       final AttendancePolicy policy = policyOverride ?? await _ref.read(attendancePolicyProvider.future);
       final notificationService = _ref.read(notificationServiceProvider);
@@ -169,6 +188,20 @@ class AttendanceReminderService {
       }
     } catch (e, stack) {
       _logger.error('Error updating attendance reminders', e, stack);
+    } finally {
+      _isExecuting = false;
+      // If a provider state change arrived while we were executing, run exactly once
+      // more with the latest requested state so the final notification state is correct.
+      if (_hasPendingRequest) {
+        _hasPendingRequest = false;
+        final session = _lastRequestedSession;
+        final policy = _lastRequestedPolicy;
+        _lastRequestedSession = null;
+        _lastRequestedPolicy = null;
+        // Small delay so Riverpod state has fully settled before re-reading providers.
+        await Future.delayed(const Duration(milliseconds: 100));
+        await _executeUpdateReminders(session, policyOverride: policy);
+      }
     }
   }
 

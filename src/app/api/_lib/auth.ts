@@ -26,11 +26,13 @@ export async function getUserFromRequest(req: NextRequest): Promise<AuthUser | n
       return user;
     }
 
-    // Fallback to x-user-data header (for backward compatibility)
-    const userHeader = req.headers.get('x-user-data');
-    if (userHeader) {
-      const user = JSON.parse(userHeader) as AuthUser;
-      return user;
+    // Fallback to x-user-data header (strictly disabled in production)
+    if (process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_E2E_TESTING === 'true') {
+      const userHeader = req.headers.get('x-user-data');
+      if (userHeader) {
+        const user = JSON.parse(userHeader) as AuthUser;
+        return user;
+      }
     }
 
     return null;

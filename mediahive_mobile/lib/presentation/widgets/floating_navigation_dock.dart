@@ -113,11 +113,9 @@ class FloatingNavigationDock extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Expanded(child: _buildDockItem(context, ref, LucideIcons.home, 'Home', NavItem.dashboard, currentItem, colors)),
-                    Expanded(child: _buildDockItem(context, ref, LucideIcons.checkSquare, 'Tasks', NavItem.tasks, currentItem, colors)),
-                    Expanded(child: _buildDockItem(context, ref, LucideIcons.calendar, 'Events', NavItem.events, currentItem, colors)),
+                    Expanded(child: _buildDockItem(context, ref, LucideIcons.checkSquare, 'Work', NavItem.work, currentItem, colors)),
                     _buildIntegratedFAB(colors),
-                    Expanded(child: _buildDockItem(context, ref, LucideIcons.package, 'Inv', NavItem.inventory, currentItem, colors)),
-                    Expanded(child: _buildDockItem(context, ref, LucideIcons.download, 'Files', NavItem.files, currentItem, colors)),
+                    Expanded(child: _buildDockItem(context, ref, LucideIcons.package, 'Assets', NavItem.assets, currentItem, colors)),
                     Expanded(
                       child: Consumer(
                         builder: (context, ref, _) {
@@ -192,11 +190,11 @@ class FloatingNavigationDock extends ConsumerWidget {
     final isLight = !colors.isDark;
 
     String fullLabel = label;
-    if (label == 'Inv')     fullLabel = 'Inventory';
-    if (label == 'Admin')   fullLabel = 'Command Center';
-    if (label == 'Leave')   fullLabel = 'Request Leave';
-    if (label == 'Profile') fullLabel = 'My Profile';
-    if (label == 'Files')   fullLabel = 'Downloads';
+    if (label == 'Inv')     fullLabel = 'Assets';
+    if (label == 'Admin')   fullLabel = 'Admin';
+    if (label == 'Leave')   fullLabel = 'Leave';
+    if (label == 'Profile') fullLabel = 'Profile';
+    if (label == 'Files')   fullLabel = 'Files';
 
     return Tooltip(
       message: fullLabel,
@@ -264,16 +262,15 @@ class FloatingNavigationDock extends ConsumerWidget {
 
                 AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
-                  opacity: isSelected ? 1.0 : 0.0,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    height: isSelected ? 14 : 0,
+                  opacity: isSelected ? 1.0 : 0.55,
+                  child: SizedBox(
+                    height: 14,
                     child: Text(
                       fullLabel.toUpperCase(),
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w900,
-                        letterSpacing: 0.5,
+                        letterSpacing: 0.2,
                         color: isLight && isSelected
                             ? DesignTokens.lightHoney
                             : colors.textPrimary,

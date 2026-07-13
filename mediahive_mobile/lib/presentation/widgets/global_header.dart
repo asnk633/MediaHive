@@ -11,8 +11,9 @@ import 'package:mediahive_mobile/core/providers/sync_errors_provider.dart';
 import 'package:mediahive_mobile/core/providers/user_provider.dart';
 import 'package:mediahive_mobile/features/system/presentation/providers/notifications_provider.dart';
 import 'package:mediahive_mobile/features/chat/presentation/providers/chat_providers.dart';
+import 'package:mediahive_mobile/core/utils/layout_helpers.dart';
 
-class GlobalHeader extends ConsumerWidget {
+class GlobalHeader extends ConsumerStatefulWidget {
   final String currentRoute;
   final bool shouldHideNav;
   final bool isProfileRoute;
@@ -25,7 +26,22 @@ class GlobalHeader extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GlobalHeader> createState() => _GlobalHeaderState();
+}
+
+class _GlobalHeaderState extends ConsumerState<GlobalHeader> {
+  final GlobalKey _headerKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final renderBox = _headerKey.currentContext?.findRenderObject() as RenderBox?;
+      if (renderBox != null) {
+        ref.read(headerHeightProvider.notifier).updateHeight(renderBox.size.height);
+      }
+    });
+
     final colors = ref.watch(themeColorsProvider);
     final isLight = !colors.isDark;
 
@@ -39,6 +55,7 @@ class GlobalHeader extends ConsumerWidget {
               ? ImageFilter.blur(sigmaX: 24, sigmaY: 24)
               : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Container(
+            key: _headerKey,
             decoration: BoxDecoration(
               color: isLight
                   ? Colors.white.withValues(alpha: 0.78)
@@ -65,7 +82,7 @@ class GlobalHeader extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        if (shouldHideNav)
+                        if (widget.shouldHideNav)
                           IconButton(
                             icon: Icon(
                               context.canPop() ? LucideIcons.arrowLeft : LucideIcons.home,
@@ -76,36 +93,42 @@ class GlobalHeader extends ConsumerWidget {
                                 : context.go('/dashboard'),
                           )
                         else
-                          SizedBox(
-                            width: 54,
-                            height: 54,
-                            child: Image.asset(
-                              'assets/images/logo.png',
+                          (() {
+                            final disableAnims = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+                            final img = Image.asset(
+                              'assets/images/logo_3d.png',
                               fit: BoxFit.contain,
-                            )
-                            .animate(onPlay: (controller) => controller.repeat())
-                            .rotate(duration: 20.seconds, curve: Curves.linear),
-                          ),
+                            );
+                            if (disableAnims) {
+                              return SizedBox(
+                                width: 54,
+                                height: 54,
+                                child: img,
+                              );
+                            }
+                            return SizedBox(
+                              width: 54,
+                              height: 54,
+                              child: img
+                                  .animate(onPlay: (controller) => controller.repeat())
+                                  .rotate(duration: 20.seconds, curve: Curves.linear),
+                            );
+                          })(),
                         const SizedBox(width: 8),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SizedBox(
-                              height: 28,
-                              child: Transform.translate(
-                                offset: const Offset(-14.5, 0),
-                                child: Transform.scale(
-                                  scale: 6.0,
-                                  alignment: Alignment.centerLeft,
-                                  child: Image.asset(
-                                    colors.isDark ? 'assets/images/app_name_light.png' : 'assets/images/app_name_dark.png',
-                                    height: 28,
-                                  ),
-                                ),
+                            Text(
+                              'MediaHive',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                                color: colors.textPrimary,
+                                letterSpacing: -0.5,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 2),
                             Row(
                               children: [
                                 Container(
@@ -145,13 +168,13 @@ class GlobalHeader extends ConsumerWidget {
                                 color: Colors.transparent,
                                 child: InkResponse(
                                   onTap: () {
-                                    if (currentRoute.startsWith('/chat')) {
+                                    if (widget.currentRoute.startsWith('/chat')) {
                                       context.pop();
                                     } else {
                                       context.push('/chat');
                                     }
                                   },
-                                  radius: 20,
+                                  radius: 24,
                                   splashColor: colors.indigo.withValues(alpha: 0.15),
                                   highlightColor: colors.indigo.withValues(alpha: 0.08),
                                   child: Stack(
@@ -208,13 +231,13 @@ class GlobalHeader extends ConsumerWidget {
                                 color: Colors.transparent,
                                 child: InkResponse(
                                   onTap: () {
-                                    if (currentRoute.startsWith('/notifications')) {
+                                    if (widget.currentRoute.startsWith('/notifications')) {
                                       context.pop();
                                     } else {
                                       context.push('/notifications');
                                     }
                                   },
-                                  radius: 20,
+                                  radius: 24,
                                   splashColor: colors.indigo.withValues(alpha: 0.15),
                                   highlightColor: colors.indigo.withValues(alpha: 0.08),
                                   child: Stack(
@@ -288,7 +311,7 @@ class GlobalHeader extends ConsumerWidget {
                                 color: Colors.transparent,
                                 child: InkResponse(
                                   onTap: () {
-                                    if (isProfileRoute) {
+                                    if (widget.isProfileRoute) {
                                       if (context.canPop()) {
                                         context.pop();
                                       } else {

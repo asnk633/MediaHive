@@ -4,12 +4,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { config } from '@/lib/config';
 import axios from 'axios';
+import { verifyUser } from '@/lib/verifyUser';
 
 // Proxy all requests to the Python face recognition service
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  // Authenticate user & restrict to admin/team
+  const user = await verifyUser(request);
+  if (!user || (user.role !== 'admin' && user.role !== 'team')) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   // Check if feature is enabled
   if (!config.FEATURE_FACE_RECOGNITION) {
     return NextResponse.json(

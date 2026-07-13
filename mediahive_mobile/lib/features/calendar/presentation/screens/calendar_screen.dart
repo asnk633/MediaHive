@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mediahive_mobile/core/utils/layout_helpers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mediahive_mobile/core/theme/app_colors.dart';
 import 'package:mediahive_mobile/core/theme/app_spacing.dart';
@@ -35,6 +36,7 @@ class CalendarScreen extends ConsumerWidget {
     final networkStatus = ref.watch(networkStatusProvider).valueOrNull ?? NetworkStatus.online;
     final isOffline = networkStatus == NetworkStatus.offline;
     final colors = ref.watch(themeColorsProvider);
+    final headerHeight = ref.watch(headerHeightProvider);
 
     return Scaffold(
       backgroundColor: colors.backgroundPrimary,
@@ -56,8 +58,8 @@ class CalendarScreen extends ConsumerWidget {
             await Future.delayed(const Duration(milliseconds: 500));
           },
           child: eventsAsync.when(
-            data: (events) => _buildContent(context, ref, events, currentView, isOffline, colors),
-            loading: () => _buildLoadingState(context, colors),
+            data: (events) => _buildContent(context, ref, events, currentView, isOffline, colors, headerHeight),
+            loading: () => _buildLoadingState(context, colors, headerHeight),
             error: (e, _) => _buildErrorState(ref, e, colors),
           ),
         ),
@@ -65,12 +67,12 @@ class CalendarScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, WidgetRef ref, List<Event> events, String currentView, bool isOffline, ThemeColors colors) {
+  Widget _buildContent(BuildContext context, WidgetRef ref, List<Event> events, String currentView, bool isOffline, ThemeColors colors, double headerHeight) {
     return ListView(
       padding: EdgeInsets.only(
         left: AppSpacing.l, 
         right: AppSpacing.l, 
-        top: 120 + MediaQuery.of(context).padding.top, 
+        top: (headerHeight == 0 ? (120.0 + MediaQuery.of(context).padding.top) : headerHeight) + 64.0, 
         bottom: 120,
       ),
       children: [
@@ -204,9 +206,9 @@ class CalendarScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildLoadingState(BuildContext context, ThemeColors colors) {
+  Widget _buildLoadingState(BuildContext context, ThemeColors colors, double headerHeight) {
     return ListView(
-      padding: EdgeInsets.only(left: AppSpacing.l, right: AppSpacing.l, top: 120 + MediaQuery.of(context).padding.top),
+      padding: EdgeInsets.only(left: AppSpacing.l, right: AppSpacing.l, top: headerHeight == 0 ? (120.0 + MediaQuery.of(context).padding.top) : headerHeight),
       children: const [
         MhSkeleton(height: 60, width: double.infinity),
         SizedBox(height: AppSpacing.m),

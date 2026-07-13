@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-// Correct credentials sourced from guest-login.spec.ts
-const GUEST = { email: 'shuaibmse007@gmail.com', password: 'amarthaiba@thaiba' };
+const GUEST = {
+  email: process.env.PLAYWRIGHT_GUEST_EMAIL || 'shuaibmse007@gmail.com',
+  password: process.env.PLAYWRIGHT_GUEST_PASSWORD || ''
+};
 
 test.describe('Firestore Security Rules Verification v1.0', () => {
 

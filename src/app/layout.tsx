@@ -1,6 +1,5 @@
-'use client';
 import './globals.css';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { Inter } from 'next/font/google';
 import RootProviders from '@/components/layout/RootProviders';
@@ -13,6 +12,8 @@ import { AmbientCursorLight } from '@/components/ui/AmbientCursorLight';
 import { GlobalCommandPalette } from '@/components/layout/GlobalCommandPalette';
 import { WebViewDetector } from '@/components/WebViewDetector';
 import { Toaster } from '@/components/ui/sonner';
+import { ServiceWorkerCleanup } from '@/components/layout/ServiceWorkerCleanup';
+import { TelemetryFAB } from '@/components/TelemetryFAB';
 import '@/utils/safeAreaInitializer';
 
 const inter = Inter({
@@ -23,35 +24,15 @@ const inter = Inter({
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // 1. Proactively unregister legacy service workers to prevent cached page hijack
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then((registrations) => {
-          for (const registration of registrations) {
-            registration.unregister().then((success) => {
-              if (success) console.log('[PWA] Unregistered legacy service worker');
-            });
-          }
-        }).catch(err => console.error('[PWA] Error unregistering service workers:', err));
-      }
-
-      // 2. Clear all cache storage keys
-      if ('caches' in window) {
-        caches.keys().then((keys) => {
-          keys.forEach((key) => {
-            caches.delete(key).then(() => {
-              console.log('[Cache] Purged cache key:', key);
-            });
-          });
-        }).catch(err => console.error('[Cache] Error clearing cache storage:', err));
-      }
-    }
-  }, []);
 
   return (
     <html lang="en" className={cn(inter.variable)} suppressHydrationWarning={true}>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{const s=localStorage.getItem('theme');const p=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='dark'||(!s&&p)){document.documentElement.classList.add('dark');document.documentElement.setAttribute('data-theme','dark');}else{document.documentElement.classList.remove('dark');document.documentElement.setAttribute('data-theme','light');}}catch(_){}})()`
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -81,6 +62,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body className="min-h-screen bg-transparent" suppressHydrationWarning={true}>
+        <a href="#main-scroll-container" className="skip-link">Skip to Content</a>
+        <ServiceWorkerCleanup />
         <WebViewDetector />
         <AmbientCursorLight />
         <QueryProvider>
@@ -96,6 +79,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </RootProviders>
           </ThemeProvider>
         </QueryProvider>
+        {/* Telemetry & Log Share FAB — always visible, auth-agnostic */}
+        <TelemetryFAB />
       {/* impeccable-live-start */}
 <script src="http://localhost:8400/live.js"></script>
 {/* impeccable-live-end */}

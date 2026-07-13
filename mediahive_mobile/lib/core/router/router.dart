@@ -7,9 +7,8 @@ import 'package:mediahive_mobile/features/auth/presentation/screens/signup_scree
 import 'package:mediahive_mobile/features/auth/presentation/screens/reset_password_screen.dart';
 import 'package:mediahive_mobile/features/auth/presentation/screens/reset_confirmation_screen.dart';
 import 'package:mediahive_mobile/presentation/screens/shell_screen.dart';
-import 'package:mediahive_mobile/features/tasks/presentation/screens/tasks_screen.dart';
-import 'package:mediahive_mobile/features/inventory/presentation/screens/inventory_screen.dart';
-import 'package:mediahive_mobile/features/calendar/presentation/screens/calendar_screen.dart';
+import 'package:mediahive_mobile/presentation/screens/work_screen.dart';
+import 'package:mediahive_mobile/presentation/screens/assets_screen.dart';
 import 'package:mediahive_mobile/features/governance/presentation/screens/governance_screen.dart';
 import 'package:mediahive_mobile/features/auth/presentation/screens/profile_screen.dart';
 import 'package:mediahive_mobile/features/attendance/presentation/screens/attendance_dashboard_screen.dart';
@@ -25,7 +24,6 @@ import 'package:mediahive_mobile/features/dashboard/presentation/screens/dashboa
 import 'package:mediahive_mobile/features/tasks/domain/models/task.dart';
 import 'package:mediahive_mobile/features/calendar/domain/models/event.dart';
 import 'package:mediahive_mobile/features/inventory/domain/models/inventory_item.dart';
-import 'package:mediahive_mobile/features/files/presentation/screens/downloads_screen.dart';
 import 'package:mediahive_mobile/features/inventory/presentation/screens/add_inventory_item_screen.dart';
 import 'package:mediahive_mobile/features/system/presentation/screens/notification_center_screen.dart';
 import 'package:mediahive_mobile/features/system/presentation/screens/create_notification_screen.dart';
@@ -124,20 +122,28 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const DashboardScreen(),
           ),
           GoRoute(
+            path: '/work',
+            builder: (context, state) => const WorkScreen(),
+          ),
+          GoRoute(
+            path: '/assets',
+            builder: (context, state) => const AssetsScreen(),
+          ),
+          GoRoute(
             path: '/tasks',
-            builder: (context, state) => const TasksScreen(),
+            redirect: (context, state) => '/work?tab=tasks',
           ),
           GoRoute(
             path: '/inventory',
-            builder: (context, state) => const InventoryScreen(),
+            redirect: (context, state) => '/assets?tab=equipment',
           ),
           GoRoute(
             path: '/calendar',
-            builder: (context, state) => const CalendarScreen(),
+            redirect: (context, state) => '/work?tab=calendar',
           ),
           GoRoute(
             path: '/files',
-            builder: (context, state) => const DownloadsScreen(),
+            redirect: (context, state) => '/assets?tab=files',
           ),
           GoRoute(
             path: '/attendance',

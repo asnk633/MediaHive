@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { Permission, Role, hasPermission, hasRole } from '@/lib/permissions';
 import { verifyUser, AuthenticatedUser } from '@/lib/server/server-utils';

@@ -1,6 +1,6 @@
 // dev-only client fetch wrapper
 // ensures x-user-data header is attached to client fetch calls during local dev/testing
-if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
+if (typeof window !== "undefined" && process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_E2E_TESTING === "true") {
   try {
     const FLAG = "__TGMM_FETCH_WRAPPER__";
     if (!(window as any)[FLAG]) {

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/network_service.dart';
@@ -18,26 +17,18 @@ class MhOfflineBanner extends ConsumerWidget {
     final colors = ref.watch(themeColorsProvider);
     final isLight = !colors.isDark;
 
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            // Light: warm amber-tinted frosted glass | Dark: deep navy scrim
-            color: isLight
-                ? const Color(0xFFFFF3CD).withValues(alpha: 0.85)
-                : const Color(0xFF0F172A).withValues(alpha: 0.8),
-            border: Border(
-              bottom: BorderSide(
-                color: isLight
-                    ? const Color(0xFFFFD600).withValues(alpha: 0.3)
-                    : Colors.white.withValues(alpha: 0.05),
-                width: isLight ? 0.75 : 1.0,
-              ),
-            ),
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: colors.surface.withValues(alpha: 0.95),
+        border: Border(
+          bottom: BorderSide(
+            color: colors.border.withValues(alpha: 0.5),
+            width: isLight ? 0.75 : 1.0,
           ),
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
           child: SafeArea(
             bottom: false,
             child: Row(
@@ -76,8 +67,6 @@ class MhOfflineBanner extends ConsumerWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
+        );
   }
 }

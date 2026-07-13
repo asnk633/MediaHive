@@ -118,7 +118,7 @@ export default function SignupClient() {
 
     if (success) {
         return (
-            <div suppressHydrationWarning className={cn("relative min-h-screen flex items-center justify-center overflow-hidden transition-all duration-500", bgGradient)}>
+            <main suppressHydrationWarning className={cn("relative min-h-screen flex items-center justify-center overflow-hidden transition-all duration-500", bgGradient)}>
                 <ThemeToggle />
                 {/* Animated color haze */}
                 <div className={cn("absolute w-[900px] h-[900px] blur-[180px] rounded-full top-[-200px] left-[-200px] animate-[float_12s_ease-in-out_infinite] transition-colors duration-500", hazeGlow1)} />
@@ -143,14 +143,14 @@ export default function SignupClient() {
                         </button>
                     </div>
                 </div>
-            </div>
+            </main>
         );
     }
 
     if (!mounted) return null;
 
     return (
-        <div suppressHydrationWarning className={cn("relative min-h-screen flex items-center justify-center overflow-hidden transition-all duration-500", bgGradient)}>
+        <main suppressHydrationWarning className={cn("relative min-h-screen flex items-center justify-center overflow-hidden transition-all duration-500", bgGradient)}>
             <ThemeToggle />
             {/* Animated color haze */}
             <div className={cn("absolute w-[900px] h-[900px] blur-[180px] rounded-full top-[-200px] left-[-200px] animate-[float_12s_ease-in-out_infinite] transition-colors duration-500", hazeGlow1)} />
@@ -366,6 +366,6 @@ export default function SignupClient() {
                     © 2026 Thaiba Garden - Media
                 </p>
             </div>
-        </div>
+        </main>
     );
 }

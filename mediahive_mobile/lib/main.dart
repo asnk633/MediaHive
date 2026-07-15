@@ -19,6 +19,7 @@ import 'core/services/auth_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/fcm_service.dart';
 import 'core/providers/update_provider.dart';
+import 'core/services/crash_log_service.dart';
 import 'features/attendance/presentation/providers/attendance_provider.dart';
 import 'features/attendance/data/services/attendance_reminder_service.dart';
 // background_headless_task import removed — BGGeo headless tasks no longer used
@@ -29,116 +30,258 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'dart:ui';
+import 'package:package_info_plus/package_info_plus.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  } catch (e) {
-    debugPrint('FIREBASE_INIT_ERROR: $e');
-  }
-  
-  await dotenv.load(fileName: ".env");
-  final config = EnvConfig.current;
-  
-  // Production Error Handling
-  ErrorWidget.builder = (details) => MhGlobalErrorScreen(details: details);
-  
-  await Hive.initFlutter();
-  await Hive.openBox<bool>('sync_notifications');
-  
-  await Supabase.initialize(
-    url: config.supabaseUrl,
-    anonKey: config.supabaseAnonKey,
-  );
+void main() {
+  final crashLogService = CrashLogService();
 
-  debugPrint('SUPABASE_INIT: URL=${config.supabaseUrl}');
-  final session = Supabase.instance.client.auth.currentSession;
-  final user = Supabase.instance.client.auth.currentUser;
-  debugPrint('AUTH_STATE: LoggedIn=${session != null}, UserID=${user?.id}');
+  runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await crashLogService.init();
 
-  final container = ProviderContainer();
-  final logger = container.read(loggerProvider.notifier);
-
-  // Initialize Background Presence Service
-  final bgPresenceService = BackgroundPresenceService();
-  try {
-    await bgPresenceService.initializeService();
-    
-    // Register token refresh handshake listener
-    FlutterBackgroundService().on('requestRefresh').listen((event) async {
       try {
-        debugPrint('BG_PRESENCE: Main isolate received requestRefresh event');
-        final response = await Supabase.instance.client.auth.refreshSession();
-        final newSession = response.session;
-        if (newSession != null) {
-          const storage = FlutterSecureStorage();
-          await storage.write(key: 'access_token', value: newSession.accessToken);
-          await storage.write(key: 'refresh_token', value: newSession.refreshToken);
-          final expiresAt = DateTime.now().add(Duration(seconds: newSession.expiresIn ?? 3600));
-          await storage.write(key: 'token_expires_at', value: expiresAt.toIso8601String());
-
-          FlutterBackgroundService().invoke('tokenRefreshResponse', {
-            'accessToken': newSession.accessToken,
-            'refreshToken': newSession.refreshToken,
-            'expiresAt': expiresAt.toIso8601String(),
-          });
-          debugPrint('BG_PRESENCE: Main isolate successfully refreshed token and sent response');
-        }
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
       } catch (e) {
-        debugPrint('BG_PRESENCE: Main isolate failed to refresh token: $e');
+        debugPrint('FIREBASE_INIT_ERROR: $e');
       }
-    });
-  } catch (e) {
-    debugPrint('BG_PRESENCE_INIT_ERROR: $e');
-  }
-  
-  // Flutter Error Interception
-  FlutterError.onError = (details) {
-    FlutterError.presentError(details);
-    logger.error('FLUTTER_ERROR', details.exception, details.stack);
-  };
 
-  // Asynchronous Error Interception
-  PlatformDispatcher.instance.onError = (error, stack) {
-    logger.error('ASYNC_ERROR', error, stack);
-    return true;
-  };
+      await dotenv.load(fileName: ".env");
+      final config = EnvConfig.current;
 
-  // Initialize Auth Monitoring
-  container.read(authServiceProvider);
-  
-  // Initialize Notifications & FCM asynchronously so they do not block startup
-  unawaited(container.read(notificationServiceProvider).initialize().catchError((e, stack) {
-    logger.error('NOTIFICATION_INIT_ERROR', e, stack);
-  }));
-  unawaited(container.read(fcmServiceProvider).initialize().catchError((e, stack) {
-    logger.error('FCM_INIT_ERROR', e, stack);
-  }));
+      // Production Error Handling
+      ErrorWidget.builder = (details) {
+        // Record the Flutter error to disk as well
+        crashLogService.record('FLUTTER_RENDER_ERROR', details.exception, details.stack);
+        return MhGlobalErrorScreen(details: details);
+      };
 
-  // Warm update check provider to check for updates on startup
-  container.read(updateInfoProvider);
+      await Hive.initFlutter();
+      await Hive.openBox<bool>('sync_notifications');
 
-  // Set up periodic update checks every 5 minutes while the app is active
-  Timer.periodic(const Duration(minutes: 5), (timer) {
-    container.invalidate(updateInfoProvider);
-  });
+      await Supabase.initialize(
+        url: config.supabaseUrl,
+        anonKey: config.supabaseAnonKey,
+      );
 
-  logger.info('APPLICATION_START: Flavor=development');
+      debugPrint('SUPABASE_INIT: URL=${config.supabaseUrl}');
+      final session = Supabase.instance.client.auth.currentSession;
+      final user = Supabase.instance.client.auth.currentUser;
+      debugPrint('AUTH_STATE: LoggedIn=${session != null}, UserID=${user?.id}');
 
-  // Sync any buffered presence logs from offline sessions
-  BackgroundPresenceService().syncBufferedLogs();
+      final container = ProviderContainer(
+        overrides: [
+          crashLogServiceProvider.overrideWithValue(crashLogService),
+        ],
+      );
+      final logger = container.read(loggerProvider.notifier);
 
-  runApp(
-    UncontrolledProviderScope(
-      container: container,
-      child: const SnackbarListener(
-        child: MediaHiveApp(),
-      ),
-    ),
+      // Commented out to debug native startup crash on Android 15
+      /*
+      final bgPresenceService = BackgroundPresenceService();
+      try {
+        await bgPresenceService.initializeService();
+
+        // Register token refresh handshake listener
+        FlutterBackgroundService().on('requestRefresh').listen((event) async {
+          try {
+            debugPrint('BG_PRESENCE: Main isolate received requestRefresh event');
+            final response = await Supabase.instance.client.auth.refreshSession();
+            final newSession = response.session;
+            if (newSession != null) {
+              const storage = FlutterSecureStorage();
+              await storage.write(key: 'access_token', value: newSession.accessToken);
+              await storage.write(key: 'refresh_token', value: newSession.refreshToken);
+              final expiresAt = DateTime.now().add(Duration(seconds: newSession.expiresIn ?? 3600));
+              await storage.write(key: 'token_expires_at', value: expiresAt.toIso8601String());
+
+              FlutterBackgroundService().invoke('tokenRefreshResponse', {
+                'accessToken': newSession.accessToken,
+                'refreshToken': newSession.refreshToken,
+                'expiresAt': expiresAt.toIso8601String(),
+              });
+              debugPrint('BG_PRESENCE: Main isolate successfully refreshed token and sent response');
+            }
+          } catch (e) {
+            debugPrint('BG_PRESENCE: Main isolate failed to refresh token: $e');
+          }
+        });
+      } catch (e) {
+        debugPrint('BG_PRESENCE_INIT_ERROR: $e');
+      }
+      */
+
+      // Flutter Error Interception
+      FlutterError.onError = (details) {
+        FlutterError.presentError(details);
+        logger.error('FLUTTER_ERROR', details.exception, details.stack);
+        crashLogService.record('FLUTTER_ERROR', details.exception, details.stack);
+      };
+
+      // Asynchronous Error Interception
+      PlatformDispatcher.instance.onError = (error, stack) {
+        logger.error('ASYNC_ERROR', error, stack);
+        crashLogService.record('ASYNC_ERROR', error, stack);
+        return true;
+      };
+
+      // Initialize Auth Monitoring
+      container.read(authServiceProvider);
+
+      // Initialize Notifications & FCM asynchronously so they do not block startup
+      unawaited(container.read(notificationServiceProvider).initialize().catchError((e, stack) {
+        logger.error('NOTIFICATION_INIT_ERROR', e, stack);
+      }));
+      unawaited(container.read(fcmServiceProvider).initialize().catchError((e, stack) {
+        logger.error('FCM_INIT_ERROR', e, stack);
+      }));
+
+      // Warm update check provider to check for updates on startup
+      container.read(updateInfoProvider);
+
+      // Set up periodic update checks every 5 minutes while the app is active
+      Timer.periodic(const Duration(minutes: 5), (timer) {
+        container.invalidate(updateInfoProvider);
+      });
+
+      logger.info('APPLICATION_START: Flavor=development');
+
+      // Sync any buffered presence logs from offline sessions
+      BackgroundPresenceService().syncBufferedLogs();
+
+      runApp(
+        UncontrolledProviderScope(
+          container: container,
+          child: const SnackbarListener(
+            child: MediaHiveApp(),
+          ),
+        ),
+      );
+
+      // ─── Background Presence Service Initialization ───────────────────────
+      // Runs AFTER runApp so it cannot block or crash the startup sequence.
+      // The try/catch isolates any Android-version-specific failures (e.g. Android 15
+      // foreground service policy changes) from the rest of the app.
+      unawaited(() async {
+        try {
+          final bgPresence = BackgroundPresenceService();
+          await bgPresence.initializeService();
+          logger.info('BG_PRESENCE: Service initialized successfully.');
+
+          // Register token refresh handshake listener for the background isolate
+          FlutterBackgroundService().on('requestRefresh').listen((event) async {
+            try {
+              debugPrint('BG_PRESENCE: Main isolate received requestRefresh event');
+              final response = await Supabase.instance.client.auth.refreshSession();
+              final newSession = response.session;
+              if (newSession != null) {
+                const storage = FlutterSecureStorage();
+                await storage.write(key: 'access_token', value: newSession.accessToken);
+                await storage.write(key: 'refresh_token', value: newSession.refreshToken);
+                final expiresAt = DateTime.now().add(Duration(seconds: newSession.expiresIn ?? 3600));
+                await storage.write(key: 'token_expires_at', value: expiresAt.toIso8601String());
+                FlutterBackgroundService().invoke('tokenRefreshResponse', {
+                  'accessToken': newSession.accessToken,
+                  'refreshToken': newSession.refreshToken,
+                  'expiresAt': expiresAt.toIso8601String(),
+                });
+                debugPrint('BG_PRESENCE: Token refresh handshake completed.');
+              }
+            } catch (e) {
+              debugPrint('BG_PRESENCE: Token refresh handshake failed: $e');
+            }
+          });
+
+          // ─── Session Resume: if the user was checked in when the app restarted
+          // (e.g. after an OTA update, reboot, or force-close), restart the tracker.
+          final userId = Supabase.instance.client.auth.currentUser?.id;
+          if (userId != null) {
+            try {
+              final isAlreadyRunning = await FlutterBackgroundService().isRunning();
+              if (!isAlreadyRunning) {
+                // Check Supabase for an active attendance session
+                final activeData = await Supabase.instance.client
+                    .from('attendance')
+                    .select('id, nfcTagId')
+                    .eq('userId', userId)
+                    .eq('attendanceState', 'active')
+                    .order('checkInTime', ascending: false)
+                    .limit(1)
+                    .maybeSingle();
+
+                if (activeData != null) {
+                  final attendanceId = activeData['id'] as String;
+                  final tagId = activeData['nfcTagId'] as String?;
+
+                  if (tagId != null) {
+                    final tagData = await Supabase.instance.client
+                        .from('nfc_tags')
+                        .select('latitude, longitude, radius')
+                        .eq('tagId', tagId)
+                        .maybeSingle();
+
+                    if (tagData != null) {
+                      await bgPresence.startTracking(
+                        attendanceId: attendanceId,
+                        userId: userId,
+                        officeLatitude: (tagData['latitude'] as num).toDouble(),
+                        officeLongitude: (tagData['longitude'] as num).toDouble(),
+                        officeRadiusMeters: (tagData['radius'] as num).toDouble(),
+                      );
+                      logger.info('BG_PRESENCE: Resumed tracking for existing active session $attendanceId');
+                    }
+                  }
+                }
+              } else {
+                logger.info('BG_PRESENCE: Service already running, skipping resume.');
+              }
+            } catch (e) {
+              logger.warning('BG_PRESENCE: Session resume check failed (non-fatal): $e');
+            }
+          }
+        } catch (e, stack) {
+          // Non-fatal: log but do not crash the app
+          debugPrint('BG_PRESENCE_INIT_ERROR: $e');
+          crashLogService.record('BG_PRESENCE_INIT_ERROR', e, stack);
+        }
+      }());
+
+      // ─── Build Number Telemetry ───────────────────────────────────────────
+      // Reports this device's build number to Supabase so the release script
+      // can always determine the true highest build in the wild before releasing.
+      // Uses MAX-only logic: never overwrites with a lower value.
+      unawaited(() async {
+        try {
+          final info = await PackageInfo.fromPlatform();
+          final thisBuild = int.tryParse(info.buildNumber) ?? 0;
+          if (thisBuild > 0) {
+            final stored = await Supabase.instance.client
+                .from('system_config')
+                .select('value')
+                .eq('key', 'app_max_client_build')
+                .maybeSingle();
+            final storedMax = int.tryParse(stored?['value'] ?? '0') ?? 0;
+            if (thisBuild > storedMax) {
+              await Supabase.instance.client.from('system_config').upsert(
+                {'key': 'app_max_client_build', 'value': thisBuild.toString()},
+                onConflict: 'key',
+              );
+              debugPrint('BUILD_TELEMETRY: Reported new max build $thisBuild to Supabase (was $storedMax)');
+            } else {
+              debugPrint('BUILD_TELEMETRY: Build $thisBuild <= stored max $storedMax, no update needed.');
+            }
+          }
+        } catch (e) {
+          debugPrint('BUILD_TELEMETRY: Non-fatal error reporting build number: $e');
+        }
+      }());
+    },
+    (error, stack) {
+      debugPrint('ZONE_ERROR: $error\n$stack');
+      crashLogService.record('ZONE_ERROR', error, stack);
+    },
   );
 }
 

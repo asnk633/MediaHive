@@ -521,8 +521,11 @@ void onStart(ServiceInstance service) async {
       }
     });
 
-    // Run first check immediately
-    await runPresenceCheck();
+    // Run first check after a short delay so setAsForegroundService() has
+    // time to complete and Android doesn't reject location access.
+    // (Android 12+: "FGS started from background cannot have location access"
+    //  is thrown if location is accessed immediately on cold start.)
+    Future.delayed(const Duration(seconds: 15), runPresenceCheck);
   } catch (e, stack) {
     debugPrint('BG_PRESENCE_ISOLATE_FATAL_ERROR: $e\n$stack');
     try {

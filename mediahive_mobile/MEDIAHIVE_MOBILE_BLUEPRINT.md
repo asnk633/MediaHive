@@ -8,7 +8,7 @@
 
 This document is the single source of truth for the **MediaHive Flutter Mobile Application**.
 
-**Last Updated:** July 15, 2026 (Version 1.2.6-beta+98003 Release)
+**Last Updated:** July 15, 2026 (Version 1.2.6-beta+98004 Release)
 
 ---
 

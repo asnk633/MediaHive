@@ -42,14 +42,35 @@ if not SUPABASE_SERVICE_KEY:
     print("[WARNING] SUPABASE_SERVICE_ROLE_KEY not found in ../.env.local. Supabase sync will be skipped.")
 
 RELEASE_NOTES = (
-    "🚀 MediaHive v1.2.6-beta+67001 — UI/UX Refinement, Role Gating & Dashboard Bug Fixes\n\n"
-    "• Attendance Dashboard Enhancements: Fixed a critical UI bug where the Missed Check-In bottom sheet was rendered underneath the main bottom navigation bar (added useRootNavigator: true). Restricted the main check-in panel display to team and manager roles.\n"
-    "• Typography & Accessibility: Integrated textScaleOf helper to clamp accessibility text scale factors between [0.8, 1.3] in MhButton and MhInput, and polished dashboard typography font sizes.\n"
-    "• Localized Date Formatting: Standardized date and time display across calendar events, task lists, and downloads using DateFormat.yMMMd().\n"
-    "• User Flow Polish: Added a SnackBar with an 'Undo' option for task deletions, mapped helpful user instructions for common authentication and network errors, and gated debug panels behind kDebugMode."
+    "🐝 MediaHive — Notification Icon & Presence Tracker Polish\n\n"
+    "• Fix: Notification Icon (Leaf → Hexagonal Bee Logo)\n"
+    "  Replaced the outdated leaf icon on all foreground service and local notifications\n"
+    "  with the beautiful monochrome MediaHive hexagonal bee badge across all 5 density buckets\n"
+    "  (mdpi, hdpi, xxhdpi, xxhdpi, xxxhdpi), ensuring premium and correct branding."
 )
 
-# ─── 1. PARSE VERSION ─────────────────────────────────────────────────────────
+
+SUPABASE_URL = "https://fcctcorycpvebupluzpe.supabase.co"
+
+def query_supabase_config(key):
+    """Query a single key from system_config. Returns the value string or None."""
+    if not SUPABASE_SERVICE_KEY:
+        return None
+    try:
+        url = f"{SUPABASE_URL}/rest/v1/system_config?key=eq.{key}&select=value&limit=1"
+        req = urllib.request.Request(url, headers={
+            "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+            "apikey": SUPABASE_SERVICE_KEY,
+        })
+        with urllib.request.urlopen(req, timeout=10) as response:
+            rows = json.loads(response.read().decode())
+            return rows[0]["value"] if rows else None
+    except Exception as e:
+        print(f"[WARNING] Could not query Supabase config key '{key}': {e}")
+        return None
+
+
+# ─── 1. PARSE VERSION & AUTO-CORRECT BUILD NUMBER ─────────────────────────────
 if not os.path.exists(PUBSPEC_PATH):
     print(f"[ERROR] pubspec.yaml not found at {PUBSPEC_PATH}!")
     exit(1)
@@ -62,12 +83,67 @@ if not version_match:
     print("[ERROR] Could not parse version from pubspec.yaml!")
     exit(1)
 
-raw_version = version_match.group(1)
+raw_version = version_match.group(1)  # e.g. "1.2.6-beta+97002"
+
+# Split into semver part and build number
+if "+" in raw_version:
+    semver_part, pubspec_build_str = raw_version.rsplit("+", 1)
+else:
+    semver_part = raw_version
+    pubspec_build_str = "0"
+
+pubspec_build = int(pubspec_build_str) if pubspec_build_str.isdigit() else 0
+
+# ─── Query Supabase for the true max build in the wild ────────────────────────
+print("\n[MediaHive] Querying Supabase for max build number in the wild...")
+
+max_client_build = 0
+max_published_build = 0
+
+# 1. Highest build any client has self-reported (covers manual sideloads, debug builds, etc.)
+client_build_str = query_supabase_config("app_max_client_build")
+if client_build_str and client_build_str.isdigit():
+    max_client_build = int(client_build_str)
+    print(f"[MediaHive] Supabase app_max_client_build = {max_client_build}")
+
+# 2. Last version we published via OTA
+published_version_str = query_supabase_config("app_latest_version")
+if published_version_str and "+" in published_version_str:
+    published_build_str = published_version_str.rsplit("+", 1)[1]
+    if published_build_str.isdigit():
+        max_published_build = int(published_build_str)
+        print(f"[MediaHive] Supabase app_latest_version build = {max_published_build}")
+
+# ─── Determine the safe new build number ──────────────────────────────────────
+true_max_in_wild = max(pubspec_build, max_client_build, max_published_build)
+new_build = true_max_in_wild + 1
+
+if new_build != pubspec_build:
+    print(f"[MediaHive] AUTO-CORRECTING build number: pubspec={pubspec_build}, "
+          f"max_in_wild={true_max_in_wild} -> new build={new_build}")
+    new_raw_version = f"{semver_part}+{new_build}"
+    pubspec_content = re.sub(
+        r"^(version:\s*)" + re.escape(raw_version),
+        f"version: {new_raw_version}",
+        pubspec_content,
+        flags=re.MULTILINE
+    )
+    with open(PUBSPEC_PATH, "w") as f:
+        f.write(pubspec_content)
+    raw_version = new_raw_version
+    print(f"[MediaHive] pubspec.yaml auto-patched to version: {raw_version}")
+else:
+    print(f"[MediaHive] Build number {pubspec_build} is already ahead of max in wild ({true_max_in_wild}). No correction needed.")
+
+# Update RELEASE_NOTES version reference if it contains the old version
+RELEASE_NOTES_UPDATED = RELEASE_NOTES.replace(pubspec_build_str, str(new_build))
+
 clean_version = raw_version.replace("+", "_")
 tag_name = f"v{raw_version.replace('+', '-')}"
 
 print(f"[MediaHive] Target Release: {tag_name}")
 print(f"[MediaHive] Target APK Name: MediaHive_V{clean_version}.apk")
+
 
 # ─── 2. BUILD OPTIMIZED SPLIT APK ─────────────────────────────────────────────
 print("\n[MediaHive] Compiling optimized split APKs via Flutter...")
@@ -275,7 +351,8 @@ if SUPABASE_SERVICE_KEY and asset_download_url:
     payload = [
         {"key": "app_latest_version", "value": raw_version},
         {"key": "app_download_url", "value": asset_download_url},
-        {"key": "app_release_notes", "value": RELEASE_NOTES}
+        {"key": "app_release_notes", "value": RELEASE_NOTES_UPDATED},
+        {"key": "app_max_client_build", "value": str(new_build)},
     ]
     
     req_data = json.dumps(payload).encode('utf-8')

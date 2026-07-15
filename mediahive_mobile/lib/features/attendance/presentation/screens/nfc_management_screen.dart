@@ -87,20 +87,21 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
     super.dispose();
   }
 
-  Future<void> _captureLocation(StateSetter setSheetState) async {
+  Future<void> _captureLocationGeneric({
+    required StateSetter setSheetState,
+    required Function(bool isCapturing, String progress) onProgress,
+    required Function(double lat, double lng, double accuracy) onSuccess,
+    required Function(String errorMsg) onError,
+  }) async {
     final colors = ref.read(themeColorsProvider);
-    setState(() {
-      _isCapturingLocation = true;
-      _gpsProgress = "Initializing high-accuracy GPS...";
-      _isLocationConfirmed = false;
-    });
+    onProgress(true, "Initializing high-accuracy GPS...");
     setSheetState(() {});
 
     try {
       // 1. Check if location services are enabled
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        setState(() => _isCapturingLocation = false);
+        onProgress(false, "");
         setSheetState(() {});
         if (mounted) {
           showDialog(
@@ -140,15 +141,13 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          if (mounted) _showSnack(colors, 'Location permission denied');
+          onError('Location permission denied');
           return;
         }
       }
       
       if (permission == LocationPermission.deniedForever) {
-        if (mounted) {
-          _showSnack(colors, 'Location permissions are permanently denied. Please enable them in your system settings.');
-        }
+        onError('Location permissions are permanently denied. Please enable them in your system settings.');
         return;
       }
 
@@ -166,9 +165,10 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
           timer.cancel();
           if (!completer.isCompleted) completer.complete();
         } else {
-          setState(() {
-            _gpsProgress = "Stabilizing GPS ($elapsed/7s)... Best accuracy: ${bestPosition != null ? '±${bestPosition!.accuracy.toStringAsFixed(1)}m' : 'Waiting...'}";
-          });
+          onProgress(
+            true,
+            "Stabilizing GPS ($elapsed/7s)... Best accuracy: ${bestPosition != null ? '±${bestPosition!.accuracy.toStringAsFixed(1)}m' : 'Waiting...'}"
+          );
           setSheetState(() {});
         }
       });
@@ -202,25 +202,14 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
       // Validation Rules:
       // - Accuracy > 25m: block registration.
       if (pos.accuracy > 25.0) {
-        if (mounted) {
-          _showSnack(
-            colors,
-            'Registration Blocked: GPS accuracy is too poor (±${pos.accuracy.toStringAsFixed(1)}m). Accuracy must be under 25m. Step outdoors or wait for a stronger GPS signal.',
-            isSuccess: false,
-          );
-        }
+        onError('GPS accuracy is too poor (±${pos.accuracy.toStringAsFixed(1)}m). Accuracy must be under 25m.');
         return;
       }
 
+      onSuccess(pos.latitude, pos.longitude, pos.accuracy);
+      setSheetState(() {});
+      
       if (mounted) {
-        setState(() {
-          _latitude = pos.latitude;
-          _longitude = pos.longitude;
-          _accuracy = pos.accuracy;
-        });
-        setSheetState(() {});
-        
-        // - Accuracy > 15m (but <= 25m): warn user.
         if (pos.accuracy > 15.0) {
           _showSnack(
             colors,
@@ -232,23 +221,50 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
         }
       }
     } catch (e) {
-      if (mounted) _showSnack(colors, 'Failed to get location: $e');
+      onError('Failed to get location: $e');
     } finally {
-      if (mounted) {
-        setState(() {
-          _isCapturingLocation = false;
-          _gpsProgress = "";
-        });
-        setSheetState(() {});
-      }
+      onProgress(false, "");
+      setSheetState(() {});
     }
   }
 
-  void _openMapPicker(BuildContext context, ThemeColors colors, StateSetter setSheetState) {
+  Future<void> _captureLocation(StateSetter setSheetState) async {
+    await _captureLocationGeneric(
+      setSheetState: setSheetState,
+      onProgress: (isCapturing, progress) {
+        setState(() {
+          _isCapturingLocation = isCapturing;
+          _gpsProgress = progress;
+        });
+      },
+      onSuccess: (lat, lng, acc) {
+        setState(() {
+          _latitude = lat;
+          _longitude = lng;
+          _accuracy = acc;
+          _isLocationConfirmed = true;
+        });
+      },
+      onError: (err) {
+        final colors = ref.read(themeColorsProvider);
+        _showSnack(colors, err);
+      },
+    );
+  }
+
+  void _openMapPicker({
+    required BuildContext context,
+    required ThemeColors colors,
+    required StateSetter setSheetState,
+    required double initialLatitude,
+    required double initialLongitude,
+    required double initialRadius,
+    required Function(double lat, double lng) onConfirm,
+  }) {
     final mapController = MapController();
     latlong.LatLng mapCenter = latlong.LatLng(
-      _latitude != 0.0 ? _latitude : 25.313183,
-      _longitude != 0.0 ? _longitude : 88.606451,
+      initialLatitude != 0.0 ? initialLatitude : 25.313183,
+      initialLongitude != 0.0 ? initialLongitude : 88.606451,
     );
 
     showDialog(
@@ -291,7 +307,7 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
                             circles: [
                               CircleMarker(
                                 point: mapCenter,
-                                radius: _radius,
+                                radius: initialRadius,
                                 useRadiusInMeter: true,
                                 color: colors.honey.withValues(alpha: 0.15),
                                 borderColor: colors.honey,
@@ -389,12 +405,7 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
                             elevation: 0,
                           ),
                           onPressed: () {
-                            setState(() {
-                              _latitude = mapCenter.latitude;
-                              _longitude = mapCenter.longitude;
-                              _isLocationConfirmed = true;
-                            });
-                            setSheetState(() {});
+                            onConfirm(mapCenter.latitude, mapCenter.longitude);
                             Navigator.pop(dialogCtx);
                           },
                           child: const Text(
@@ -964,6 +975,23 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
             if (isAdmin) ...[
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.surface,
+                  foregroundColor: colors.honey,
+                  side: BorderSide(color: colors.honey.withValues(alpha: 0.5)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  minimumSize: const Size(double.infinity, 48),
+                ),
+                onPressed: () {
+                  Navigator.pop(ctx); // Close the detail sheet first
+                  _showEditSheet(context, colors, tag);
+                },
+                icon: const Icon(LucideIcons.pencil, size: 16),
+                label: const Text('EDIT TAG PROPERTIES', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 0.5)),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
                   backgroundColor: colors.honey,
                   foregroundColor: colors.backgroundPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
@@ -985,6 +1013,7 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
                       context: ctx,
                       builder: (d) => AlertDialog(
                         backgroundColor: colors.backgroundSecondary,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                         title: Text('Retire Tag', style: TextStyle(color: colors.textPrimary)),
                         content: Text('This tag will be soft deleted and can no longer be used for check-ins.', style: TextStyle(color: colors.textSecondary)),
                         actions: [
@@ -1451,6 +1480,663 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
     await _performRealNfcScan(context, colors, setSheetState);
   }
 
+  void _showEditSheet(BuildContext context, ThemeColors colors, domain.NfcTag tag) {
+    final formKey = GlobalKey<FormState>();
+    final nameController = TextEditingController(text: tag.tagName);
+    final tagIdController = TextEditingController(text: tag.tagId);
+    final campusNameController = TextEditingController(text: tag.campusName ?? '');
+    final campusIdController = TextEditingController(text: tag.campusId ?? '');
+    final locationGroupController = TextEditingController(text: tag.locationGroup ?? '');
+    final wifiSsidsController = TextEditingController(text: tag.wifiSsids ?? '');
+    
+    double editLatitude = tag.latitude;
+    double editLongitude = tag.longitude;
+    double editRadius = tag.radius;
+    double editAccuracy = tag.accuracy ?? 0.0;
+    String editTagType = tag.tagType;
+    bool editActive = tag.active;
+    bool isLocationConfirmed = true; 
+    bool isSubmittingEdit = false;
+    bool isCapturingLocationLocal = false;
+    String gpsProgressLocal = "";
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useRootNavigator: true,
+      useSafeArea: true,
+      backgroundColor: colors.backgroundSecondary,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) {
+          Future<void> saveEdit() async {
+            if (formKey.currentState?.validate() != true) return;
+            if (editLatitude == 0.0 && editLongitude == 0.0) {
+              _showSnack(colors, 'Please select location on map first');
+              return;
+            }
+            if (!isLocationConfirmed) {
+              _showSnack(colors, 'Please lock and confirm coordinates before saving');
+              return;
+            }
+            setSheetState(() => isSubmittingEdit = true);
+            try {
+              final campusName = campusNameController.text.trim();
+              final locationGroup = locationGroupController.text.trim();
+              final wifiSsids = wifiSsidsController.text.trim();
+              String? campusId = campusIdController.text.trim();
+
+              if (campusId.isEmpty && campusName.isNotEmpty) {
+                campusId = const Uuid().v4();
+              } else if (campusId.isEmpty) {
+                campusId = null;
+              }
+
+              final repo = ref.read(attendanceRepositoryProvider);
+              await repo.updateTag(tag.id, {
+                'tagName': nameController.text.trim(),
+                'tagId': tagIdController.text.trim(),
+                'tagType': editTagType,
+                'latitude': editLatitude,
+                'longitude': editLongitude,
+                'radius': editRadius,
+                'accuracy': editAccuracy,
+                'active': editActive,
+                'campusId': campusId,
+                'campusName': campusName.isNotEmpty ? campusName : null,
+                'locationGroup': locationGroup.isNotEmpty ? locationGroup : null,
+                'wifi_ssids': wifiSsids.isNotEmpty ? wifiSsids : null,
+              });
+
+              if (mounted) {
+                ref.invalidate(allNfcTagsProvider);
+                ref.invalidate(activeNfcTagsProvider);
+                _showSnack(colors, 'NFC tag updated successfully', isSuccess: true);
+                Navigator.pop(ctx);
+              }
+            } catch (e) {
+              _showSnack(colors, 'Update failed: $e');
+            } finally {
+              setSheetState(() => isSubmittingEdit = false);
+            }
+          }
+
+          return Padding(
+            padding: EdgeInsets.fromLTRB(24, 24, 24, 24 + MediaQuery.of(ctx).viewInsets.bottom),
+            child: Form(
+              key: formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 36, height: 4,
+                        decoration: BoxDecoration(color: colors.border, borderRadius: BorderRadius.circular(100)),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text('EDIT NFC TAG', style: AppTypography.h3.copyWith(color: colors.textPrimary)),
+                    const SizedBox(height: 4),
+                    Text('Modify properties of an existing NFC check-in spot', style: TextStyle(color: colors.textSecondary, fontSize: 13)),
+                    const SizedBox(height: 24),
+                    _buildFormField(
+                      colors: colors,
+                      controller: nameController,
+                      label: 'Tag Name',
+                      hint: 'e.g. Main Entrance',
+                      icon: LucideIcons.tag,
+                      validator: (v) => v?.isEmpty == true ? 'Tag name required' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: _buildFormField(
+                            colors: colors,
+                            controller: tagIdController,
+                            label: 'Physical Tag ID',
+                            hint: 'e.g. NFC_UID_HERE',
+                            icon: LucideIcons.hash,
+                            validator: (v) => v?.isEmpty == true ? 'Tag ID required' : null,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: SizedBox(
+                            height: 56,
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colors.honey,
+                                foregroundColor: colors.backgroundPrimary,
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                elevation: 0,
+                              ),
+                              onPressed: () async {
+                                final availability = await NfcManager.instance.checkAvailability();
+                                if (availability != NfcAvailability.enabled) {
+                                  _showSnack(colors, availability == NfcAvailability.disabled 
+                                      ? 'NFC is disabled. Please enable it in Settings.' 
+                                      : 'NFC hardware is not supported on this device.');
+                                  return;
+                                }
+
+                                if (!context.mounted) return;
+                                
+                                BuildContext? scanDialogContext;
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (dialogCtx) {
+                                    scanDialogContext = dialogCtx;
+                                    return WillPopScope(
+                                      onWillPop: () async {
+                                        await NfcManager.instance.stopSession();
+                                        return true;
+                                      },
+                                      child: AlertDialog(
+                                        backgroundColor: colors.backgroundSecondary,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                        title: Center(
+                                          child: Text('READY TO SCAN',
+                                              style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.bold, fontSize: 16)),
+                                        ),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            Icon(LucideIcons.nfc, size: 50, color: colors.honey)
+                                                .animate(onPlay: (controller) => controller.repeat(reverse: true))
+                                                .scale(begin: const Offset(1, 1), end: const Offset(1.2, 1.2), duration: 1000.ms),
+                                            const SizedBox(height: 20),
+                                            Text(
+                                              'Approach your device to the physical NFC tag.',
+                                              style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            const SizedBox(height: 10),
+                                          ],
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () async {
+                                              await NfcManager.instance.stopSession();
+                                              if (dialogCtx.mounted) Navigator.pop(dialogCtx);
+                                            },
+                                            child: Text('Cancel', style: TextStyle(color: colors.textSecondary)),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+
+                                await NfcManager.instance.startSession(
+                                  pollingOptions: {
+                                    NfcPollingOption.iso14443,
+                                    NfcPollingOption.iso15693,
+                                    NfcPollingOption.iso18092,
+                                  },
+                                  onDiscovered: (NfcTag scannedTag) {
+                                    Future.microtask(() async {
+                                      String identifier = 'UNKNOWN';
+                                      try {
+                                        final dynamic rawData = (scannedTag as dynamic).data;
+                                        if (rawData != null) {
+                                          final dynamic id = (scannedTag as dynamic).id;
+                                          if (id is Uint8List) {
+                                            identifier = id.map((b) => b.toRadixString(16).padLeft(2, '0')).join(':').toUpperCase();
+                                          }
+                                        }
+                                      } catch (_) {}
+
+                                      if (identifier == 'UNKNOWN') {
+                                        await NfcManager.instance.stopSession();
+                                        if (scanDialogContext != null && scanDialogContext!.mounted) {
+                                          Navigator.pop(scanDialogContext!);
+                                        }
+                                        _showSnack(colors, 'Could not read NFC Tag serial ID.', isSuccess: false);
+                                        return;
+                                      }
+                                      
+                                      bool writeSuccess = false;
+                                      try {
+                                        final ndef = Ndef.from(scannedTag);
+                                        if (ndef != null && ndef.isWritable) {
+                                          final uriBytes = utf8.encode('mediahive://attendance/scan?tagId=$identifier&v=1');
+                                          final payload = Uint8List.fromList([0x00, ...uriBytes]);
+                                          final message = NdefMessage(records: [
+                                            NdefRecord(
+                                              typeNameFormat: TypeNameFormat.wellKnown,
+                                              type: Uint8List.fromList([0x55]),
+                                              identifier: Uint8List(0),
+                                              payload: payload,
+                                            ),
+                                          ]);
+                                          await ndef.write(message: message);
+                                          writeSuccess = true;
+                                        }
+                                      } catch (_) {}
+
+                                      await NfcManager.instance.stopSession();
+                                      if (scanDialogContext != null && scanDialogContext!.mounted) {
+                                        Navigator.pop(scanDialogContext!);
+                                      }
+                                      
+                                      tagIdController.text = identifier;
+                                      setSheetState(() {});
+                                      _showSnack(colors, 'NFC Tag ID captured: $identifier', isSuccess: true);
+                                    });
+                                  },
+                                );
+                              },
+                              icon: const Icon(LucideIcons.nfc, size: 16),
+                              label: const Text('SCAN', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _buildFormField(
+                      colors: colors,
+                      controller: campusNameController,
+                      label: 'Campus Name (Optional)',
+                      hint: 'e.g. Thaiba Garden',
+                      icon: LucideIcons.building,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildFormField(
+                      colors: colors,
+                      controller: campusIdController,
+                      label: 'Campus ID (Optional - Auto-generates if blank)',
+                      hint: 'Leave blank to generate or enter UUID',
+                      icon: LucideIcons.shieldAlert,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildFormField(
+                      colors: colors,
+                      controller: locationGroupController,
+                      label: 'Location Group (Optional)',
+                      hint: 'e.g. main_entrance, reception',
+                      icon: LucideIcons.layers,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildFormField(
+                      colors: colors,
+                      controller: wifiSsidsController,
+                      label: 'Approved Office WiFi SSID(s) (Optional)',
+                      hint: 'e.g. MH_OFFICE, THAIBA_MAIN (comma separated)',
+                      icon: LucideIcons.wifi,
+                      suffixIcon: IconButton(
+                        icon: Icon(LucideIcons.refreshCw, color: colors.honey, size: 16),
+                        onPressed: () async {
+                          try {
+                            final info = NetworkInfo();
+                            String? rawSsid = await info.getWifiName();
+                            if (rawSsid != null) {
+                              final cleanSsid = rawSsid.replaceAll('"', '');
+                              final currentText = wifiSsidsController.text.trim();
+                              if (currentText.isEmpty) {
+                                wifiSsidsController.text = cleanSsid;
+                              } else {
+                                final list = currentText.split(',').map((s) => s.trim()).toList();
+                                if (!list.contains(cleanSsid)) {
+                                  wifiSsidsController.text = '$currentText, $cleanSsid';
+                                }
+                              }
+                              _showSnack(colors, 'Captured WiFi SSID: $cleanSsid', isSuccess: true);
+                            }
+                          } catch (_) {}
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Text(
+                          'ACTIVE STATUS',
+                          style: TextStyle(color: colors.textSecondary, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1),
+                        ),
+                        const Spacer(),
+                        Switch(
+                          value: editActive,
+                          activeColor: colors.honey,
+                          onChanged: (val) => setSheetState(() => editActive = val),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text('TAG TYPE', style: TextStyle(color: colors.textSecondary, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        {'id': 'attendance', 'label': 'ATTENDANCE', 'icon': LucideIcons.clock},
+                        {'id': 'equipment', 'label': 'EQUIPMENT', 'icon': LucideIcons.package},
+                        {'id': 'vehicle', 'label': 'VEHICLE', 'icon': LucideIcons.car},
+                        {'id': 'location', 'label': 'LOCATION', 'icon': LucideIcons.mapPin},
+                        {'id': 'field_work', 'label': 'FIELD WORK', 'icon': LucideIcons.briefcase},
+                      ].map((t) {
+                        final isSelected = editTagType == t['id'];
+                        return GestureDetector(
+                          onTap: () => setSheetState(() => editTagType = t['id'] as String),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: isSelected ? colors.honey.withValues(alpha: 0.1) : colors.surface,
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(
+                                color: isSelected ? colors.honey.withValues(alpha: 0.5) : colors.border,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(t['icon'] as IconData, color: isSelected ? colors.honey : colors.textSecondary, size: 12),
+                                const SizedBox(width: 6),
+                                Text(
+                                  t['label'] as String,
+                                  style: TextStyle(
+                                    color: isSelected ? colors.honey : colors.textSecondary,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 16),
+                    GestureDetector(
+                      onTap: () => _openMapPicker(
+                        context: context,
+                        colors: colors,
+                        setSheetState: setSheetState,
+                        initialLatitude: editLatitude,
+                        initialLongitude: editLongitude,
+                        initialRadius: editRadius,
+                        onConfirm: (lat, lng) {
+                          setSheetState(() {
+                            editLatitude = lat;
+                            editLongitude = lng;
+                            isLocationConfirmed = true;
+                          });
+                        },
+                      ),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: editLatitude != 0.0 ? AppColors.success.withValues(alpha: 0.1) : colors.surface,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: editLatitude != 0.0 ? AppColors.success.withValues(alpha: 0.4) : colors.border,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              editLatitude != 0.0 ? LucideIcons.checkCircle : LucideIcons.map,
+                              color: editLatitude != 0.0 ? AppColors.success : colors.honey,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    editLatitude != 0.0 ? 'LOCATION LOCKED' : 'SELECT LOCATION ON MAP',
+                                    style: TextStyle(
+                                      color: editLatitude != 0.0 ? AppColors.success : colors.textPrimary,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    editLatitude != 0.0
+                                        ? 'Coordinates set: ${editLatitude.toStringAsFixed(6)}, ${editLongitude.toStringAsFixed(6)}'
+                                        : 'Tap to place a pin on the map',
+                                    style: TextStyle(color: colors.textSecondary, fontSize: 11),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(LucideIcons.chevronRight, color: colors.textSecondary, size: 16),
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (editLatitude != 0.0 && editLongitude != 0.0) ...[
+                      const SizedBox(height: 12),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: colors.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: colors.border),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(LucideIcons.locate, color: colors.honey, size: 18),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'SELECTED COORDINATES',
+                                    style: TextStyle(
+                                      color: colors.honey,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Latitude: $editLatitude\nLongitude: $editLongitude',
+                                    style: TextStyle(
+                                      color: colors.textPrimary,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'monospace',
+                                      height: 1.35,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                    GestureDetector(
+                      onTap: isCapturingLocationLocal
+                          ? null
+                          : () async {
+                              await _captureLocationGeneric(
+                                setSheetState: setSheetState,
+                                onProgress: (isCapturing, progress) {
+                                  setSheetState(() {
+                                    isCapturingLocationLocal = isCapturing;
+                                    gpsProgressLocal = progress;
+                                  });
+                                },
+                                onSuccess: (lat, lng, acc) {
+                                  setSheetState(() {
+                                    editLatitude = lat;
+                                    editLongitude = lng;
+                                    editAccuracy = acc;
+                                    isLocationConfirmed = true;
+                                  });
+                                },
+                                onError: (err) {
+                                  _showSnack(colors, err);
+                                },
+                              );
+                            },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: editLatitude != 0.0
+                              ? (editAccuracy > 15.0 ? Colors.orange.withValues(alpha: 0.1) : AppColors.success.withValues(alpha: 0.1))
+                              : colors.surface,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: editLatitude != 0.0
+                                ? (editAccuracy > 15.0 ? Colors.orange.withValues(alpha: 0.4) : AppColors.success.withValues(alpha: 0.4))
+                                : colors.border,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            isCapturingLocationLocal
+                                ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: colors.honey))
+                                : Icon(
+                                    editLatitude != 0.0
+                                        ? (editAccuracy > 15.0 ? LucideIcons.alertTriangle : LucideIcons.checkCircle)
+                                        : LucideIcons.locateFixed,
+                                    color: editLatitude != 0.0
+                                        ? (editAccuracy > 15.0 ? Colors.orange : AppColors.success)
+                                        : colors.honey,
+                                    size: 16,
+                                  ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    editLatitude != 0.0
+                                        ? (editAccuracy > 15.0 ? 'GPS Location (Poor Accuracy)' : 'GPS Location Stabilized')
+                                        : 'GET CURRENT GPS LOCATION (CONVENIENCE)',
+                                    style: TextStyle(
+                                        color: editLatitude != 0.0
+                                            ? (editAccuracy > 15.0 ? Colors.orange : AppColors.success)
+                                            : colors.textPrimary,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: 0.5),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  if (editLatitude != 0.0) ...[
+                                    Text(
+                                      'Latitude:\n$editLatitude',
+                                      style: TextStyle(color: colors.textPrimary, fontSize: 11, fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Longitude:\n$editLongitude',
+                                      style: TextStyle(color: colors.textPrimary, fontSize: 11, fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Best Accuracy:\n±${editAccuracy.toStringAsFixed(1)}m',
+                                      style: TextStyle(
+                                        color: editAccuracy > 15.0 ? Colors.orange : colors.textPrimary,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ] else ...[
+                                    Text(
+                                      isCapturingLocationLocal ? gpsProgressLocal : 'Tap to capture stabilized GPS coordinates',
+                                      style: TextStyle(color: colors.textSecondary, fontSize: 11),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text('RADIUS', style: TextStyle(color: colors.textSecondary, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Slider(
+                            value: editRadius,
+                            min: 25,
+                            max: 200,
+                            divisions: 7,
+                            activeColor: colors.honey,
+                            inactiveColor: colors.border,
+                            onChanged: (v) => setSheetState(() => editRadius = v),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: colors.surface,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: colors.border),
+                          ),
+                          child: Text(
+                            '${editRadius.toInt()}m',
+                            style: TextStyle(color: colors.honey, fontWeight: FontWeight.w900, fontSize: 12),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    GestureDetector(
+                      onTap: isSubmittingEdit ? null : saveEdit,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          gradient: colors.isDark ? AppColors.primaryGradient : AppColors.lightPrimaryGradient,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (isSubmittingEdit)
+                              SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: colors.backgroundPrimary))
+                            else
+                              Icon(LucideIcons.save, color: colors.backgroundPrimary, size: 16),
+                            const SizedBox(width: 10),
+                            Text(
+                              isSubmittingEdit ? 'SAVING...' : 'SAVE CHANGES',
+                              style: TextStyle(
+                                color: colors.backgroundPrimary,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 13,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildInfoRow(ThemeColors colors, String label, String value, IconData icon) {
     return Row(
       children: [
@@ -1608,7 +2294,22 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
                   const SizedBox(height: 16),
                   // Interactive Map Location Picker (Primary)
                   GestureDetector(
-                    onTap: () => _openMapPicker(context, colors, setSheetState),
+                    onTap: () => _openMapPicker(
+                      context: context,
+                      colors: colors,
+                      setSheetState: setSheetState,
+                      initialLatitude: _latitude,
+                      initialLongitude: _longitude,
+                      initialRadius: _radius,
+                      onConfirm: (lat, lng) {
+                        setState(() {
+                          _latitude = lat;
+                          _longitude = lng;
+                          _isLocationConfirmed = true;
+                        });
+                        setSheetState(() {});
+                      },
+                    ),
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),

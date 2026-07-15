@@ -252,7 +252,9 @@ void main() {
           }
 
           // If the user is already available (cached session), resume immediately.
-          // Otherwise, wait for the first auth state event (signedIn / tokenRefreshed).
+          // Otherwise, wait for the first auth state event.
+          // NOTE: After OTA/reboot, Supabase restores a persisted session and fires
+          // AuthChangeEvent.initialSession — NOT signedIn. We must handle all three.
           final immediateUser = Supabase.instance.client.auth.currentUser;
           if (immediateUser != null) {
             await tryResumeSession(immediateUser.id);
@@ -261,7 +263,9 @@ void main() {
             StreamSubscription? sub;
             sub = Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
               final event = data.event;
-              if (event == AuthChangeEvent.signedIn || event == AuthChangeEvent.tokenRefreshed) {
+              if (event == AuthChangeEvent.initialSession ||
+                  event == AuthChangeEvent.signedIn ||
+                  event == AuthChangeEvent.tokenRefreshed) {
                 final uid = data.session?.user.id;
                 if (uid != null) {
                   await tryResumeSession(uid);

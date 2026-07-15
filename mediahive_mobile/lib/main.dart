@@ -196,50 +196,79 @@ void main() {
 
           // ─── Session Resume: if the user was checked in when the app restarted
           // (e.g. after an OTA update, reboot, or force-close), restart the tracker.
-          final userId = Supabase.instance.client.auth.currentUser?.id;
-          if (userId != null) {
+          // Wait for Supabase to restore the persisted session from storage before
+          // checking currentUser — it may be null immediately at startup.
+          Future<void> tryResumeSession(String userId) async {
             try {
               final isAlreadyRunning = await FlutterBackgroundService().isRunning();
-              if (!isAlreadyRunning) {
-                // Check Supabase for an active attendance session
-                final activeData = await Supabase.instance.client
-                    .from('attendance')
-                    .select('id, nfcTagId')
-                    .eq('userId', userId)
-                    .eq('attendanceState', 'active')
-                    .order('checkInTime', ascending: false)
-                    .limit(1)
-                    .maybeSingle();
+              if (isAlreadyRunning) {
+                logger.info('BG_PRESENCE: Service already running, skipping resume.');
+                return;
+              }
 
-                if (activeData != null) {
-                  final attendanceId = activeData['id'] as String;
-                  final tagId = activeData['nfcTagId'] as String?;
+              // Check Supabase for an active attendance session
+              // NOTE: attendance.nfcTagId stores the nfc_tags UUID (primary key),
+              //       NOT the raw hardware tag ID. So we look up nfc_tags by 'id'.
+              final activeData = await Supabase.instance.client
+                  .from('attendance')
+                  .select('id, nfcTagId')
+                  .eq('userId', userId)
+                  .eq('attendanceState', 'active')
+                  .order('checkInTime', ascending: false)
+                  .limit(1)
+                  .maybeSingle();
 
-                  if (tagId != null) {
-                    final tagData = await Supabase.instance.client
-                        .from('nfc_tags')
-                        .select('latitude, longitude, radius')
-                        .eq('tagId', tagId)
-                        .maybeSingle();
+              if (activeData != null) {
+                final attendanceId = activeData['id'] as String;
+                final nfcTagUuid = activeData['nfcTagId'] as String?;
 
-                    if (tagData != null) {
-                      await bgPresence.startTracking(
-                        attendanceId: attendanceId,
-                        userId: userId,
-                        officeLatitude: (tagData['latitude'] as num).toDouble(),
-                        officeLongitude: (tagData['longitude'] as num).toDouble(),
-                        officeRadiusMeters: (tagData['radius'] as num).toDouble(),
-                      );
-                      logger.info('BG_PRESENCE: Resumed tracking for existing active session $attendanceId');
-                    }
+                if (nfcTagUuid != null) {
+                  // Look up by nfc_tags.id (the UUID primary key)
+                  final tagData = await Supabase.instance.client
+                      .from('nfc_tags')
+                      .select('latitude, longitude, radius')
+                      .eq('id', nfcTagUuid)
+                      .maybeSingle();
+
+                  if (tagData != null) {
+                    await bgPresence.startTracking(
+                      attendanceId: attendanceId,
+                      userId: userId,
+                      officeLatitude: (tagData['latitude'] as num).toDouble(),
+                      officeLongitude: (tagData['longitude'] as num).toDouble(),
+                      officeRadiusMeters: (tagData['radius'] as num).toDouble(),
+                    );
+                    logger.info('BG_PRESENCE: Resumed tracking for existing active session $attendanceId');
+                  } else {
+                    logger.warning('BG_PRESENCE: No nfc_tags row found for UUID=$nfcTagUuid — cannot resume.');
                   }
                 }
               } else {
-                logger.info('BG_PRESENCE: Service already running, skipping resume.');
+                logger.info('BG_PRESENCE: No active attendance session found — tracker not started.');
               }
             } catch (e) {
               logger.warning('BG_PRESENCE: Session resume check failed (non-fatal): $e');
             }
+          }
+
+          // If the user is already available (cached session), resume immediately.
+          // Otherwise, wait for the first auth state event (signedIn / tokenRefreshed).
+          final immediateUser = Supabase.instance.client.auth.currentUser;
+          if (immediateUser != null) {
+            await tryResumeSession(immediateUser.id);
+          } else {
+            // Session may not be restored yet — wait for the auth stream.
+            StreamSubscription? sub;
+            sub = Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
+              final event = data.event;
+              if (event == AuthChangeEvent.signedIn || event == AuthChangeEvent.tokenRefreshed) {
+                final uid = data.session?.user.id;
+                if (uid != null) {
+                  await tryResumeSession(uid);
+                }
+                await sub?.cancel();
+              }
+            });
           }
         } catch (e, stack) {
           // Non-fatal: log but do not crash the app

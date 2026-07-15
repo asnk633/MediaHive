@@ -35,7 +35,8 @@ import {
     AlertCircle, 
     Printer, 
     Search,
-    ShieldAlert
+    ShieldAlert,
+    Pencil
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
@@ -71,6 +72,19 @@ export default function AdminAttendancePage() {
     // Modal States
     const [exportOpen, setExportOpen] = useState(false);
     const [registerOpen, setRegisterOpen] = useState(false);
+    const [editOpen, setEditOpen] = useState(false);
+    const [editingTag, setEditingTag] = useState<any>(null);
+
+    // Form fields for editing
+    const [editTagName, setEditTagName] = useState('');
+    const [editTagId, setEditTagId] = useState('');
+    const [editTagType, setEditTagType] = useState('attendance');
+    const [editLatitude, setEditLatitude] = useState('');
+    const [editLongitude, setEditLongitude] = useState('');
+    const [editRadius, setEditRadius] = useState('50');
+    const [editWifiSsids, setEditWifiSsids] = useState('');
+    const [editCampusName, setEditCampusName] = useState('');
+    const [editActive, setEditActive] = useState(true);
 
     // Logs Data State
     const [logs, setLogs] = useState<any[]>([]);
@@ -264,6 +278,59 @@ export default function AdminAttendancePage() {
         } catch (err) {
             console.error('Error registering spot:', err);
             toast.error('Error registering NFC Spot');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleOpenEdit = (tag: any) => {
+        setEditingTag(tag);
+        setEditTagName(tag.tagName || '');
+        setEditTagId(tag.tagId || '');
+        setEditTagType(tag.tagType || 'attendance');
+        setEditLatitude(tag.latitude !== undefined ? String(tag.latitude) : '');
+        setEditLongitude(tag.longitude !== undefined ? String(tag.longitude) : '');
+        setEditRadius(tag.radius !== undefined ? String(tag.radius) : '50');
+        setEditWifiSsids(tag.wifiSsids || tag.wifi_ssids || '');
+        setEditCampusName(tag.campusName || '');
+        setEditActive(tag.active !== false);
+        setEditOpen(true);
+    };
+
+    const handleUpdateTag = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editTagName || !editTagId || !editLatitude || !editLongitude || !editRadius) {
+            toast.error('Please fill in all required fields');
+            return;
+        }
+        setIsSubmitting(true);
+        try {
+            const res = await fetch(`/api/admin/nfc-tags/${editingTag.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tagName: editTagName,
+                    tagId: editTagId,
+                    tagType: editTagType,
+                    latitude: parseFloat(editLatitude),
+                    longitude: parseFloat(editLongitude),
+                    radius: parseFloat(editRadius),
+                    wifiSsids: editWifiSsids || null,
+                    campusName: editCampusName || null,
+                    active: editActive,
+                }),
+            });
+            if (res.ok) {
+                toast.success('NFC Spot updated successfully');
+                setEditOpen(false);
+                fetchTags();
+            } else {
+                const data = await res.json();
+                toast.error(data.error || 'Failed to update NFC Spot');
+            }
+        } catch (err) {
+            console.error('Error updating spot:', err);
+            toast.error('Error updating NFC Spot');
         } finally {
             setIsSubmitting(false);
         }
@@ -765,7 +832,14 @@ export default function AdminAttendancePage() {
                                                             )}
                                                         </button>
                                                     </td>
-                                                    <td className="p-4 sm:p-5 text-right">
+                                                    <td className="p-4 sm:p-5 text-right flex items-center justify-end gap-2">
+                                                        <button
+                                                            onClick={() => handleOpenEdit(tag)}
+                                                            className="p-2 bg-zinc-500/15 text-amber-500 hover:bg-zinc-500/25 rounded-xl transition-colors inline-flex items-center justify-center border border-zinc-500/10"
+                                                            title="Edit Spot"
+                                                        >
+                                                            <Pencil size={14} />
+                                                        </button>
                                                         <button
                                                             onClick={() => handleDeleteTag(tag.id)}
                                                             className="p-2 bg-red-500/15 text-red-400 hover:bg-red-500/25 rounded-xl transition-colors inline-flex items-center justify-center border border-red-500/10"
@@ -828,7 +902,13 @@ export default function AdminAttendancePage() {
                                 {/* QR Code Image */}
                                 <div className="bg-white p-4 rounded-2xl shadow-inner flex items-center justify-center">
                                     <img 
-                                        src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=mediahive://attendance/scan?tagId=${selectedTag.id}`} 
+                                        src={(() => {
+                                            // Build the full deep-link first, THEN encode the entire thing as the `data` param.
+                                            // If we inline &sig= directly, the ampersand is treated as a qrserver.com query
+                                            // separator — the sig gets stripped and the scanned URL has no signature.
+                                            const deepLink = `mediahive://attendance/scan?tagId=${encodeURIComponent(selectedTag.tagId || '')}${selectedTag.qrSignature ? `&sig=${encodeURIComponent(selectedTag.qrSignature)}` : ''}`;
+                                            return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(deepLink)}`;
+                                        })()} 
                                         alt={`QR Code for ${selectedTag.tagName}`} 
                                         className="w-48 h-48"
                                     />
@@ -994,6 +1074,148 @@ export default function AdminAttendancePage() {
                             </button>
                         </div>
                     </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* EDIT NFC SPOT MODAL DIALOG */}
+            <Dialog open={editOpen} onOpenChange={setEditOpen}>
+                <DialogContent className="bg-popover border border-border text-foreground max-w-md rounded-2xl shadow-2xl p-6">
+                    <DialogHeader>
+                        <DialogTitle className="text-lg font-bold text-foreground">Edit NFC Check-In Spot</DialogTitle>
+                        <DialogDescription className="text-xs text-muted-foreground">
+                            Update the geofenced location spot and physical validation settings.
+                        </DialogDescription>
+                    </DialogHeader>
+                    
+                    {editingTag && (
+                        <form onSubmit={handleUpdateTag} className="space-y-4 mt-4">
+                            <div>
+                                <Label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Spot Name *</Label>
+                                <Input
+                                    type="text"
+                                    required
+                                    placeholder="e.g. Downtown Lobby Entrance"
+                                    value={editTagName}
+                                    onChange={(e) => setEditTagName(e.target.value)}
+                                    className="bg-background border-border text-foreground focus:border-primary focus:ring-primary"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <Label className="text-xs font-semibold text-zinc-400 mb-1.5 block">Physical Tag ID *</Label>
+                                    <Input
+                                        type="text"
+                                        required
+                                        placeholder="e.g. NFC_LOBBY_A"
+                                        value={editTagId}
+                                        onChange={(e) => setEditTagId(e.target.value)}
+                                        className="bg-background border-border text-foreground focus:border-primary focus:ring-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <Label className="text-xs font-semibold text-zinc-400 mb-1.5 block">Radius (meters) *</Label>
+                                    <Input
+                                        type="number"
+                                        required
+                                        placeholder="50"
+                                        value={editRadius}
+                                        onChange={(e) => setEditRadius(e.target.value)}
+                                        className="bg-background border-border text-foreground focus:border-primary focus:ring-primary"
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <Label className="text-xs font-semibold text-zinc-400 mb-1.5 block">Latitude *</Label>
+                                    <Input
+                                        type="number"
+                                        step="any"
+                                        required
+                                        placeholder="e.g. 13.756"
+                                        value={editLatitude}
+                                        onChange={(e) => setEditLatitude(e.target.value)}
+                                        className="bg-background border-border text-foreground focus:border-primary focus:ring-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <Label className="text-xs font-semibold text-zinc-400 mb-1.5 block">Longitude *</Label>
+                                    <Input
+                                        type="number"
+                                        step="any"
+                                        required
+                                        placeholder="e.g. 100.50"
+                                        value={editLongitude}
+                                        onChange={(e) => setEditLongitude(e.target.value)}
+                                        className="bg-background border-border text-foreground focus:border-primary focus:ring-primary"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <Label className="text-xs font-semibold text-zinc-400 mb-1.5 block">Campus Name (Optional)</Label>
+                                <Input
+                                    type="text"
+                                    placeholder="e.g. Downtown Campus"
+                                    value={editCampusName}
+                                    onChange={(e) => setEditCampusName(e.target.value)}
+                                    className="bg-background border-border text-foreground focus:border-primary focus:ring-primary"
+                                />
+                            </div>
+                            <div>
+                                <Label className="text-xs font-semibold text-zinc-400 mb-1.5 block">WiFi SSIDs (Optional, comma-separated)</Label>
+                                <Input
+                                    type="text"
+                                    placeholder="e.g. MediaHive_HQ, MediaHive_Backup"
+                                    value={editWifiSsids}
+                                    onChange={(e) => setEditWifiSsids(e.target.value)}
+                                    className="bg-background border-border text-foreground focus:border-primary focus:ring-primary"
+                                />
+                            </div>
+                            <div>
+                                <Label className="text-xs font-semibold text-zinc-400 mb-1.5 block">Tag Type *</Label>
+                                <select
+                                    value={editTagType}
+                                    onChange={(e) => setEditTagType(e.target.value)}
+                                    className="w-full bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                >
+                                    <option value="attendance">Attendance</option>
+                                    <option value="equipment">Equipment</option>
+                                    <option value="vehicle">Vehicle</option>
+                                    <option value="location">Location</option>
+                                    <option value="field_work">Field Work</option>
+                                    <option value="mixed">Mixed</option>
+                                </select>
+                            </div>
+                            <div className="flex items-center gap-2 py-2">
+                                <input
+                                    type="checkbox"
+                                    id="editActive"
+                                    checked={editActive}
+                                    onChange={(e) => setEditActive(e.target.checked)}
+                                    className="rounded border-border bg-background text-primary focus:ring-primary h-4 w-4"
+                                />
+                                <Label htmlFor="editActive" className="text-xs font-semibold text-zinc-400 cursor-pointer">
+                                    Active Status
+                                </Label>
+                            </div>
+                            <div className="flex justify-end gap-3 pt-4 border-t border-border">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditOpen(false)}
+                                    className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 disabled:opacity-50"
+                                >
+                                    {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : null}
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    )}
                 </DialogContent>
             </Dialog>
         </PageLayout>

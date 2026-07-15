@@ -153,6 +153,22 @@ class AttendanceRepository {
     }
   }
 
+  /// Update an NFC tag's properties (Admin/Manager)
+  Future<NfcTag> updateTag(String id, Map<String, dynamic> data) async {
+    try {
+      final response = await _client
+          .from('nfc_tags')
+          .update(data)
+          .eq('id', id)
+          .select()
+          .single();
+      return NfcTag.fromJson(response);
+    } catch (e) {
+      _logger.error('Error updating NFC tag: $e');
+      throw Exception('Failed to update NFC tag: $e');
+    }
+  }
+
   /// Soft delete / retire a tag
   Future<void> deleteTag(String id) async {
     try {

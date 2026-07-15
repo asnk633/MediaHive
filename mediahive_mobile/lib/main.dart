@@ -194,85 +194,93 @@ void main() {
             }
           });
 
-          // ─── Session Resume: if the user was checked in when the app restarted
-          // (e.g. after an OTA update, reboot, or force-close), restart the tracker.
-          // Wait for Supabase to restore the persisted session from storage before
-          // checking currentUser — it may be null immediately at startup.
-          Future<void> tryResumeSession(String userId) async {
+          // ─── Session Resume ───────────────────────────────────────────────
+          // Strategy: read FlutterSecureStorage first.
+          // startTracking() always writes active_attendance_id + all config to
+          // secure storage, and FlutterSecureStorage PERSISTS across OTA updates,
+          // force-closes, and reboots. So if data is there, just start the service —
+          // the background isolate reads its own config from storage directly.
+          //
+          // This is far more reliable than listening to Supabase auth events, because
+          // AuthChangeEvent.initialSession fires DURING Supabase.initialize() (before
+          // this unawaited block even runs), so we always miss it.
+          const bgStorage = FlutterSecureStorage();
+          final storedAttendanceId = await bgStorage.read(key: 'active_attendance_id');
+          final isAlreadyRunning = await FlutterBackgroundService().isRunning();
+
+          if (storedAttendanceId != null && !isAlreadyRunning) {
+            // ── Fast path: stored config found → start service directly ──────
+            // Refresh the auth tokens in storage so the isolate has a fresh token.
             try {
-              final isAlreadyRunning = await FlutterBackgroundService().isRunning();
-              if (isAlreadyRunning) {
-                logger.info('BG_PRESENCE: Service already running, skipping resume.');
-                return;
+              final session = Supabase.instance.client.auth.currentSession;
+              if (session != null) {
+                await bgStorage.write(key: 'access_token', value: session.accessToken);
+                await bgStorage.write(key: 'refresh_token', value: session.refreshToken ?? '');
+                final expiresAt = DateTime.now().add(Duration(seconds: session.expiresIn ?? 3600));
+                await bgStorage.write(key: 'token_expires_at', value: expiresAt.toIso8601String());
               }
+            } catch (_) {}
+            await FlutterBackgroundService().startService();
+            logger.info('BG_PRESENCE: Resumed service from stored session (attendanceId=$storedAttendanceId)');
 
-              // Check Supabase for an active attendance session
-              // NOTE: attendance.nfcTagId stores the nfc_tags UUID (primary key),
-              //       NOT the raw hardware tag ID. So we look up nfc_tags by 'id'.
-              final activeData = await Supabase.instance.client
-                  .from('attendance')
-                  .select('id, nfcTagId')
-                  .eq('userId', userId)
-                  .eq('attendanceState', 'active')
-                  .order('checkInTime', ascending: false)
-                  .limit(1)
-                  .maybeSingle();
+          } else if (storedAttendanceId == null && !isAlreadyRunning) {
+            // ── Fallback: no stored config → query Supabase ──────────────────
+            // Handles the case where the user checked in on a different device,
+            // or the secure storage was cleared. Must wait for auth to be ready.
+            Future<void> tryResumeFromSupabase(String userId) async {
+              try {
+                final activeData = await Supabase.instance.client
+                    .from('attendance')
+                    .select('id, nfcTagId')
+                    .eq('userId', userId)
+                    .eq('attendanceState', 'active')
+                    .order('checkInTime', ascending: false)
+                    .limit(1)
+                    .maybeSingle();
 
-              if (activeData != null) {
-                final attendanceId = activeData['id'] as String;
-                final nfcTagUuid = activeData['nfcTagId'] as String?;
-
-                if (nfcTagUuid != null) {
-                  // Look up by nfc_tags.id (the UUID primary key)
-                  final tagData = await Supabase.instance.client
-                      .from('nfc_tags')
-                      .select('latitude, longitude, radius')
-                      .eq('id', nfcTagUuid)
-                      .maybeSingle();
-
-                  if (tagData != null) {
-                    await bgPresence.startTracking(
-                      attendanceId: attendanceId,
-                      userId: userId,
-                      officeLatitude: (tagData['latitude'] as num).toDouble(),
-                      officeLongitude: (tagData['longitude'] as num).toDouble(),
-                      officeRadiusMeters: (tagData['radius'] as num).toDouble(),
-                    );
-                    logger.info('BG_PRESENCE: Resumed tracking for existing active session $attendanceId');
-                  } else {
-                    logger.warning('BG_PRESENCE: No nfc_tags row found for UUID=$nfcTagUuid — cannot resume.');
+                if (activeData != null) {
+                  final attendanceId = activeData['id'] as String;
+                  final nfcTagUuid = activeData['nfcTagId'] as String?;
+                  if (nfcTagUuid != null) {
+                    final tagData = await Supabase.instance.client
+                        .from('nfc_tags')
+                        .select('latitude, longitude, radius')
+                        .eq('id', nfcTagUuid)
+                        .maybeSingle();
+                    if (tagData != null) {
+                      await bgPresence.startTracking(
+                        attendanceId: attendanceId,
+                        userId: userId,
+                        officeLatitude: (tagData['latitude'] as num).toDouble(),
+                        officeLongitude: (tagData['longitude'] as num).toDouble(),
+                        officeRadiusMeters: (tagData['radius'] as num).toDouble(),
+                      );
+                      logger.info('BG_PRESENCE: Resumed via Supabase fallback for session $attendanceId');
+                    }
                   }
+                } else {
+                  logger.info('BG_PRESENCE: No active session in Supabase — tracker not started.');
                 }
-              } else {
-                logger.info('BG_PRESENCE: No active attendance session found — tracker not started.');
+              } catch (e) {
+                logger.warning('BG_PRESENCE: Supabase fallback resume failed (non-fatal): $e');
               }
-            } catch (e) {
-              logger.warning('BG_PRESENCE: Session resume check failed (non-fatal): $e');
             }
-          }
 
-          // If the user is already available (cached session), resume immediately.
-          // Otherwise, wait for the first auth state event.
-          // NOTE: After OTA/reboot, Supabase restores a persisted session and fires
-          // AuthChangeEvent.initialSession — NOT signedIn. We must handle all three.
-          final immediateUser = Supabase.instance.client.auth.currentUser;
-          if (immediateUser != null) {
-            await tryResumeSession(immediateUser.id);
-          } else {
-            // Session may not be restored yet — wait for the auth stream.
-            StreamSubscription? sub;
-            sub = Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
-              final event = data.event;
-              if (event == AuthChangeEvent.initialSession ||
-                  event == AuthChangeEvent.signedIn ||
-                  event == AuthChangeEvent.tokenRefreshed) {
+            final immediateUser = Supabase.instance.client.auth.currentUser;
+            if (immediateUser != null) {
+              await tryResumeFromSupabase(immediateUser.id);
+            } else {
+              StreamSubscription? sub;
+              sub = Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
                 final uid = data.session?.user.id;
                 if (uid != null) {
-                  await tryResumeSession(uid);
+                  await tryResumeFromSupabase(uid);
+                  await sub?.cancel();
                 }
-                await sub?.cancel();
-              }
-            });
+              });
+            }
+          } else {
+            logger.info('BG_PRESENCE: Service already running — skipping resume.');
           }
         } catch (e, stack) {
           // Non-fatal: log but do not crash the app

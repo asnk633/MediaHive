@@ -8,7 +8,7 @@
 
 This document is the single source of truth for the **MediaHive Flutter Mobile Application**.
 
-**Last Updated:** July 15, 2026 (Version 1.2.6-beta+114012 Release)
+**Last Updated:** July 15, 2026 (Version 1.2.6-beta+114014 Release)
 
 ---
 
@@ -347,6 +347,7 @@ mediahive_mobile/
 | Jul 15, 2026 | **Fix: Android 12+ FGS Location Crash on Background Start (build 112011):** `adb logcat` confirmed: `Foreground service started from background can not have location/camera/microphone access → Scheduling restart of crashed service`. Root cause: `onStart()` called `runPresenceCheck()` immediately, which called `Geolocator.getCurrentPosition()`. Android 12+ forbids location access in a foreground service started from a background context (boot, OTA resume). The service crashed on every OTA/reboot resume before the notification could post. Fix: replaced `await runPresenceCheck()` with `Future.delayed(15s, runPresenceCheck)` so `setAsForegroundService()` completes first and the notification posts, then location runs 15 seconds later when Android considers the service properly started. | AI Agent |
 | Jul 15, 2026 | **Fix & Upgrade: Offline Tracking Support & 2-Min Grace Alert Threshold (build 114012):** (1) Rearchitected `runPresenceCheck()` so that GPS location and geofence verification checks run fully when the phone has internet disabled (GPS is hardware-based). Exit warnings/alerts now execute offline, write offline logs to a Hive database buffer, and auto-sync to Supabase once connection is restored. (2) Changed the geofence exit alert threshold from 15 minutes to 2 minutes. | AI Agent |
 | 2026-07-15 | **Admins NFC Tag Edit Dialog Option**: Integrated NFC Check-in spot property editing (Tag Name, Tag Type, Radius, coordinates, active status, campusName, and wifiSsids) inside `nfc_management_screen.dart` via `EditNfcTagDialog`. Updated `AttendanceRepository` with the `updateNfcTag` API call linking directly to Supabase PostgREST table. | AI Agent |
+| Jul 15, 2026 | **Fix Compile Errors and Release App:** Fixed compilation errors in `nfc_management_screen.dart` (restored missing closing braces/parentheses for `showDialog` inside `_openMapPicker`, and corrected undefined variable `isAllowedToEdit` to `isAdmin` inside `_showTagDetailSheet`). Successfully compiled optimized split APKs and published release version `1.2.6-beta+114014` to GitHub and Supabase. | AI Agent |
 
 ---
 
@@ -355,7 +356,7 @@ mediahive_mobile/
 To ensure OTA updates trigger correctly during testing, the release build number must strictly exceed the build number installed on any active testing devices.
 
 Current testing devices and their last verified build numbers:
-- **User's Physical Android Phone:** Build `112011` (OTA to `114012` pushed 2026-07-15)
+- **User's Physical Android Phone:** Build `112011` (OTA to `114014` pushed 2026-07-15)
 
 > **Known Quirk (Android 12+):** Foreground services started from a background context (OTA resume, boot) cannot access location immediately. The first presence check is intentionally delayed 15 seconds after service start to allow the OS to fully register the foreground service before location is accessed.
 

@@ -422,6 +422,7 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
           },
         );
       },
+    );
   }
 
   Future<void> _registerTag() async {
@@ -971,7 +972,7 @@ class _NfcManagementScreenState extends ConsumerState<NfcManagementScreen> {
               label: const Text('VIEW ON GOOGLE MAPS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 0.5)),
             ),
             const SizedBox(height: 16),
-            if (isAllowedToEdit) ...[
+            if (isAdmin) ...[
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colors.surface,

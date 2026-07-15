@@ -392,6 +392,7 @@ graph TD
 | 2026-07-13 | Mobile / Security | **System Health Visibility:** Removed `kDebugMode` restriction on the System Health tile in profile settings, making the screen accessible to all users in release builds. | AI Agent |
 | 2026-07-15 | Mobile / Attendance | **Admins NFC Tag Edit Dialog Option**: Integrated NFC Check-in spot property editing (Tag Name, Tag Type, Radius, coordinates, active status, campusName, and wifiSsids) inside `nfc_management_screen.dart` via `EditNfcTagDialog`. Updated `AttendanceRepository` with the `updateNfcTag` API call linking directly to Supabase PostgREST table. | AI Agent |
 | 2026-07-15 | Web / Attendance | **Admins NFC Tag Edit UI Modal Option**: Added support for editing existing check-in spot properties (Spot Name, Physical Tag ID, Radius, Latitude/Longitude coordinates, active status, campusName, and wifiSsids) inside Next.js dashboard `/admin/attendance` page. Form validation, toggle switches, and loading states are handled via local React state variables. Sends updates to `/api/admin/nfc-tags/[id]`. | AI Agent |
+| 2026-07-15 | Mobile / Bug Fixes | **Fix Compile Errors and Release App**: Fixed compilation errors in `nfc_management_screen.dart` (restored missing closing braces/parentheses for `showDialog` inside `_openMapPicker`, and corrected undefined variable `isAllowedToEdit` to `isAdmin` inside `_showTagDetailSheet`). Successfully compiled optimized split APKs and published release version `1.2.6-beta+114014` to GitHub and Supabase. | AI Agent |
 
 
 ## 5. Known Quirks

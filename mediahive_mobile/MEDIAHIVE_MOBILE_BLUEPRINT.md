@@ -8,7 +8,7 @@
 
 This document is the single source of truth for the **MediaHive Flutter Mobile Application**.
 
-**Last Updated:** July 15, 2026 (Version 1.2.6-beta+110010 Release)
+**Last Updated:** July 15, 2026 (Version 1.2.6-beta+112011 Release)
 
 ---
 
@@ -344,6 +344,7 @@ mediahive_mobile/
 | Jul 13, 2026 | **Crash Fix: Post Check-In TypeError** — Fixed app crash (Android error notification) that occurred immediately after a successful QR or NFC check-in. Root cause: `_processTagScan` in `attendance_provider.dart` used `tagData['latitude'] as double` and `tagData['longitude'] as double` — hard Dart casts that throw `TypeError` when Supabase returns integer coordinates (e.g. `25` instead of `25.0`). Fixed by replacing with `(tagData['latitude'] as num).toDouble()` and `(tagData['longitude'] as num).toDouble()`. The crash was intermittent because subsequent scans hit a cached value that was already `double`-typed. Also added debug diagnostics to `qr_scanner_overlay.dart` (raw scanned value shown in error message in kDebugMode). Released as **v1.2.6-beta+71002**. | AI Agent |
 | Jul 14, 2026 | **Local Crash Logging & Diagnostics System** — Implemented on-device crash logging. Wrapped isolate initialization and `runApp()` in a unified `runZonedGuarded` in `main.dart` to intercept asynchronous, render, and zone-level exceptions. Captures detailed stack traces and device metadata (OS version, device model, app build). Saves logs synchronously via `writeAsStringSync` to survive fatal crashes. Logs auto-rotate after 3 days or a 50-file cap. Added a `CrashLogsScreen` under System Health settings with a swipable logs list, detail trace viewer, confirmation dialogs, and native log sharing (`share_plus`). Added a long-press debug test crash trigger to System Health screen. Visible in all build modes (including release build `74002`, `76002`, `80002`, `84002`, `86002`, `88002` and `90002`) to enable device testing. | AI Agent |
 | Jul 15, 2026 | **Fix: Presence Tracker Notification Icon (Leaf → MediaHive Logo):** The foreground service notification was showing a leaf-shaped silhouette instead of the MediaHive logo. Root cause: `AndroidManifest.xml` had no `android:icon` on the `flutter_background_service` `<service>` entry, so Android rendered the adaptive launcher icon (`@mipmap/ic_launcher`) as a monochrome silhouette. Fixed by adding `android:icon="@drawable/ic_stat_notification"` to the service declaration, pointing to the existing monochrome MediaHive hexagonal badge (present in all 5 density buckets: mdpi → xxxhdpi). | AI Agent |
+| Jul 15, 2026 | **Fix: Android 12+ FGS Location Crash on Background Start (build 112011):** `adb logcat` confirmed: `Foreground service started from background can not have location/camera/microphone access → Scheduling restart of crashed service`. Root cause: `onStart()` called `runPresenceCheck()` immediately, which called `Geolocator.getCurrentPosition()`. Android 12+ forbids location access in a foreground service started from a background context (boot, OTA resume). The service crashed on every OTA/reboot resume before the notification could post. Fix: replaced `await runPresenceCheck()` with `Future.delayed(15s, runPresenceCheck)` so `setAsForegroundService()` completes first and the notification posts, then location runs 15 seconds later when Android considers the service properly started. | AI Agent |
 
 ---
 
@@ -352,7 +353,9 @@ mediahive_mobile/
 To ensure OTA updates trigger correctly during testing, the release build number must strictly exceed the build number installed on any active testing devices.
 
 Current testing devices and their last verified build numbers:
-- **User's Physical Android Phone:** Build `108009` (OTA to `110010` pushed 2026-07-15)
+- **User's Physical Android Phone:** Build `110010` (OTA to `112011` pushed 2026-07-15)
+
+> **Known Quirk (Android 12+):** Foreground services started from a background context (OTA resume, boot) cannot access location immediately. The first presence check is intentionally delayed 15 seconds after service start to allow the OS to fully register the foreground service before location is accessed.
 
 *Rule: The `pubspec.yaml` build number no longer needs to be manually managed. The `release_app.py` script auto-queries Supabase for the true max build in the wild and self-corrects. Just run `python release_app.py`.*
 

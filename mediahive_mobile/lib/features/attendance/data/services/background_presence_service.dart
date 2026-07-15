@@ -213,6 +213,10 @@ void onStart(ServiceInstance service) async {
       service.on('setAsBackground').listen((event) {
         service.setAsBackgroundService();
       });
+
+      // Immediately set as foreground so the persistent notification appears
+      // right away regardless of how the service was started (check-in or resume).
+      await service.setAsForegroundService();
     }
 
     const storage = FlutterSecureStorage();

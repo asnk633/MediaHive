@@ -8,7 +8,7 @@
 
 This document is the single source of truth for the **MediaHive Flutter Mobile Application**.
 
-**Last Updated:** July 15, 2026 (Version 1.2.6-beta+102006 Release)
+**Last Updated:** July 15, 2026 (Version 1.2.6-beta+104007 Release)
 
 ---
 
@@ -348,6 +348,7 @@ mediahive_mobile/
 | Jul 15, 2026 | **Permanent Fix: OTA Build Number Mismatch (builds 97003/98003):** Root cause — release script had no visibility into what build was actually installed on devices, so manually sideloaded APKs could produce higher build numbers than the next OTA release. Fixed with a two-part system: (1) `main.dart` now reports the device's build number to Supabase `system_config.app_max_client_build` on every launch (MAX-only update, never overwrites with a lower value). (2) `release_app.py` now queries `app_max_client_build` AND `app_latest_version` from Supabase before building, computes `new_build = max(all) + 1`, and auto-patches `pubspec.yaml` if the correction is needed. The release script also writes the new build number back to `app_max_client_build` after publishing, so the floor is always current. This system is fully automatic — no manual build number tracking needed. | AI Agent |
 | Jul 15, 2026 | **Fix: Foreground Service Leaf Icon & OTA Mismatch (build 100005):** Overrode the background presence tracker's default leaf notification icon by copying our monochrome bee badge to `ic_bg_service_small.png` across all drawable density buckets (which is what the `flutter_background_service` package defaults to native-side). Pushed version `100005` to bypass the user's device running `100003`, and resolved client permission issues for `app_max_client_build` by creating custom UPDATE and INSERT RLS policies on the `system_config` table in Supabase. | AI Agent |
 | Jul 15, 2026 | **Fix: Session Resume & Presence Logs Database Column Name Mismatch (build 102006):** Fixed a silent runtime database exception in both `main.dart` (session resume) and `background_presence_service.dart` (presence logging and buffer syncing) where SQL queries targeted snake_case columns (`user_id`, `nfc_tag_id`, `check_in_time`, `status`, `is_within_geofence`, etc.) but the database schema uses camelCase (`userId`, `nfcTagId`, `checkInTime`, `attendanceState`, `isWithinGeofence`, etc.). Restored full session resume functionality and background presence logging. | AI Agent |
+| Jul 15, 2026 | **Fix: Session Resume Still Not Starting Tracker — Two Stacked Bugs (build 104007):** (1) `nfc_tags` lookup used wrong column: `attendance.nfcTagId` stores the `nfc_tags` UUID primary key but code was querying `.eq('tagId', ...)` (the raw hardware NFC ID), so `tagData` always returned `null` and `startTracking()` was never reached. Fixed to `.eq('id', nfcTagUuid)`. (2) `Supabase.instance.client.auth.currentUser` can be `null` immediately after `Supabase.initialize()` because session restoration from secure storage is async. Code now checks `currentUser` immediately and, if null, subscribes to `onAuthStateChange` and waits for `signedIn`/`tokenRefreshed` before attempting session resume. | AI Agent |
 
 ---
 
@@ -356,7 +357,7 @@ mediahive_mobile/
 To ensure OTA updates trigger correctly during testing, the release build number must strictly exceed the build number installed on any active testing devices.
 
 Current testing devices and their last verified build numbers:
-- **User's Physical Android Phone:** Build `100005` (OTA to `102006` pushed 2026-07-15)
+- **User's Physical Android Phone:** Build `102006` (OTA to `104007` pushed 2026-07-15)
 
 *Rule: The `pubspec.yaml` build number no longer needs to be manually managed. The `release_app.py` script auto-queries Supabase for the true max build in the wild and self-corrects. Just run `python release_app.py`.*
 

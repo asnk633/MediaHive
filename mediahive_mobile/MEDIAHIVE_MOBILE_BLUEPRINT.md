@@ -8,7 +8,7 @@
 
 This document is the single source of truth for the **MediaHive Flutter Mobile Application**.
 
-**Last Updated:** July 15, 2026 (Version 1.2.6-beta+106008 Release)
+**Last Updated:** July 15, 2026 (Version 1.2.6-beta+108009 Release)
 
 ---
 
@@ -350,6 +350,7 @@ mediahive_mobile/
 | Jul 15, 2026 | **Fix: Session Resume & Presence Logs Database Column Name Mismatch (build 102006):** Fixed a silent runtime database exception in both `main.dart` (session resume) and `background_presence_service.dart` (presence logging and buffer syncing) where SQL queries targeted snake_case columns (`user_id`, `nfc_tag_id`, `check_in_time`, `status`, `is_within_geofence`, etc.) but the database schema uses camelCase (`userId`, `nfcTagId`, `checkInTime`, `attendanceState`, `isWithinGeofence`, etc.). Restored full session resume functionality and background presence logging. | AI Agent |
 | Jul 15, 2026 | **Fix: Session Resume Still Not Starting Tracker — Two Stacked Bugs (build 104007):** (1) `nfc_tags` lookup used wrong column: `attendance.nfcTagId` stores the `nfc_tags` UUID primary key but code was querying `.eq('tagId', ...)` (the raw hardware NFC ID), so `tagData` always returned `null` and `startTracking()` was never reached. Fixed to `.eq('id', nfcTagUuid)`. (2) `Supabase.instance.client.auth.currentUser` can be `null` immediately after `Supabase.initialize()` because session restoration from secure storage is async. Code now checks `currentUser` immediately and, if null, subscribes to `onAuthStateChange` and waits for `signedIn`/`tokenRefreshed` before attempting session resume. | AI Agent |
 | Jul 15, 2026 | **Fix: Tracker Still Not Auto-Starting After OTA — Missing `initialSession` Event (build 106008):** After OTA install + app reopen, Supabase restores a persisted session from `FlutterSecureStorage` and fires `AuthChangeEvent.initialSession` — NOT `signedIn` or `tokenRefreshed`. The `onAuthStateChange` listener only handled the latter two, so for any user already logged in (the OTA/reboot scenario), the listener sat idle forever and the tracker never resumed. Fixed by adding `AuthChangeEvent.initialSession` to the condition. Confirmed: manual check-out + check-in worked (direct `startTracking()` call), but auto-resume on OTA did not (missed event). | AI Agent |
+| Jul 15, 2026 | **Fix: Session Resume Definitive Rearchitecture — FlutterSecureStorage-First (build 108009):** Root cause of all prior session-resume failures: `AuthChangeEvent.initialSession` fires DURING `Supabase.initialize()`, before the `unawaited` block even subscribes to `onAuthStateChange`. We were always too late to catch it. Fix: `startTracking()` already writes the full tracker config (`active_attendance_id`, `office_latitude`, etc.) to `FlutterSecureStorage`, which persists across OTA updates, reboots, and force-closes. Session resume now reads `active_attendance_id` directly from storage — if present, calls `FlutterBackgroundService().startService()` immediately (no auth stream, no Supabase query, no timing dependency). Falls back to Supabase query only if storage is empty (e.g., checked in on a different device). | AI Agent |
 
 ---
 
@@ -358,7 +359,7 @@ mediahive_mobile/
 To ensure OTA updates trigger correctly during testing, the release build number must strictly exceed the build number installed on any active testing devices.
 
 Current testing devices and their last verified build numbers:
-- **User's Physical Android Phone:** Build `104007` (OTA to `106008` pushed 2026-07-15)
+- **User's Physical Android Phone:** Build `106008` (OTA to `108009` pushed 2026-07-15)
 
 *Rule: The `pubspec.yaml` build number no longer needs to be manually managed. The `release_app.py` script auto-queries Supabase for the true max build in the wild and self-corrects. Just run `python release_app.py`.*
 

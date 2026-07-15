@@ -340,15 +340,7 @@ void onStart(ServiceInstance service) async {
         final officeLongitude = double.parse(officeLngStr);
         final officeRadius = double.parse(officeRadiusStr);
 
-        // Check network connectivity
-        final connectivityResult = await Connectivity().checkConnectivity();
-        if (connectivityResult == ConnectivityResult.none) {
-          debugPrint('BG_PRESENCE_ISOLATE: Offline. Scheduling retry in 1 minute.');
-          await privateBox.put('next_scheduled_check', DateTime.now().add(const Duration(minutes: 1)).millisecondsSinceEpoch);
-          return;
-        }
-
-        // Query location
+        // Query location (GPS works without internet)
         Position? position;
         try {
           position = await Geolocator.getCurrentPosition(
@@ -386,15 +378,15 @@ void onStart(ServiceInstance service) async {
             await privateBox.put('grace_start_timestamp', now.millisecondsSinceEpoch);
             await NotificationService.showNotificationDirect(
               title: 'Geofence Exit Warning',
-              body: 'You have left the office geofence. Please return or check out within 15 minutes.',
+              body: 'You have left the office geofence. Please return or check out within 2 minutes.',
             );
           } else {
             final graceStart = DateTime.fromMillisecondsSinceEpoch(graceStartVal as int);
             final elapsedGraceMinutes = now.difference(graceStart).inMinutes;
-            if (elapsedGraceMinutes >= 15) {
+            if (elapsedGraceMinutes >= 2) {
               await NotificationService.showNotificationDirect(
                 title: 'Geofence Exit Alert',
-                body: 'You have been outside the office for over 15 minutes. Please check in again when you return.',
+                body: 'You have been outside the office for over 2 minutes. Please check in again when you return.',
               );
             }
           }
@@ -413,87 +405,79 @@ void onStart(ServiceInstance service) async {
           'timestamp': now.toIso8601String(),
         };
 
+        // Determine if we can upload to Supabase immediately (requires internet)
         bool uploaded = false;
-        final token = await getValidAccessToken();
-        if (token != null) {
-          final client = await getSupabaseClient();
-          if (client != null) {
-            try {
-              // Set session string or recovery parameters
-              final sessionJson = jsonEncode({
-                'access_token': token,
-                'refresh_token': await storage.read(key: 'refresh_token') ?? '',
-                'expires_in': 3600,
-                'token_type': 'bearer',
-                'user': {
-                  'id': activeUserId,
-                  'email': '',
-                }
-              });
-              await client.auth.recoverSession(sessionJson);
+        final connectivityResult = await Connectivity().checkConnectivity();
+        final isOnline = connectivityResult != ConnectivityResult.none;
 
-              await client.from('presence_logs').insert({
-                'attendanceId': activeAttendanceId,
-                'userId': activeUserId,
-                'latitude': position.latitude,
-                'longitude': position.longitude,
-                'accuracy': position.accuracy,
-                'isWithinGeofence': isWithinGeofence,
-                'isMockLocation': position.isMocked,
-                'verificationMethod': 'background_polling',
-                'distanceFromOffice': distance,
-              });
-              uploaded = true;
-              debugPrint('BG_PRESENCE_ISOLATE: Presence log uploaded.');
-            } catch (e) {
-              debugPrint('BG_PRESENCE_ISOLATE: Log upload failed: $e. Buffering.');
+        if (isOnline) {
+          try {
+            final token = await getValidAccessToken();
+            if (token != null) {
+              final client = await getSupabaseClient();
+              if (client != null) {
+                // Set session string or recovery parameters
+                final sessionJson = jsonEncode({
+                  'access_token': token,
+                  'refresh_token': await storage.read(key: 'refresh_token') ?? '',
+                  'expires_in': 3600,
+                  'token_type': 'bearer',
+                  'user': {
+                    'id': activeUserId,
+                    'email': '',
+                  }
+                });
+                await client.auth.recoverSession(sessionJson);
+
+                await client.from('presence_logs').insert({
+                  'attendanceId': activeAttendanceId,
+                  'userId': activeUserId,
+                  'latitude': position.latitude,
+                  'longitude': position.longitude,
+                  'accuracy': position.accuracy,
+                  'isWithinGeofence': isWithinGeofence,
+                  'isMockLocation': position.isMocked,
+                  'verificationMethod': 'background_polling',
+                  'distanceFromOffice': distance,
+                });
+                uploaded = true;
+                debugPrint('BG_PRESENCE_ISOLATE: Presence log uploaded.');
+
+                // Sync background buffer box since we are online now
+                if (bufferBox.isNotEmpty) {
+                  final keys = bufferBox.keys.toList();
+                  for (final key in keys) {
+                    try {
+                      final entry = Map<String, dynamic>.from(bufferBox.get(key) as Map);
+                      await client.from('presence_logs').insert({
+                        'attendanceId': entry['attendanceId'],
+                        'userId': entry['userId'],
+                        'latitude': entry['latitude'],
+                        'longitude': entry['longitude'],
+                        'accuracy': entry['accuracy'],
+                        'isWithinGeofence': entry['isWithinGeofence'],
+                        'isMockLocation': entry['isMockLocation'],
+                        'verificationMethod': 'background_polling',
+                        'distanceFromOffice': entry['distanceFromOffice'],
+                      });
+                      await bufferBox.delete(key);
+                    } catch (e) {
+                      debugPrint('BG_PRESENCE_ISOLATE: Failed to sync buffered log $key: $e');
+                      break;
+                    }
+                  }
+                }
+              }
             }
+          } catch (e) {
+            debugPrint('BG_PRESENCE_ISOLATE: Log upload failed: $e. Buffering.');
           }
         }
 
         if (!uploaded) {
           final key = DateTime.now().millisecondsSinceEpoch.toString();
           await bufferBox.put(key, logData);
-        }
-
-        // Sync background buffer box
-        if (token != null && bufferBox.isNotEmpty) {
-          final client = await getSupabaseClient();
-          if (client != null) {
-            final sessionJson = jsonEncode({
-              'access_token': token,
-              'refresh_token': await storage.read(key: 'refresh_token') ?? '',
-              'expires_in': 3600,
-              'token_type': 'bearer',
-              'user': {
-                'id': activeUserId,
-                'email': '',
-              }
-            });
-            await client.auth.recoverSession(sessionJson);
-
-            final keys = bufferBox.keys.toList();
-            for (final key in keys) {
-              try {
-                final entry = Map<String, dynamic>.from(bufferBox.get(key) as Map);
-                await client.from('presence_logs').insert({
-                  'attendance_id': entry['attendanceId'],
-                  'user_id': entry['userId'],
-                  'latitude': entry['latitude'],
-                  'longitude': entry['longitude'],
-                  'accuracy': entry['accuracy'],
-                  'is_within_geofence': entry['isWithinGeofence'],
-                  'is_mock_location': entry['isMockLocation'],
-                  'verification_method': 'background_polling',
-                  'distance_from_office': entry['distanceFromOffice'],
-                });
-                await bufferBox.delete(key);
-              } catch (e) {
-                debugPrint('BG_PRESENCE_ISOLATE: Failed to sync buffered log $key: $e');
-                break;
-              }
-            }
-          }
+          debugPrint('BG_PRESENCE_ISOLATE: Presence log buffered locally (offline/error).');
         }
       } catch (e) {
         debugPrint('BG_PRESENCE_ISOLATE: Unhandled check error: $e');
